@@ -1,5 +1,7 @@
 # spot-solver
 
+> Les modes à score (v1, v2, cible) ne servent plus au jeu ; seul le mode pose compte.
+
 Solveur exact (OR-Tools CP-SAT), vérificateur d'unicité, solveur de déduction humaine (pur Python, note de
 difficulté) et générateur de grilles pour Dispatch.
 Règles de pose : `../docs/archive/demo-spec.md` §1-2 ; score v2, objectifs et format : `../docs/archive/scoring-v2.md`.

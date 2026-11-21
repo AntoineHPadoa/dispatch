@@ -24,6 +24,7 @@ npx tsx scripts/convert-grids.ts /tmp/gen.json /tmp/gen14.json   # prints a repo
 
 ## 2. Put it in `grids.json`
 
+- A generated grid comes out with `id: 1` and a title "Pose 1": set `id` to the next free id and give it a real `title`. The converter only gives tutorial intros to the prototype's own grids, but the id still has to be unique.
 - Append the object, with a new unique `id`, a `title`, `section` (`tutorial` with `intro` and `teaches`, or `rated`) and `difficulty` (from the solver: `rating` 1-4, `label`, `techniques`).
 - Update the expected id list in `tests/grids.test.ts` ("has the … pose grids").
 

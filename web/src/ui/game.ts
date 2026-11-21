@@ -11,7 +11,7 @@
  */
 import type { Grid, Placement } from '../model/grid';
 import {
-  barIndexAt, checkPlaceOver, evaluate, newGame, placeOver, remove, removeStep, addStep, setExport, exportsAt,
+  barIndexAt, checkPlaceOver, evaluate, newGame, placeOver, remove, removeStep, setExport, exportsAt,
   importsAt, type ClueReport, type Evaluation, type PlayState,
 } from '../engine';
 import { MSG, TECHNIQUES, UI, columnLabel, countryTo, durationText, placementLabel, slotClueShort } from '../i18n/fr';
@@ -20,8 +20,9 @@ import {
   alongShape, cancel, idle, isFlat, moveTo, press, previewRect, release, tap, type Cell, type GestureState, type Rect, type Shape,
 } from './gesture';
 import { canUndo, push, reset, start, undo, type History } from './history';
-import { STEP_KEY, bookEntries, publishedStepPairs, renderBook, renderClues, renderCo2, type BookEntry } from './panels';
+import { STEP_KEY, bookEntries, renderBook, renderClues, renderCo2, type BookEntry } from './panels';
 import { esc, icon } from './palette';
+import { stepPairIndexAt, stepTapResult } from './step';
 import { dailyGrid, nextGrid, recordState, type ProgressStore } from './progress';
 
 export interface GameContext {
@@ -361,28 +362,16 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
 
   /** STEP chosen: the first tap pumps, a tap on a later slot turbines. */
   function stepTap(col: number) {
-    const s0 = history.present;
-    const at = (c: number) => columnLabel(grid, c);
-    if (stepPending === null) {
-      if (col === grid.columns.length - 1) { say(UI.stepLastSlot, 'bad'); return; }
-      const want = publishedStepPairs(grid);
-      if (grid.inventory.level === 'exact' && want !== null && s0.step.length >= want) { say(MSG.stepCount(want), 'bad'); return; }
-      stepPending = col;
-      message = { text: UI.stepPending(at(col)), tone: 'info' };
-      drawBoard();
-      return;
-    }
-    if (col <= stepPending) { say(UI.stepTooEarly(at(stepPending)), 'bad'); return; }
-    const pump = stepPending;
-    const res = addStep(grid, s0, pump, col);
-    if (!res.ok) { say(res.error.message, 'bad'); return; }
-    stepPending = null;
-    commit(res.state, UI.stepAdded(at(pump), at(col)));
+    const r = stepTapResult(grid, history.present, stepPending, col);
+    stepPending = r.pending;
+    if (r.state) commit(r.state, r.message.text);
+    else if (r.message.tone === 'info') { message = r.message; drawBoard(); }
+    else say(r.message.text, r.message.tone);
   }
 
   /** Remove the STEP pair pumping or turbining in a column. */
   function removePairAt(col: number): boolean {
-    const k = history.present.step.findIndex((p) => p.pump === col || p.turbine === col);
+    const k = stepPairIndexAt(history.present, col);
     if (k < 0) return false;
     const res = removeStep(history.present, k);
     if (res.ok) commit(res.state, UI.stepRemoved, 'info');

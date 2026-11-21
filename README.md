@@ -13,6 +13,8 @@ npm run dev     # http://localhost:5173/dispatch/
 npm test
 ```
 
+Imprimer : bouton sur chaque grille, ou toutes les grilles depuis l'accueil.
+
 Règles du jeu et format des grilles : [`GAME-DESIGN.md`](GAME-DESIGN.md). Le solveur et générateur de grilles (Python) est dans [`solver/`](solver/README.md).
 
 ## Publier

@@ -86,6 +86,7 @@ h3.sub { font-family: var(--f-title); font-weight: 500; font-size: 1.1rem; margi
 .tool svg, .ico svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round }
 .book { display: grid; gap: 8px }
 .prow { display: grid; grid-template-columns: 96px 1fr; gap: 10px; align-items: center; padding: 6px 8px; border-radius: 12px }
+.step-glyph { font-size: .66rem; font-weight: 800; letter-spacing: .05em; color: #4f7fb8; background: #e3eefa; border: 1px solid #bfd7f1; border-radius: 6px; padding: 1px 6px }
 .prow.sel { background: var(--wash); outline: 1.5px solid #e2c3d3 }
 .pname { display: grid; line-height: 1.2 }
 .pname b { font-weight: 800; font-size: .84rem }
@@ -140,6 +141,11 @@ h3.sub { font-family: var(--f-title); font-weight: 500; font-size: 1.1rem; margi
 .a4 .kind { font-size: .56rem; color: #6c7d78 }
 .a4 .pc::before { border-radius: 0; outline: .8px solid #1f2a27 }
 .a4 .slot { border-color: #6c7d78 }
+.a4 .steprow { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: .64rem; font-weight: 800; color: #6c7d78 }
+.a4 .steprow i { width: 16px; height: 16px; background: #fff; border: .8px solid #1f2a27 }
+.a4 .legend ul { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 14px; font-size: .7rem }
+.a4 .legend li { break-inside: avoid; padding-left: 8px; text-indent: -8px }
+.a4 .legend li::before { content: "· "; color: #6c7d78 }
 .a4 .foot { margin-top: auto; display: flex; justify-content: space-between; color: #6c7d78; font-size: .64rem; border-top: 1px solid #c7d5d1; padding-top: 6px }
 .cols2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px }
 </style>
@@ -395,7 +401,8 @@ const freeBook = (paper) => `<div class="book">
   ${prow("C", "2 à 3 GW", mb("C", 3, 2, { dashFrom: 1, paper }) + (paper ? "" : `<span class="count">6 posées</span>`))}
   ${prow("G", "1 ou 2 GW", range("G", 2, 3, paper) + (paper ? "" : `<span class="count">2 posées</span>`))}
   ${prow("B", "stock : 2 cases", mb("B", 1, 1, { used: !paper, paper }) + mb("B", 1, 1, { paper }) + (paper ? "" : `<span class="count">1 / 2</span>`))}
-  ${prow("T", "1 case, pointe", range("T", 1, 1, paper) + (paper ? "" : `<span class="count">2 posées</span>`), !paper)}
+  ${prow("T", "1 case, pointe", range("T", 1, 1, paper) + (paper ? "" : `<span class="count">2 posées</span>`))}
+  ${paper ? "" : `<div class="prow sel"><div class="pname"><b>STEP</b><span>paires à déduire</span></div><div class="bars"><span class="step-glyph">▲▼</span><span class="count">1 posée</span></div></div>`}
 </div>`;
 const co2 = `<div class="gauge"><div class="lbl"><span><b>CO₂</b> 25 points sur 28</span><span style="color:#8f8593">plafond</span></div>
   <div class="track"><i style="width:64.3%;background:${P.C.a}"></i><i style="width:7.1%;background:${P.G.a}"></i><i style="width:14.3%;background:${P.T.a}"></i><i style="width:3.6%;background:${P.I.a}"></i></div>
@@ -466,7 +473,8 @@ const statesBlock = () => `<div class="ref">
   </div><p class="rule">Au-dessus de la silhouette, rien n'est dessiné : le fond suffit.</p></article>
   <article class="refcard"><h4>Pièces et poses</h4><div class="vis m" style="background:#fbf7f9">${grid(ST_GRID, { cell: 40 })}</div>
     <p class="rule">Pose possible : aperçu en pointillés verts. Pose refusée : pointillés rouges, avec la raison en clair. Pièce devenue invalide (la silhouette a bougé) : hachures rouges, jamais supprimée d'office.</p>
-    <div class="m" style="display:grid;gap:6px;background:transparent"><div class="msg bad">TAC à 16h, ligne 1 : la case est déjà prise par le nucléaire.</div><div class="msg bad">Gaz de 8h à 16h, ligne 3 : la silhouette a baissé à 12h, la barre dépasse.</div></div></article>
+    <div class="m" style="display:grid;gap:6px;background:transparent"><div class="msg bad">TAC à 16h, ligne 1 : la case est déjà prise par le nucléaire.</div><div class="msg bad">Gaz de 8h à 16h, ligne 3 : la silhouette a baissé à 12h, la barre dépasse.</div></div>
+    <p class="rule">Poser par-dessus remplace les centrales couvertes, en une seule étape annulable ; une centrale engagée ne se remplace jamais.</p></article>
   <article class="refcard"><h4>Indices</h4><div class="m" style="background:transparent"><ul class="clues">
     ${clue("len", "À vérifier", "Rien ne le contredit encore.", "")}
     ${clue("len", "Vérifié", "La grille le respecte.", "ok")}
@@ -503,12 +511,15 @@ const FREE_PAPER = { ...FREE, steps: [], stack: FREE.stack.map(k => k.filter(x =
 const paperFree = () => `<div class="a4">
   <div class="meta"><h3>Soleil de midi</h3><span>Grille du jour · Difficile</span></div>
   <div style="display:grid;place-items:center">${grid(FREE_PAPER, { cell: 40, style: "B", pieces: false })}</div>
+  <div class="steprow"><span>STEP ▲▼</span>${"<i></i>".repeat(8)}</div>
+  <div class="legend"><div class="sec">Indices sur la grille</div><ul>
+    <li>Prix : le gaz fixe le prix à 12h</li><li>Programme : réacteur de 15h à 24h</li><li>Flux : 1 export vers l'Allemagne à 21h</li><li>Flux : 1 import d'Espagne à 18h</li></ul></div>
   <div class="cols2"><div><div class="sec">Centrales disponibles</div>${freeBook(true)}</div>
   <div><div class="sec">Indices de la journée</div><ul class="clues">
     <li class="clue"><span><span class="kind">Durée de marche</span><span class="txt">Un ${pc("N", "réacteur")} tourne ${slot("4")} créneaux d'affilée.</span></span></li>
     <li class="clue"><span><span class="kind">Échanges du jour</span><span class="txt">2 blocs vers l'Allemagne, 1 importé d'Espagne, 1 pompage.</span></span></li>
     <li class="clue"><span><span class="kind">Plafond CO₂</span><span class="txt">28 au plus : charbon 3, TAC 2, gaz 1, import d'Espagne 1 par case.</span></span></li></ul></div></div>
-  <div class="foot"><span>Pompage ▲ et turbinage ▼ : note-les au-dessus des colonnes.</span><span>dispatch · 21/11</span></div></div>`;
+  <div class="foot"><span>Pompage ▲ et turbinage ▼ : note-les dans les cases sous la grille.</span><span>dispatch · 21/11</span></div></div>`;
 
 /* ===== Foundations ===== */
 const swatches = () => `<div class="tok">${Object.entries(P).map(([k, v]) => `<div class="tokc"><div class="pair"><span style="background:${v.a}">écran</span><span class="p" style="background:${v.b}">papier</span></div>

@@ -12,10 +12,11 @@ flags=(--headless=new --disable-gpu --hide-scrollbars --virtual-time-budget=3000
 if (( width >= 500 )); then
   "$chrome" "${flags[@]}" --window-size="$width,$height" --screenshot="$out" "$url" 2>/dev/null
 else
-  frame=$(mktemp -t dispatch-frame).html
+  tmp=$(mktemp -d)
+  frame=$tmp/frame.html
   printf '<!doctype html><body style="margin:0;background:#888"><iframe src="%s" style="width:%spx;height:%spx;border:0;background:#fff"></iframe></body>' \
     "$url" "$width" "$height" > "$frame"
   "$chrome" "${flags[@]}" --window-size="600,$height" --screenshot="$out" "file://$frame" 2>/dev/null
-  rm -f "$frame"
+  rm -rf "$tmp"
 fi
 echo "$out"

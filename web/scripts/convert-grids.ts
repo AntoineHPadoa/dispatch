@@ -19,8 +19,6 @@ import {
 } from '../src/model/grid';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const input = resolve(process.argv[2] ?? resolve(here, '../../docs/archive/demo/grids-pose.json'));
-const output = resolve(process.argv[3] ?? resolve(here, '../src/data/grids.json'));
 
 /** Merit-order ranks of §3. */
 const RANK: Record<PieceId, number> = { N: 1, B: 2, C: 3, G: 4, T: 5 };
@@ -59,6 +57,13 @@ const INTRO_OVERRIDE: Record<number, string> = {
 };
 
 /** Player text uses the typographic apostrophe only. */
+/** Rewrites and technique tags only fit the prototype's own grids: tutorials 1-7 and the rated grid 8. */
+const isPrototypeTutorial = (g: { id: number; section: string }) => g.section === 'Tutoriel' && g.id >= 1 && g.id <= 7;
+const isPrototypeFacile = (g: { id: number; section: string; title: string }) =>
+  g.id === 8 && g.section === 'Grilles' && g.title === 'Facile';
+const introOverride = (g: { id: number; section: string; title: string }): string | undefined =>
+  isPrototypeTutorial(g) || isPrototypeFacile(g) ? INTRO_OVERRIDE[g.id] : undefined;
+
 const typo = (s: string) => s.replace(/'/g, '’');
 
 // ---- prototype shapes (only what the converter reads) ----------------------
@@ -135,7 +140,7 @@ function convertPrice(g: ProtoGrid, clue: { col: number; value: number }, availa
   return { type: 'price', col, piece: setter };
 }
 
-function convertGrid(g: ProtoGrid): Grid {
+export function convertGrid(g: ProtoGrid): Grid {
   const n = g.columns.length;
   const level = g.inventory.level;
   if (level !== 'exact' && level !== 'none') throw new Error(`grid ${g.id}: unsupported level ${level}`);
@@ -241,14 +246,15 @@ function convertGrid(g: ProtoGrid): Grid {
       : { piece: b.piece as PieceId, row: b.row, col: b.col, len: b.len });
 
   const tutorial = g.section === 'Tutoriel';
-  const intro = INTRO_OVERRIDE[g.id] ?? (g.intro ? typo(g.intro) : undefined);
-  if (INTRO_OVERRIDE[g.id]) note(g, 'intro rewritten (tutorial wording, price clue names a plant, grid 8 states its dam stock, grid 7 explains STEP)');
+  const override = introOverride(g);
+  const intro = override ?? (g.intro ? typo(g.intro) : undefined);
+  if (override) note(g, 'intro rewritten (tutorial wording, price clue names a plant, grid 8 states its dam stock, grid 7 explains STEP)');
   const grid: Grid = {
     id: g.id,
     title: typo(g.title),
     section: tutorial ? 'tutorial' : 'rated',
     ...(intro ? { intro } : {}),
-    ...(tutorial && TEACHES[g.id] ? { teaches: TEACHES[g.id] } : {}),
+    ...(isPrototypeTutorial(g) && TEACHES[g.id] ? { teaches: TEACHES[g.id] } : {}),
     columns: g.columns,
     demand: g.residual.slice(),
     pieces,
@@ -272,13 +278,19 @@ function convertGrid(g: ProtoGrid): Grid {
   return assertGrid(grid);
 }
 
-const proto = JSON.parse(readFileSync(input, 'utf8')) as ProtoGrid[];
-const kept = proto.filter((g) => g.mode === 'pose');
-const skipped = proto.filter((g) => g.mode !== 'pose').map((g) => `${g.id} (${g.title})`);
-const grids = kept.map(convertGrid);
-writeFileSync(output, `${JSON.stringify(grids, null, 2)}\n`);
+function main() {
+  const input = resolve(process.argv[2] ?? resolve(here, '../../docs/archive/demo/grids-pose.json'));
+  const output = resolve(process.argv[3] ?? resolve(here, '../src/data/grids.json'));
+  const proto = JSON.parse(readFileSync(input, 'utf8')) as ProtoGrid[];
+  const kept = proto.filter((g) => g.mode === 'pose');
+  const skipped = proto.filter((g) => g.mode !== 'pose').map((g) => `${g.id} (${g.title})`);
+  const grids = kept.map(convertGrid);
+  writeFileSync(output, `${JSON.stringify(grids, null, 2)}\n`);
 
-console.log(`Converted ${grids.length} grids -> ${output}`);
-console.log(`Skipped (not pose mode): ${skipped.join(', ') || 'none'}`);
-console.log('Report:');
-console.log(report.length ? report.join('\n') : '- nothing to report');
+  console.log(`Converted ${grids.length} grids -> ${output}`);
+  console.log(`Skipped (not pose mode): ${skipped.join(', ') || 'none'}`);
+  console.log('Report:');
+  console.log(report.length ? report.join('\n') : '- nothing to report');
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();

@@ -1,5 +1,5 @@
 # Build the web app (web/) and deploy it to GitHub Pages on every push to main.
-# Tests and type checks must pass before the site is published.
+# Web tests, solver tests and the one-solution check of every grid must pass before the site is published.
 name: Deploy to GitHub Pages
 
 on:
@@ -17,7 +17,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  solver:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.13"
+      - run: uv sync
+        working-directory: solver
+      - run: .venv/bin/pytest -q
+        working-directory: solver
+      - run: ../solver/.venv/bin/python scripts/check_unique.py
+        working-directory: web
+
   build:
+    needs: solver
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -38,7 +53,7 @@ jobs:
           path: web/dist
 
   deploy:
-    needs: build
+    needs: [build, solver]
     runs-on: ubuntu-latest
     environment:
       name: github-pages

@@ -22,6 +22,8 @@ import {
 import { MSG, durationText } from '../src/i18n/fr';
 import { STEP_KEY, bookEntries, isDayClue, publishedStepPairs, renderBook, renderCo2, richClueText } from '../src/ui/panels';
 import { renderSheet, slotLegend } from '../src/ui/print';
+import { stepPairIndexAt, stepTapResult } from '../src/ui/step';
+import { UI } from '../src/i18n/fr';
 
 const grids = gridsJson as unknown as Grid[];
 const byId = (id: number) => structuredClone(grids.find((g) => g.id === id)!);
@@ -537,5 +539,55 @@ describe('review S6.3 round 3', () => {
   it('the stock refusal has one colon only', () => {
     expect(MSG.stock('B', 'du barrage', 2)).toBe('Plus d’eau dans le barrage (2 cases au plus).');
     expect(MSG.stock('G', 'de gaz', 1)).toBe('Plus de stock de gaz (1 case au plus).');
+  });
+});
+
+describe('STEP taps (grid 7: 8 slots, one published pair)', () => {
+  const g7 = byId(7);
+  const s0 = newGame(g7);
+  // Slots: 0 = 0h, 1 = 3h, 5 = 15h, 7 = 21h.
+  const withPair = () => stepTapResult(g7, stepTapResult(g7, s0, null, 1).state ?? s0, 1, 5).state!;
+
+  it('refuses a pump on the last slot', () => {
+    const r = stepTapResult(g7, s0, null, 7);
+    expect(r.pending).toBeNull();
+    expect(r.state).toBeUndefined();
+    expect(r.message).toEqual({ text: UI.stepLastSlot, tone: 'bad' });
+  });
+
+  it('the first tap pumps: pending slot, info message', () => {
+    const r = stepTapResult(g7, s0, null, 1);
+    expect(r.pending).toBe(1);
+    expect(r.state).toBeUndefined();
+    expect(r.message).toEqual({ text: UI.stepPending('3h'), tone: 'info' });
+  });
+
+  it('refuses a turbine on the same slot or earlier, and keeps the pending pump', () => {
+    const same = stepTapResult(g7, s0, 1, 1);
+    expect(same).toMatchObject({ pending: 1, message: { text: UI.stepTooEarly('3h'), tone: 'bad' } });
+    expect(same.state).toBeUndefined();
+    const before = stepTapResult(g7, s0, 1, 0);
+    expect(before).toMatchObject({ pending: 1, message: { text: UI.stepTooEarly('3h'), tone: 'bad' } });
+  });
+
+  it('a turbine on a later slot adds the pair and clears the pending pump', () => {
+    const r = stepTapResult(g7, s0, 1, 5);
+    expect(r.pending).toBeNull();
+    expect(r.state?.step).toEqual([{ pump: 1, turbine: 5 }]);
+    expect(r.message).toEqual({ text: UI.stepAdded('3h', '15h'), tone: 'ok' });
+  });
+
+  it('with the exact inventory full, refuses a new pump', () => {
+    const r = stepTapResult(g7, withPair(), null, 2);
+    expect(r.pending).toBeNull();
+    expect(r.message).toEqual({ text: MSG.stepCount(1), tone: 'bad' });
+  });
+
+  it('finds the pair pumping or turbining in a column, so a tap there removes it', () => {
+    const s = withPair();
+    expect(stepPairIndexAt(s, 1)).toBe(0);
+    expect(stepPairIndexAt(s, 5)).toBe(0);
+    expect(stepPairIndexAt(s, 3)).toBe(-1);
+    expect(stepPairIndexAt(s0, 1)).toBe(-1);
   });
 });
