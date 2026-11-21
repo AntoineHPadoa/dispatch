@@ -4,6 +4,7 @@
  * - Price clues: the prototype publishes a value (N 0, B 1, C 1, G 2, T 5, import = neighbor price);
  *   §14 names the plant that sets the price. The plant is read from the reference solution; every
  *   ambiguous value and every clued column holding an import is reported.
+ * - Rated prototype grids 8 to 11 get their hand-written bulletin (scripts/bulletins.ts).
  * - Level "none": exchange totals move from the inventory to an `exchanges` clue.
  * - Prints a conversion report on stdout; exits non-zero when a grid fails validation.
  *
@@ -12,6 +13,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { BULLETINS } from './bulletins';
 import {
   ANY_COUNTRY, IMPORT_PIECE, PIECE_IDS, assertGrid,
   type Clue, type Grid, type Inventory, type InventoryPieceSpec, type Neighbor, type PieceDef, type PieceId,
@@ -63,6 +65,9 @@ const isPrototypeFacile = (g: { id: number; section: string; title: string }) =>
   g.id === 8 && g.section === 'Grilles' && g.title === 'Facile';
 const introOverride = (g: { id: number; section: string; title: string }): string | undefined =>
   isPrototypeTutorial(g) || isPrototypeFacile(g) ? INTRO_OVERRIDE[g.id] : undefined;
+
+const isPrototypeRated = (g: { id: number; section: string; title: string }) =>
+  g.section === 'Grilles' && ['Facile', 'Moyen', 'Difficile', 'Expert'].includes(g.title) && g.id >= 8 && g.id <= 11;
 
 const typo = (s: string) => s.replace(/'/g, '’');
 
@@ -274,6 +279,7 @@ export function convertGrid(g: ProtoGrid): Grid {
       label: g.difficulty.rating_label,
       techniques: Object.keys(g.difficulty.techniques),
     },
+    ...(isPrototypeRated(g) && BULLETINS[g.id] ? { bulletin: structuredClone(BULLETINS[g.id]) } : {}),
   };
   return assertGrid(grid);
 }

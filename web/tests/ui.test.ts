@@ -11,12 +11,12 @@ import {
 } from '../src/ui/gesture';
 import { canUndo, MAX_PAST, push, reset, start, undo } from '../src/ui/history';
 import {
-  ProgressStore, STORAGE_KEY, dailyGrid, emptyProgress, isPlayState, localDayNumber, nextGrid, parseProgress,
+  ProgressStore, STORAGE_KEY, emptyProgress, isPlayState, nextGrid, parseProgress,
   playOrder, recordState, statusOf, type KeyValueStore,
 } from '../src/ui/progress';
 import { boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard } from '../src/ui/board';
 import {
-  applyLockedExports, boardMessage, displayTitle, exportTap, initialState, isInitialState, newlyBroken, nextExportValue,
+  applyLockedExports, boardMessage, bulletinTag, displayTitle, exportTap, initialState, isInitialState, newlyBroken, nextExportValue,
   poseMessage, techniqueLine,
 } from '../src/ui/game';
 import { MSG, durationText } from '../src/i18n/fr';
@@ -254,19 +254,6 @@ describe('progress', () => {
     expect(statusOf(new ProgressStore(() => kv).get(), 9)).toBe('new');
   });
 
-  it('grid of the day: a rated grid, stable over the day, changing the next day', () => {
-    const morning = dailyGrid(grids, new Date(2026, 10, 21, 7));
-    const evening = dailyGrid(grids, new Date(2026, 10, 21, 23, 59));
-    const tomorrow = dailyGrid(grids, new Date(2026, 10, 22, 7));
-    expect(morning?.section).toBe('rated');
-    expect(evening?.id).toBe(morning?.id);
-    expect(tomorrow?.id).not.toBe(morning?.id);
-    expect(localDayNumber(new Date(1970, 0, 2))).toBe(1);
-    const rated = grids.filter((g) => g.section === 'rated');
-    const seen = new Set(Array.from({ length: rated.length }, (_, d) => dailyGrid(grids, new Date(2026, 0, 1 + d))?.id));
-    expect(seen.size).toBe(rated.length);
-  });
-
   it('play order: tutorials then rated grids; next grid follows it', () => {
     const order = playOrder(grids).map((g) => g.section);
     expect(order.lastIndexOf('tutorial')).toBeLessThan(order.indexOf('rated'));
@@ -361,7 +348,25 @@ describe('board and game helpers', () => {
 
   it('display titles: tutorials lose their number, rated grids get one', () => {
     expect(displayTitle(byId(1))).toBe('Poser l’inventaire');
-    expect(displayTitle(byId(8))).toBe('Grille n° 8');
+    expect(displayTitle(byId(8))).toBe(byId(8).bulletin!.title);
+    const noBulletin = { ...byId(8), bulletin: undefined, title: byId(8).difficulty.label } as Grid;
+    expect(displayTitle(noBulletin)).toBe(UI.gridNumber(8));
+  });
+
+  it('a grid with a bulletin shows its number on the game eyebrow tag, the sheet and the tab title', () => {
+    const g = byId(8);
+    const tag = bulletinTag(g)!;
+    expect(tag).toMatch(new RegExp(`^n° ${g.bulletin!.number} · `));
+    expect(bulletinTag(byId(1))).toBeNull();
+    const html = renderSheet(g, null);
+    expect(html).toContain(tag);
+    expect(html).toContain(g.bulletin!.title);
+    expect(html).not.toContain('Grille notée');
+  });
+
+  it('home labels say Accueil', () => {
+    expect(UI.back).toBe('Accueil');
+    expect(UI.home).toBe('Accueil');
   });
 });
 

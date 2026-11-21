@@ -9,6 +9,7 @@
  * - Touch: with a piece one row high the board lets vertical swipes scroll the page; a swipe the
  *   browser takes for scrolling cancels the gesture silently. Eraser and STEP taps act on release.
  */
+import { localIsoDate, weekdayIndex } from '../model/bulletin';
 import type { Grid, Placement } from '../model/grid';
 import {
   barIndexAt, checkPlaceOver, evaluate, newGame, placeOver, remove, removeStep, setExport, exportsAt,
@@ -23,7 +24,7 @@ import { canUndo, push, reset, start, undo, type History } from './history';
 import { STEP_KEY, bookEntries, renderBook, renderClues, renderCo2, type BookEntry } from './panels';
 import { esc, icon } from './palette';
 import { stepPairIndexAt, stepTapResult } from './step';
-import { dailyGrid, nextGrid, recordState, type ProgressStore } from './progress';
+import { nextGrid, recordState, statusOf, type ProgressStore } from './progress';
 
 export interface GameContext {
   grids: readonly Grid[];
@@ -69,8 +70,15 @@ export function applyLockedExports(grid: Grid, state: PlayState): PlayState {
   return s;
 }
 
-/** Display title: tutorial titles lose their number, rated grids named after their level get a number. */
+/** Issue tag of a grid that has a bulletin (`n° 214 · sam.`), or null. */
+export function bulletinTag(grid: Grid): string | null {
+  const b = grid.bulletin;
+  return b ? UI.bulletin.sheetTag(b.number, UI.bulletin.weekdayShort[weekdayIndex(b.published)] ?? '') : null;
+}
+
+/** Display title: bulletin headline, tutorial titles without their number, else a numbered rated grid. */
 export function displayTitle(grid: Grid): string {
+  if (grid.bulletin) return grid.bulletin.title;
   if (grid.section === 'tutorial') return grid.title.replace(/^\d+\.\s*/, '');
   return grid.title === grid.difficulty.label ? UI.gridNumber(grid.id) : grid.title;
 }
@@ -154,10 +162,9 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   const elapsed = () => frozenElapsed ?? elapsedBase + (Date.now() - sessionStart);
 
   const tutorials = ctx.grids.filter((g) => g.section === 'tutorial').sort((a, b) => a.id - b.id);
-  const daily = dailyGrid(ctx.grids, new Date());
   const eyebrow = grid.section === 'tutorial'
     ? UI.tutorialOf(tutorials.findIndex((g) => g.id === grid.id) + 1, tutorials.length)
-    : `${daily?.id === grid.id ? UI.daily : UI.ratedEyebrow}${grid.inventory.level === 'none' ? ` · ${UI.noInventory}` : ''}`;
+    : `${bulletinTag(grid) ?? UI.ratedEyebrow}${grid.inventory.level === 'none' ? ` · ${UI.noInventory}` : ''}`;
 
   const tech = techniqueLine(grid);
   const intro = grid.intro
@@ -246,7 +253,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
 
   function drawMessage(pv: ReturnType<typeof preview> = preview()) {
     if (ev.solved) {
-      const next = nextGrid(ctx.grids, grid.id);
+      const next = nextGrid(ctx.grids, grid.id, localIsoDate(), (id) => statusOf(ctx.store.get(), id) === 'done');
       const html = `<div class="banner" role="status"><b>${esc(UI.doneTitle)}</b>`
         + `<span>${esc(UI.doneText(grid.clues.length, durationText(elapsed())))}</span></div>`
         + `<div class="tools done-tools">${next ? `<a class="tool on" href="#/grille/${next.id}">${esc(UI.next)}${icon('next')}</a>` : `<a class="tool on" href="#/">${esc(UI.home)}</a>`}`

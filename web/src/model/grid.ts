@@ -1,7 +1,7 @@
 /*
  * Grid format (GAME-DESIGN.md §14): TypeScript types and a structural validator.
  * - Types describe one puzzle: silhouette (demand - weather), pieces, neighbors, STEP, CO2 cap,
- *   inventory, market clues, reference solution and difficulty.
+ *   inventory, market clues, reference solution, difficulty and the optional market bulletin.
  * - validateGrid() checks shape, cross-references (columns, pieces, countries) and geometry of the
  *   laid pieces (allowed width and height, inside the grid, STEP order, line capacity); it does not
  *   check that the solution satisfies the rules (that is the engine's job).
@@ -188,6 +188,23 @@ export interface Difficulty {
 
 export type Section = 'tutorial' | 'rated';
 
+/** Sky shown for one time slot of the bulletin. */
+export const WEATHER_KINDS = ['sun', 'moon', 'cloud', 'wind'] as const;
+export type WeatherKind = (typeof WEATHER_KINDS)[number];
+
+/** Market bulletin published with a grid (§14): number, headline, story, sky per slot, publication day. */
+export interface Bulletin {
+  /** Issue number, unique across the published grids. */
+  number: number;
+  title: string;
+  /** Short context text telling the day. */
+  text: string;
+  /** One sky per column. */
+  weather: WeatherKind[];
+  /** Publication day, ISO `YYYY-MM-DD`. */
+  published: string;
+}
+
 export interface Grid {
   id: number;
   title: string;
@@ -208,6 +225,8 @@ export interface Grid {
   clues: Clue[];
   solution: Solution;
   difficulty: Difficulty;
+  /** Market bulletin; grids without one are never shown as a daily sheet. */
+  bulletin?: Bulletin;
 }
 
 // ---- validation -------------------------------------------------------------
@@ -225,6 +244,14 @@ const isNat = (v: unknown): v is number => isInt(v) && v >= 0;
 const isPos = (v: unknown): v is number => isInt(v) && v > 0;
 const isPieceId = (v: unknown): v is PieceId =>
   typeof v === 'string' && (PIECE_IDS as readonly string[]).includes(v);
+
+/** True for a real calendar day written `YYYY-MM-DD`. */
+export function isIsoDate(v: unknown): v is string {
+  if (typeof v !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(v)) return false;
+  const [y, m, d] = v.split('-').map(Number) as [number, number, number];
+  const date = new Date(Date.UTC(y, m - 1, d));
+  return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d;
+}
 
 /** Ascending list of positive integers, without duplicates. */
 function isSizeList(v: unknown): v is number[] {
@@ -494,6 +521,26 @@ export function validateGrid(raw: unknown): ValidationResult {
   if (!isObj(d) || !isInt(d.rating) || d.rating < 1 || d.rating > 4 || typeof d.label !== 'string'
     || !Array.isArray(d.techniques) || !d.techniques.every((t) => typeof t === 'string')) {
     err('difficulty: {rating 1-4, label, techniques[]} expected');
+  }
+
+  // Bulletin (optional)
+  if (g.bulletin !== undefined) {
+    const b = g.bulletin;
+    if (!isObj(b)) {
+      err('bulletin: object expected');
+    } else {
+      if (!isPos(b.number)) err('bulletin.number: positive integer expected');
+      if (typeof b.title !== 'string' || !b.title.trim()) err('bulletin.title: non-empty string expected');
+      if (typeof b.text !== 'string' || !b.text.trim()) err('bulletin.text: non-empty string expected');
+      if (!Array.isArray(b.weather) || b.weather.length !== n
+        || !b.weather.every((w) => (WEATHER_KINDS as readonly unknown[]).includes(w))) {
+        err(`bulletin.weather: ${n} values among ${WEATHER_KINDS.join(', ')} expected`);
+      }
+      if (!isIsoDate(b.published)) err('bulletin.published: ISO date YYYY-MM-DD expected');
+      for (const k of Object.keys(b)) {
+        if (!['number', 'title', 'text', 'weather', 'published'].includes(k)) err(`bulletin.${k}: unknown key`);
+      }
+    }
   }
 
   return { ok: errors.length === 0, errors };
