@@ -4,7 +4,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import gridsJson from '../src/data/grids.json';
-import type { Clue, Grid, Placement } from '../src/model/grid';
+import type { Clue, Grid, PieceId, Placement } from '../src/model/grid';
 import {
   addStep, checkPlacement, clueText, evaluate, newGame, place, remove, removeStep, residual, setExport,
   silhouette, solutionState, type ActionResult, type PlayState,
@@ -317,6 +317,19 @@ describe('clues (one broken case per type)', () => {
     expect(status(g, sol, { type: 'exchanges', exports: { DE: exported + 1 } })).toBe('open');
     expect(status(g, sol, { type: 'flow', col: 0, country: 'DE', dir: 'export', value: 1 })).not.toBe('broken');
     expect(status(g, sol, { type: 'column', col: 0, counts: { N: 0 } })).toBe('broken');
+  });
+
+  it('review S8 B M13: a hatched bar counts towards no clue', () => {
+    const g = byId(6);
+    const s = solutionState(g);
+    const price = g.clues.find((c) => c.type === 'price')!;
+    const col = (price as { col: number }).col;
+    const pricier = (Object.keys(g.pieces) as PieceId[]).filter((k) => g.pieces[k]!.rank > g.pieces[(price as { piece: PieceId }).piece]!.rank);
+    expect(pricier.length).toBeGreaterThan(0);
+    const stray = { ...s, bars: [...s.bars, { piece: pricier[0]!, row: g.demand[col]! + 3, col, len: 1 }] };
+    const ev = evaluate(g, stray);
+    expect(ev.invalidBars.length).toBe(1);
+    expect(status(g, stray, price)).not.toBe('broken');
   });
 
   it('engaged (pre-placed bar)', () => {

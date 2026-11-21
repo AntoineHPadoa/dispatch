@@ -10,7 +10,7 @@
  * Example: cellsOf(grid, {piece: 'C', row: 1, col: 2, len: 4})
  *          -> [[1,2], [1,3], [2,3], [1,4], [2,4], [1,5]]
  */
-import type { Grid, PieceDef, Placement } from './grid';
+import { IMPORT_PIECE, type Grid, type PieceDef, type Placement } from './grid';
 
 export const SHAPE_KINDS = ['rect', 'trap', 'stair'] as const;
 export type ShapeKind = (typeof SHAPE_KINDS)[number];
@@ -40,7 +40,7 @@ export function profile(kind: ShapeKind, len: number, height = 1): Profile {
 
 /** Shape kind of a placement on a grid. */
 export const kindOf = (grid: Grid, b: Placement): ShapeKind =>
-  (b.piece === 'I' ? 'rect' : shapeKind(grid.pieces[b.piece]));
+  (b.piece === IMPORT_PIECE ? 'rect' : shapeKind(grid.pieces[b.piece]));
 
 export const profileOf = (grid: Grid, b: Placement): Profile => profile(kindOf(grid, b), b.len, b.height ?? 1);
 

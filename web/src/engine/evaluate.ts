@@ -116,6 +116,7 @@ function worst(statuses: ClueStatus[]): ClueStatus {
 }
 
 interface Board {
+  /** Composition of the valid bars only: a hatched bar counts towards no clue. */
   comp: Composition;
   missingByCol: number[];
   /** Bars that break no rule (hatched ones do not count towards a clue). */
@@ -160,7 +161,8 @@ export function clueStatus(grid: Grid, state: PlayState, board: Board, clue: Clu
       return st === 'ok' ? 'ok' : 'broken';
     }
     case 'flow': {
-      const got = clue.dir === 'export' ? exportsAt(state, clue.country, clue.col) : importsAt(state, clue.country, clue.col);
+      const valid = { ...state, bars: board.validBars };
+      const got = clue.dir === 'export' ? exportsAt(state, clue.country, clue.col) : importsAt(valid, clue.country, clue.col);
       return countStatus(got, clue.value);
     }
     case 'exchanges': {
@@ -314,7 +316,8 @@ export function evaluate(grid: Grid, state: PlayState): Evaluation {
   // Clues
   const comp = composition(grid, state);
   const bad = new Set(invalidBars);
-  const board: Board = { comp, missingByCol, validBars: state.bars.filter((_, i) => !bad.has(i)) };
+  const validBars = state.bars.filter((_, i) => !bad.has(i));
+  const board: Board = { comp: bad.size ? composition(grid, { ...state, bars: validBars }) : comp, missingByCol, validBars };
   // Once every cell is covered, a cell clue (price, record, program, running length) still open can no
   // longer be met by laying: it is contradicted. An exchanges or flow clue stays open: an export or a
   // STEP pair raises the silhouette and may still meet it.

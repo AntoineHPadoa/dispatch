@@ -12,7 +12,7 @@ import {
 import { canUndo, MAX_PAST, push, reset, start, undo } from '../src/ui/history';
 import {
   ProgressStore, STORAGE_KEY, emptyProgress, isPlayState, nextGrid, parseProgress,
-  playOrder, recordState, statusOf, type KeyValueStore,
+  playOrder, recordState, statusOf, gridFingerprint, savedBoard, type KeyValueStore,
 } from '../src/ui/progress';
 import { bandPlan, boardLead, boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard, stepTagLabels } from '../src/ui/board';
 import {
@@ -975,9 +975,7 @@ describe('order book without exchanges line; exchanges in the clue card', () => 
   it('the paper day list carries the exchanges line, and the card has one name', () => {
     const sheet = renderSheet(byId(6), 6);
     expect(sheet).toContain('Aujourd’hui');
-    expect(sheet).toContain(UI.dayClues);
-    expect(UI.dayClues).toBe('Publications du marché');
-    expect(UI.gridClues).toBe(UI.dayClues);
+    expect(sheet).toContain(UI.printDayTitle);
     expect(renderClues(byId(10), evaluate(byId(10), newGame(byId(10))).clues, newGame(byId(10)))).toContain('Publications du marché');
   });
 });
@@ -994,5 +992,19 @@ describe('verdict clue count (review S8 A1)', () => {
       const k = shownClueCount(g);
       expect(UI.doneText(k, '1 min')).not.toBe(UI.doneText(g.clues.length, '1 min'));
     }
+  });
+});
+
+describe('saved board and grid version (review S8 B M14)', () => {
+  it('replays a board only on the grid it was saved on', () => {
+    const g = byId(7);
+    const s = solutionState(g);
+    const saved = parseProgress(JSON.stringify(recordState(emptyProgress(), g.id, s, 5, false, gridFingerprint(g)))).grids[String(g.id)];
+    expect(savedBoard(saved, g)).toEqual(s);
+    const changed = { ...g, demand: g.demand.map((d, i) => (i === 0 ? d + 1 : d)) };
+    expect(gridFingerprint(changed)).not.toBe(gridFingerprint(g));
+    expect(savedBoard(saved, changed)).toBeUndefined();
+    // an older save without fingerprint is kept
+    expect(savedBoard({ status: 'started', state: s }, changed)).toEqual(s);
   });
 });

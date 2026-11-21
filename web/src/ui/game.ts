@@ -26,7 +26,7 @@ import { canUndo, push, reset, start, undo, type History } from './history';
 import { STEP_KEY, bookEntries, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, shownClueCount, type BookEntry } from './panels';
 import { esc, icon } from './palette';
 import { stepArrowAction, stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from './step';
-import { nextGrid, recordState, statusOf, type ProgressStore } from './progress';
+import { gridFingerprint, nextGrid, recordState, savedBoard, statusOf, type ProgressStore } from './progress';
 
 export interface GameContext {
   grids: readonly Grid[];
@@ -143,7 +143,9 @@ export function poseMessage(grid: Grid, label: string, replaced: readonly { piec
 export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () => void {
   const saved = ctx.store.get().grids[String(grid.id)];
   const initial = initialState(grid);
-  let history: History<PlayState> = start(saved?.state ? applyLockedExports(grid, saved.state) : initial);
+  const fp = gridFingerprint(grid);
+  const board = savedBoard(saved, grid);
+  let history: History<PlayState> = start(board ? applyLockedExports(grid, board) : initial);
   let ev: Evaluation = evaluate(grid, history.present);
   const entries = bookEntries(grid);
   let selected: BookEntry | null = entries[0] ?? null;
@@ -358,7 +360,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   }
 
   function save() {
-    ctx.store.set(recordState(ctx.store.get(), grid.id, history.present, elapsed(), ev.solved));
+    ctx.store.set(recordState(ctx.store.get(), grid.id, history.present, elapsed(), ev.solved, fp));
   }
 
   function say(text: string, tone: Tone) {

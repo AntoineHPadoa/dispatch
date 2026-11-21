@@ -3,7 +3,7 @@
  * clue list with status, CO2 gauge, and the clue text styling (plant chips, slot values).
  * - Screen and paper share the markup; `paper` switches to style B (no usage, no counts).
  */
-import { ANY_COUNTRY, IMPORT_PIECE, PIECE_IDS, type Clue, type ExchangesClue, type Grid, type PieceId } from '../model/grid';
+import { ANY_COUNTRY, IMPORT_PIECE, PIECE_IDS, publishedStepPairs, type Clue, type ExchangesClue, type Grid, type PieceId } from '../model/grid';
 import {
   clueText, co2PerCell, pieceCells, totalExports, totalImports, type ClueReport, type ClueStatus, type PlayState,
 } from '../engine';
@@ -27,13 +27,7 @@ export interface BookEntry {
 /** Book entry of the STEP (pumped storage): chosen like a plant, laid as pump then turbine. */
 export const STEP_KEY = 'STEP';
 
-/** STEP pairs published by the grid (exact inventory or exchanges clue), or null when to deduce. */
-export function publishedStepPairs(grid: Grid): number | null {
-  if (!grid.step) return null;
-  if (grid.inventory.step !== undefined) return grid.inventory.step;
-  for (const c of grid.clues) if (c.type === 'exchanges' && c.step !== undefined) return c.step;
-  return null;
-}
+export { publishedStepPairs } from '../model/grid';
 
 /** Plants, import lines and the STEP the player can lay, in merit order. */
 export function bookEntries(grid: Grid): BookEntry[] {
@@ -244,7 +238,7 @@ export function renderClues(grid: Grid, boardReports: readonly ClueReport[], sta
   const reports = withInventoryExchanges(grid, state, boardReports);
   if (!reports.length) return '';
   const ok = reports.filter((r) => r.status === 'ok').length;
-  const title = reports.some((r) => isDayClue(r.clue)) ? UI.dayClues : UI.gridClues;
+  const title = UI.cluesTitle;
   const list = `<ul class="clues">${orderClues(reports).map((r) => clueItem(grid, r.clue, r.status)).join('')}</ul>`;
   return `<section class="card" aria-label="${esc(title)}"><h2 class="ct">${esc(title)} <small>${esc(UI.cluesChecked(ok, reports.length))}</small></h2>${list}</section>`;
 }

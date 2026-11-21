@@ -2,7 +2,7 @@
  * Every French text shown to the player: piece and country names, clue texts, rule violations,
  * inventory status. The engine and the UI import from here; no player text lives elsewhere.
  */
-import type { Clue, Grid, PieceId } from '../model/grid';
+import { IMPORT_PIECE, type Clue, type Grid, type PieceId } from '../model/grid';
 import { isRamp, shapeKind, type ShapeKind } from '../model/shapes';
 
 interface PieceWords {
@@ -24,10 +24,8 @@ export const PIECE_WORDS: Record<PieceId, PieceWords> = {
   T: { name: 'TAC', the: 'la TAC', a: 'une TAC', of: 'de TAC' },
 };
 
-export const IMPORT_NAME = 'Import';
 /** Stands for the country in exchange messages when totals cover all countries. */
 export const ALL_COUNTRIES = 'tous pays confondus';
-export const STEP_NAME = 'STEP';
 
 interface CountryWords { to: string; from: string }
 
@@ -197,7 +195,7 @@ export const TODO = {
 
 /** "de nucléaire", "d’import d’Allemagne": complement used by inventory messages. */
 export function ofPiece(grid: Grid, piece: string, country?: string): string {
-  if (piece === 'I') return country ? `d’import ${countryFrom(grid, country)}` : 'd’import';
+  if (piece === IMPORT_PIECE) return country ? `d’import ${countryFrom(grid, country)}` : 'd’import';
   return PIECE_WORDS[piece as PieceId]?.of ?? `de ${piece}`;
 }
 
@@ -288,7 +286,7 @@ export function pieceHint(piece: PieceId, lens: number[], heights: number[], max
 /** "TAC à 8h, ligne 6", "Gaz de 4h à 12h, ligne 2" (rows count from 1 at the bottom). */
 export function placementLabel(grid: Grid, piece: string, country: string | undefined, row: number, col: number,
   len: number, height = 1, shape: ShapeKind = 'rect'): string {
-  const name = piece === 'I' ? `Import ${countryFrom(grid, country ?? '')}` : PIECE_WORDS[piece as PieceId]?.name ?? piece;
+  const name = piece === IMPORT_PIECE ? `Import ${countryFrom(grid, country ?? '')}` : PIECE_WORDS[piece as PieceId]?.name ?? piece;
   const when = len === 1 ? `à ${columnLabel(grid, col)}` : `de ${columnLabel(grid, col)} à ${columnLabel(grid, col + len)}`;
   if (shape !== 'rect') return `${name} en rampe ${when}, base ligne ${row + 1}`;
   const where = height > 1 ? `lignes ${row + 1} à ${row + height}` : `ligne ${row + 1}`;
@@ -306,7 +304,6 @@ export function durationText(ms: number): string {
 
 export const UI = {
   appName: 'Dispatch',
-  kicker: 'Puzzle de logique',
   tagline: 'Tu construis le programme d’appel du réseau électrique pour une journée : remplis exactement la courbe de demande avec des centrales, en respectant les indices du marché. On déduit, on ne calcule rien.',
   rulesTitle: 'Règle du jeu',
   rules: [
@@ -357,11 +354,9 @@ export const UI = {
   availableHint: 'formes autorisées, quantités à déduire',
   importName: 'Import',
   importHint: (country: string) => `${country}, 1\u00a0case`,
-  importPill: (id: string, got: number, want: number) => `← ${id} ${got} / ${want}`,
   placed: (k: number) => `${k} ${k > 1 ? 'cases posées' : 'case posée'}`,
   /** Name of the card listing every publication of the day (a single name, whatever the grid). */
-  dayClues: 'Publications du marché',
-  gridClues: 'Publications du marché',
+  cluesTitle: 'Publications du marché',
   cluesChecked: (k: number, n: number) => `${k} sur ${n} ${k > 1 ? 'vérifiés' : 'vérifié'}`,
   clueState: { ok: 'vérifié', open: 'à vérifier', broken: 'contredit' } as const,
   chipsLabel: 'Centrales',
@@ -393,7 +388,6 @@ export const UI = {
     `${name}, ${col} : ${value} exporté${value > 1 ? 's' : ''}${imports ? `, ${imports} importé${imports > 1 ? 's' : ''}` : ''}. Touche pour changer l’export.`,
   exportLocked: (name: string, col: string) => `${name}, ${col} : flux publié, verrouillé.`,
   lockedTap: (col: string) => `Flux publié à ${col} : verrouillé.`,
-  stepCellLabel: (col: string) => `STEP à ${col}`,
   /** Idle hint: `list` when the grid has no order book, `exports` when it has a neighbor line. */
   hintChoose: (list: boolean, exports: boolean, phone = false) => 'Glisse sur la grille pour poser la centrale choisie'
     + ` (ou touche la case de départ puis celle d’arrivée). Change de centrale dans ${phone ? 'la barre sous la grille' : list ? 'la liste' : 'le carnet'}.`
@@ -405,7 +399,7 @@ export const UI = {
   replaces: (grid: Grid, bars: readonly { piece: string; country?: string }[]) => {
     const counts = new Map<string, number>();
     for (const b of bars) {
-      const key = b.piece === 'I' ? `I:${b.country ?? ''}` : b.piece;
+      const key = b.piece === IMPORT_PIECE ? `I:${b.country ?? ''}` : b.piece;
       counts.set(key, (counts.get(key) ?? 0) + 1);
     }
     const parts = [...counts].map(([key, k]) => (key.startsWith('I:')
@@ -427,7 +421,6 @@ export const UI = {
   stepAdded: (pump: string, turbine: string) => `STEP : pompage à ${pump}, turbinage à ${turbine}.`,
   stepRemoved: 'Paire STEP retirée.',
   stepPendingDropped: 'Pompage en attente annulé.',
-  stepEarlier: 'Le turbinage doit venir après le pompage.',
   invalidBars: (k: number) => `${k} ${k > 1 ? 'centrales ne tiennent plus' : 'centrale ne tient plus'} : hachurée${k > 1 ? 's' : ''} en rouge.`,
   doneTitle: 'Programme bouclé',
   doneText: (k: number, time: string) => (k

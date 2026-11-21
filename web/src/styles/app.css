@@ -21,7 +21,6 @@ button { font: inherit; color: inherit; }
 
 .m { max-width: 1180px; margin: 0 auto; padding: 24px max(16px, env(safe-area-inset-right, 0px)) 48px max(16px, env(safe-area-inset-left, 0px)); }
 .eyebrow { font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; color: var(--soft); font-weight: 800; }
-.kicker { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 800; }
 .diff { font-size: .7rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
 .diff.d1 { background: #e5f2e9; color: #3f7656; }
 .diff.d2 { background: #f6efcf; color: #866a1f; }
