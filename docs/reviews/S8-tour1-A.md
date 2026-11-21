@@ -176,3 +176,37 @@ Aucun. Les 13 grilles se jouent jusqu'au verdict aux trois largeurs, à la souri
 3. **Constat 4** : « Une centrale est un rectangle » contredit les tutoriels de rampe.
 4. **Constat 3** : « Sept grilles guidées » pour 9.
 5. **Constat 5** : les noms des techniques du labo, différents du jeu, avec le contresens « Record ». C'est la page où l'humain calibre les notes.
+
+---
+
+## Corrections (S8.3, branche `v2-fix-1`)
+
+Commits `411b6c5` à `5ef20c8`. Bilan : **5 à corriger sur 5 faits**, **12 mineurs : 10 faits, 2 non** (grilles publiées, et une observation pour le générateur).
+
+| Constat | État | Correction | Vérification |
+|---|---|---|---|
+| 1 compte d'indices du verdict | **Fait** | `shownClueCount(grid)` (`panels.ts`) : indices de la grille plus la ligne d'échanges de l'inventaire exact, la même liste que le panneau. | Test sur toutes les grilles ; G7 dit « les 7 indices » |
+| 2 puces de la fiche du jour à 1280 px | **Fait** | La liste de l'accueil devient `ul.plant-chips`, avec ses propres règles. | `after/home-1280.png`, `home-solved-1280.png` |
+| 3 « Sept grilles guidées » | **Fait** | « Des grilles guidées, une technique chacune… » (sans nombre). | `after/dossier-1280.png` |
+| 4 « Une centrale est un rectangle » | **Fait** | « Une centrale a une forme fixe : sa largeur est sa durée de marche, sa hauteur sa puissance. Le charbon peut démarrer en rampe. » | `after/home-rules-375.png` |
+| 5 noms des techniques du labo | **Fait** | Lus dans `TECHNIQUES` de `fr.ts` ; seconde table supprimée (aussi B C8). | `after/lab-end-nuit-jouer-a-1280.png` |
+| 6 exports sur la fiche bouclée | **Fait** | Contour pointillé violet sur chaque case exportée (`home-art.ts`, classe `sil-export`). | Test ; `after/home-solved-1280.png` |
+| 7 feuille imprimée G7 | **Fait** | Plus de soulignement des nombres sur papier ; bloc de droite titré « Bilan du jour ». | `after/print-7.pdf`, `after/print-preview-7.png` |
+| 8 insécables | **En partie** | Le texte du bulletin passe par `frenchSpaces()` à l'affichage (nombre + unité, fine insécable avant « : »). Le texte stocké dans `grids.json` et les autres chaînes de `fr.ts` ne sont pas réécrits (grilles publiées). | Test |
+| 9 table du labo à 1280 px | **Fait** | Colonne Mécaniques renvoyée à la ligne : la colonne ★ est visible. | `after/lab-list-nuit-jouer-a-1280.png` |
+| 10 fiche de candidate | **Fait** | Parenthèse seulement si le profil d'indices n'est pas vide ; « Escalier : pas encore jouable ». | — |
+| 11 favicon du labo | **Fait** | `<link rel="icon">` dans `lab.html`. Le KO console de `lab.mjs` disparaît (24/24). | `lab-results.json` |
+| 12 bouton désactivé | **Fait** | `.lab-btn:disabled` atténué. | `after/lab-end-nuit-jouer-a-1280.png` |
+| 13 barres de progression | **Fait** | `aria-label` = « N / M terminées ». | — |
+| 14 unités du carnet | **Fait** | « ruban de 3 à 6 créneaux ». | — |
+| 15 intro du tutoriel 3 | **Non** | Le texte est dans `grids.json` (grille publiée) : à changer par l'orchestrateur avec l'humain. Proposition : « Touche une case de la rangée DE sous la grille pour exporter un bloc. » | — |
+| 16 barre d'outils sur 2 lignes | **Fait** | Padding des boutons 10 → 8 px : une rangée sur G1, G7, G11 à 1280, 375 et 320 px. | sonde DOM |
+| 17 candidate rampe n° 1 triviale | **Non** | Observation pour le générateur, transmise : le rejet `trivial` ne vise que les grilles à une seule clé sans échange. À revoir avec le calibrage. | — |
+
+### Contrôles rejoués (Chrome, build de production)
+
+- Scripts de cette review, sorties dans `after/` (`OUT_DIR`, seul changement aux scripts) :
+  - `play.mjs` : 312/312 (13 grilles × 3 largeurs, de l'ouverture au verdict) ;
+  - `nav.mjs` : 81/82, le même KO attendu qu'avant (fin de tabulation sur `body`) ;
+  - `lab.mjs` : 24/24 (le 404 du favicon a disparu). Données du labo effacées après le passage.
+- `web/scripts/check-ui.mjs` (nouveau, B C19) : 205/205.

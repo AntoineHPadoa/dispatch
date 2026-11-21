@@ -7,7 +7,7 @@ import fs from 'fs';
 import { playSolutionOn } from './solve-helper.mjs';
 
 const BASE = 'http://localhost:5173/dispatch/lab.html';
-const OUT = new URL('../', import.meta.url).pathname;
+const OUT = process.env.OUT_DIR ?? new URL('../', import.meta.url).pathname;
 const LAB = new URL('../../../../lab/candidates/', import.meta.url).pathname;
 const results = [];
 const check = (name, ok, detail = '') => {

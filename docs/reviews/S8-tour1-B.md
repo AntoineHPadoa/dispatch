@@ -266,3 +266,69 @@ La note recalculée est égale à la note stockée pour les 18 grilles.
 3. **C2 + C3 + C5, rendre justes `ramp_relay` et `ramp_lone`** (S4.6, ouverts depuis deux tours) : une règle de déduction fausse peut déclarer déductible une grille qui ne l'est pas.
 4. **C11 + C17 + C18, `npm run convert` hors du chemin, CLAUDE.md et skills à jour** : un agent neuf qui suit la doc peut effacer les tutoriels de rampe et croit la rampe hors du jeu.
 5. **C9 + C10, agrégats du labo sur `attempt == 1` et abandons fantômes exclus** : les mesures du labo sont la base du recalibrage (§9, « À recalibrer en priorité »).
+
+---
+
+## Corrections (S8.3, branche `v2-fix-1`)
+
+Commits `f7e5842` à `5ef20c8`. Bilan : **19 à corriger sur 19 faits** (C1 avec une décision en attente), **17 mineurs : 12 faits, 4 en partie, 1 non**.
+
+### À corriger
+
+| Constat | État | Correction | Test |
+|---|---|---|---|
+| C1 pose × totaux d'échanges | **Fait**, décision en attente | `room` (niveau 1) vérifie qu'une pose qui monte plusieurs colonnes tient dans une option de silhouette, STEP et totaux du jour compris ; l'indice `exchanges` est cité quand il sert (`rules.py`, `_room_together`). jouer-a[3] Difficile → Facile, jouer-a[1] Expert → Difficile, comme mesuré par la review. **La grille publiée 11 passe d'Expert à Facile** : `grids.json` n'est pas modifié, `test_published.py` tolère cet écart nommé (`RATING_PENDING`), question q851 à l'humain. Lots du labo renotés (`solver/scripts/rerate_lots.py`, NUIT.md « Notes recalculées ») : 14 notes en baisse, toutes les grilles restent publiables, aucun indice devenu inutile. | `test_room_checks_a_bar_against_the_day_total`, `test_room_without_totals_keeps_the_bar` |
+| C2 `ramp_relay` sans preuve | **Fait** | Un côté n'est posé que si l'autre ne peut pas fournir seul toutes les cases de charbon (ses candidates sur des lignes distinctes bornent ses épaules). | `test_ramp_relay_needs_proof` (piège l'ancienne règle), `test_ramp_relay_places_both_shoulders` |
+| C3 `ramp_lone` compte les cases sûres | **Fait** | Même comptage que `_count_hi` : seules les cases du plateau pas déjà sûres en charbon. | `test_ramp_lone_skips_sure_coal_cells` (échoue sur l'ancien code) |
+| C4 plateau et épaule = `room` / `single_cover` | **Fait** (étiquettes) | Présentées comme des étiquettes : en-têtes de `rules.py` et `trace.py` (`RAMP_LABELS`, `RAMP_OWN`), GAME-DESIGN §9, `rampe.md` §2, NUIT.md (1 grille sur 20 emploie une technique propre à la rampe, pas 12). Stats : `ramp_grids_with_own_technique`. | — |
+| C5 `ramp_relay` jamais employée | **Fait** | Rangée avant `share_out` (même niveau 3). Elle ne se déclenche qu'avec un relevé de 2 cases de charbon ; sur T4 (sans indice) c'est toujours `share_out` qui trouve le relais, écrit dans `rampe.md`. | `test_ramp_relay_comes_before_share_out` |
+| C6 STEP au niveau `none` | **Fait** | `with_clues` reconstruit le plateau si le nombre de paires change ; `_Judge` part des indices obligatoires. Avant : 6 tirages sur 8 rejetés `too_many_clues` ; après : 3 grilles sur les 5 premières graines. | `test_step_count_from_a_clue_shapes_the_board` |
+| C7 `check-published` et rampes | **Fait** | Rampes acceptées par défaut (`--no-ramp` pour refuser) ; README, `grid.py`, `solver-v2.md` à jour. | `test_check_published_accepts_ramps_by_default`, `test_cli_errors_and_strict` |
+| C8 étiquettes du labo | **Fait** | `techniqueLabel` lit `TECHNIQUES` de `fr.ts` (`given` : `GIVEN_STEP`) ; `TECHNIQUE_LABELS` supprimée. | `lab-logic.test.ts` (chaque id de `TECHNIQUES`) |
+| C9 agrégats et `attempt` | **Fait** | `playStats` ne garde que les premières parties (`attempt` 1 ou absent, sans fantôme) ; rejeux comptés à part et affichés « (+ N rejeux) ». | `keeps first plays only…` |
+| C10 abandon fantôme | **Fait** | Événement `move` du jeu, champ `moves` dans la partie ; un abandon sans coup ou de moins de 10 s est `phantom` et ne compte pas dans `attempt`. README à jour. | `test_a_stray_open_is_not_an_attempt` |
+| C11 `npm run convert` | **Fait** | Script npm retiré ; le convertisseur refuse d'écraser une sortie qui perdrait des ids (`--force` sinon) ; retiré de CLAUDE.md, du skill et de GAME-DESIGN. | `lostIds` (convert.test.ts), essai : « grids 12, 13 would be lost », code 1 |
+| C12 tests couplés à `grids.json` | **Fait** | Sélection par propriété ou id, comptes dérivés, seul invariant figé : ids uniques et croissants. Vérifié par une promotion simulée (grille 14, bulletin en 2027) : 373 tests verts. | grids, bulletin, ui |
+| C13 test daté | **Fait** | `today` passé explicitement à `playOrder` et `nextGrid`. | ui.test.ts |
+| C14 « Sept grilles guidées » | **Fait** | Chapeau sans nombre : « Des grilles guidées… ». | — |
+| C15 focus d'une pastille d'export | **Fait** | Le sélecteur de re-focus porte aussi `data-country` (la ligne n'est pas supprimée : après le redessin, `activate` ne retrouve plus l'élément actif). Non testé en navigateur : aucune grille publiée n'a 2 voisins. | lecture |
+| C16 indice d'échanges « contredit » | **Fait** | `settle` ne s'applique qu'aux indices de cases (prix, relevé, programme, durée) ; échanges et flux restent ouverts. | `review S8 B C16…` (engine), test S6.3 adapté |
+| C17 CLAUDE.md | **Fait** | Carte sans compte de grilles, `lab/` une fois, `docs/next/` versionné, commandes (`check-published`, `--strict`, `--out`, `rerate_lots.py`, `build_fixtures.py`, `check-ui.mjs`), pytest ~3 min. | — |
+| C18 skills | **Fait** | `add-grid` réécrit autour de labo → promotion → `check_unique` → `npm test` ; `deploy` cite le job `solver` et `check_unique.py`. | — |
+| C19 scripts navigateur | **Fait** | `web/scripts/check-ui.mjs` (toutes les grilles à 1280/375/320, pastilles entières et disjointes, solution jusqu'au verdict, défilement, erreurs, une page A4 par grille) ; `playwright-core` 1.48.2 en devDependency ; skill `run-app`. Résultat : 205/205. | lancé |
+
+### Mineurs
+
+| Constat | État | Correction |
+|---|---|---|
+| M1 parité des messages | **En partie** | 5 fixtures invalides de plus (`title`, `section`, `co2_cap`, `flow.dir`, `engaged.row`, `bulletin.text`), jouées par pytest et Vitest. Le fuzz différentiel en CI n'est pas fait : le job solveur n'a pas Node. |
+| M2 CLI | **Fait** | `--index` cité, fichier absent ou JSON invalide → message et code 2, `TimeoutError` rapporté (`error`), `deduce` valide la grille, `check --strict`. |
+| M3 étapes non tracées | **Fait** | Écrit dans `solver-v2.md`. |
+| M4 temps de pytest | **Fait** | README et CLAUDE.md : ~170 tests, ~3 min. |
+| M5 bulletin servi sans contrôle | **Fait** | Écrit dans `lab/README.md` (« Blind rules »). |
+| M6 commentaires des autres joueurs | **Fait** | Masqués avec `felt`. Test `test_comments_are_masked_like_felt_ratings`. |
+| M7 `sendBeacon` | **Fait** | `fetch(..., {keepalive: true})` avec l'en-tête JSON. |
+| M8 README et textes « rampe » | **Fait** | Origines (port Vite et port du serveur), « Escalier : pas encore jouable », messages du serveur. |
+| M9 titres | **Fait** (règle écrite) | §14 : une grille avec bulletin s'affiche sous le titre du bulletin (`displayTitle`), `title` ne sert qu'aux outils. Pas de renommage des 4 grilles notées (grilles publiées). |
+| M10 textes du labo | **Fait** | Exception écrite dans CLAUDE.md. « Candidate N » est déjà du français (une candidate) : inchangé. |
+| M11 doublons | **En partie** | `publishedStepPairs` déplacée dans `model/grid.ts`. Restent : `ev.inventory` contre le carnet, `importCells`, `ShapeKind` de `gesture.ts`, `StepTone` (un import de `game.ts` créerait un cycle), `print.ts` → `game.ts`. |
+| M12 code mort | **Fait** | `IMPORT_NAME`, `STEP_NAME`, `kicker` (et sa règle CSS), `importPill`, `stepCellLabel`, `stepEarlier` supprimés ; `dayClues`/`gridClues` fusionnés en `cluesTitle`. `INVENTORY` reste : lu par `ev.inventory` (M11). |
+| M13 barres hachurées et indices | **Fait** | Les indices lisent la composition des seules barres valides (prix, relevé, imports d'un flux). Test qui échoue sur l'ancien code. |
+| M14 progression et version de grille | **Fait** | Empreinte `fp` sauvée avec le plateau ; un plateau d'une autre version n'est pas rejoué (une sauvegarde ancienne sans empreinte l'est encore). Test. |
+| M15 statut de l'escalier | **En partie** | Statut écrit (GAME-DESIGN §3) : connu du format et du dessin, non joué. Jouable ou refusé par `validateGrid` : décision de conception laissée à l'humain. |
+| M16 textes périmés | **En partie** | Règle « rectangle », commentaire de `print.ts`, `describe('review fixes')`, littéraux `'I'` de pièce (`shapes.ts`, `fr.ts`). Restent : `'I'` clé de couleur dans `panels.ts` (ce n'est pas l'id de pièce) et la grammaire en dur de `panels.ts:173`. |
+| M17 doc et poids du dépôt | **En partie** | GAME-DESIGN, `solver/README.md`, `solver-v2.md` (en-tête « historique »), NUIT.md, `nuit-rampe.json` ; maquettes finies dans `docs/archive/maquettes/`. **Poids non traité** : `.gitignore` des captures et réécriture de l'historique sont à décider par l'humain ; ce tour ajoute lui-même 25 Mo de captures (`S8-tour1-A/after/`, demandées par le prompt). |
+
+### Décisions à remonter
+
+- **G11 publiée** : Expert → Facile avec C1 (q851). En attendant : `RATING_PENDING = {11: 1}` dans `solver/tests/test_published.py`, `check_unique.py` affiche `(stored rating 4)`.
+- **Indices inutiles préexistants** (sans lien avec C1) : G8 (flux de 6h) et G7 (programme N à 15h, tutoriel) se résolvent sans un de leurs indices.
+- **Escalier** (M15) et **poids du dépôt** (M17).
+
+### Tests
+
+- `solver/.venv/bin/pytest -q` : 172 verts (2 min 50) ; `ruff check` et `ruff format --check` OK.
+- `pytest lab/tests -q` : 49 verts.
+- `npm test` : 379 verts ; `npm run typecheck`, `npm run build` OK.
+- `check_unique.py` : `OK`, G11 `rating=1 (stored rating 4)`.
+- `web/scripts/check-ui.mjs` : 205/205.

@@ -1,0 +1,1562 @@
+[
+ {
+  "name": "G1@1280 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@1280 lay N6 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@1280 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@1280 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@1280 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@1280 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@1280 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@1280 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@1280 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@1280 lay N6 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@1280 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@1280 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@1280 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@1280 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@1280 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@1280 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@1280 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@1280 lay N3 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@1280 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@1280 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@1280 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@1280 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@1280 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@1280 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@1280 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@1280 lay N3 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@1280 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@1280 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@1280 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@1280 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@1280 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@1280 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@1280 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@1280 lay N3 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@1280 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@1280 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@1280 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@1280 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@1280 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@1280 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 lay N6 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@1280 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@1280 lay N3 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@1280 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@1280 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@1280 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@1280 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@1280 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@1280 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@1280 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@1280 lay N5 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@1280 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@1280 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@1280 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@1280 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@1280 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@1280 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@1280 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@1280 lay N5 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@1280 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@1280 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@1280 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@1280 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@1280 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@1280 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 lay N4 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@1280 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@1280 lay N5 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@1280 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@1280 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@1280 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@1280 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@1280 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@1280 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@1280 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@1280 lay N6 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@1280 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@1280 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@1280 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@1280 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@1280 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@1280 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@1280 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@1280 lay N4 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@1280 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@1280 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@1280 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@1280 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@1280 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@1280 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@375 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@375 lay N6 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@375 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@375 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@375 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@375 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@375 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@375 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@375 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@375 lay N6 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@375 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@375 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@375 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@375 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@375 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@375 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@375 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@375 lay N3 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@375 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@375 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@375 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@375 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@375 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@375 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@375 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@375 lay N3 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@375 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@375 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@375 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@375 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@375 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@375 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@375 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@375 lay N3 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@375 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@375 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@375 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@375 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@375 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@375 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 lay N6 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@375 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@375 lay N3 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@375 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@375 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@375 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@375 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@375 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@375 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@375 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@375 lay N5 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@375 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@375 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@375 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@375 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@375 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@375 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@375 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@375 lay N5 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@375 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@375 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@375 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@375 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@375 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@375 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 lay N4 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@375 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@375 lay N5 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@375 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@375 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@375 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@375 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@375 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@375 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@375 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@375 lay N6 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@375 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@375 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@375 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@375 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@375 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@375 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@375 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@375 lay N4 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@375 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@375 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@375 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@375 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@375 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@375 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@320 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@320 lay N6 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@320 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@320 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@320 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@320 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@320 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@320 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@320 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@320 lay N6 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@320 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@320 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@320 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@320 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@320 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@320 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@320 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@320 lay N3 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@320 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@320 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@320 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@320 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@320 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@320 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@320 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@320 lay N3 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@320 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@320 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@320 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@320 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@320 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@320 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@320 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@320 lay N3 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@320 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@320 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@320 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@320 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@320 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@320 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 lay N6 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@320 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@320 lay N3 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@320 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@320 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@320 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@320 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@320 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@320 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@320 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@320 lay N5 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@320 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@320 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@320 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@320 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@320 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@320 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@320 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@320 lay N5 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@320 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@320 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@320 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@320 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@320 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@320 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 lay N4 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@320 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@320 lay N5 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@320 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@320 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@320 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@320 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@320 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@320 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@320 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@320 lay N6 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@320 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@320 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@320 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@320 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@320 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G12@320 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@320 opens, no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@320 lay N4 r0 c0",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@320 erase",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@320 undo restores the bar",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@320 reset empties",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@320 solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@320 no horizontal scroll after solve",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G13@320 no console/JS error",
+  "ok": true,
+  "detail": ""
+ }
+]

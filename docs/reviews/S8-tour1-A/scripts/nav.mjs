@@ -8,7 +8,7 @@ import { chromium } from 'playwright-core';
 import fs from 'fs';
 
 const BASE = 'http://127.0.0.1:4672/dispatch/';
-const OUT = new URL('../', import.meta.url).pathname;
+const OUT = process.env.OUT_DIR ?? new URL('../', import.meta.url).pathname;
 const GRIDS = JSON.parse(fs.readFileSync(new URL('../../../../web/src/data/grids.json', import.meta.url)));
 const W = [1280, 375, 320];
 const results = [];
