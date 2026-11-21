@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   PlayRecorder, displayNumber, feltAverage, filterCandidates, formatDuration, lotTemplate, nextLotName, nextWeather, noFilters,
-  playStats, sortCandidates, techniqueLabel, type Candidate, type Play,
+  playStats, sortCandidates, techniqueLabel, TECHNIQUE_LABELS, type Candidate, type Play,
 } from '../src/lab/logic';
 
 const cand = (index: number, over: Partial<Candidate> = {}): Candidate => ({
@@ -133,6 +133,10 @@ describe('blind lists and labels', () => {
   it('translates techniques and falls back on the id', () => {
     expect(techniqueLabel('single_cover')).toBe('Couverture unique');
     expect(techniqueLabel('new_tech')).toBe('new tech');
+    for (const id of ['given', 'room', 'exhausted', 'price_cap', 'record', 'flow', 'single_cover', 'single_spot', 'program', 'length', 'silhouette',
+      'swap', 'top_price', 'ribbon', 'just_enough', 'column_sum', 'carbon', 'share_out', 'refuted']) {
+      expect(TECHNIQUE_LABELS[id], id).toBeTruthy();
+    }
   });
 });
 

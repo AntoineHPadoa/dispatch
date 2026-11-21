@@ -56,9 +56,12 @@ export interface Play {
 export const displayNumber = (index: number): string => String(index + 1);
 
 /** French names of the solver techniques; an unknown id is shown with spaces. */
+/** Short labels of the deduction techniques: every rule id of dispatch_solver.deduce.rules.RULES. */
 export const TECHNIQUE_LABELS: Record<string, string> = {
-  flow: 'Flux', room: 'Place', exhausted: 'Épuisement', record: 'Record', single_cover: 'Couverture unique',
-  silhouette: 'Silhouette', ribbon: 'Ruban', bottleneck: 'Goulot', neighbors: 'Voisins', step: 'STEP',
+  given: 'Engagée', room: 'Place', exhausted: 'Épuisement', price_cap: 'Prix plafond', record: 'Record', flow: 'Flux',
+  single_cover: 'Couverture unique', single_spot: 'Place unique', program: 'Programme', length: 'Durée',
+  silhouette: 'Silhouette', swap: 'Échange', top_price: 'Case la plus chère', ribbon: 'Ruban', just_enough: 'Inventaire juste',
+  column_sum: 'Somme de colonne', carbon: 'Carbone', share_out: 'Répartition', refuted: 'Hypothèse réfutée',
 };
 export const techniqueLabel = (t: string): string => TECHNIQUE_LABELS[t] ?? t.replace(/_/g, ' ');
 
