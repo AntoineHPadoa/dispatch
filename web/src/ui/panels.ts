@@ -217,6 +217,11 @@ export function inventoryExchanges(grid: Grid): ExchangesClue | null {
   return clue.exports || clue.imports || clue.step !== undefined ? clue : null;
 }
 
+/** Number of clues the clue card lists: the grid's own, plus the exchanges line of an exact inventory. */
+export function shownClueCount(grid: Grid): number {
+  return grid.clues.length + (inventoryExchanges(grid) ? 1 : 0);
+}
+
 /** Status of an exchanges clue on a board: every total met (ok), one exceeded (broken), else open. */
 function exchangesStatus(state: PlayState, clue: ExchangesClue): ClueStatus {
   const st: ClueStatus[] = [];

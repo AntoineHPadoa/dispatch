@@ -43,7 +43,7 @@ function sheetCard(g: BulletinGrid, st: GridStatus): string {
     <div class="sbody">
       <p>${esc(b.text)}</p>
       <div class="sil-wrap">${sheetSilhouette(g, b.weather, (k) => UI.bulletin.weather[k], UI.bulletin.silhouetteLabel(Math.min(...g.demand), Math.max(...g.demand), g.demand.length), st === 'done')}</div>
-      <ul class="chips">${plantChips(g)}</ul>
+      <ul class="plant-chips">${plantChips(g)}</ul>
       <div class="sact">${dots(g)}<a class="btn${st === 'done' ? ' secondary' : ''}" href="#/grille/${g.id}">${icon('next')}${esc(goLabel(st))}</a></div>
     </div></article>`;
 }

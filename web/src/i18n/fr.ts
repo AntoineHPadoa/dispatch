@@ -238,6 +238,9 @@ export const TECHNIQUES: Record<string, { name: string; text: string }> = {
   refuted: { name: 'Hypothèse réfutée', text: 'Si un choix mène à une impasse par les règles simples, il est exclu (une seule hypothèse, jamais imbriquée).' },
 };
 
+/** Name of the `given` trace step (an engaged plant), not a technique the player learns. */
+export const GIVEN_STEP = 'Centrale engagée';
+
 /** Clue kinds, as labels above each clue text. */
 export const CLUE_KIND: Record<Clue['type'], string> = {
   price: 'Prix',
@@ -308,7 +311,7 @@ export const UI = {
   rulesTitle: 'Règle du jeu',
   rules: [
     'Une case vaut 1 créneau en largeur et 1 GW en hauteur. Couvre chaque case de la silhouette exactement une fois.',
-    'Une centrale est un rectangle : sa largeur est sa durée de marche, sa hauteur sa puissance.',
+    'Une centrale a une forme fixe : sa largeur est sa durée de marche, sa hauteur sa puissance. Le charbon peut démarrer en rampe.',
     'Respecte le carnet d’ordres et les indices du marché. Une seule solution.',
   ],
   bulletin: {
@@ -330,7 +333,7 @@ export const UI = {
     months: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
   },
   dossier: {
-    'premiers-pas': { title: 'Premiers pas', lead: 'Sept grilles guidées, une technique chacune, avec l’inventaire exact.' },
+    'premiers-pas': { title: 'Premiers pas', lead: 'Des grilles guidées, une technique chacune, avec l’inventaire exact.' },
   } as Record<string, { title: string; lead: string }>,
   dossierCount: (k: number) => `${k} ${k > 1 ? 'grilles' : 'grille'}`,
   dossierProgress: (done: number, total: number) => `${done} / ${total}`,

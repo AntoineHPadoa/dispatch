@@ -160,8 +160,8 @@ body:has(.home), body:has(.game) { background-color: #faf8f9; background-image: 
 .sbody p { margin: 0; color: #5d5463; font-size: .9rem; max-width: 62ch; }
 .sil-wrap { display: grid; place-items: center; }
 .sil { width: 100%; max-width: 380px; height: auto; display: block; }
-.chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
-.home .chip { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: .76rem; padding: 4px 10px 4px 6px; border-radius: 999px; background: #fff; border: 1px solid #ece6ea; }
+.plant-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.home .chip { cursor: default; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: .76rem; padding: 4px 10px 4px 6px; border-radius: 999px; background: #fff; border: 1px solid #ece6ea; }
 .sq { display: inline-flex; gap: 2px; }
 .sq i { width: 7px; height: 7px; border-radius: 2px; background: #cfc6cc; display: block; }
 .sact { display: flex; justify-content: space-between; align-items: center; gap: 12px; }

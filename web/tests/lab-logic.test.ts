@@ -1,8 +1,9 @@
 // Lab logic: filters, sort, play recorder, aggregates, bulletin helpers.
 import { describe, expect, it } from 'vitest';
+import { TECHNIQUES } from '../src/i18n/fr';
 import {
   PlayRecorder, displayNumber, feltAverage, filterCandidates, formatDuration, lotTemplate, nextLotName, nextWeather, noFilters,
-  playStats, sortCandidates, techniqueLabel, TECHNIQUE_LABELS, type Candidate, type Play,
+  playStats, sortCandidates, techniqueLabel, type Candidate, type Play,
 } from '../src/lab/logic';
 
 const cand = (index: number, over: Partial<Candidate> = {}): Candidate => ({
@@ -131,12 +132,12 @@ describe('blind lists and labels', () => {
   });
   it('numbers candidates from 1', () => expect(displayNumber(0)).toBe('1'));
   it('translates techniques and falls back on the id', () => {
-    expect(techniqueLabel('single_cover')).toBe('Couverture unique');
+    expect(techniqueLabel('single_cover')).toBe('Une seule barre pour cette case');
+    expect(techniqueLabel('record')).toBe('Le relevé compte les cases');
+    expect(techniqueLabel('ramp_relay')).toBe('Deux épaules se relaient');
+    expect(techniqueLabel('given')).toBe('Centrale engagée');
     expect(techniqueLabel('new_tech')).toBe('new tech');
-    for (const id of ['given', 'room', 'exhausted', 'price_cap', 'record', 'flow', 'single_cover', 'single_spot', 'program', 'length', 'silhouette',
-      'swap', 'top_price', 'ribbon', 'just_enough', 'column_sum', 'carbon', 'share_out', 'refuted']) {
-      expect(TECHNIQUE_LABELS[id], id).toBeTruthy();
-    }
+    for (const id of Object.keys(TECHNIQUES)) expect(techniqueLabel(id)).toBe(TECHNIQUES[id]!.name);
   });
 });
 

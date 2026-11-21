@@ -23,7 +23,7 @@ import {
   alongShape, cancel, idle, isFlat, moveTo, press, previewRect, release, tap, type Cell, type GestureState, type Rect, type Shape,
 } from './gesture';
 import { canUndo, push, reset, start, undo, type History } from './history';
-import { STEP_KEY, bookEntries, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, type BookEntry } from './panels';
+import { STEP_KEY, bookEntries, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, shownClueCount, type BookEntry } from './panels';
 import { esc, icon } from './palette';
 import { stepArrowAction, stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from './step';
 import { nextGrid, recordState, statusOf, type ProgressStore } from './progress';
@@ -274,7 +274,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     if (ev.solved) {
       const next = nextGrid(ctx.grids, grid.id, localIsoDate(), (id) => statusOf(ctx.store.get(), id) === 'done');
       const html = `<div class="banner" role="status"><b>${esc(UI.doneTitle)}</b>`
-        + `<span>${esc(UI.doneText(grid.clues.length, durationText(elapsed())))}</span></div>`
+        + `<span>${esc(UI.doneText(shownClueCount(grid), durationText(elapsed())))}</span></div>`
         + `<div class="tools done-tools">${next ? `<a class="tool on" href="#/grille/${next.id}">${esc(UI.next)}${icon('next')}</a>` : `<a class="tool on" href="#/">${esc(UI.home)}</a>`}`
         + `<button type="button" class="tool print-tool" data-tool="print">${icon('print')}${esc(UI.tools.print)}</button></div>`;
       setMsg(html);

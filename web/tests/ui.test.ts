@@ -20,7 +20,7 @@ import {
   poseMessage, techniqueLine,
 } from '../src/ui/game';
 import { MSG, durationText } from '../src/i18n/fr';
-import { STEP_KEY, bookEntries, inventoryExchanges, isDayClue, orderClues, withInventoryExchanges, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, richClueText } from '../src/ui/panels';
+import { STEP_KEY, bookEntries, inventoryExchanges, isDayClue, orderClues, withInventoryExchanges, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, richClueText, shownClueCount } from '../src/ui/panels';
 import { renderSheet, slotLegend } from '../src/ui/print';
 import { stepArrowAction, stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from '../src/ui/step';
 import { UI } from '../src/i18n/fr';
@@ -975,5 +975,20 @@ describe('order book without exchanges line; exchanges in the clue card', () => 
     expect(UI.dayClues).toBe('Publications du marché');
     expect(UI.gridClues).toBe(UI.dayClues);
     expect(renderClues(byId(10), evaluate(byId(10), newGame(byId(10))).clues, newGame(byId(10)))).toContain('Publications du marché');
+  });
+});
+
+describe('verdict clue count (review S8 A1)', () => {
+  it('counts the clues the card lists, the exchanges line of an exact inventory included', () => {
+    const withLine = grids.filter((g) => inventoryExchanges(g));
+    expect(withLine.length).toBeGreaterThan(0);
+    for (const g of grids) {
+      const listed = withInventoryExchanges(g, solutionState(g), evaluate(g, solutionState(g)).clues).length;
+      expect(shownClueCount(g)).toBe(listed);
+    }
+    for (const g of withLine) {
+      const k = shownClueCount(g);
+      expect(UI.doneText(k, '1 min')).not.toBe(UI.doneText(g.clues.length, '1 min'));
+    }
   });
 });
