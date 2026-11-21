@@ -142,12 +142,13 @@ export function renderBook(grid: Grid, state: PlayState, selected: PieceKey | nu
 export function richClueText(grid: Grid, clue: Clue, text = clueText(grid, clue)): string {
   let html = esc(text);
   const piece = 'piece' in clue ? clue.piece : null;
-  const chip = (p: string, label: string) => `<span class="pc" style="--dot:${PIECE_COLORS[colorKey(p)].a}">${label}</span>`;
+  // The punctuation right after a chip stays glued to it (no lone "." on a new line).
+  const chip = (p: string, label: string, punct = '') => `<span class="nw"><span class="pc" style="--dot:${PIECE_COLORS[colorKey(p)].a}">${label}</span>${punct}</span>`;
   if (piece) {
     const w = PIECE_WORDS[piece];
     for (const phrase of [w.a, w.the, w.of.replace(/^de /, ''), w.name.toLowerCase()]) {
-      const re = new RegExp(`(^|[\\s'’])(${phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(?=[\\s,.]|$)`, 'i');
-      if (re.test(html)) { html = html.replace(re, (_m, pre: string, word: string) => `${pre}${chip(piece, word)}`); break; }
+      const re = new RegExp(`(^|[\\s'’])(${phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})([,.;:]?)(?=[\\s,.]|$)`, 'i');
+      if (re.test(html)) { html = html.replace(re, (_m, pre: string, word: string, punct: string) => `${pre}${chip(piece, word, punct)}`); break; }
     }
   }
   if (clue.type === 'column') {
@@ -155,7 +156,7 @@ export function richClueText(grid: Grid, clue: Clue, text = clueText(grid, clue)
       if (k.startsWith('I:')) continue;
       const word = PIECE_WORDS[k as PieceId]?.of.replace(/^de /, '');
       if (!word) continue;
-      html = html.replace(new RegExp(`(de |d’|d')(${word})(?=[\\s,.])`), (_m, pre: string, wd: string) => `${pre}${chip(k, wd)}`);
+      html = html.replace(new RegExp(`(de |d’|d')(${word})([,.;:]?)(?=[\\s,.]|$)`), (_m, pre: string, wd: string, punct: string) => `${pre}${chip(k, wd, punct)}`);
     }
   }
   // Slot values: hours ("8h") and counts.

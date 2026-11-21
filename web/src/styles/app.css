@@ -124,6 +124,7 @@ button.prow:hover { background: #faf4f7; }
 .state.ok::after { content: ""; position: absolute; left: 5px; top: 2px; width: 4px; height: 8px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
 .state.bad { background: var(--bad); border-color: var(--bad); }
 .state.bad::after { content: "!"; position: absolute; inset: 0; display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 11px; }
+.nw { white-space: nowrap; }
 .pc { display: inline-flex; align-items: center; gap: 4px; font-weight: 800; white-space: nowrap; }
 .pc::before { content: ""; width: 9px; height: 9px; border-radius: 3px; background: var(--dot); }
 .slot { font-weight: 800; font-variant-numeric: tabular-nums; border-bottom: 1.5px dotted var(--soft); }

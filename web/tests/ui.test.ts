@@ -671,9 +671,21 @@ describe('renderChips (phone row)', () => {
   });
 });
 
+describe('clue text: punctuation stays glued to the plant chip', () => {
+  it('the chip and the sign after it share one nowrap span', () => {
+    const g = byId(10);
+    for (const cl of g.clues) {
+      const html = richClueText(g, cl);
+      expect(html).not.toMatch(/<\/span><\/span>[,.;:]/);
+    }
+    const any = g.clues.map((cl) => richClueText(g, cl)).join('');
+    expect(any).toContain('class="nw"');
+  });
+});
+
 describe('phone hint', () => {
   it('points to the row under the board below 860 px', () => {
-    expect(UI.hintChoose(false, false, true)).toContain('la rangée sous la grille');
+    expect(UI.hintChoose(false, false, true)).toContain('la barre sous la grille');
     expect(UI.hintChoose(false, false)).toContain('le carnet');
   });
 });
@@ -748,6 +760,35 @@ describe('board card: fixed layout, price row, export rows', () => {
     expect(below.length).toBe(g.clues.filter((c) => c.type === 'price').length);
     expect(geo.priceRows).toBe(1);
     expect(boardGeometry(byId(10), 'A', 50).priceRows).toBe(0); // no price clue: no row
+  });
+
+  it('neighbouring price tags never overlap, even with a 30 px cell', () => {
+    for (const id of [6, 7]) {
+      for (const cell of [30, 40, 50]) {
+        const { svg } = draw(byId(id), undefined, cell);
+        const rects = [...svg.matchAll(/<g class="tag"><rect x="([\d.-]+)" y="[\d.-]+" width="([\d.]+)"/g)].map((m) => [Number(m[1]), Number(m[1]) + Number(m[2])] as const);
+        const sorted = [...rects].sort((a, b) => a[0] - b[0]);
+        sorted.forEach((r, i) => { if (i) expect(r[0]).toBeGreaterThanOrEqual(sorted[i - 1]![1]); });
+        rects.forEach((r) => expect(r[1] - r[0]).toBeLessThanOrEqual(cell - 4 + 10));
+      }
+    }
+    // Tight cell: the short label "€ N" replaces the long one.
+    expect(draw(byId(6), undefined, 30).svg).toContain('>€ ');
+  });
+
+  it('two neighbours: one export row each, distinct positions, viewBox stable after an export', () => {
+    const g = byId(10);
+    g.neighbors = [...g.neighbors, { id: 'ES', name: 'Espagne', cap: 2, co2: g.neighbors[0]!.co2 }];
+    const before = draw(g, initialState(g), 40);
+    const ys = (id: string) => before.svg.match(new RegExp(`data-country="${id}" data-col="0"[\\s\\S]*?<rect[^>]* y="([\\d.-]+)"`))?.[1];
+    expect(ys('DE')).toBeDefined();
+    expect(ys('ES')).toBeDefined();
+    expect(ys('DE')).not.toBe(ys('ES'));
+    expect(before.svg).toContain('>ES</text>');
+    const r = exportTap(g, initialState(g), 'ES', g.columns.length - 2);
+    expect(r.state).not.toBeNull();
+    const after = draw(g, r.state!, 40);
+    expect(viewBox(after.svg)).toBe(viewBox(before.svg));
   });
 
   it('one row of export cells per neighbor, headed by its id, aligned on the columns', () => {

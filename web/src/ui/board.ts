@@ -437,8 +437,10 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   grid.clues.forEach((cl, i) => {
     if (cl.type !== 'price') return;
     const ty = H * cell + 21;
-    const label = A ? priceTag(cl.piece) : priceTagShort(cl.piece);
-    const w = Math.max(cell - 6, label.length * 5.6 + 10);
+    const longLabel = A ? priceTag(cl.piece) : priceTagShort(cl.piece);
+    // Neighbouring slots must not overlap: switch to the short label when the long one does not fit, and cap the width.
+    const label = longLabel.length * 5.6 + 10 > cell - 4 ? priceTagShort(cl.piece) : longLabel;
+    const w = Math.min(cell - 4, Math.max(cell - 6, label.length * 5.6 + 10));
     s += `<g class="tag">${pill(x(cl.col) + cell / 2, ty, w, A ? fill(cl.piece) : '#fff', A ? null : ink, (tc) => T(tc, ty + 12.5, label), statusOf(i))}</g>`;
   });
 
