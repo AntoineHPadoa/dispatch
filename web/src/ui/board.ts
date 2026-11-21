@@ -4,6 +4,10 @@
  *   contour, empty except what is imposed (weather, engaged plants), boxes to write exchanges in.
  * - boardGeometry() is pure (sizes, rows, hit-testing); renderBoard() returns the SVG markup.
  * - Rows count from 0 at the bottom of the dispatchable part; weather cells sit below row 0.
+ * - Fixed layout: the card never moves while the player exports or pumps. Rows cover the highest
+ *   reach of every column; the empty reach is drawn as a faint reserve (only with a neighbor or a
+ *   STEP). Price tags sit under the slot hours; each neighbor has a row of cells under the grid,
+ *   headed by its id in a left gutter, and a tap on a cell exports a block in that slot.
  */
 import type { Clue, Grid, PieceId } from '../model/grid';
 import {
@@ -50,6 +54,16 @@ export function lockedExports(grid: Grid): Map<string, number> {
   return m;
 }
 
+const STEP_BLUE = '#e3eefa';
+
+/** Icons of the STEP tags in column `c`: ▲ for a pump, ▼ for a turbine, with the pair number when `numbered`. */
+export function stepTagLabels(step: readonly { pump: number; turbine: number }[], c: number, numbered: boolean): string[] {
+  const out: string[] = [];
+  step.forEach((q, i) => { if (q.pump === c) out.push(`▲${numbered ? i + 1 : ''}`); });
+  step.forEach((q, i) => { if (q.turbine === c) out.push(`▼${numbered ? i + 1 : ''}`); });
+  return out;
+}
+
 /** Most STEP pairs the board may hold (inventory or exchanges clue; the validator requires one). */
 export function maxStepPairs(grid: Grid): number {
   if (!grid.step) return 0;
@@ -84,32 +98,38 @@ export interface BoardGeometry {
   width: number;
   height: number;
   programRows: number;
-  /** Bottom rows: one per neighbor, plus STEP on screen or paper when the grid has one. */
+  /** Bottom rows: one export row per neighbor, plus STEP on paper when the grid has one. */
   bottomRows: number;
+  /** Width of the left gutter holding the neighbor ids of the export rows (0 without neighbors). */
+  lead: number;
+  /** Highest cell count of each column (weather included): demand plus every export and pumping it may take. */
+  reach: number[];
+  /** 1 when the grid has price tags (a fixed row under the hours), else 0. */
+  priceRows: number;
 }
 
-/** Number of tags stacked above each column (prices, records, STEP pairs on screen). */
+/** Width of the left gutter of the export rows: the neighbor id ("DE") stands there. */
+export const BOARD_LEAD = 22;
+export const boardLead = (grid: Grid): number => (grid.neighbors.length ? BOARD_LEAD : 0);
+/** Height of one export cell (a touch target), and the pitch of one neighbor row (cells plus its caption). */
+export const exportCellHeight = (cell: number): number => Math.max(24, Math.round(cell * 0.55));
+const neighborPitch = (cell: number): number => exportCellHeight(cell) + 24;
+const PRICE_ROW = 24;
+
+/** Number of tags stacked above each column (records, STEP pairs on screen); prices sit under the hours. */
 function tagsPerColumn(grid: Grid, style: BoardStyle): number[] {
   const t = grid.columns.map(() => 0);
-  for (const cl of grid.clues) if (cl.type === 'price' || cl.type === 'column') t[cl.col]! += 1;
+  for (const cl of grid.clues) if (cl.type === 'column') t[cl.col]! += 1;
   // One slot per column for the STEP arrows and pair tags, so the board never jumps when the mode opens.
   if (style === 'A' && grid.step) for (let c = 0; c < t.length; c++) t[c]! += 1;
   return t;
-}
-
-/** Visual height of each column now: weather, cells to fill, turbined ghosts. */
-function columnTops(grid: Grid, state: PlayState, style: BoardStyle, weather: number[]): number[] {
-  const raw = style === 'A' ? rawSilhouette(grid, state) : residual(grid);
-  const turb = grid.columns.map(() => 0);
-  if (style === 'A') for (const s of state.step) if (s.turbine >= 0 && s.turbine < turb.length) turb[s.turbine]! += 1;
-  return raw.map((v, c) => weather[c]! + Math.max(0, v) + turb[c]!);
 }
 
 /**
  * Board sizes. The row count covers the highest the silhouette can go (exports up to the line
  * capacity, STEP pairs), so the rows under the grid never move while the player exports.
  */
-export function boardGeometry(grid: Grid, style: BoardStyle, cell: number, state?: PlayState): BoardGeometry {
+export function boardGeometry(grid: Grid, style: BoardStyle, cell: number): BoardGeometry {
   const n = grid.columns.length;
   const res = residual(grid);
   const weather = grid.columns.map((_, c) => (grid.weather.R[c] ?? 0) + (grid.weather.F[c] ?? 0));
@@ -122,24 +142,29 @@ export function boardGeometry(grid: Grid, style: BoardStyle, cell: number, state
     return Math.min(exports, exportTotal) + maxStepPairs(grid);
   };
   const colMax = res.map((r, c) => weather[c]! + Math.max(0, r + extraAt(c)));
-  const rows = Math.max(1, ...colMax);
-  const st = state ?? { bars: [], exports: {}, step: [] };
+  // Paper: one blank row above the highest point any column can reach.
+  const rows = Math.max(1, ...colMax) + (style === 'B' ? 1 : 0);
   const tags = tagsPerColumn(grid, style);
-  // Paper: every tag sits above the rectangle, outside the grid.
-  const tops = style === 'B' ? res.map(() => rows) : columnTops(grid, st, style, weather);
+  // Tags sit above what a column can reach (paper: above the rectangle), so nothing depends on the play state.
+  const tops = style === 'B' ? res.map(() => rows) : colMax;
   const need = Math.max(0, ...tags.map((k, c) => (k ? k * 22 + 6 - (rows - tops[c]!) * cell : 0)));
   const topPad = Math.max(8, need);
   const programRows = programLanes(grid).reduce((m, l) => Math.max(m, l.lane + 1), 0);
-  // STEP: chosen from the order book on screen; on paper, a row of boxes to note it in.
+  const priceRows = grid.clues.some((c) => c.type === 'price') ? 1 : 0;
+  // Export rows (one per neighbor); STEP: chosen from the order book on screen, a row of boxes on paper.
   const bottomRows = grid.neighbors.length + (grid.step && style === 'B' ? 1 : 0);
-  const botPad = 20 + programRows * 26 + bottomRows * 40 + 4;
-  return { n, cell, rows, weather, topPad, botPad, width: n * cell + 4, height: rows * cell + topPad + botPad, programRows, bottomRows };
+  const lead = boardLead(grid);
+  const botPad = 20 + priceRows * PRICE_ROW + programRows * 26 + bottomRows * neighborPitch(cell) + 4;
+  return {
+    n, cell, rows, weather, topPad, botPad, width: lead + n * cell + 4, height: rows * cell + topPad + botPad,
+    programRows, bottomRows, lead, reach: colMax, priceRows,
+  };
 }
 
 /** Cell under a point given in SVG user units (x from 0, y from the top of the rows). */
 export function cellAt(geo: BoardGeometry, x: number, y: number): Cell | null {
-  if (x < 0 || y < 0) return null;
-  const col = Math.floor(x / geo.cell);
+  if (x < geo.lead || y < 0) return null;
+  const col = Math.floor((x - geo.lead) / geo.cell);
   const v = geo.rows - 1 - Math.floor(y / geo.cell);
   if (col >= geo.n || v < 0) return null;
   return { col, row: v - (geo.weather[col] ?? 0) };
@@ -163,7 +188,7 @@ let uid = 0;
 export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometry } {
   const { grid, state, ev, style, cell } = input;
   const A = style === 'A';
-  const geo = boardGeometry(grid, style, cell, state);
+  const geo = boardGeometry(grid, style, cell);
   const { n, rows: H, weather } = geo;
   const ink = A ? INK_A : INK_B;
   const soft = A ? SOFT_A : SOFT_B;
@@ -181,7 +206,8 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   const exportsOf = (c: number) => grid.neighbors.reduce((a, nb) => a + exportsAt(state, nb.id, c), 0);
   const statusOf = (i: number): ClueStatus | null => (ev ? ev.clues[i]?.status ?? null : null);
   const y = (v: number, h = 1) => (H - v - h) * cell;
-  const x = (c: number) => c * cell;
+  const X0 = geo.lead;
+  const x = (c: number) => X0 + c * cell;
   const T = (tx: number, ty: number, txt: string, o: { anchor?: string; w?: number; size?: number; color?: string; op?: number } = {}) =>
     `<text x="${tx}" y="${ty}" text-anchor="${o.anchor ?? 'middle'}" font-family="Manrope, system-ui, sans-serif" font-size="${o.size ?? fs}" font-weight="${o.w ?? 800}" fill="${o.color ?? ink}"${o.op !== undefined ? ` fill-opacity="${o.op}"` : ''}>${esc(txt)}</text>`;
 
@@ -228,9 +254,18 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
         if (hidden.has(`${r},${c}`)) continue;
         s += A ? `<rect x="${bx}" y="${by}" width="${w}" height="${w}" rx="${rad}" fill="#fff" stroke="#eadfe6"/>`
           : `<rect x="${bx}" y="${by}" width="${w}" height="${w}" fill="#fff" stroke="#c7d5d1" stroke-width=".8"/>`;
+      } else if (kind === 'pump') {
+        s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" stroke="${PIECE_COLORS.B.ink}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
       } else {
-        const col = kind === 'pump' ? PIECE_COLORS.B.ink : PIECE_COLORS.I.ink;
-        s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" stroke="${col}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
+        // Exported block: a filled cell in the neighbor's colour.
+        s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="${PIECE_COLORS.I.a}" stroke="${PIECE_COLORS.I.ink}" stroke-width="1.5"/>`;
+      }
+    }
+    // Reserve: what the column can still take (exports, pumping), a faint dashed outline, empty until something rises.
+    if (A && (grid.neighbors.length > 0 || grid.step)) {
+      for (let r = k + turbines[c]!; r < geo.reach[c]! - weather[c]!; r++) {
+        const { bx, by, w } = box(c, weather[c]! + r);
+        s += `<rect class="reserve" x="${bx}" y="${by}" width="${w}" height="${w}" rx="${rad}" fill="none" stroke="#e4d9e0" stroke-width="1.2" stroke-dasharray="3 3"/>`;
       }
     }
     // Paper: the grid is a full rectangle; cells above the demand line are plain white too.
@@ -299,32 +334,33 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
 
   // ---- silhouette contour (paper)
   if (!A) {
-    let d = `M0 ${H * cell}`;
+    let d = `M${x(0)} ${H * cell}`;
     for (let c = 0; c < n; c++) {
       const top = y(weather[c]! + sil[c]!, 0);
       d += ` L${x(c)} ${top} L${x(c + 1)} ${top}`;
     }
-    s += `<path d="${d} L${n * cell} ${H * cell} Z" fill="none" stroke="${ink}" stroke-width="3.2" stroke-linejoin="miter"/>`;
+    s += `<path d="${d} L${x(n)} ${H * cell} Z" fill="none" stroke="${ink}" stroke-width="3.2" stroke-linejoin="miter"/>`;
   }
 
-  // ---- tags above the columns: price, record, STEP
+  // ---- tags above the columns: record, STEP (prices are drawn under the hours)
+  // Tags sit above the highest reach of their column: fixed, whatever the player has laid.
   const stack = grid.columns.map(() => 0);
-  const barTop = grid.columns.map(() => 0);
-  if (A) for (const b of state.bars) for (let c = b.col; c < Math.min(n, b.col + b.len); c++) barTop[c] = Math.max(barTop[c]!, b.row + barHeight(b));
-  const topOf = (c: number) => (A ? weather[c]! + Math.max(sil[c]! + turbines[c]!, barTop[c]!) : H);
+  const topOf = (c: number) => (A ? geo.reach[c]! : H);
   const tagY = (c: number) => y(topOf(c) - 1) - 24 - stack[c]!++ * 22;
   // A pill centred on `mid`, kept inside the board; a verified pill grows by 10 to hold its tick.
   // `content(textCentre, left)` draws what is inside.
   const W = n * cell;
+  const minX = X0;
+  const maxX = X0 + W;
   // On narrow cells the tick sits on the pill's corner instead, so the pill keeps within its column.
   const pill = (mid: number, py: number, w: number, bg: string, stroke: string | null,
     content: (tc: number, left: number) => string, st: ClueStatus | null) => {
     const corner = st === 'ok' && w + 10 > cell - 2;
     const tot = w + (st === 'ok' && !corner ? 10 : 0);
-    const px = Math.min(Math.max(mid - tot / 2, 0), Math.max(0, W - tot));
+    const px = Math.min(Math.max(mid - tot / 2, minX), Math.max(minX, maxX - tot));
     let o = `<rect x="${px}" y="${py}" width="${tot}" height="18" rx="9" fill="${bg}"${stroke ? ` stroke="${stroke}"` : ''}/>${content(px + w / 2, px)}`;
     if (st === 'ok') {
-      const kx = corner ? Math.min(px + tot - 2, W - 4) : px + tot - 7;
+      const kx = corner ? Math.min(px + tot - 2, maxX - 4) : px + tot - 7;
       const ky = corner ? py + 1 : py + 9;
       if (corner) o += `<circle cx="${kx}" cy="${ky}" r="6.2" fill="#fff"/>`;
       o += `<circle cx="${kx}" cy="${ky}" r="5" fill="${OK}"/><path d="M${kx - 2.4} ${ky} l1.7 1.7 l2.9 -3.3" stroke="#fff" stroke-width="1.4" fill="none"/>`;
@@ -332,15 +368,6 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     if (st === 'broken') o += `<rect x="${px - 1.5}" y="${py - 1.5}" width="${tot + 3}" height="21" rx="10.5" fill="none" stroke="${BAD}" stroke-width="2"/>`;
     return o;
   };
-  grid.clues.forEach((cl, i) => {
-    if (cl.type !== 'price') return;
-    const ty = tagY(cl.col);
-    const mid = x(cl.col) + cell / 2;
-    const label = A ? priceTag(cl.piece) : priceTagShort(cl.piece);
-    const w = Math.max(cell - 6, label.length * 5.6 + 10);
-    s += `<g class="tag">${pill(mid, ty, w, A ? fill(cl.piece) : '#fff', A ? null : ink, (tc) => T(tc, ty + 12.5, label), statusOf(i))}`
-      + `<path d="M${mid - 4} ${ty + 18} l4 4 l4 -4z" fill="${A ? fill(cl.piece) : ink}"/></g>`;
-  });
   grid.clues.forEach((cl, i) => {
     if (cl.type !== 'column') return;
     const entries = Object.entries(cl.counts);
@@ -357,38 +384,36 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     s += `<g class="tag">${pill(x(cl.col) + cell / 2, ty, w, '#fff', A ? '#d9cbd3' : ink, inner, statusOf(i))}</g>`;
   });
   if (A) {
-    // STEP tags: "▲ pompe" over the pumped column, "▼ turbine" over the turbined one, linked by a
-    // faint line; a tap on a tag removes its pair. In STEP mode, arrows ▲ then ▼ sit in the same band.
-    const tagAt = new Map<number, { left: number; right: number; y: number }>();
+    // STEP tags: "▲ pompe" over the pumped column, "▼ turbine" over the turbined one, both light blue
+    // (the shared colour and icons tell the pair); a tap on a tag removes its pair. With several pairs
+    // each icon carries its pair number. In STEP mode, arrows ▲ then ▼ sit in the same band.
     let tags = '';
     const pending = input.stepPending ?? null;
+    const numbered = maxStepPairs(grid) > 1;
     for (let c = 0; c < n; c++) {
       if (!pumps[c] && !turbines[c]) continue;
       const ty = tagY(c);
       const pump = pumps[c]! > 0;
       const full = cell >= 48;
-      const label = pump && turbines[c] ? '▲▼' : pump ? (full ? UI.stepPump : '▲') : full ? UI.stepTurbine : '▼';
-      const w = full ? Math.max(cell - 8, label.length * 5 + 12) : cell - 8;
+      const labels = stepTagLabels(state.step, c, numbered);
+      // The word ("pompe" / "turbine") only goes on a lone icon; several icons in one tag are joined.
+      const word = pump ? UI.stepPumpWord : UI.stepTurbineWord;
+      const label = labels.length === 1 && full ? `${labels[0]} ${word}` : labels.join('');
+      const w = full ? Math.max(cell - 8, label.length * 5 + 12) : Math.max(cell - 8, label.length * 5.5 + 8);
       const mid = x(c) + cell / 2;
-      const left = Math.min(Math.max(mid - w / 2, 0), Math.max(0, W - w));
-      tagAt.set(c, { left, right: left + w, y: ty + 9 });
       const k = state.step.findIndex((q) => q.pump === c || q.turbine === c);
       const pair = k >= 0 ? state.step[k] : undefined;
       const act = input.interactive && pair
         ? ` data-act="step-tag" data-col="${c}" tabindex="0" role="button" aria-label="${esc(UI.stepTagLabel(columnLabel(grid, pair.pump), columnLabel(grid, pair.turbine)))}"` : '';
       tags += `<g class="tag step-tag${act ? ' act' : ''}"${act}>`
-        + pill(mid, ty, w, pump ? '#e3eefa' : '#eef0f3', pump ? PIECE_COLORS.B.ink : '#b9b3bf', (tc) => T(tc, ty + 12.5, label, { size: full ? 8.5 : 9.5 }), null)
+        + pill(mid, ty, w, STEP_BLUE, PIECE_COLORS.B.ink, (tc) => T(tc, ty + 12.5, label, { size: full ? 8.5 : 9.5 }), null)
         + '</g>';
-    }
-    for (const q of state.step) {
-      const a = tagAt.get(q.pump);
-      const b = tagAt.get(q.turbine);
-      if (a && b) s += `<path class="step-link" d="M${a.right} ${a.y} L${b.left} ${b.y}" stroke="${PIECE_COLORS.B.ink}" stroke-opacity=".5" stroke-width="1.2" stroke-dasharray="2 3" fill="none" pointer-events="none"/>`;
     }
     s += tags;
     if (input.stepMode) {
       // ▲ over each slot to choose the pump; once chosen, it stays filled and ▼ shows on later slots.
       const r = Math.min(11, cell / 2 - 3);
+      const nextPair = state.step.length + 1;
       for (let c = 0; c < n; c++) {
         const chosen = pending === c;
         const kind = pending === null ? (c < n - 1 ? 'up' : null) : chosen ? 'up' : c > pending ? 'down' : null;
@@ -399,8 +424,8 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
         const col = PIECE_COLORS.B.ink;
         const label = kind === 'up' ? (chosen ? UI.stepArrowChosen(columnLabel(grid, c)) : UI.stepArrowPump(columnLabel(grid, c))) : UI.stepArrowTurbine(columnLabel(grid, c));
         const act = input.interactive ? ` data-act="step-arrow" data-col="${c}" tabindex="0" role="button" aria-label="${esc(label)}"` : '';
-        s += `<g class="step-arrow${act ? ' act' : ''}"${act}><circle cx="${cx}" cy="${cy}" r="${r}" fill="${chosen ? col : '#e3eefa'}" stroke="${col}" stroke-width="1.4"/>`
-          + T(cx, cy + 4, kind === 'up' ? '▲' : '▼', { size: 11, color: chosen ? '#fff' : col }) + '</g>';
+        s += `<g class="step-arrow${act ? ' act' : ''}"${act}><circle cx="${cx}" cy="${cy}" r="${r}" fill="${chosen ? col : STEP_BLUE}" stroke="${col}" stroke-width="1.4"/>`
+          + T(cx, cy + 4, (kind === 'up' ? '▲' : '▼') + (numbered ? String(nextPair) : ''), { size: numbered ? 9 : 11, color: chosen ? '#fff' : col }) + '</g>';
       }
     }
   }
@@ -408,11 +433,22 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   // ---- column labels
   grid.columns.forEach((label, c) => { s += T(x(c) + cell / 2, H * cell + 14, label, { w: 600, size: Math.min(10.5, fs + 1), color: soft }); });
 
+  // ---- price tags: under the hour of their slot, a fixed row that shows nothing of the column's height
+  grid.clues.forEach((cl, i) => {
+    if (cl.type !== 'price') return;
+    const ty = H * cell + 21;
+    const longLabel = A ? priceTag(cl.piece) : priceTagShort(cl.piece);
+    // Neighbouring slots must not overlap: switch to the short label when the long one does not fit, and cap the width.
+    const label = longLabel.length * 5.6 + 10 > cell - 4 ? priceTagShort(cl.piece) : longLabel;
+    const w = Math.min(cell - 4, Math.max(cell - 6, label.length * 5.6 + 10));
+    s += `<g class="tag">${pill(x(cl.col) + cell / 2, ty, w, A ? fill(cl.piece) : '#fff', A ? null : ink, (tc) => T(tc, ty + 12.5, label), statusOf(i))}</g>`;
+  });
+
   // ---- programme brackets
   for (const l of programLanes(grid)) {
     if (l.clue.type !== 'bar') continue;
     const piece = l.clue.piece as PieceId;
-    const by = H * cell + 26 + l.lane * 26;
+    const by = H * cell + 26 + geo.priceRows * PRICE_ROW + l.lane * 26;
     const x1 = x(l.col) + 6;
     const x2 = x(l.col + l.len) - 6;
     const mid = (x1 + x2) / 2;
@@ -424,27 +460,29 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     s += pill(mid, by + 3, tw, A ? fill(piece) : '#fff', A ? null : ink, (tc) => T(tc, by + 15.5, label), st);
   }
 
-  // ---- neighbors: one row per country, then STEP
+  // ---- neighbors: one row of cells per country under the grid (its id in the gutter), then STEP on paper
   const locked = lockedExports(grid);
   const flowClue = (country: string, c: number) => grid.clues.findIndex((cl) => cl.type === 'flow' && cl.country === country && cl.col === c);
   const focus = input.interactive ? ' tabindex="0" role="button"' : '';
-  const baseY = H * cell + 22 + geo.programRows * 26;
+  const baseY = H * cell + 22 + geo.priceRows * PRICE_ROW + geo.programRows * 26;
+  const rowH = exportCellHeight(cell);
+  const pitch = rowH + 24;
+  const cgap = 3;
   grid.neighbors.forEach((nb, k) => {
-    const ry = baseY + k * 40;
-    const lab = W < 240 ? nb.name : `${UI.neighborLine(nb.name, nb.cap)}${grid.co2_cap !== null ? ` · ${UI.co2PerCell(nb.co2)}` : ''}`;
-    s += T(0, ry + 8, lab, { anchor: 'start', w: 700, size: 9, color: soft });
-    // Narrow cells: wider pills (3 px margin), so a padlock and its value both fit.
-    const inset = cell < 44 ? 3 : 6;
+    const ry = baseY + k * pitch;
+    const cap = W < 240 ? nb.name : `${UI.neighborLine(nb.name, nb.cap)}${grid.co2_cap !== null ? ` · ${UI.co2PerCell(nb.co2)}` : ''}`;
+    s += T(X0 - 5, ry + rowH / 2 + 3.5, nb.id, { anchor: 'end', w: 800, size: 9.5, color: soft });
+    s += T(X0, ry + rowH + 13, cap, { anchor: 'start', w: 700, size: 9, color: soft });
     for (let c = 0; c < n; c++) {
-      const px = x(c) + inset;
-      const w = cell - 2 * inset;
-      const yy = ry + 14;
+      const px = x(c) + cgap / 2;
+      const w = cell - cgap;
+      const yy = ry;
       const fi = flowClue(nb.id, c);
       const flow = fi >= 0 ? grid.clues[fi] : undefined;
       if (!A) {
-        s += `<rect x="${px + w / 2 - 8}" y="${yy}" width="16" height="16" fill="#fff" stroke="${ink}" stroke-width=".8"/>`;
+        s += `<rect x="${px}" y="${yy}" width="${w}" height="${rowH}" fill="#fff" stroke="${ink}" stroke-width=".8"/>`;
         if (flow && flow.type === 'flow') {
-          s += T(px + w / 2, yy + 12, flow.dir === 'export' ? `→${flow.value}` : `←${flow.value}`, { size: 8.5 });
+          s += T(px + w / 2, yy + rowH / 2 + 3.5, flow.dir === 'export' ? `→${flow.value}` : `←${flow.value}`, { size: 8.5 });
         }
         continue;
       }
@@ -452,41 +490,39 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       const im = importsAt(state, nb.id, c);
       const isLocked = locked.has(`${nb.id}:${c}`);
       const st = fi >= 0 ? statusOf(fi) : null;
-      const text = e && im ? `→${e} ←${im}` : e ? `→ ${e}` : im ? `← ${im}` : flow && flow.type === 'flow' && flow.dir === 'import' && flow.value ? `← ${flow.value}` : '0';
+      const text = e && im ? `→${e} ←${im}` : e ? `→${e}` : im ? `←${im}` : flow && flow.type === 'flow' && flow.dir === 'import' && flow.value ? `←${flow.value}` : '';
       const aria = isLocked ? UI.exportLocked(nb.name, columnLabel(grid, c)) : UI.exportLabel(nb.name, columnLabel(grid, c), e, im);
       const act = !input.interactive ? '' : ` data-act="${isLocked ? 'locked' : 'export'}" data-country="${esc(nb.id)}" data-col="${c}"${focus}`;
       s += `<g class="pill${act ? ' act' : ''}${isLocked ? ' locked' : ''}"${act} aria-label="${esc(aria)}">`;
       if (!e && !im) {
         const pending = flow && flow.type === 'flow' && flow.dir === 'import' && flow.value > 0;
-        s += `<rect x="${px}" y="${yy}" width="${w}" height="18" rx="9" fill="${A ? '#fbf7f9' : '#fff'}" stroke="${pending ? PIECE_COLORS.I.ink : '#dccfd7'}" stroke-dasharray="3 3"/>`
-          + T(px + w / 2, yy + 12.5, text, { w: 700, size: 9, color: pending ? ink : '#c3b5be' });
+        s += `<rect x="${px}" y="${yy}" width="${w}" height="${rowH}" rx="${rad}" fill="#fbf7f9" stroke="${pending ? PIECE_COLORS.I.ink : '#dccfd7'}" stroke-width="1.2" stroke-dasharray="3 3"/>`
+          + (text ? T(px + w / 2, yy + rowH / 2 + 3.5, text, { w: 700, size: 9, color: ink }) : '');
       } else {
-        s += `<rect x="${px}" y="${yy}" width="${w}" height="18" rx="9" fill="${PIECE_COLORS.I.a}"${fi >= 0 ? ` stroke="${ink}" stroke-width="1.5"` : ''}/>`
-          + T(px + w / 2 + (isLocked ? 5 : 0), yy + 12.5, w < 36 ? text.replace(' ', '') : text);
+        s += `<rect x="${px}" y="${yy}" width="${w}" height="${rowH}" rx="${rad}" fill="${PIECE_COLORS.I.a}" stroke="${fi >= 0 ? ink : PIECE_COLORS.I.ink}" stroke-width="${fi >= 0 ? 1.5 : 1.2}"/>`
+          + T(px + w / 2 + (isLocked ? 5 : 0), yy + rowH / 2 + 3.5, text, { size: 9 });
       }
-      // A published export is fixed: padlock inside its pill. A published import only outlines
-      // the pill (the player still exports there freely).
+      // A published export is fixed: padlock inside its cell. A published import only outlines
+      // the cell (the player still exports there freely).
       if (isLocked) {
-        s += `<g transform="translate(${px + 3} ${yy + 4.5}) scale(.5)" fill="none" stroke="${ink}" stroke-width="2.4" stroke-linecap="round">${ICONS.lock}</g>`;
+        s += `<g transform="translate(${px + 3} ${yy + (rowH - 12) / 2}) scale(.5)" fill="none" stroke="${ink}" stroke-width="2.4" stroke-linecap="round">${ICONS.lock}</g>`;
       }
-      if (fi >= 0 && st === 'broken') s += `<rect x="${px - 1.5}" y="${yy - 1.5}" width="${w + 3}" height="21" rx="10.5" fill="none" stroke="${BAD}" stroke-width="2"/>`;
+      if (fi >= 0 && st === 'broken') s += `<rect x="${px - 1.5}" y="${yy - 1.5}" width="${w + 3}" height="${rowH + 3}" rx="${rad + 1}" fill="none" stroke="${BAD}" stroke-width="2"/>`;
       s += '</g>';
     }
   });
   if (grid.step && !A) {
-    const ry = baseY + grid.neighbors.length * 40;
-    s += T(0, ry + 8, UI.stepLine, { anchor: 'start', w: 700, size: 9, color: soft });
+    const ry = baseY + grid.neighbors.length * pitch;
+    if (X0) s += T(X0 - 5, ry + rowH / 2 + 3.5, '▲▼', { anchor: 'end', w: 800, size: 9, color: soft });
+    s += T(X0, ry + rowH + 13, maxStepPairs(grid) > 1 ? UI.stepLineNumbered : UI.stepLine, { anchor: 'start', w: 700, size: 9, color: soft });
     for (let c = 0; c < n; c++) {
-      const px = x(c) + 6;
-      const w = cell - 12;
-      const yy = ry + 14;
-      s += `<rect x="${px + w / 2 - 8}" y="${yy}" width="16" height="16" fill="#fff" stroke="${ink}" stroke-width=".8"/>`;
+      s += `<rect x="${x(c) + cgap / 2}" y="${ry}" width="${cell - cgap}" height="${rowH}" fill="#fff" stroke="${ink}" stroke-width=".8"/>`;
     }
   }
 
   const vb = `-2 ${-geo.topPad} ${geo.width} ${geo.height}`;
   return {
-    svg: `<svg class="board-svg" data-cell="${cell}" data-rows="${H}" data-top="${geo.topPad}" width="${geo.width}" height="${geo.height}" viewBox="${vb}" xmlns="http://www.w3.org/2000/svg">${s}</svg>`,
+    svg: `<svg class="board-svg" data-cell="${cell}" data-lead="${geo.lead}" data-rows="${H}" data-top="${geo.topPad}" width="${geo.width}" height="${geo.height}" viewBox="${vb}" xmlns="http://www.w3.org/2000/svg">${s}</svg>`,
     geo,
   };
 }

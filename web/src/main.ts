@@ -1,4 +1,4 @@
-// App entry point: loads the grids and the styles, then starts the hash router.
+// App entry point: loads the grids and the styles, then starts the hash router (tab icon: public/icon.svg).
 import gridsJson from './data/grids.json';
 import type { Grid } from './model/grid';
 import { startApp } from './ui/app';

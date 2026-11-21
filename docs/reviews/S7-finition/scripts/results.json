@@ -1,0 +1,269 @@
+{
+ "results": [
+  {
+   "name": "[1280] 1280 resserrée : case la plus haute alignée sur l’eyebrow « N° »",
+   "ok": true,
+   "detail": "case haute y=88.0 ; eyebrow y=86.0 ; lift 68"
+  },
+  {
+   "name": "[1280] 1280 resserrée : colonne de droite ~520 px collée au plateau, marge à droite",
+   "ok": true,
+   "detail": "plateau 66–550 ; colonne 580–1100 (520 px) ; écart 30 ; marge droite 180"
+  },
+  {
+   "name": "[1280] 1. accueil → grille du jour → logo → accueil : logo immobile",
+   "ok": true,
+   "detail": "accueil 66.0,26.0 ; grille 66.0,26.0 ; retour 66.0,26.0 ; dossier 66.0,26.0"
+  },
+  {
+   "name": "[1280] « Prendre le quart » reste le bouton principal",
+   "ok": true,
+   "detail": "Prendre le quart ; fond rgb(59, 51, 64)"
+  },
+  {
+   "name": "[1280] 1. aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[1280] 2. dossier « Premiers pas » → tutoriel → retour",
+   "ok": true,
+   "detail": "#/dossier/premiers-pas → #/grille/1 → #/dossier/premiers-pas"
+  },
+  {
+   "name": "[1280] 2. aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[1280] 3. ▲ puis ▼ : paire posée, ▲ ▼ bleu clair, sans numéro (1 paire)",
+   "ok": true,
+   "detail": "7 ▲ ; étiquettes ▲ pompe / ▼ turbine"
+  },
+  {
+   "name": "[1280] 3. aucun trait entre ▲ et ▼",
+   "ok": true,
+   "detail": "0 ligne(s) pointillée(s) ajoutée(s) par la paire (0 avant)"
+  },
+  {
+   "name": "[1280] 3. Annuler retire la paire",
+   "ok": true,
+   "detail": "0 paire"
+  },
+  {
+   "name": "[1280] 3. gomme : barre gommée",
+   "ok": true,
+   "detail": "1 → 0"
+  },
+  {
+   "name": "[1280] 3. aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[1280] 4. bouclée → accueil : solution en couleurs de centrales",
+   "ok": true,
+   "detail": "Programme bouclé ; 9 pièces (#f7e2a0)"
+  },
+  {
+   "name": "[1280] 4. « Revoir le quart » en bouton secondaire discret",
+   "ok": true,
+   "detail": "Revoir le quart ; fond rgba(0, 0, 0, 0) ; bord 1px rgb(59, 51, 64) ; h 38 ; à 0 px du bord droit"
+  },
+  {
+   "name": "[1280] 4. aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[1280] 7. aucun scroll horizontal (7 écrans)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[375] 1. accueil → grille du jour → logo → accueil : logo immobile",
+   "ok": true,
+   "detail": "accueil 16.0,18.0 ; grille 16.0,18.0 ; retour 16.0,18.0 ; dossier 16.0,18.0"
+  },
+  {
+   "name": "[375] « Prendre le quart » reste le bouton principal",
+   "ok": true,
+   "detail": "Prendre le quart ; fond rgb(59, 51, 64)"
+  },
+  {
+   "name": "[375] 1. aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[375] 2. dossier « Premiers pas » → tutoriel → retour",
+   "ok": true,
+   "detail": "#/dossier/premiers-pas → #/grille/1 → #/dossier/premiers-pas"
+  },
+  {
+   "name": "[375] 2. aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[375] 3. ▲ puis ▼ : paire posée, ▲ ▼ bleu clair, sans numéro (1 paire)",
+   "ok": true,
+   "detail": "7 ▲ ; étiquettes ▲ / ▼"
+  },
+  {
+   "name": "[375] 3. aucun trait entre ▲ et ▼",
+   "ok": true,
+   "detail": "0 ligne(s) pointillée(s) ajoutée(s) par la paire (0 avant)"
+  },
+  {
+   "name": "[375] 3. Annuler retire la paire",
+   "ok": true,
+   "detail": "0 paire"
+  },
+  {
+   "name": "[375] 3. gomme : barre gommée",
+   "ok": true,
+   "detail": "1 → 0"
+  },
+  {
+   "name": "[375] 3. aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[375] 4. bouclée → accueil : solution en couleurs de centrales",
+   "ok": true,
+   "detail": "Programme bouclé ; 9 pièces (#f7e2a0)"
+  },
+  {
+   "name": "[375] 4. « Revoir le quart » en bouton secondaire discret",
+   "ok": true,
+   "detail": "Revoir le quart ; fond rgba(0, 0, 0, 0) ; bord 1px rgb(59, 51, 64) ; h 38 ; à 0 px du bord droit"
+  },
+  {
+   "name": "[375] 4. aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[375] 7. aucun scroll horizontal (7 écrans)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[320] 1. accueil → grille du jour → logo → accueil : logo immobile",
+   "ok": true,
+   "detail": "accueil 16.0,18.0 ; grille 16.0,18.0 ; retour 16.0,18.0 ; dossier 16.0,18.0"
+  },
+  {
+   "name": "[320] « Prendre le quart » reste le bouton principal",
+   "ok": true,
+   "detail": "Prendre le quart ; fond rgb(59, 51, 64)"
+  },
+  {
+   "name": "[320] 1. aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[320] 2. dossier « Premiers pas » → tutoriel → retour",
+   "ok": true,
+   "detail": "#/dossier/premiers-pas → #/grille/1 → #/dossier/premiers-pas"
+  },
+  {
+   "name": "[320] 2. aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[320] 3. ▲ puis ▼ : paire posée, ▲ ▼ bleu clair, sans numéro (1 paire)",
+   "ok": true,
+   "detail": "7 ▲ ; étiquettes ▲ / ▼"
+  },
+  {
+   "name": "[320] 3. aucun trait entre ▲ et ▼",
+   "ok": true,
+   "detail": "0 ligne(s) pointillée(s) ajoutée(s) par la paire (0 avant)"
+  },
+  {
+   "name": "[320] 3. Annuler retire la paire",
+   "ok": true,
+   "detail": "0 paire"
+  },
+  {
+   "name": "[320] 3. gomme : barre gommée",
+   "ok": true,
+   "detail": "1 → 0"
+  },
+  {
+   "name": "[320] 3. aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[320] 4. bouclée → accueil : solution en couleurs de centrales",
+   "ok": true,
+   "detail": "Programme bouclé ; 9 pièces (#f7e2a0)"
+  },
+  {
+   "name": "[320] 4. « Revoir le quart » en bouton secondaire discret",
+   "ok": true,
+   "detail": "Revoir le quart ; fond rgba(0, 0, 0, 0) ; bord 1px rgb(59, 51, 64) ; h 38 ; à 0 px du bord droit"
+  },
+  {
+   "name": "[320] 4. aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[320] 7. aucun scroll horizontal (7 écrans)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[A4] 5. PDF grille 7 : 1 page",
+   "ok": true,
+   "detail": "1 page(s)"
+  },
+  {
+   "name": "[A4] 5. PDF grille 10 : 1 page",
+   "ok": true,
+   "detail": "1 page(s)"
+  },
+  {
+   "name": "[A4] 5. PDF grille 11 : 1 page",
+   "ok": true,
+   "detail": "1 page(s)"
+  },
+  {
+   "name": "6. icône d’onglet présente",
+   "ok": true,
+   "detail": "icon.svg (image/svg+xml) ; HTTP 200 image/svg+xml"
+  },
+  {
+   "name": "3 bis. grille de test à 2 paires : numéros par paire, pastilles assez larges",
+   "ok": true,
+   "detail": "▲1 pompe / ▲2▼1 / ▼2 turbine | ▲1▲2 / ▼1 turbine / ▼2 turbine | ▲1 / ▲2▼1 / ▼2 | ▲1▲2 / ▼1 / ▼2 | ▲1 pompe / ▼1 turbine ; flèches mode STEP : ▲2 ▲2 ▲2 ▲2 ▲2 ▲2 ▲2 ; 0 débordement(s)"
+  }
+ ],
+ "logo": {
+  "320": {
+   "home": "16.0,18.0",
+   "game": "16.0,18.0",
+   "back": "16.0,18.0",
+   "dossier": "16.0,18.0"
+  },
+  "375": {
+   "home": "16.0,18.0",
+   "game": "16.0,18.0",
+   "back": "16.0,18.0",
+   "dossier": "16.0,18.0"
+  },
+  "1280": {
+   "home": "66.0,26.0",
+   "game": "66.0,26.0",
+   "back": "66.0,26.0",
+   "dossier": "66.0,26.0"
+  }
+ }
+}

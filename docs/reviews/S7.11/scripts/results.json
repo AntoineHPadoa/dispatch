@@ -1,0 +1,772 @@
+[
+ {
+  "name": "G6@1280 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G6@1280 card level with the title eyebrow (desktop) / under the logo (phone)",
+  "ok": true,
+  "detail": "card 104 eyebrow 104"
+ },
+ {
+  "name": "G6@1280 card has the border, radius and fill of the right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 board inside the card",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 export row: cells for the neighbor",
+  "ok": true,
+  "detail": "6"
+ },
+ {
+  "name": "G6@1280 DE heads the row",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 the export cell fills (→1)",
+  "ok": true,
+  "detail": "→1"
+ },
+ {
+  "name": "G6@1280 the export took a reserve cell",
+  "ok": true,
+  "detail": "6 → 5"
+ },
+ {
+  "name": "G6@1280 grid, card and logo did not move after an export",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[66,104,416,567],\"svg\":[81,119,386,533],\"logo\":[66,26,36,36],\"ttl\":[512,104,240.9,15.8]},\"after\":{\"card\":[66,104,416,567],\"svg\":[81,119,386,533],\"logo\":[66,26,36,36],\"ttl\":[512,104,240.9,15.8]}}"
+ },
+ {
+  "name": "G6@1280 no horizontal scroll after the export",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 a second tap clears the export",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@1280 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G7@1280 card level with the title eyebrow (desktop) / under the logo (phone)",
+  "ok": true,
+  "detail": "card 104 eyebrow 104"
+ },
+ {
+  "name": "G7@1280 card has the border, radius and fill of the right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@1280 board inside the card",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@1280 the 2 price pills sit under the hours",
+  "ok": true,
+  "detail": "{\"hoursY\":420,\"ys\":[96,441,441]}"
+ },
+ {
+  "name": "G7@1280 export row: cells for the neighbor",
+  "ok": true,
+  "detail": "6"
+ },
+ {
+  "name": "G7@1280 DE heads the row",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@1280 grid, card and logo did not move after an export",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[66,104,536,613],\"svg\":[81,119,506,579],\"logo\":[66,26,36,36],\"ttl\":[632,104,378.7,15.8]},\"after\":{\"card\":[66,104,536,613],\"svg\":[81,119,506,579],\"logo\":[66,26,36,36],\"ttl\":[632,104,378.7,15.8]}}"
+ },
+ {
+  "name": "G7@1280 no horizontal scroll after the export",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@1280 the third export is refused with a message",
+  "ok": true,
+  "detail": "Plus d’export vers l’Allemagne dans l’inventaire (2 au total)."
+ },
+ {
+  "name": "G7@1280 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G10@1280 card level with the title eyebrow (desktop) / under the logo (phone)",
+  "ok": true,
+  "detail": "card 104 eyebrow 104"
+ },
+ {
+  "name": "G10@1280 card has the border, radius and fill of the right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 board inside the card",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 export row: cells for the neighbor",
+  "ok": true,
+  "detail": "8"
+ },
+ {
+  "name": "G10@1280 DE heads the row",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 the export cell fills (→1)",
+  "ok": true,
+  "detail": "→1"
+ },
+ {
+  "name": "G10@1280 the export took a reserve cell",
+  "ok": true,
+  "detail": "8 → 7"
+ },
+ {
+  "name": "G10@1280 grid, card and logo did not move after an export",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[66,104,536,423],\"svg\":[81,119,506,389],\"logo\":[66,26,36,36],\"ttl\":[632,104,196,15.8]},\"after\":{\"card\":[66,104,536,423],\"svg\":[81,119,506,389],\"logo\":[66,26,36,36],\"ttl\":[632,104,196,15.8]}}"
+ },
+ {
+  "name": "G10@1280 no horizontal scroll after the export",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 a second tap clears the export",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@1280 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G11@1280 card level with the title eyebrow (desktop) / under the logo (phone)",
+  "ok": true,
+  "detail": "card 104 eyebrow 104"
+ },
+ {
+  "name": "G11@1280 card has the border, radius and fill of the right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@1280 board inside the card",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@1280 export row: cells for the neighbor",
+  "ok": true,
+  "detail": "8"
+ },
+ {
+  "name": "G11@1280 DE heads the row",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@1280 the export cell fills (→1)",
+  "ok": true,
+  "detail": "→1"
+ },
+ {
+  "name": "G11@1280 the export took a reserve cell",
+  "ok": true,
+  "detail": "8 → 7"
+ },
+ {
+  "name": "G11@1280 grid, card and logo did not move after an export",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[66,104,536,543],\"svg\":[81,119,506,509],\"logo\":[66,26,36,36],\"ttl\":[632,104,245.2,15.8]},\"after\":{\"card\":[66,104,536,543],\"svg\":[81,119,506,509],\"logo\":[66,26,36,36],\"ttl\":[632,104,245.2,15.8]}}"
+ },
+ {
+  "name": "G11@1280 no horizontal scroll after the export",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@1280 a second tap clears the export",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@1280 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G6@375 card level with the title eyebrow (desktop) / under the logo (phone)",
+  "ok": true,
+  "detail": "card 254.4 eyebrow 82"
+ },
+ {
+  "name": "G6@375 card has the border, radius and fill of the right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 board inside the card",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 export row: cells for the neighbor",
+  "ok": true,
+  "detail": "6"
+ },
+ {
+  "name": "G6@375 DE heads the row",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 the export cell fills (→1)",
+  "ok": true,
+  "detail": "→1"
+ },
+ {
+  "name": "G6@375 the export took a reserve cell",
+  "ok": true,
+  "detail": "6 → 5"
+ },
+ {
+  "name": "G6@375 grid, card and logo did not move after an export",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[16,254.4,343,476],\"svg\":[27.5,265.4,320,450],\"logo\":[16,18,36,36],\"ttl\":[16,82,192.7,15.8]},\"after\":{\"card\":[16,254.4,343,476],\"svg\":[27.5,265.4,320,450],\"logo\":[16,18,36,36],\"ttl\":[16,82,192.7,15.8]}}"
+ },
+ {
+  "name": "G6@375 no horizontal scroll after the export",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 a second tap clears the export",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@375 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G7@375 card level with the title eyebrow (desktop) / under the logo (phone)",
+  "ok": true,
+  "detail": "card 347.3 eyebrow 82"
+ },
+ {
+  "name": "G7@375 card has the border, radius and fill of the right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@375 board inside the card",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@375 the 2 price pills sit under the hours",
+  "ok": true,
+  "detail": "{\"hoursY\":259,\"ys\":[50,280,280]}"
+ },
+ {
+  "name": "G7@375 export row: cells for the neighbor",
+  "ok": true,
+  "detail": "6"
+ },
+ {
+  "name": "G7@375 DE heads the row",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@375 grid, card and logo did not move after an export",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[16,347.3,343,435],\"svg\":[26.5,358.3,322,409],\"logo\":[16,18,36,36],\"ttl\":[16,82,270.6,15.8]},\"after\":{\"card\":[16,347.3,343,435],\"svg\":[26.5,358.3,322,409],\"logo\":[16,18,36,36],\"ttl\":[16,82,270.6,15.8]}}"
+ },
+ {
+  "name": "G7@375 no horizontal scroll after the export",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@375 the third export is refused with a message",
+  "ok": true,
+  "detail": "Plus d’export vers l’Allemagne dans l’inventaire (2 au total)."
+ },
+ {
+  "name": "G7@375 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G10@375 card level with the title eyebrow (desktop) / under the logo (phone)",
+  "ok": true,
+  "detail": "card 234.7 eyebrow 82"
+ },
+ {
+  "name": "G10@375 card has the border, radius and fill of the right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 board inside the card",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 export row: cells for the neighbor",
+  "ok": true,
+  "detail": "8"
+ },
+ {
+  "name": "G10@375 DE heads the row",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 the export cell fills (→1)",
+  "ok": true,
+  "detail": "→1"
+ },
+ {
+  "name": "G10@375 the export took a reserve cell",
+  "ok": true,
+  "detail": "8 → 7"
+ },
+ {
+  "name": "G10@375 grid, card and logo did not move after an export",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[16,234.7,343,291],\"svg\":[26.5,245.7,322,265],\"logo\":[16,18,36,36],\"ttl\":[16,82,196,15.8]},\"after\":{\"card\":[16,234.7,343,291],\"svg\":[26.5,245.7,322,265],\"logo\":[16,18,36,36],\"ttl\":[16,82,196,15.8]}}"
+ },
+ {
+  "name": "G10@375 no horizontal scroll after the export",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 a second tap clears the export",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@375 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G11@375 card level with the title eyebrow (desktop) / under the logo (phone)",
+  "ok": true,
+  "detail": "card 234.7 eyebrow 82"
+ },
+ {
+  "name": "G11@375 card has the border, radius and fill of the right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@375 board inside the card",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@375 export row: cells for the neighbor",
+  "ok": true,
+  "detail": "8"
+ },
+ {
+  "name": "G11@375 DE heads the row",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@375 the export cell fills (→1)",
+  "ok": true,
+  "detail": "→1"
+ },
+ {
+  "name": "G11@375 the export took a reserve cell",
+  "ok": true,
+  "detail": "8 → 7"
+ },
+ {
+  "name": "G11@375 grid, card and logo did not move after an export",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[16,234.7,343,365],\"svg\":[26.5,245.7,322,339],\"logo\":[16,18,36,36],\"ttl\":[16,82,198.8,15.8]},\"after\":{\"card\":[16,234.7,343,365],\"svg\":[26.5,245.7,322,339],\"logo\":[16,18,36,36],\"ttl\":[16,82,198.8,15.8]}}"
+ },
+ {
+  "name": "G11@375 no horizontal scroll after the export",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@375 a second tap clears the export",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@375 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G6@320 card level with the title eyebrow (desktop) / under the logo (phone)",
+  "ok": true,
+  "detail": "card 254.4 eyebrow 82"
+ },
+ {
+  "name": "G6@320 card has the border, radius and fill of the right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 board inside the card",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 export row: cells for the neighbor",
+  "ok": true,
+  "detail": "6"
+ },
+ {
+  "name": "G6@320 DE heads the row",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 the export cell fills (→1)",
+  "ok": true,
+  "detail": "→1"
+ },
+ {
+  "name": "G6@320 the export took a reserve cell",
+  "ok": true,
+  "detail": "6 → 5"
+ },
+ {
+  "name": "G6@320 grid, card and logo did not move after an export",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[16,254.4,288,410],\"svg\":[27,265.4,266,384],\"logo\":[16,18,36,36],\"ttl\":[16,82,192.7,15.8]},\"after\":{\"card\":[16,254.4,288,410],\"svg\":[27,265.4,266,384],\"logo\":[16,18,36,36],\"ttl\":[16,82,192.7,15.8]}}"
+ },
+ {
+  "name": "G6@320 no horizontal scroll after the export",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 a second tap clears the export",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@320 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G7@320 card level with the title eyebrow (desktop) / under the logo (phone)",
+  "ok": true,
+  "detail": "card 367 eyebrow 82"
+ },
+ {
+  "name": "G7@320 card has the border, radius and fill of the right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@320 board inside the card",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@320 the 2 price pills sit under the hours",
+  "ok": true,
+  "detail": "{\"hoursY\":210,\"ys\":[36,231,231]}"
+ },
+ {
+  "name": "G7@320 export row: cells for the neighbor",
+  "ok": true,
+  "detail": "6"
+ },
+ {
+  "name": "G7@320 DE heads the row",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@320 grid, card and logo did not move after an export",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[16,367,288,386],\"svg\":[27,378,266,360],\"logo\":[16,18,36,36],\"ttl\":[16,82,215.6,15.8]},\"after\":{\"card\":[16,367,288,386],\"svg\":[27,378,266,360],\"logo\":[16,18,36,36],\"ttl\":[16,82,215.6,15.8]}}"
+ },
+ {
+  "name": "G7@320 no horizontal scroll after the export",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@320 the third export is refused with a message",
+  "ok": true,
+  "detail": "Plus d’export vers l’Allemagne dans l’inventaire (2 au total)."
+ },
+ {
+  "name": "G7@320 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G10@320 card level with the title eyebrow (desktop) / under the logo (phone)",
+  "ok": true,
+  "detail": "card 234.7 eyebrow 82"
+ },
+ {
+  "name": "G10@320 card has the border, radius and fill of the right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 board inside the card",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 export row: cells for the neighbor",
+  "ok": true,
+  "detail": "8"
+ },
+ {
+  "name": "G10@320 DE heads the row",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 the export cell fills (→1)",
+  "ok": true,
+  "detail": "→1"
+ },
+ {
+  "name": "G10@320 the export took a reserve cell",
+  "ok": true,
+  "detail": "8 → 7"
+ },
+ {
+  "name": "G10@320 grid, card and logo did not move after an export",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[16,234.7,288,256],\"svg\":[27,245.7,266,230],\"logo\":[16,18,36,36],\"ttl\":[16,82,196,15.8]},\"after\":{\"card\":[16,234.7,288,256],\"svg\":[27,245.7,266,230],\"logo\":[16,18,36,36],\"ttl\":[16,82,196,15.8]}}"
+ },
+ {
+  "name": "G10@320 no horizontal scroll after the export",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 a second tap clears the export",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@320 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G11@320 card level with the title eyebrow (desktop) / under the logo (phone)",
+  "ok": true,
+  "detail": "card 234.7 eyebrow 82"
+ },
+ {
+  "name": "G11@320 card has the border, radius and fill of the right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@320 board inside the card",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@320 export row: cells for the neighbor",
+  "ok": true,
+  "detail": "8"
+ },
+ {
+  "name": "G11@320 DE heads the row",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@320 the export cell fills (→1)",
+  "ok": true,
+  "detail": "→1"
+ },
+ {
+  "name": "G11@320 the export took a reserve cell",
+  "ok": true,
+  "detail": "8 → 7"
+ },
+ {
+  "name": "G11@320 grid, card and logo did not move after an export",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[16,234.7,288,316],\"svg\":[27,245.7,266,290],\"logo\":[16,18,36,36],\"ttl\":[16,82,198.8,15.8]},\"after\":{\"card\":[16,234.7,288,316],\"svg\":[27,245.7,266,290],\"logo\":[16,18,36,36],\"ttl\":[16,82,198.8,15.8]}}"
+ },
+ {
+  "name": "G11@320 no horizontal scroll after the export",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@320 a second tap clears the export",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@320 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@1280 STEP pair laid (2 tags)",
+  "ok": true,
+  "detail": "2"
+ },
+ {
+  "name": "G7@1280 card, grid and logo did not move after pumping",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[66,104,536,613],\"svg\":[81,119,506,579],\"logo\":[66,26,36,36],\"ttl\":[632,104,378.7,15.8]},\"after\":{\"card\":[66,104,536,613],\"svg\":[81,119,506,579],\"logo\":[66,26,36,36],\"ttl\":[632,104,378.7,15.8]}}"
+ },
+ {
+  "name": "G7@375 STEP pair laid (2 tags)",
+  "ok": true,
+  "detail": "2"
+ },
+ {
+  "name": "G7@375 card, grid and logo did not move after pumping",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[16,347.3,343,435],\"svg\":[26.5,358.3,322,409],\"logo\":[16,18,36,36],\"ttl\":[16,82,270.6,15.8]},\"after\":{\"card\":[16,347.3,343,435],\"svg\":[26.5,358.3,322,409],\"logo\":[16,18,36,36],\"ttl\":[16,82,270.6,15.8]}}"
+ },
+ {
+  "name": "G3 the order book has no Échanges row",
+  "ok": true,
+  "detail": "Nucléaireruban de 3 à 6Gaz2 à 3 créneauxImportAllemagne, 1 case0 / 1"
+ },
+ {
+  "name": "G3 clue card named « Publications du marché »",
+  "ok": true,
+  "detail": "Publications du marché 0 sur 1 vérifié"
+ },
+ {
+  "name": "G3 the exchanges line comes first",
+  "ok": true,
+  "detail": "Aujourd’hui : 2 blocs exportés, 1 bloc importé."
+ },
+ {
+  "name": "G6 the order book has no Échanges row",
+  "ok": true,
+  "detail": "Nucléaireruban de 3 à 6Gaz2 à 3 créneaux"
+ },
+ {
+  "name": "G6 clue card named « Publications du marché »",
+  "ok": true,
+  "detail": "Publications du marché 0 sur 3 vérifié"
+ },
+ {
+  "name": "G6 the exchanges line comes first",
+  "ok": true,
+  "detail": "Aujourd’hui : 2 blocs exportés, aucun bloc importé."
+ },
+ {
+  "name": "G7 the order book has no Échanges row",
+  "ok": true,
+  "detail": "Nucléaireruban de 3 à 6ImportAllemagne, 1 case0 / 2STEP1 paire▲▼0 / 1"
+ },
+ {
+  "name": "G7 clue card named « Publications du marché »",
+  "ok": true,
+  "detail": "Publications du marché 2 sur 7 vérifiés"
+ },
+ {
+  "name": "G7 the exchanges line comes first",
+  "ok": true,
+  "detail": "Aujourd’hui : 2 blocs exportés, 2 blocs importés, 1 pompage."
+ }
+]

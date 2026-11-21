@@ -3,11 +3,11 @@
  * clue list with status, CO2 gauge, and the clue text styling (plant chips, slot values).
  * - Screen and paper share the markup; `paper` switches to style B (no usage, no counts).
  */
-import { ANY_COUNTRY, IMPORT_PIECE, PIECE_IDS, type Clue, type Grid, type PieceId } from '../model/grid';
+import { ANY_COUNTRY, IMPORT_PIECE, PIECE_IDS, type Clue, type ExchangesClue, type Grid, type PieceId } from '../model/grid';
 import {
-  co2PerCell, pieceCells, totalExports, type ClueReport, type PlayState,
+  clueText, co2PerCell, pieceCells, totalExports, totalImports, type ClueReport, type ClueStatus, type PlayState,
 } from '../engine';
-import { CLUE_KIND, PIECE_WORDS, UI, clueText, countryFrom, pieceHint } from '../i18n/fr';
+import { CLUE_KIND, PIECE_WORDS, UI, countryFrom, pieceHint } from '../i18n/fr';
 import { CLUE_ICON, PIECE_COLORS, colorKey, esc, icon } from './palette';
 
 /** A selectable entry of the book: a plant id, or `I:<country>` for imports. */
@@ -135,40 +135,20 @@ export function renderBook(grid: Grid, state: PlayState, selected: PieceKey | nu
     if (paper) return `<div class="prow">${body}</div>`;
     return `<button type="button" class="prow${sel ? ' sel' : ''}" data-piece="${esc(e.key)}" aria-pressed="${sel}">${body}</button>`;
   });
-  return `<div class="book">${rows.join('')}${exchangesLine(grid, state, paper)}</div>`;
-}
-
-/** Exact inventory: exports, imports and STEP pairs to place, as pills. */
-function exchangesLine(grid: Grid, state: PlayState, paper: boolean): string {
-  const inv = grid.inventory;
-  if (inv.level !== 'exact') return '';
-  const pills: string[] = [];
-  const pill = (cls: string, txt: string, done: boolean) => `<span class="xpill ${cls}${!paper && done ? ' done' : ''}">${esc(txt)}</span>`;
-  for (const nb of grid.neighbors) {
-    const want = inv.exports?.[nb.id] ?? 0;
-    if (want > 0) {
-      const got = totalExports(state, nb.id);
-      pills.push(pill('exp', paper ? `→ ${nb.id} ${want}` : UI.exportPill(nb.id, got, want), got === want));
-    }
-  }
-  if (paper && grid.step && (inv.step ?? 0) > 0) {
-    const want = inv.step ?? 0;
-    pills.push(pill('step', paper ? `▲▼ ${UI.pairs(want)}` : UI.stepPill(state.step.length, want), state.step.length === want));
-  }
-  if (!pills.length) return '';
-  return `<div class="prow xrow"><span class="pname"><b>${esc(UI.exchangesTitle)}</b><span>${esc(paper ? UI.noteBelowPaper : UI.noteBelow)}</span></span><span class="bars">${pills.join('')}</span></div>`;
+  return `<div class="book">${rows.join('')}</div>`;
 }
 
 /** Clue text with plant chips and slot values highlighted (text itself comes from fr.ts). */
 export function richClueText(grid: Grid, clue: Clue, text = clueText(grid, clue)): string {
   let html = esc(text);
   const piece = 'piece' in clue ? clue.piece : null;
-  const chip = (p: string, label: string) => `<span class="pc" style="--dot:${PIECE_COLORS[colorKey(p)].a}">${label}</span>`;
+  // The punctuation right after a chip stays glued to it (no lone "." on a new line).
+  const chip = (p: string, label: string, punct = '') => `<span class="nw"><span class="pc" style="--dot:${PIECE_COLORS[colorKey(p)].a}">${label}</span>${punct}</span>`;
   if (piece) {
     const w = PIECE_WORDS[piece];
     for (const phrase of [w.a, w.the, w.of.replace(/^de /, ''), w.name.toLowerCase()]) {
-      const re = new RegExp(`(^|[\\s'’])(${phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(?=[\\s,.]|$)`, 'i');
-      if (re.test(html)) { html = html.replace(re, (_m, pre: string, word: string) => `${pre}${chip(piece, word)}`); break; }
+      const re = new RegExp(`(^|[\\s'’])(${phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})([,.;:]?)(?=[\\s,.]|$)`, 'i');
+      if (re.test(html)) { html = html.replace(re, (_m, pre: string, word: string, punct: string) => `${pre}${chip(piece, word, punct)}`); break; }
     }
   }
   if (clue.type === 'column') {
@@ -176,7 +156,7 @@ export function richClueText(grid: Grid, clue: Clue, text = clueText(grid, clue)
       if (k.startsWith('I:')) continue;
       const word = PIECE_WORDS[k as PieceId]?.of.replace(/^de /, '');
       if (!word) continue;
-      html = html.replace(new RegExp(`(de |d’|d')(${word})(?=[\\s,.])`), (_m, pre: string, wd: string) => `${pre}${chip(k, wd)}`);
+      html = html.replace(new RegExp(`(de |d’|d')(${word})([,.;:]?)(?=[\\s,.]|$)`), (_m, pre: string, wd: string, punct: string) => `${pre}${chip(k, wd, punct)}`);
     }
   }
   // Slot values: hours ("8h") and counts.
@@ -199,19 +179,55 @@ export function clueItem(grid: Grid, clue: Clue, status: ClueReport['status'] | 
     + `<span><span class="kind">${kind}</span><span class="txt">${txt}</span></span>${stateDot(status)}</li>`;
 }
 
-/** Clue card: day clues listed, slot clues counted; every clue in text in a collapsed list. */
-export function renderClues(grid: Grid, reports: readonly ClueReport[]): string {
-  if (!grid.clues.length) return '';
+/** Clues in reading order: day clues first (no slot), then slot clues by column; ties keep the grid order. */
+export function orderClues<T extends { clue: Clue }>(reports: readonly T[]): T[] {
+  const col = (c: Clue) => ('col' in c && typeof c.col === 'number' ? c.col : -1);
+  return reports
+    .map((r, i) => ({ r, i }))
+    .sort((a, b) => col(a.r.clue) - col(b.r.clue) || a.i - b.i)
+    .map(({ r }) => r);
+}
+
+/**
+ * Day totals an exact inventory imposes (exports, imports, STEP pairs), as an "exchanges" clue:
+ * they are market publications like the clues of the no-inventory grids, so they live in the clue
+ * card, not in the order book. Null when the inventory imposes none, or the grid has its own clue.
+ */
+export function inventoryExchanges(grid: Grid): ExchangesClue | null {
+  const inv = grid.inventory;
+  if (inv.level !== 'exact' || grid.clues.some((c) => c.type === 'exchanges')) return null;
+  const clue: ExchangesClue = { type: 'exchanges' };
+  if (inv.exports && Object.keys(inv.exports).length) clue.exports = { ...inv.exports };
+  if (inv.imports && Object.keys(inv.imports).length) clue.imports = { ...inv.imports };
+  if (grid.step && inv.step !== undefined) clue.step = inv.step;
+  return clue.exports || clue.imports || clue.step !== undefined ? clue : null;
+}
+
+/** Status of an exchanges clue on a board: every total met (ok), one exceeded (broken), else open. */
+function exchangesStatus(state: PlayState, clue: ExchangesClue): ClueStatus {
+  const st: ClueStatus[] = [];
+  const count = (got: number, want: number): ClueStatus => (got > want ? 'broken' : got === want ? 'ok' : 'open');
+  for (const [k, v] of Object.entries(clue.exports ?? {})) st.push(count(totalExports(state, k), v));
+  for (const [k, v] of Object.entries(clue.imports ?? {})) st.push(count(totalImports(state, k), v));
+  if (clue.step !== undefined) st.push(count(state.step.length, clue.step));
+  return st.includes('broken') ? 'broken' : st.includes('open') ? 'open' : 'ok';
+}
+
+/** The clue reports of the board plus the exchanges line of an exact inventory (a day clue, so listed first). */
+export function withInventoryExchanges(grid: Grid, state: PlayState, reports: readonly ClueReport[]): ClueReport[] {
+  const clue = inventoryExchanges(grid);
+  if (!clue) return [...reports];
+  return [...reports, { clue, text: clueText(grid, clue), status: exchangesStatus(state, clue) }];
+}
+
+/** Clue card: every clue in text, day clues first, then slot clues in time order. */
+export function renderClues(grid: Grid, boardReports: readonly ClueReport[], state: PlayState): string {
+  const reports = withInventoryExchanges(grid, state, boardReports);
+  if (!reports.length) return '';
   const ok = reports.filter((r) => r.status === 'ok').length;
-  const day = reports.filter((r) => isDayClue(r.clue));
-  const slot = reports.filter((r) => !isDayClue(r.clue));
-  const items = (rs: readonly ClueReport[]) => `<ul class="clues">${rs.map((r) => clueItem(grid, r.clue, r.status)).join('')}</ul>`;
-  // Day clues listed, slot clues one click away; without day clues, every clue is listed.
-  const title = day.length ? UI.dayClues : UI.gridClues;
-  const list = items(day.length ? day : reports);
-  const note = day.length && slot.length ? `<p class="note">${esc(UI.gridCluesNote)}</p>` : '';
-  const all = day.length && slot.length ? `<details class="all-clues"><summary>${esc(UI.allClues)}</summary>${items(reports)}</details>` : '';
-  return `<section class="card" aria-label="${esc(title)}"><h2 class="ct">${esc(title)} <small>${esc(UI.cluesChecked(ok, reports.length))}</small></h2>${list}${note}${all}</section>`;
+  const title = reports.some((r) => isDayClue(r.clue)) ? UI.dayClues : UI.gridClues;
+  const list = `<ul class="clues">${orderClues(reports).map((r) => clueItem(grid, r.clue, r.status)).join('')}</ul>`;
+  return `<section class="card" aria-label="${esc(title)}"><h2 class="ct">${esc(title)} <small>${esc(UI.cluesChecked(ok, reports.length))}</small></h2>${list}</section>`;
 }
 
 /** CO2 gauge in cells, split by plant (only when the grid has a cap). */
