@@ -231,4 +231,6 @@ Le gros du travail est commun aux deux profils : passer de pièces rectangles à
 
 ## 8. Décision
 
-_À compléter après le choix de l'humain._
+- **Choix de l'humain (21 novembre 2026)** : le **trapèze 1 → 2 → 1** est traité en premier, comme recommandé.
+- L'escalier 2 → 1 reste documenté ici (§3) pour plus tard.
+- Suite : S1.2 (go / no-go) cherchera les 4 techniques du trapèze dans les traces du solveur de déduction.
