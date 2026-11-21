@@ -35,7 +35,9 @@ An abandoned game is recorded when the player gives up, leaves the game screen, 
 - The grid sent to the game has no `lab` block, no bulletin, no draft title or difficulty.
 - The list, the plays and the notes hide the solver rating, techniques, steps, the draft title and the other player's measures (time, errors, rating) on every candidate the current player has not rated yet. `Mode création` (top bar) shows everything, to sort a lot without playing it: do not calibrate with it on.
 - `/api/reveal` answers 403 until the player has rated the candidate.
+- Comments (`notes.json`) are hidden with the felt ratings: another player's « trop dur » shows only after the player's own rating.
+- Not blind, by choice: `/api/bulletin/<lot>/<i>` serves the bulletin draft (title, text) to the « Gardées » screen, even for a candidate kept without being played. The title can hint at the mechanics (« Frontière ouverte »), never at the rating.
 
 ## Server safety
 
-Listens on 127.0.0.1. Every request must carry a local `Host`; a request with an `Origin` other than `localhost:5173` or `127.0.0.1:5173` is refused; writes must be `Content-Type: application/json`.
+Listens on 127.0.0.1. Every request must carry a local `Host`; a request with an `Origin` other than `localhost` or `127.0.0.1` on the Vite port (5173) or the server port (8765 by default) is refused; writes must be `Content-Type: application/json`.

@@ -180,7 +180,7 @@ class Lab:
         """Grid for playing: no `lab` block, solver rating, techniques or bulletin text."""
         g = copy.deepcopy(self._find(lot, index))
         if has_ramp(g):
-            raise LabError("ramp grids cannot be played in the web game yet", 422)
+            raise LabError("staircase ramps cannot be played in the web game yet", 422)
         g.pop("lab", None)
         g.pop("bulletin", None)
         if not isinstance(g.get("id"), int) or g["id"] < 1:
@@ -313,7 +313,7 @@ class Lab:
         return self._read_json(self.dir / "notes.json", {})
 
     def notes_for(self, player: str | None, creation: bool = False) -> dict[str, Any]:
-        """Notes; felt ratings only for candidates already revealed to `player`."""
+        """Notes; felt ratings and comments only for candidates already revealed to `player`."""
         notes = self.notes()
         if creation:
             return notes
@@ -322,8 +322,9 @@ class Lab:
         for key, note in notes.items():
             lot, _, index = key.rpartition(":")
             note = dict(note)
-            if "felt" in note and not self.revealed(lot, int(index), player, plays, notes):
-                del note["felt"]
+            if ("felt" in note or "comment" in note) and not self.revealed(lot, int(index), player, plays, notes):
+                note.pop("felt", None)
+                note.pop("comment", None)
             out[key] = note
         return out
 
@@ -404,7 +405,7 @@ class Lab:
                 raise LabError(f"grid id {new_id} is already used", 409)
             grid = copy.deepcopy(self._find(lot, index))
             if has_ramp(grid):
-                raise LabError("ramp grids cannot be promoted until the game supports them", 422)
+                raise LabError("staircase ramps cannot be promoted until the game plays them", 422)
             grid.pop("lab", None)
             grid["id"] = new_id
             grid["section"] = "rated"

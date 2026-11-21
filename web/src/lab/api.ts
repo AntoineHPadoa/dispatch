@@ -44,8 +44,10 @@ export const api = {
   plays: (lot?: string, player?: string) => call<Play[]>('GET', `/plays?${lot ? `lot=${encodeURIComponent(lot)}&` : ''}${viewerQuery(player)}`),
   notes: (player?: string) => call<Record<string, Note>>('GET', `/notes?${viewerQuery(player)}`),
   addPlay: (p: PlayRecord) => call<Play>('POST', '/plays', p),
-  /** Fire-and-forget on page unload (sendBeacon survives the page); true when the browser queued it. */
-  beaconPlay: (p: PlayRecord): boolean => navigator.sendBeacon(`${BASE}/plays`, new Blob([JSON.stringify(p)], { type: 'application/json' })),
+  /** Fire-and-forget on page unload: a keepalive fetch survives the page and sends the JSON header the server requires. */
+  beaconPlay: (p: PlayRecord): void => {
+    void fetch(`${BASE}/plays`, { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p) }).catch(() => undefined);
+  },
   /** Felt rating of a play, once (409 afterwards). */
   ratePlay: (id: string, felt: number, comment: string) => call<Play>('POST', `/plays/${id}/rate`, { felt, comment }),
   note: (lot: string, index: number, patch: Partial<Note>) => call<Note>('PUT', `/notes/${lot}/${index}`, patch),

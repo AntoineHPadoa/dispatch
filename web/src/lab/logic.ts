@@ -27,7 +27,7 @@ export interface Candidate {
   silhouette: number[];
   /** False until the current player has rated the grid (or creation mode): rating, techniques, steps and felt are then empty. */
   revealed: boolean;
-  /** False for ramp grids, which the web game cannot play yet. */
+  /** False for staircase ramps, which the web game cannot play yet (trapezoids are played). */
   playable: boolean;
   plays: number;
   kept: boolean;

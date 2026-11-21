@@ -178,6 +178,14 @@ def test_a_stray_open_is_not_an_attempt(api):
     assert quick["phantom"]  # a legacy record without moves: only the time decides
 
 
+def test_comments_are_masked_like_felt_ratings(api):
+    """Review S8 B M6: another player's comment ("trop dur") stays hidden until the player has rated."""
+    play = api("POST", "/api/plays", {**PLAY, "player": "Joueur 2"})[1]
+    assert api("POST", f"/api/plays/{play['id']}/rate", {"felt": 4, "comment": "trop dur"})[0] == 200
+    assert "comment" not in api("GET", "/api/notes?player=Joueur%201")[1]["t:0"]
+    assert api("GET", "/api/notes?player=Joueur%202")[1]["t:0"]["comment"] == "trop dur"
+
+
 def test_wall_time_cannot_be_below_active_time(api):
     assert api("POST", "/api/plays", {**PLAY, "ms": 5000, "wall_ms": 100})[0] == 400
 
