@@ -133,10 +133,11 @@ function solutionErrors(g: Grid): string[] {
 }
 
 describe('converted grids', () => {
-  it('has the 11 pose grids: 7 tutorial then 4 rated', () => {
-    expect(grids.map((g) => g.id)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
-    expect(grids.filter((g) => g.section === 'tutorial')).toHaveLength(7);
-    expect(grids.slice(7).every((g) => g.section === 'rated')).toBe(true);
+  it('has the 11 pose grids (7 tutorial then 4 rated) and the 2 coal ramp tutorials', () => {
+    expect(grids.map((g) => g.id)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]);
+    expect(grids.filter((g) => g.section === 'tutorial')).toHaveLength(9);
+    expect(grids.slice(7, 11).every((g) => g.section === 'rated')).toBe(true);
+    expect(grids.slice(11).every((g) => g.section === 'tutorial' && g.pieces.C?.shape === 'trap')).toBe(true);
   });
 
   it.each(grids.map((g) => [g.id, g] as const))('grid %i passes structural validation', (_id, g) => {
