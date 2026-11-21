@@ -50,7 +50,6 @@ export function lockedExports(grid: Grid): Map<string, number> {
   return m;
 }
 
-/** Most STEP pairs the board may hold (inventory or exchanges clue; the validator requires one). */
 const STEP_BLUE = '#e3eefa';
 
 /** Icons of the STEP tags in column `c`: ▲ for a pump, ▼ for a turbine, with the pair number when `numbered`. */
@@ -61,6 +60,7 @@ export function stepTagLabels(step: readonly { pump: number; turbine: number }[]
   return out;
 }
 
+/** Most STEP pairs the board may hold (inventory or exchanges clue; the validator requires one). */
 export function maxStepPairs(grid: Grid): number {
   if (!grid.step) return 0;
   if (grid.inventory.step !== undefined) return grid.inventory.step;
@@ -380,8 +380,10 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       const pump = pumps[c]! > 0;
       const full = cell >= 48;
       const labels = stepTagLabels(state.step, c, numbered);
-      const label = pump && turbines[c] ? labels.join('') : pump ? (full ? `${labels[0]} ${UI.stepPumpWord}` : labels[0]!) : full ? `${labels[0]} ${UI.stepTurbineWord}` : labels[0]!;
-      const w = full ? Math.max(cell - 8, label.length * 5 + 12) : cell - 8;
+      // The word ("pompe" / "turbine") only goes on a lone icon; several icons in one tag are joined.
+      const word = pump ? UI.stepPumpWord : UI.stepTurbineWord;
+      const label = labels.length === 1 && full ? `${labels[0]} ${word}` : labels.join('');
+      const w = full ? Math.max(cell - 8, label.length * 5 + 12) : Math.max(cell - 8, label.length * 5.5 + 8);
       const mid = x(c) + cell / 2;
       const k = state.step.findIndex((q) => q.pump === c || q.turbine === c);
       const pair = k >= 0 ? state.step[k] : undefined;

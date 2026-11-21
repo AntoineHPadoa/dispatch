@@ -13,7 +13,7 @@ import { localIsoDate, weekdayIndex } from '../model/bulletin';
 import type { Grid, Placement } from '../model/grid';
 import {
   barIndexAt, checkPlaceOver, evaluate, newGame, placeOver, remove, removeStep, setExport, exportsAt,
-  importsAt, type ClueReport, type Evaluation, type PlayState,
+  importsAt, residual, type ClueReport, type Evaluation, type PlayState,
 } from '../engine';
 import { MSG, TECHNIQUES, UI, columnLabel, countryTo, durationText, placementLabel, slotClueShort } from '../i18n/fr';
 import { siteHead } from './home-art';
@@ -246,6 +246,10 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       stepMode: stepModeOn(), interactive: true,
     });
     geo = out.geo;
+    // Desktop: the board rises so its highest cell lines up with the eyebrow of the title column.
+    const resid = residual(grid);
+    const topCells = Math.max(...geo.weather.map((w, c) => w + Math.max(0, resid[c] ?? 0)));
+    gameEl.style.setProperty('--lift', `${Math.max(0, Math.round(geo.topPad + (geo.rows - topCells) * cell))}px`);
     scroll.innerHTML = out.svg;
     wrap.classList.toggle('placing', !!selected && !erase);
     wrap.classList.toggle('pan', !!selected && !erase && isFlat(shapeOf(selected)));

@@ -454,6 +454,17 @@ describe('STEP in the order book', () => {
     expect(arrows).toContain('▲2'); // next pair to place
   });
 
+  it('STEP numbering: two pairs pumping at the same slot keep both numbers, compact tag widens', () => {
+    const multi = { ...g7, inventory: { ...g7.inventory, step: 2 } };
+    const s = { ...initialState(multi), step: [{ pump: 1, turbine: 3 }, { pump: 1, turbine: 5 }] };
+    for (const cell of [50, 34]) {
+      const svg = renderBoard({ grid: multi, state: s, ev: null, style: 'A', cell }).svg;
+      expect(svg).toContain('▲1▲2');
+    }
+    const both = { ...initialState(multi), step: [{ pump: 1, turbine: 3 }, { pump: 3, turbine: 5 }] };
+    expect(renderBoard({ grid: multi, state: both, ev: null, style: 'A', cell: 34 }).svg).toContain('▲2▼1');
+  });
+
   it('paper keeps its STEP boxes and draws no pair', () => {
     const sheet = renderSheet(g7, 7);
     expect(sheet).toContain('STEP · pompage');

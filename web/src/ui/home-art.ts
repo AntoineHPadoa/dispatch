@@ -1,9 +1,12 @@
 /*
  * Drawings of the home screen (inline SVG strings).
  * - logoSvg(): the Dispatch mark, a D of four stacked plant bars in their original colours.
+ * - siteHead(): header shared by the home, dossier and game pages (logo, name, optional right slot).
  * - sheetSilhouette(): the demand silhouette of the sheet of the day with the sky of each slot
- *   and the cell that sets the price; colours come from app.css (`.sil-cell`, `.mini-sil`).
+ *   and the cell that sets the price; once finished, the solution in plant colours (STEP included).
  * - miniSilhouette(): the small demand outline of a previous sheet or a dossier.
+ * - cellSilhouette(): the demand drawn as small cells (dossier cards).
+ * Colours come from app.css (`.sil-cell`, `.mini-sil`).
  */
 import type { Grid, WeatherKind } from '../model/grid';
 import { UI } from '../i18n/fr';
@@ -47,7 +50,8 @@ function priceCell(grid: Grid): [number, number] | null {
 export function sheetSilhouette(grid: Grid, weather: readonly WeatherKind[], labelFor: (k: WeatherKind) => string, label: string, done = false): string {
   const solved = done && grid.solution ? grid.solution : null;
   const cell = 40, top = 30, n = grid.demand.length;
-  const heights = grid.demand.map((d, c) => d + Object.values(solved?.exports ?? {}).reduce((a, e) => a + (e[c] ?? 0), 0));
+  const heights = grid.demand.map((d, c) => d + Object.values(solved?.exports ?? {}).reduce((a, e) => a + (e[c] ?? 0), 0)
+    + (solved?.step ?? []).reduce((a, q) => a + (q.pump === c ? 1 : 0) - (q.turbine === c ? 1 : 0), 0));
   const rows = Math.max(1, ...heights, ...(solved?.placements ?? []).map((p) => p.row + (p.height ?? 1)));
   const w = n * cell, hBars = rows * cell, h = top + hBars + 18;
   const hi = solved ? null : priceCell(grid);
