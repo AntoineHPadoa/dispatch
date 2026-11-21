@@ -437,7 +437,7 @@ export const UI = {
   printFoot: 'Couvre tout ce qui est sous le trait épais. Une seule solution.',
   printFootStep: 'Pompage ▲ et turbinage ▼ : note-les sous la grille. Remonte le trait épais d’une case par pompage, descends-le par turbinage.',
   printFootExports: 'Exports et imports : note-les sous chaque créneau. Remonte le trait épais d’une case par export.',
-  printFootBoth: 'Note exports, imports, pompage ▲ et turbinage ▼ sous la grille. Remonte le trait épais d’une case par export ou pompage, descends-le par turbinage.',
+  printFootBoth: 'Note exports, imports, pompage ▲ et turbinage ▼ sous la grille. Le trait épais monte d’une case par export ou pompage, descend par turbinage.',
   printLegend: 'Indices sur la grille',
   printId: (id: number) => `Dispatch · n° ${id}`,
   printTitle: 'Impression',

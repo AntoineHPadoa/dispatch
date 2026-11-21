@@ -44,7 +44,7 @@ export function renderSheet(grid: Grid, tutorialIndex: number | null): string {
     ${slotLegend(grid)}
     <div class="cols2"><div><div class="sec">${esc(bookTitle)}</div>${renderBook(grid, state, null, true)}</div>
       ${day.length ? `<div><div class="sec">${esc(dayTitle)}</div><ul class="clues">${day.join('')}</ul></div>` : '<div></div>'}</div>
-    <div class="foot"><span>${esc(foot)}</span><span>${esc(UI.printId(grid.id))}</span></div>
+    <div class="foot"><span>${esc(foot)}</span><span>${esc(UI.printId(grid.bulletin?.number ?? grid.id))}</span></div>
   </article>`;
 }
 

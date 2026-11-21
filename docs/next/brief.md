@@ -49,7 +49,7 @@ Maquettes : `docs/next/menu-bulletin.html`. La section « Tour 5 » montre les c
 
 ## 5. Papier
 
-- **Grille rectangulaire** à la hauteur maximale possible, avec un **trait épais intérieur pour la demande**. Les cases de réserve au-dessus sont en grisé très pâle. Le joueur remonte le trait au crayon quand il exporte ou pompe, et le descend quand il turbine. Cela règle le défaut actuel : le pompage déforme la tête de la grille imprimée.
+- **Grille rectangulaire** à la hauteur maximale possible, avec un **trait épais intérieur pour la demande**. Les cases de réserve au-dessus sont en cases blanches, comme sous le trait (décision de l’humain). Le joueur remonte le trait au crayon quand il exporte ou pompe, et le descend quand il turbine. Cela règle le défaut actuel : le pompage déforme la tête de la grille imprimée.
 - La légende des indices en texte existe déjà depuis la v1.
 - **À décider** :
   - un livret PDF de plusieurs grilles, avec une page de règles et un exemple résolu (backlog du GAME-DESIGN §12) ;
