@@ -338,6 +338,29 @@ INVALID: dict[str, tuple[Any, list[str], bool]] = {
         ["difficulty: {rating 1-4, label, techniques[]} expected"],
         False,
     ),
+    "head-bad": (
+        lambda g: g.update(title="", section="daily"),
+        ["title: non-empty string expected", 'section: "tutorial" or "rated" expected'],
+        False,
+    ),
+    "co2-cap-bad": (lambda g: g.update(co2_cap=-1), ["co2_cap: null or integer >= 0 expected"], False),
+    "flow-dir-bad": (
+        lambda g: g["clues"].append({"type": "flow", "col": 0, "country": "DE", "dir": "both", "value": 0}),
+        ['clues[1].dir: "export" or "import" expected'],
+        False,
+    ),
+    "engaged-row-bad": (
+        lambda g: g["clues"].append({"type": "engaged", "piece": "N", "row": -1, "col": 0, "len": 3}),
+        ["clues[1].row: integer >= 0 expected"],
+        False,
+    ),
+    "bulletin-text-blank": (
+        lambda g: g.update(
+            bulletin={"number": 1, "title": "t", "text": "  ", "weather": ["sun"] * 6, "published": "2026-11-18"}
+        ),
+        ["bulletin.text: non-empty string expected"],
+        False,
+    ),
     "bulletin-bad": (
         lambda g: g.update(
             bulletin={"number": 0, "title": "", "text": "x", "weather": ["sun"], "published": "2026-13-40"}
