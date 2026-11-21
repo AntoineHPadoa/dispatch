@@ -6,7 +6,13 @@
  * - miniSilhouette(): the small demand outline of a previous sheet or a dossier.
  */
 import type { Grid, WeatherKind } from '../model/grid';
+import { UI } from '../i18n/fr';
 import { PIECE_COLORS, colorKey, esc } from './palette';
+
+/** Header shared by the home, dossier and game pages: logo and name, a link to the home; `right` is an optional slot. */
+export function siteHead(right = ''): string {
+  return `<header class="site-head"><a class="brand" href="#/" aria-label="${esc(UI.bulletin.logoLabel)}">${logoSvg(36)}<span class="wm">${esc(UI.appName)}</span></a>${right}</header>`;
+}
 
 const SKY_STROKE = '#9a929c';
 

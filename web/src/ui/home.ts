@@ -10,7 +10,7 @@ import { currentBulletin, localIsoDate, previousBulletins, type BulletinGrid } f
 import { dossierNext, dossierProgress, dossiers, type Dossier } from '../model/dossiers';
 import type { Grid, PieceId } from '../model/grid';
 import { bulletinTag, displayTitle } from './game';
-import { cellSilhouette, logoSvg, miniSilhouette, sheetSilhouette } from './home-art';
+import { cellSilhouette, miniSilhouette, sheetSilhouette, siteHead } from './home-art';
 import { esc, icon } from './palette';
 import { statusOf, type GridStatus, type Progress } from './progress';
 
@@ -82,10 +82,8 @@ export function renderHome(root: HTMLElement, grids: readonly Grid[], progress: 
   const prev = previousBulletins(grids, today);
   const list = dossiers(grids);
   root.innerHTML = `<div class="m home">
-    <header class="htop">
-      <h1 class="brand">${logoSvg(36)}<span class="wm">${esc(UI.appName)}</span></h1>
-      <button type="button" class="ghost" aria-expanded="false" aria-controls="rules" data-rules>${esc(UI.bulletin.howTo)}</button>
-    </header>
+    ${siteHead(`<button type="button" class="ghost" aria-expanded="false" aria-controls="rules" data-rules>${esc(UI.bulletin.howTo)}</button>`)}
+    <h1 class="sr-only">${esc(UI.appName)}</h1>
     <section class="card rules" id="rules" hidden><h2 class="ct">${esc(UI.rulesTitle)}</h2><p class="rtag">${esc(UI.tagline)}</p><ol>${UI.rules.map((r) => `<li>${esc(r)}</li>`).join('')}</ol></section>
     <div class="hgrid">
       ${sheet ? sheetCard(sheet, statusOf(progress, sheet.id)) : firstBulletinNote(grids)}
@@ -124,7 +122,7 @@ export function renderDossier(root: HTMLElement, d: Dossier, progress: Progress)
     </a></li>`;
   }).join('');
   root.innerHTML = `<div class="m home">
-    <a class="backlink" href="#/">${icon('back')}${esc(UI.back)}</a>
+    ${siteHead()}
     <section class="glist"><div class="sh"><h1>${esc(words.title)}</h1><p>${esc(words.lead)}</p></div>
       <div class="prog"><span>${esc(UI.dossierDone(done, total))}</span><span class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${total ? (done / total) * 100 : 0}%"></i></span></div>
       <ol class="fiches">${cards}</ol></section>
