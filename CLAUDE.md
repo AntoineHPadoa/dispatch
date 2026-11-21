@@ -1,0 +1,51 @@
+# Dispatch
+
+Printable logic puzzle on the power grid: fill the day's demand curve with power plants (rectangles: width = running time, height = power), following the market clues. One solution per grid, no score. Static web game (French) published on GitHub Pages. Game rules and grid format: `GAME-DESIGN.md`.
+
+## Map
+
+- `web/` — the game (TypeScript + Vite, no framework, Vitest).
+  - `src/model/grid.ts` — grid format (§14) types and `validateGrid()`.
+  - `src/engine/` — pure engine, no DOM, immutable state: actions, rules, clue status, verdict on the composition (§8.1).
+  - `src/ui/` — hash router, home, game screen (SVG board, gestures, undo, progress in `localStorage`), print sheets; `src/styles/` screen and print CSS.
+  - `src/i18n/fr.ts` — every text shown to the player.
+  - `src/data/grids.json` — the 11 grids (7 tutorial, 4 rated).
+  - `scripts/convert-grids.ts` (prototype format → §14), `scripts/check_unique.py` (uniqueness with the solver).
+  - `tests/` — Vitest: grids, engine, UI logic.
+- `solver/` — Python (OR-Tools CP-SAT): exact solver, human-deduction solver and difficulty rating, grid generator, CLI `spot-solver`. Its score modes (v1, v2, target) are not part of the game: leave them.
+- `docs/style-reference.html` — visual reference (screen style A, paper style B); `docs/reviews/` reviews and captures; `docs/archive/` prototype and superseded notes (read-only).
+- `.github/workflows/deploy.yml` — test, build and publish on every push to `main`.
+
+## Commands
+
+```bash
+cd web
+npm ci                    # install
+npm run dev               # http://localhost:5173/dispatch/
+npm test                  # Vitest
+npm run typecheck         # tsc --noEmit
+npm run build             # typecheck + build to web/dist
+npm run convert           # regenerate src/data/grids.json from docs/archive/demo/grids-pose.json
+../solver/.venv/bin/python scripts/check_unique.py   # every grid has exactly one composition
+
+cd solver
+uv sync                   # creates .venv
+.venv/bin/pytest -q       # solver tests
+```
+
+Skills in `.claude/skills/`: `add-grid` (create, convert, check, play a grid), `run-app` (servers, headless Chrome captures, print PDF), `deploy` (workflow, checking the live site).
+
+## Conventions
+
+- Code, identifiers, comments, logs and developer errors in English; player-facing text in French, only in `web/src/i18n/fr.ts`.
+- File headers: short English bullets on what the file does, current state only.
+- Grids follow §14 and must pass `validateGrid()`; change the format in `grid.ts`, the validator and `GAME-DESIGN.md` §14 together.
+- A piece's legal shapes are its allowed widths × allowed heights. A STEP grid publishes its number of pairs (`inventory.step`, or `step` in an `exchanges` clue). A price clue names a plant, never a value, and never sits on a column with an import.
+- A grid is solved on its composition (cells per piece and column, exports, pumping, turbining), not on the drawing.
+- UI follows `docs/style-reference.html`; the page never scrolls horizontally (check at 320 px).
+
+## Git
+
+- Branch names without `/` (use `-`).
+- No mention of Claude or AI in commits, PRs or code (no `Co-Authored-By`, no "Generated with").
+- Pushing to `main` publishes the site: push only when asked.

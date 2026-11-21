@@ -1,0 +1,18 @@
+# OS and editors
+.DS_Store
+.idea/
+.vscode/
+
+# web/ (Node, Vite, Vitest)
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+*.log
+
+# solver/ (Python)
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.pyc

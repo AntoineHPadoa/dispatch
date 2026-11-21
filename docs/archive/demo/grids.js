@@ -1,0 +1,2448 @@
+/* Generated from grids-pose.json (do not edit): exposes the 13 grids as SPOT_GRIDS. */
+var SPOT_GRIDS = [
+ {
+  "id": 1,
+  "title": "1. Poser l'inventaire",
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "residual": [
+   2,
+   2,
+   4,
+   3,
+   2,
+   3
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "price": 0,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "price": 2,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "price": 5,
+    "co2": 2
+   }
+  },
+  "mode": "pose",
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      6,
+      6
+     ]
+    },
+    "G": {
+     "bars": [
+      2
+     ]
+    },
+    "T": {
+     "cells": 2
+    }
+   },
+   "exports": {},
+   "imports": {},
+   "step": 0
+  },
+  "constraints": {
+   "co2_cap": null
+  },
+  "clues": [],
+  "difficulty": {
+   "value": 12.0,
+   "level": "exact",
+   "clues": 0,
+   "mechanics": 2,
+   "rating": 1,
+   "rating_label": "Facile",
+   "techniques": {
+    "swap": 1
+   }
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "G",
+     "row": 2,
+     "col": 2,
+     "len": 2
+    },
+    {
+     "piece": "T",
+     "row": 2,
+     "col": 5,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 3,
+     "col": 2,
+     "len": 1
+    }
+   ]
+  },
+  "section": "Tutoriel",
+  "intro": "Pose toutes les centrales de l'inventaire, ni plus ni moins, en remplissant exactement la silhouette. Technique : « Cases interchangeables » : quand tu sais combien de cases de chaque techno va dans une colonne, l'ordre ne compte pas."
+ },
+ {
+  "id": 2,
+  "title": "2. Le prix plafonne la colonne",
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "residual": [
+   2,
+   3,
+   2,
+   1,
+   3,
+   1
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "price": 0,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "price": 1,
+    "co2": 0,
+    "cap": 2
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "price": 2,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "price": 5,
+    "co2": 2
+   }
+  },
+  "mode": "pose",
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      6,
+      3
+     ]
+    },
+    "B": {
+     "cells": 2
+    },
+    "T": {
+     "cells": 1
+    }
+   },
+   "exports": {},
+   "imports": {},
+   "step": 0
+  },
+  "constraints": {
+   "co2_cap": null
+  },
+  "clues": [
+   {
+    "type": "price",
+    "col": 4,
+    "value": 1,
+    "text": "À 16h, le prix est de 1 : c'est le barrage qui le fixe."
+   }
+  ],
+  "difficulty": {
+   "value": 11.3,
+   "level": "exact",
+   "clues": 1,
+   "mechanics": 3,
+   "rating": 1,
+   "rating_label": "Facile",
+   "techniques": {
+    "price_cap": 1,
+    "swap": 1
+   }
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "B",
+     "row": 1,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 2,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "B",
+     "row": 2,
+     "col": 4,
+     "len": 1
+    }
+   ]
+  },
+  "section": "Tutoriel",
+  "intro": "Nouveau : un prix publié par la bourse. Sous un prix publié, aucune case n'est plus chère que ce prix."
+ },
+ {
+  "id": 3,
+  "title": "3. Inventaire juste",
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "residual": [
+   4,
+   3,
+   2,
+   2,
+   4,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "price": 0,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "price": 2,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "price": 5,
+    "co2": 2
+   }
+  },
+  "neighbor": {
+   "name": "Voisin",
+   "price": [
+    2,
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "cap": 1,
+   "export_budget": 2,
+   "import": true,
+   "export": true
+  },
+  "mode": "pose",
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      6,
+      3,
+      3,
+      3,
+      3
+     ]
+    },
+    "G": {
+     "bars": [
+      2
+     ]
+    }
+   },
+   "exports": {
+    "X": 2
+   },
+   "imports": {
+    "X": 1
+   },
+   "step": 0
+  },
+  "constraints": {
+   "co2_cap": null
+  },
+  "clues": [],
+  "difficulty": {
+   "value": 13.0,
+   "level": "exact",
+   "clues": 0,
+   "mechanics": 3,
+   "rating": 2,
+   "rating_label": "Moyen",
+   "techniques": {
+    "silhouette": 1,
+    "room": 2,
+    "just_enough": 1,
+    "swap": 1
+   }
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    1,
+    1,
+    0,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "I",
+     "row": 3,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "G",
+     "row": 3,
+     "col": 4,
+     "len": 2
+    }
+   ]
+  },
+  "section": "Tutoriel",
+  "intro": "S'il reste exactement autant de cases possibles que de cases à poser pour une techno, toutes ces cases sont à elle."
+ },
+ {
+  "id": 4,
+  "title": "4. Le creux coupe le ruban",
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "residual": [
+   3,
+   4,
+   3,
+   2,
+   2,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "price": 0,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "price": 2,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "price": 5,
+    "co2": 2
+   }
+  },
+  "neighbor": {
+   "name": "Voisin",
+   "price": [
+    0,
+    2,
+    2,
+    3,
+    3,
+    3
+   ],
+   "cap": 1,
+   "export_budget": 2,
+   "import": true,
+   "export": true
+  },
+  "mode": "pose",
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      6,
+      3,
+      3,
+      3,
+      3
+     ]
+    }
+   },
+   "exports": {
+    "X": 2
+   },
+   "imports": {
+    "X": 2
+   },
+   "step": 0
+  },
+  "constraints": {
+   "co2_cap": null
+  },
+  "clues": [],
+  "difficulty": {
+   "value": 13.0,
+   "level": "exact",
+   "clues": 0,
+   "mechanics": 3,
+   "rating": 2,
+   "rating_label": "Moyen",
+   "techniques": {
+    "single_cover": 1,
+    "silhouette": 1,
+    "room": 2,
+    "column_sum": 1,
+    "ribbon": 3,
+    "swap": 1
+   }
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    1,
+    1,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "I",
+     "row": 3,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "row": 3,
+     "col": 5,
+     "len": 1
+    }
+   ]
+  },
+  "section": "Tutoriel",
+  "intro": "Chaque ligne se découpe en rubans entre les creux de demande. Une barre qui laisserait un bout de ruban impossible à remplir est exclue."
+ },
+ {
+  "id": 5,
+  "title": "5. Flux publié et compter la colonne",
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "residual": [
+   1,
+   1,
+   3,
+   2,
+   1,
+   1
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "price": 0,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "price": 2,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "price": 5,
+    "co2": 2
+   }
+  },
+  "neighbor": {
+   "name": "Voisin",
+   "price": [
+    0,
+    -2,
+    -2,
+    -2,
+    -2,
+    0
+   ],
+   "cap": 1,
+   "export_budget": 2,
+   "import": true,
+   "export": true
+  },
+  "mode": "pose",
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      3,
+      3
+     ]
+    }
+   },
+   "exports": {
+    "X": 1
+   },
+   "imports": {
+    "X": 4
+   },
+   "step": 0
+  },
+  "constraints": {
+   "co2_cap": null
+  },
+  "clues": [
+   {
+    "type": "flow",
+    "col": 0,
+    "country": "X",
+    "dir": "import",
+    "value": 0,
+    "text": "À 0h, aucun import de Voisin."
+   }
+  ],
+  "difficulty": {
+   "value": 11.3,
+   "level": "exact",
+   "clues": 1,
+   "mechanics": 3,
+   "rating": 2,
+   "rating_label": "Moyen",
+   "techniques": {
+    "flow": 1,
+    "single_cover": 2,
+    "room": 2,
+    "silhouette": 2,
+    "column_sum": 1,
+    "exhausted": 3
+   }
+  },
+  "solution": {
+   "exports": [
+    0,
+    1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "I",
+     "row": 0,
+     "col": 3,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "row": 0,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "row": 0,
+     "col": 5,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 1,
+     "len": 3
+    },
+    {
+     "piece": "I",
+     "row": 2,
+     "col": 2,
+     "len": 1
+    }
+   ]
+  },
+  "section": "Tutoriel",
+  "intro": "Nouveau : la ligne vers l'Allemagne et un flux publié. Une colonne a autant de cases que sa hauteur : connaissant les autres, on déduit celle qui reste."
+ },
+ {
+  "id": 6,
+  "title": "6. La case la plus chère",
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "residual": [
+   6,
+   6,
+   6,
+   6,
+   6,
+   6
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "price": 0,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "price": 2,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "price": 5,
+    "co2": 2
+   }
+  },
+  "neighbor": {
+   "name": "Voisin",
+   "price": [
+    3,
+    1,
+    2,
+    3,
+    1,
+    2
+   ],
+   "cap": 1,
+   "export_budget": 2,
+   "import": true,
+   "export": true
+  },
+  "mode": "pose",
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      6,
+      6,
+      6,
+      6,
+      6,
+      6
+     ]
+    },
+    "G": {
+     "bars": [
+      2
+     ]
+    }
+   },
+   "exports": {
+    "X": 2
+   },
+   "imports": {
+    "X": 0
+   },
+   "step": 0
+  },
+  "constraints": {
+   "co2_cap": null
+  },
+  "clues": [
+   {
+    "type": "price",
+    "col": 1,
+    "value": 0,
+    "text": "À 4h, le prix est de 0 : c'est le nucléaire qui le fixe."
+   },
+   {
+    "type": "price",
+    "col": 2,
+    "value": 2,
+    "text": "À 8h, le prix est de 2 : c'est l'import de Voisin ou le gaz qui le fixe."
+   }
+  ],
+  "difficulty": {
+   "value": 9.7,
+   "level": "exact",
+   "clues": 2,
+   "mechanics": 3,
+   "rating": 2,
+   "rating_label": "Moyen",
+   "techniques": {
+    "price_cap": 1,
+    "single_cover": 2,
+    "room": 1,
+    "exhausted": 2,
+    "silhouette": 2,
+    "top_price": 1
+   }
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    1,
+    1,
+    0,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "G",
+     "row": 6,
+     "col": 2,
+     "len": 2
+    }
+   ]
+  },
+  "section": "Tutoriel",
+  "intro": "Un prix publié exige au moins une case à ce prix dans la colonne : s'il n'y a qu'une case possible, c'est elle."
+ },
+ {
+  "id": 7,
+  "title": "7. Pompage, relevé et programme",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "residual": [
+   1,
+   3,
+   2,
+   3,
+   5,
+   4,
+   4,
+   3
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "price": 0,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "price": 2,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "price": 5,
+    "co2": 2
+   }
+  },
+  "neighbor": {
+   "name": "Voisin",
+   "price": [
+    5,
+    2,
+    4,
+    3,
+    1,
+    0,
+    -2,
+    -2
+   ],
+   "cap": 1,
+   "export_budget": 2,
+   "import": true,
+   "export": true
+  },
+  "step": 1,
+  "mode": "pose",
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      4,
+      4,
+      4,
+      4,
+      3,
+      3,
+      3
+     ]
+    }
+   },
+   "exports": {
+    "X": 2
+   },
+   "imports": {
+    "X": 2
+   },
+   "step": 1
+  },
+  "constraints": {
+   "co2_cap": null
+  },
+  "clues": [
+   {
+    "type": "price",
+    "col": 1,
+    "value": 0,
+    "text": "À 3h, le prix est de 0 : c'est le nucléaire qui le fixe."
+   },
+   {
+    "type": "price",
+    "col": 4,
+    "value": 0,
+    "text": "À 12h, le prix est de 0 : c'est le nucléaire qui le fixe."
+   },
+   {
+    "type": "column",
+    "col": 3,
+    "counts": {
+     "N": 4
+    },
+    "text": "Relevé de 9h : 4 cases de nucléaire."
+   },
+   {
+    "type": "flow",
+    "col": 0,
+    "country": "X",
+    "dir": "export",
+    "value": 1,
+    "text": "À 0h, 1 bloc exporté vers Voisin."
+   },
+   {
+    "type": "flow",
+    "col": 2,
+    "country": "X",
+    "dir": "export",
+    "value": 1,
+    "text": "À 6h, 1 bloc exporté vers Voisin."
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 5,
+    "len": 3,
+    "text": "Un(e) réacteur tourne de 15h à 24h."
+   }
+  ],
+  "difficulty": {
+   "value": 6.5,
+   "level": "exact",
+   "clues": 6,
+   "mechanics": 4,
+   "rating": 2,
+   "rating_label": "Moyen",
+   "techniques": {
+    "flow": 1,
+    "room": 3,
+    "price_cap": 1,
+    "record": 1,
+    "silhouette": 1,
+    "ribbon": 6,
+    "column_sum": 1,
+    "program": 1,
+    "swap": 1
+   }
+  },
+  "solution": {
+   "exports": [
+    1,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "step": [
+    {
+     "pump": 3,
+     "turbine": 4
+    }
+   ],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "I",
+     "row": 0,
+     "col": 6,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "row": 0,
+     "col": 7,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 1,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 3,
+     "len": 4
+    }
+   ]
+  },
+  "section": "Tutoriel",
+  "intro": "Nouveau : une STEP (pompage ▲ puis turbinage ▼), un relevé de production RTE et le programme publié d'une centrale."
+ },
+ {
+  "id": 8,
+  "title": "Facile",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "residual": [
+   1,
+   2,
+   1,
+   1,
+   1,
+   3,
+   2,
+   1
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "price": 0,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "price": 1,
+    "co2": 0,
+    "cap": 2
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "price": 2,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "price": 5,
+    "co2": 2
+   }
+  },
+  "neighbor": {
+   "name": "Voisin",
+   "price": [
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    2,
+    2
+   ],
+   "cap": 1,
+   "export_budget": 2,
+   "import": true,
+   "export": true
+  },
+  "mode": "pose",
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "B": {}
+   },
+   "exports": {
+    "X": 2
+   },
+   "imports": {
+    "X": 0
+   },
+   "step": 0
+  },
+  "constraints": {
+   "co2_cap": null
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 7,
+    "counts": {
+     "N": 1
+    },
+    "text": "Relevé de 21h : 1 case de nucléaire."
+   },
+   {
+    "type": "flow",
+    "col": 2,
+    "country": "X",
+    "dir": "export",
+    "value": 0,
+    "text": "À 6h, aucun export vers Voisin."
+   }
+  ],
+  "difficulty": {
+   "value": 19.5,
+   "level": "none",
+   "clues": 2,
+   "mechanics": 4,
+   "rating": 1,
+   "rating_label": "Facile",
+   "techniques": {
+    "flow": 1,
+    "room": 1,
+    "exhausted": 1,
+    "record": 1,
+    "single_cover": 1,
+    "silhouette": 1
+   }
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    1,
+    1,
+    0,
+    0,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "B",
+     "row": 1,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 4
+    },
+    {
+     "piece": "B",
+     "row": 2,
+     "col": 5,
+     "len": 1
+    }
+   ]
+  },
+  "section": "Grilles",
+  "intro": "Sans inventaire : tu connais les technos disponibles, pas leurs quantités. Les indices du marché suffisent à déduire la seule pose."
+ },
+ {
+  "id": 9,
+  "title": "Moyen",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "residual": [
+   4,
+   5,
+   5,
+   5,
+   6,
+   5,
+   4,
+   5
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "price": 0,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "price": 1,
+    "co2": 0,
+    "cap": 2
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "price": 2,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "price": 5,
+    "co2": 2
+   }
+  },
+  "neighbor": {
+   "name": "Voisin",
+   "price": [
+    -2,
+    -2,
+    -2,
+    0,
+    0,
+    -2,
+    -1,
+    -2
+   ],
+   "cap": 1,
+   "export_budget": 2,
+   "import": true,
+   "export": true
+  },
+  "mode": "pose",
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {}
+   },
+   "exports": {
+    "X": 0
+   },
+   "imports": {
+    "X": 6
+   },
+   "step": 0
+  },
+  "constraints": {
+   "co2_cap": null
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 3,
+    "counts": {
+     "N": 5
+    },
+    "text": "Relevé de 9h : 5 cases de nucléaire."
+   }
+  ],
+  "difficulty": {
+   "value": 20.8,
+   "level": "none",
+   "clues": 1,
+   "mechanics": 4,
+   "rating": 2,
+   "rating_label": "Moyen",
+   "techniques": {
+    "record": 1,
+    "single_cover": 1,
+    "column_sum": 1,
+    "ribbon": 4,
+    "swap": 1
+   }
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "I",
+     "row": 3,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "row": 3,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "row": 3,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 1,
+     "len": 4
+    },
+    {
+     "piece": "I",
+     "row": 4,
+     "col": 5,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "row": 4,
+     "col": 7,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "row": 5,
+     "col": 4,
+     "len": 1
+    }
+   ]
+  },
+  "section": "Grilles",
+  "intro": "Sans inventaire. Un seul relevé de production : à toi de découper les rubans."
+ },
+ {
+  "id": 10,
+  "title": "Difficile",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "residual": [
+   3,
+   4,
+   4,
+   3,
+   1,
+   3,
+   4,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "price": 0,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "price": 1,
+    "co2": 0,
+    "cap": 2
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "price": 2,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "price": 5,
+    "co2": 2
+   }
+  },
+  "neighbor": {
+   "name": "Voisin",
+   "price": [
+    3,
+    2,
+    1,
+    1,
+    4,
+    -1,
+    -2,
+    -1
+   ],
+   "cap": 1,
+   "export_budget": 2,
+   "import": true,
+   "export": true
+  },
+  "mode": "pose",
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {}
+   },
+   "exports": {
+    "X": 2
+   },
+   "imports": {
+    "X": 2
+   },
+   "step": 0
+  },
+  "constraints": {
+   "co2_cap": null
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 3,
+    "counts": {
+     "N": 3
+    },
+    "text": "Relevé de 9h : 3 cases de nucléaire."
+   },
+   {
+    "type": "column",
+    "col": 5,
+    "counts": {
+     "N": 3
+    },
+    "text": "Relevé de 15h : 3 cases de nucléaire."
+   }
+  ],
+  "difficulty": {
+   "value": 19.5,
+   "level": "none",
+   "clues": 2,
+   "mechanics": 4,
+   "rating": 3,
+   "rating_label": "Difficile",
+   "techniques": {
+    "silhouette": 2,
+    "room": 1,
+    "share_out": 3,
+    "record": 2,
+    "exhausted": 1,
+    "single_cover": 1
+   }
+  },
+  "solution": {
+   "exports": [
+    1,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "I",
+     "row": 3,
+     "col": 6,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "row": 3,
+     "col": 7,
+     "len": 1
+    }
+   ]
+  },
+  "section": "Grilles",
+  "intro": "Sans inventaire. Il faudra répartir les barres entre les lignes."
+ },
+ {
+  "id": 11,
+  "title": "Expert",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "residual": [
+   1,
+   3,
+   3,
+   5,
+   6,
+   6,
+   6,
+   5
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "price": 0,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "price": 1,
+    "co2": 0,
+    "cap": 2
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "price": 2,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "price": 5,
+    "co2": 2
+   }
+  },
+  "neighbor": {
+   "name": "Voisin",
+   "price": [
+    1,
+    2,
+    3,
+    3,
+    3,
+    3,
+    4,
+    3
+   ],
+   "cap": 1,
+   "export_budget": 2,
+   "import": true,
+   "export": true
+  },
+  "mode": "pose",
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {}
+   },
+   "exports": {
+    "X": 2
+   },
+   "imports": {
+    "X": 0
+   },
+   "step": 0
+  },
+  "constraints": {
+   "co2_cap": null
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 0,
+    "counts": {
+     "N": 1
+    },
+    "text": "Relevé de 0h : 1 case de nucléaire."
+   },
+   {
+    "type": "column",
+    "col": 2,
+    "counts": {
+     "N": 3
+    },
+    "text": "Relevé de 6h : 3 cases de nucléaire."
+   }
+  ],
+  "difficulty": {
+   "value": 19.5,
+   "level": "none",
+   "clues": 2,
+   "mechanics": 4,
+   "rating": 4,
+   "rating_label": "Expert",
+   "techniques": {
+    "record": 1,
+    "silhouette": 2,
+    "ribbon": 6,
+    "refuted": 1
+   }
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    1
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 1,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 1,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 3,
+     "len": 5
+    }
+   ]
+  },
+  "section": "Grilles",
+  "intro": "Sans inventaire. Une hypothèse se réfute en quelques coups : laquelle ?"
+ },
+ {
+  "id": 12,
+  "title": "Score cible 1",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "residual": [
+   3,
+   2,
+   3,
+   4,
+   6,
+   6,
+   5,
+   6
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "price": 0,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "price": 1,
+    "co2": 0,
+    "cap": 2
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "price": 2,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "price": 5,
+    "co2": 2
+   }
+  },
+  "neighbor": {
+   "name": "Voisin",
+   "price": [
+    3,
+    2,
+    3,
+    2,
+    3,
+    3,
+    5,
+    1
+   ],
+   "cap": 1,
+   "export_budget": 2,
+   "import": true,
+   "export": true
+  },
+  "objective": {
+   "optimize": "target",
+   "target": -4,
+   "constraints": {
+    "no_import": true
+   }
+  },
+  "optimum": {
+   "score": -4,
+   "co2": 0,
+   "cost": 1,
+   "trades": 1
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "B",
+     "row": 2,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 2,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 4,
+     "len": 4
+    }
+   ]
+  },
+  "difficulty": {
+   "value": 11.7,
+   "cells": 35,
+   "mechanics": 5,
+   "decoys": "2",
+   "optimal_compositions": 1
+  },
+  "intro": "Mode à part : fais exactement le score indiqué (somme des prix de créneau − recettes d'export), sans aucun import.",
+  "lesson": "Viser un score exact oblige à comprendre ce que vaut chaque créneau, pas seulement à minimiser.",
+  "levels": [
+   9
+  ],
+  "section": "Score cible",
+  "mode": "target"
+ },
+ {
+  "id": 13,
+  "title": "Score cible 2",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "residual": [
+   4,
+   5,
+   6,
+   6,
+   6,
+   6,
+   6,
+   5
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "price": 0,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "price": 1,
+    "co2": 0,
+    "cap": 2
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "price": 2,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "price": 5,
+    "co2": 2
+   }
+  },
+  "neighbor": {
+   "name": "Voisin",
+   "price": [
+    2,
+    1,
+    -1,
+    -2,
+    4,
+    -2,
+    -2,
+    0
+   ],
+   "cap": 1,
+   "export_budget": 2,
+   "import": true,
+   "export": true
+  },
+  "objective": {
+   "optimize": "target",
+   "target": -4,
+   "constraints": {
+    "no_import": true
+   }
+  },
+  "optimum": {
+   "score": -4,
+   "co2": 0
+  },
+  "solution": {
+   "exports": [
+    0,
+    1,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 1,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 1,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 4,
+     "len": 3
+    },
+    {
+     "piece": "B",
+     "row": 6,
+     "col": 4,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "value": 15.0,
+   "cells": 44,
+   "mechanics": 5,
+   "decoys": "6",
+   "optimal_compositions": 1
+  },
+  "section": "Score cible",
+  "mode": "target",
+  "intro": "Mode à part : fais exactement le score indiqué (somme des prix de créneau − recettes d'export), sans aucun import."
+ }
+];
+if (typeof module === 'object' && module.exports) module.exports = SPOT_GRIDS;

@@ -1,0 +1,2413 @@
+[
+ {
+  "id": 1,
+  "title": "Premier programme",
+  "levels": [
+   0,
+   1
+  ],
+  "columns": [
+   "0h",
+   "6h",
+   "12h",
+   "18h"
+  ],
+  "residual": [
+   2,
+   3,
+   2,
+   2
+  ],
+  "intro": "Remplis chaque colonne exactement jusqu'à sa hauteur. Tu n'as que 6 cases de nucléaire (prix 0) ; le reste se fait au gaz (prix 2). Chaque créneau vaut le prix de sa case la plus chère : le score est la somme des créneaux.",
+  "lesson": "Le prix d'un créneau est fixé par la centrale la plus chère appelée : regroupe le gaz dans un seul créneau.",
+  "pieces": {
+   "N": {
+    "len": [
+     1
+    ],
+    "co2": 0,
+    "cap": 6,
+    "price": 0
+   },
+   "G": {
+    "len": [
+     1
+    ],
+    "co2": 1,
+    "price": 2
+   }
+  },
+  "objective": {
+   "optimize": "min_score",
+   "target": null,
+   "constraints": {}
+  },
+  "optimum": {
+   "score": 2,
+   "co2": 3,
+   "cost": 6,
+   "trades": 0
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "G",
+     "row": 0,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 3,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "G",
+     "row": 1,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 1
+    },
+    {
+     "piece": "G",
+     "row": 2,
+     "col": 1,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "value": 1.9,
+   "cells": 9,
+   "mechanics": 1,
+   "decoys": "0",
+   "optimal_compositions": 1
+  }
+ },
+ {
+  "id": 2,
+  "title": "Les rubans",
+  "levels": [
+   2
+  ],
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "residual": [
+   3,
+   3,
+   2,
+   3,
+   3,
+   3
+  ],
+  "intro": "Le nucléaire se pose en barres horizontales de 3 à 6 créneaux : un réacteur ne s'arrête pas pour quelques heures. Ce qui ne rentre pas en barre se comble avec des TAC (1 case, prix 5).",
+  "lesson": "Un creux de demande coupe les rubans de nucléaire : la base se joue en lignes entières.",
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "co2": 0,
+    "price": 0
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "co2": 2,
+    "price": 5
+   }
+  },
+  "objective": {
+   "optimize": "min_score",
+   "target": null,
+   "constraints": {}
+  },
+  "optimum": {
+   "score": 10,
+   "co2": 4,
+   "cost": 10,
+   "trades": 0
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "T",
+     "row": 2,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 2,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 3,
+     "len": 3
+    }
+   ]
+  },
+  "difficulty": {
+   "value": 2.7,
+   "cells": 17,
+   "mechanics": 1,
+   "decoys": "0",
+   "optimal_compositions": 1
+  }
+ },
+ {
+  "id": 3,
+  "title": "La pointe isolée",
+  "levels": [
+   3
+  ],
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "residual": [
+   2,
+   4,
+   6,
+   3,
+   7,
+   4
+  ],
+  "intro": "Nouveau : le gaz (CCG), une barre de 2 ou 3 créneaux, prix 2. Plus souple que le nucléaire, mais il lui faut 2 créneaux d'affilée.",
+  "lesson": "Une pointe courte et isolée ne peut être suivie que par des centrales de pointe : c'est elle qui coûte cher.",
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "co2": 0,
+    "price": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "co2": 1,
+    "price": 2
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "co2": 2,
+    "price": 5
+   }
+  },
+  "objective": {
+   "optimize": "min_score",
+   "target": null,
+   "constraints": {}
+  },
+  "optimum": {
+   "score": 14,
+   "co2": 14,
+   "cost": 33,
+   "trades": 0
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 1,
+     "len": 5
+    },
+    {
+     "piece": "G",
+     "row": 3,
+     "col": 1,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 3,
+     "col": 4,
+     "len": 2
+    },
+    {
+     "piece": "T",
+     "row": 4,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 4,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 5,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 5,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 6,
+     "col": 4,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "value": 4.6,
+   "cells": 26,
+   "mechanics": 2,
+   "decoys": "0",
+   "optimal_compositions": 1
+  }
+ },
+ {
+  "id": 4,
+  "title": "L'eau comptée",
+  "levels": [
+   4
+  ],
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "residual": [
+   2,
+   4,
+   6,
+   3,
+   7,
+   4
+  ],
+  "intro": "La même journée, avec 3 cases d'eau de barrage (prix 1, 1 case chacune). Où les mettre pour faire baisser le score ?",
+  "lesson": "L'eau est rare : on la garde pour les créneaux où elle évite une TAC.",
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "co2": 0,
+    "price": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "co2": 1,
+    "price": 2
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "co2": 2,
+    "price": 5
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "co2": 0,
+    "cap": 3,
+    "price": 1
+   }
+  },
+  "objective": {
+   "optimize": "min_score",
+   "target": null,
+   "constraints": {}
+  },
+  "optimum": {
+   "score": 10,
+   "co2": 10,
+   "cost": 27,
+   "trades": 0
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 1,
+     "len": 5
+    },
+    {
+     "piece": "G",
+     "row": 3,
+     "col": 1,
+     "len": 2
+    },
+    {
+     "piece": "T",
+     "row": 3,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "B",
+     "row": 3,
+     "col": 5,
+     "len": 1
+    },
+    {
+     "piece": "B",
+     "row": 4,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 4,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "B",
+     "row": 5,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 5,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 6,
+     "col": 4,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "value": 5.6,
+   "cells": 26,
+   "mechanics": 3,
+   "decoys": "0",
+   "optimal_compositions": 1
+  }
+ },
+ {
+  "id": 5,
+  "title": "Pomper la nuit",
+  "levels": [
+   5
+  ],
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "residual": [
+   3,
+   2,
+   3,
+   3,
+   2,
+   3,
+   4,
+   5
+  ],
+  "intro": "Tu as une STEP : choisis un créneau où pomper (la demande y monte de 1) et un créneau plus tard où turbiner (elle y baisse de 1).",
+  "lesson": "Le stockage déplace la demande dans le temps : on remplit un creux pour prolonger le nucléaire.",
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "co2": 0,
+    "price": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "co2": 1,
+    "price": 2
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "co2": 2,
+    "price": 5
+   }
+  },
+  "step": 1,
+  "objective": {
+   "optimize": "min_score",
+   "target": null,
+   "constraints": {}
+  },
+  "optimum": {
+   "score": 4,
+   "co2": 2,
+   "cost": 4,
+   "trades": 0
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "step": [
+    {
+     "pump": 1,
+     "turbine": 7
+    }
+   ],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 3,
+     "col": 6,
+     "len": 2
+    }
+   ]
+  },
+  "difficulty": {
+   "value": 5.5,
+   "cells": 25,
+   "mechanics": 3,
+   "decoys": "0",
+   "optimal_compositions": 1
+  }
+ },
+ {
+  "id": 6,
+  "title": "Trop de soleil",
+  "levels": [
+   6,
+   7,
+   8
+  ],
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "residual": [
+   3,
+   3,
+   -1,
+   2,
+   4,
+   3
+  ],
+  "intro": "À 8h, le soleil produit plus que la demande (−1). Exporte ce surplus (au prix voisin, ici −1 : ça te coûte 1) ou écrête-le (pénalité 2). La ligne vers l'Allemagne laisse passer 1 bloc par créneau ; 2 blocs d'export au plus sur la journée.",
+  "lesson": "Un surplus de renouvelables casse les rubans de nucléaire ; l'export permet de les prolonger.",
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "co2": 0,
+    "price": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "co2": 1,
+    "price": 2
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "co2": 2,
+    "price": 5
+   }
+  },
+  "neighbor": {
+   "name": "Allemagne",
+   "price": [
+    0,
+    1,
+    -1,
+    1,
+    4,
+    1
+   ],
+   "cap": 1,
+   "import": true,
+   "export": true,
+   "export_budget": 2
+  },
+  "curtail_penalty": 2,
+  "objective": {
+   "optimize": "min_score",
+   "target": null,
+   "constraints": {}
+  },
+  "optimum": {
+   "score": 6,
+   "co2": 8,
+   "cost": 19,
+   "trades": 4
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    1,
+    1,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "G",
+     "row": 0,
+     "col": 0,
+     "len": 2
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 1,
+     "col": 0,
+     "len": 2
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "I",
+     "row": 2,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "row": 2,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 3,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 4,
+     "col": 4,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "value": 5.5,
+   "cells": 15,
+   "mechanics": 4,
+   "decoys": "0",
+   "optimal_compositions": 1
+  }
+ },
+ {
+  "id": 7,
+  "title": "La montagne",
+  "levels": [
+   2,
+   3,
+   4,
+   5
+  ],
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "residual": [
+   3,
+   2,
+   4,
+   5,
+   3,
+   6,
+   7,
+   4
+  ],
+  "intro": "Grille difficile : rubans, gaz, TAC, 2 cases d'eau et une STEP.",
+  "lesson": "Un seul pompage bien placé relie deux pointes en un long ruban.",
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ],
+    "co2": 0,
+    "price": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "co2": 1,
+    "price": 2
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "co2": 2,
+    "price": 5
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "co2": 0,
+    "cap": 2,
+    "price": 1
+   }
+  },
+  "step": 1,
+  "objective": {
+   "optimize": "min_score",
+   "target": null,
+   "constraints": {}
+  },
+  "optimum": {
+   "score": 6,
+   "co2": 4,
+   "cost": 10,
+   "trades": 0
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "step": [
+    {
+     "pump": 4,
+     "turbine": 6
+    }
+   ],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 8
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 8
+    },
+    {
+     "piece": "B",
+     "row": 2,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 2,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 2,
+     "len": 6
+    },
+    {
+     "piece": "B",
+     "row": 4,
+     "col": 3,
+     "len": 1
+    },
+    {
+     "piece": "G",
+     "row": 4,
+     "col": 5,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 5,
+     "col": 5,
+     "len": 2
+    }
+   ]
+  },
+  "difficulty": {
+   "value": 7.4,
+   "cells": 34,
+   "mechanics": 4,
+   "decoys": "0",
+   "optimal_compositions": 1
+  }
+ },
+ {
+  "id": 8,
+  "title": "Plafond carbone",
+  "levels": [
+   2,
+   3,
+   7,
+   8,
+   9
+  ],
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "residual": [
+   2,
+   2,
+   4,
+   5,
+   4,
+   6,
+   5,
+   3
+  ],
+  "intro": "Grille difficile : 16 cases de nucléaire seulement, du charbon (barre de 3 à 5, prix 1, 3 CO₂ par case), du gaz (prix 2, 1 CO₂), la ligne vers l'Allemagne. Contrainte : CO₂ ≤ 10.",
+  "lesson": "Le charbon est moins cher que le gaz mais émet 3 fois plus : le plafond CO₂ change tout le programme.",
+  "pieces": {
+   "N": {
+    "len": [
+     4,
+     5,
+     6,
+     7,
+     8
+    ],
+    "co2": 0,
+    "cap": 16,
+    "price": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5
+    ],
+    "co2": 3,
+    "price": 1
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "co2": 1,
+    "price": 2
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "co2": 2,
+    "price": 5
+   }
+  },
+  "neighbor": {
+   "name": "Allemagne",
+   "price": [
+    0,
+    0,
+    1,
+    2,
+    2,
+    4,
+    3,
+    1
+   ],
+   "cap": 1,
+   "import": true,
+   "export": true,
+   "export_budget": 2
+  },
+  "objective": {
+   "optimize": "min_score",
+   "target": null,
+   "constraints": {
+    "co2_cap": 10
+   }
+  },
+  "optimum": {
+   "score": 7,
+   "co2": 10,
+   "cost": 26,
+   "trades": 7
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "I",
+     "row": 0,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "row": 0,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 2,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "I",
+     "row": 1,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "G",
+     "row": 1,
+     "col": 5,
+     "len": 2
+    },
+    {
+     "piece": "I",
+     "row": 1,
+     "col": 7,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 2,
+     "len": 6
+    },
+    {
+     "piece": "I",
+     "row": 3,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "G",
+     "row": 3,
+     "col": 3,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 3,
+     "col": 5,
+     "len": 2
+    },
+    {
+     "piece": "I",
+     "row": 4,
+     "col": 3,
+     "len": 1
+    },
+    {
+     "piece": "G",
+     "row": 4,
+     "col": 5,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 5,
+     "col": 5,
+     "len": 2
+    }
+   ]
+  },
+  "difficulty": {
+   "value": 8.1,
+   "cells": 31,
+   "mechanics": 5,
+   "decoys": "0",
+   "optimal_compositions": 1
+  }
+ },
+ {
+  "id": 9,
+  "title": "Exporter la nuit",
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "residual": [
+   6,
+   6,
+   4,
+   5,
+   5,
+   5
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "price": 0,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "price": 2,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "price": 5,
+    "co2": 2
+   }
+  },
+  "neighbor": {
+   "name": "Voisin",
+   "price": [
+    3,
+    4,
+    3,
+    2,
+    3,
+    1
+   ],
+   "cap": 1,
+   "export_budget": 2,
+   "import": true,
+   "export": true
+  },
+  "objective": {
+   "optimize": "min_score",
+   "target": null,
+   "constraints": {}
+  },
+  "optimum": {
+   "score": -3,
+   "co2": 6,
+   "cost": 12,
+   "trades": 2
+  },
+  "solution": {
+   "exports": [
+    1,
+    1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 4,
+     "col": 0,
+     "len": 2
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 5,
+     "col": 0,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 6,
+     "col": 0,
+     "len": 2
+    }
+   ]
+  },
+  "difficulty": {
+   "value": 6.1,
+   "cells": 31,
+   "mechanics": 3,
+   "decoys": "0",
+   "optimal_compositions": 1
+  },
+  "intro": "Le voisin paie bien certains créneaux. Un bloc exporté ajoute une case à remplir, mais s'il prolonge un ruban de nucléaire (prix 0), il te rapporte le prix voisin. 2 exports au plus sur la journée.",
+  "lesson": "Exporter n'est pas seulement écouler un surplus : c'est vendre un ruban qui ne coûte rien.",
+  "levels": [
+   8
+  ]
+ },
+ {
+  "id": 10,
+  "title": "Acheter à prix négatif",
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "residual": [
+   3,
+   1,
+   1,
+   2,
+   4,
+   2
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "price": 0,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "price": 2,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "price": 5,
+    "co2": 2
+   }
+  },
+  "neighbor": {
+   "name": "Voisin",
+   "price": [
+    -2,
+    0,
+    -1,
+    5,
+    -2,
+    -2
+   ],
+   "cap": 1,
+   "export_budget": 2,
+   "import": true,
+   "export": true
+  },
+  "objective": {
+   "optimize": "min_score",
+   "target": null,
+   "constraints": {}
+  },
+  "optimum": {
+   "score": 1,
+   "co2": 4,
+   "cost": 5,
+   "trades": 6
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    1,
+    0,
+    1
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "I",
+     "row": 0,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "row": 0,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "row": 0,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 1,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 2,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "I",
+     "row": 3,
+     "col": 4,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "value": 4.3,
+   "cells": 13,
+   "mechanics": 3,
+   "decoys": "0",
+   "optimal_compositions": 1
+  },
+  "intro": "Chez le voisin, certains créneaux sont à prix négatif : importer y rapporte. Mais la ligne ne laisse passer qu'1 bloc par créneau, importé ou exporté.",
+  "lesson": "Un prix négatif chez le voisin est une aubaine… tant que la ligne est libre.",
+  "levels": [
+   7
+  ]
+ },
+ {
+  "id": 11,
+  "title": "La grande journée",
+  "columns": [
+   "0h",
+   "2h",
+   "4h",
+   "6h",
+   "8h",
+   "10h",
+   "12h",
+   "14h",
+   "16h",
+   "18h",
+   "20h",
+   "22h"
+  ],
+  "residual": [
+   4,
+   3,
+   4,
+   5,
+   6,
+   5,
+   4,
+   4,
+   2,
+   1,
+   1,
+   1
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "price": 0,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "price": 1,
+    "co2": 0,
+    "cap": 2
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "price": 2,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "price": 5,
+    "co2": 2
+   }
+  },
+  "neighbor": {
+   "name": "Voisin",
+   "price": [
+    1,
+    2,
+    3,
+    3,
+    2,
+    3,
+    1,
+    2,
+    4,
+    2,
+    2,
+    1
+   ],
+   "cap": 1,
+   "export_budget": 2,
+   "import": true,
+   "export": true
+  },
+  "step": 1,
+  "objective": {
+   "optimize": "min_score",
+   "target": null,
+   "constraints": {}
+  },
+  "optimum": {
+   "score": -7,
+   "co2": 0,
+   "cost": 0,
+   "trades": 2
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0
+   ],
+   "step": [
+    {
+     "pump": 1,
+     "turbine": 4
+    }
+   ],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 6,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 5,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 5,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 2,
+     "len": 4
+    }
+   ]
+  },
+  "difficulty": {
+   "value": 9.0,
+   "cells": 40,
+   "mechanics": 5,
+   "decoys": "0",
+   "optimal_compositions": 1
+  },
+  "intro": "Grille de 12 créneaux de 2 h : rubans, eau (2 cases), gaz, TAC, une STEP et la ligne vers l'Allemagne (2 exports au plus).",
+  "lesson": "Sur une journée entière, les décisions se répondent : un pompage le matin change les exports du soir.",
+  "levels": [
+   2,
+   3,
+   4,
+   5,
+   7,
+   8
+  ]
+ },
+ {
+  "id": 12,
+  "title": "Score cible",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "residual": [
+   3,
+   2,
+   3,
+   4,
+   6,
+   6,
+   5,
+   6
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "price": 0,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "price": 1,
+    "co2": 0,
+    "cap": 2
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "price": 2,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "price": 5,
+    "co2": 2
+   }
+  },
+  "neighbor": {
+   "name": "Voisin",
+   "price": [
+    3,
+    2,
+    3,
+    2,
+    3,
+    3,
+    5,
+    1
+   ],
+   "cap": 1,
+   "export_budget": 2,
+   "import": true,
+   "export": true
+  },
+  "objective": {
+   "optimize": "target",
+   "target": -4,
+   "constraints": {
+    "no_import": true
+   }
+  },
+  "optimum": {
+   "score": -4,
+   "co2": 0,
+   "cost": 1,
+   "trades": 1
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "B",
+     "row": 2,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 2,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 4,
+     "len": 4
+    }
+   ]
+  },
+  "difficulty": {
+   "value": 11.7,
+   "cells": 35,
+   "mechanics": 5,
+   "decoys": "2",
+   "optimal_compositions": 1
+  },
+  "intro": "Objectif du jour : fais **exactement** le score indiqué, sans aucun import. Plusieurs programmes atteignent le score minimal ; un seul tombe pile sur la cible.",
+  "lesson": "Viser un score exact oblige à comprendre ce que vaut chaque créneau, pas seulement à minimiser.",
+  "levels": [
+   9
+  ]
+ },
+ {
+  "id": 13,
+  "title": "Prix lisse",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "residual": [
+   4,
+   3,
+   4,
+   2,
+   3,
+   5,
+   7,
+   6
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "price": 0,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "price": 1,
+    "co2": 0,
+    "cap": 2
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "price": 2,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "price": 5,
+    "co2": 2
+   }
+  },
+  "objective": {
+   "optimize": "min_score",
+   "target": null,
+   "constraints": {
+    "smooth": 3
+   }
+  },
+  "optimum": {
+   "score": 11,
+   "co2": 7,
+   "cost": 17,
+   "trades": 0
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "B",
+     "row": 3,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "B",
+     "row": 3,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 4,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 5,
+     "col": 6,
+     "len": 2
+    },
+    {
+     "piece": "T",
+     "row": 6,
+     "col": 6,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "value": 7.4,
+   "cells": 34,
+   "mechanics": 4,
+   "decoys": "0",
+   "optimal_compositions": 1
+  },
+  "intro": "Objectif du jour : deux créneaux voisins ne doivent pas différer de plus de 3. Une TAC (5) ne peut donc pas côtoyer un créneau à 0 ou à 1.",
+  "lesson": "Un prix qui saute d'un créneau à l'autre se paie : il faut « monter en pente » vers la pointe.",
+  "levels": [
+   9
+  ]
+ },
+ {
+  "id": 14,
+  "title": "Trois voisins",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "residual": [
+   4,
+   2,
+   1,
+   1,
+   2,
+   1,
+   2,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "price": 0,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5
+    ],
+    "price": 1,
+    "co2": 3
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "price": 2,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "price": 5,
+    "co2": 2
+   }
+  },
+  "neighbors": [
+   {
+    "id": "DE",
+    "name": "DE",
+    "price": [
+     2,
+     3,
+     3,
+     5,
+     3,
+     3,
+     2,
+     3
+    ],
+    "cap": 1,
+    "export_budget": 1,
+    "import": true,
+    "export": true,
+    "co2": 3
+   },
+   {
+    "id": "UK",
+    "name": "UK",
+    "price": [
+     4,
+     0,
+     -1,
+     -2,
+     -2,
+     -1,
+     -2,
+     -2
+    ],
+    "cap": 1,
+    "export_budget": 1,
+    "import": true,
+    "export": true,
+    "co2": 0
+   },
+   {
+    "id": "ES",
+    "name": "ES",
+    "price": [
+     2,
+     1,
+     1,
+     5,
+     3,
+     3,
+     3,
+     1
+    ],
+    "cap": 1,
+    "export_budget": 1,
+    "import": true,
+    "export": true,
+    "co2": 1
+   }
+  ],
+  "objective": {
+   "optimize": "min_score",
+   "target": null,
+   "constraints": {
+    "co2_cap": 6
+   }
+  },
+  "optimum": {
+   "score": -6,
+   "co2": 6,
+   "cost": 7,
+   "trades": 8
+  },
+  "solution": {
+   "exports": {
+    "DE": [
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "UK": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "ES": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0
+    ]
+   },
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "I:UK",
+     "row": 0,
+     "col": 3,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "I:UK",
+     "row": 1,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 2,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "I:ES",
+     "row": 2,
+     "col": 7,
+     "len": 1
+    },
+    {
+     "piece": "I:ES",
+     "row": 3,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "I:UK",
+     "row": 3,
+     "col": 7,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 4,
+     "col": 0,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "value": 9.7,
+   "cells": 17,
+   "mechanics": 8,
+   "decoys": "0",
+   "optimal_compositions": 1
+  },
+  "intro": "Allemagne, Royaume-Uni, Espagne : chaque pays a ses prix et son CO₂ par case importée (DE 3, UK 0, ES 1), compté dans ton plafond. 1 export au plus par pays sur la journée. Contrainte : CO₂ ≤ 6.",
+  "lesson": "Sous plafond CO₂, le pays le moins cher n'est pas forcément le bon fournisseur.",
+  "levels": [
+   7,
+   8,
+   9
+  ]
+ }
+]

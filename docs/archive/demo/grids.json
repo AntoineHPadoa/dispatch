@@ -1,0 +1,1321 @@
+[
+ {
+  "id": 1,
+  "title": "Premier programme",
+  "levels": [
+   0,
+   1
+  ],
+  "columns": [
+   "0h",
+   "6h",
+   "12h",
+   "18h"
+  ],
+  "residual": [
+   2,
+   3,
+   4,
+   2
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     1
+    ],
+    "cost": 10,
+    "co2": 0,
+    "cap": 8
+   },
+   "G": {
+    "len": [
+     1
+    ],
+    "cost": 150,
+    "co2": 1
+   }
+  },
+  "intro": "Remplis chaque colonne exactement jusqu'à la demande. Tu n'as que 8 cases de nucléaire (10 €) ; le reste se fait au gaz (150 €). Le coût ne dépend pas de l'endroit où tu mets le gaz… mais la facture, si : chaque colonne est payée au prix de sa case la plus chère, multiplié par sa hauteur.",
+  "lesson": "Le prix est fixé par la centrale la plus chère appelée. Concentrer le gaz dans une seule petite colonne protège toutes les autres.",
+  "optimum": {
+   "cost": 530,
+   "facture": 530,
+   "co2": 3
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "G",
+     "row": 0,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 3,
+     "len": 1
+    },
+    {
+     "piece": "G",
+     "row": 1,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 1
+    },
+    {
+     "piece": "G",
+     "row": 2,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 2,
+     "len": 1
+    }
+   ]
+  },
+  "alternatives": [
+   {
+    "facture": 670,
+    "co2": 3
+   },
+   {
+    "facture": 670,
+    "co2": 3
+   },
+   {
+    "facture": 670,
+    "co2": 3
+   },
+   {
+    "facture": 810,
+    "co2": 3
+   },
+   {
+    "facture": 810,
+    "co2": 3
+   },
+   {
+    "facture": 810,
+    "co2": 3
+   },
+   {
+    "facture": 810,
+    "co2": 3
+   },
+   {
+    "facture": 950,
+    "co2": 3
+   },
+   {
+    "facture": 950,
+    "co2": 3
+   },
+   {
+    "facture": 950,
+    "co2": 3
+   },
+   {
+    "facture": 950,
+    "co2": 3
+   },
+   {
+    "facture": 1090,
+    "co2": 3
+   },
+   {
+    "facture": 1090,
+    "co2": 3
+   },
+   {
+    "facture": 1090,
+    "co2": 3
+   },
+   {
+    "facture": 1230,
+    "co2": 3
+   },
+   {
+    "facture": 1370,
+    "co2": 3
+   },
+   {
+    "facture": 1370,
+    "co2": 3
+   }
+  ]
+ },
+ {
+  "id": 2,
+  "title": "Les rubans",
+  "levels": [
+   2
+  ],
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "residual": [
+   3,
+   3,
+   2,
+   3,
+   3,
+   3
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "cost": 10,
+    "co2": 0
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "cost": 850,
+    "co2": 2
+   }
+  },
+  "intro": "Le nucléaire se pose maintenant en barres horizontales de 3 à 6 créneaux : un réacteur ne s'arrête pas pour quelques heures. Une barre ne peut passer que là où la demande est assez haute sur toute sa longueur. Ce qui ne rentre pas en barre se comble avec des TAC (1 case, 850 €).",
+  "lesson": "Un creux de demande coupe les rubans de nucléaire : la base se joue en lignes entières.",
+  "optimum": {
+   "cost": 1850,
+   "facture": 5210,
+   "co2": 4
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 2,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 2,
+     "col": 1,
+     "len": 1
+    }
+   ]
+  },
+  "alternatives": []
+ },
+ {
+  "id": 3,
+  "title": "La pointe isolée",
+  "levels": [
+   3
+  ],
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "residual": [
+   2,
+   4,
+   6,
+   3,
+   7,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "cost": 10,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "cost": 150,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "cost": 850,
+    "co2": 2
+   }
+  },
+  "intro": "Nouveau : le gaz en cycle combiné (CCG), une barre de 2 ou 3 créneaux à 150 €. Il est plus souple que le nucléaire, mais il lui faut quand même 2 créneaux d'affilée.",
+  "lesson": "Une pointe courte et isolée ne peut être suivie que par des centrales de pointe : c'est elle qui coûte cher.",
+  "optimum": {
+   "cost": 5020,
+   "facture": 12300,
+   "co2": 14
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 1,
+     "len": 5
+    },
+    {
+     "piece": "G",
+     "row": 3,
+     "col": 1,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 3,
+     "col": 4,
+     "len": 2
+    },
+    {
+     "piece": "T",
+     "row": 4,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 4,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 5,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 5,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 6,
+     "col": 4,
+     "len": 1
+    }
+   ]
+  },
+  "alternatives": []
+ },
+ {
+  "id": 4,
+  "title": "L'eau comptée",
+  "levels": [
+   4
+  ],
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "residual": [
+   2,
+   4,
+   6,
+   3,
+   7,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "cost": 10,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "cost": 150,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "cost": 850,
+    "co2": 2
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "cost": 50,
+    "co2": 0,
+    "cap": 3
+   }
+  },
+  "intro": "La même journée, mais tu disposes de 3 cases d'eau de barrage (50 €, 1 case chacune). Où les mettre ? Le coût est le même partout : regarde la facture.",
+  "lesson": "L'eau est rare : on la garde pour la colonne où elle évite que la TAC fixe le prix.",
+  "optimum": {
+   "cost": 2620,
+   "facture": 7400,
+   "co2": 8
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 1,
+     "len": 5
+    },
+    {
+     "piece": "G",
+     "row": 3,
+     "col": 1,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 3,
+     "col": 4,
+     "len": 2
+    },
+    {
+     "piece": "B",
+     "row": 4,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 4,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "B",
+     "row": 5,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 5,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "B",
+     "row": 6,
+     "col": 4,
+     "len": 1
+    }
+   ]
+  },
+  "alternatives": [
+   {
+    "facture": 8100,
+    "co2": 8
+   },
+   {
+    "facture": 12300,
+    "co2": 8
+   }
+  ]
+ },
+ {
+  "id": 5,
+  "title": "Pomper la nuit",
+  "levels": [
+   5
+  ],
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "residual": [
+   2,
+   3,
+   3,
+   2,
+   3,
+   3,
+   4,
+   5
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "cost": 10,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "cost": 150,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "cost": 850,
+    "co2": 2
+   }
+  },
+  "step": 1,
+  "intro": "Tu as une STEP (station de pompage) : choisis un créneau où pomper (la demande y monte de 1) et un créneau plus tard où turbiner (la demande y baisse de 1). Bien placée, elle répare un ruban ou rabote une pointe.",
+  "lesson": "Le stockage déplace la demande dans le temps : on remplit un creux pour prolonger le nucléaire.",
+  "optimum": {
+   "cost": 530,
+   "facture": 1090,
+   "co2": 2
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "step": [
+    {
+     "pump": 5,
+     "turbine": 7
+    }
+   ],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "G",
+     "row": 2,
+     "col": 1,
+     "len": 2
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 5,
+     "len": 3
+    }
+   ]
+  },
+  "alternatives": [
+   {
+    "facture": 1370,
+    "co2": 2
+   },
+   {
+    "facture": 1370,
+    "co2": 2
+   }
+  ]
+ },
+ {
+  "id": 6,
+  "title": "Trop de soleil",
+  "levels": [
+   6,
+   7,
+   8
+  ],
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "residual": [
+   3,
+   3,
+   -1,
+   2,
+   4,
+   3
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "cost": 10,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "cost": 150,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "cost": 850,
+    "co2": 2
+   }
+  },
+  "neighbor": {
+   "name": "Allemagne",
+   "price": [
+    30,
+    40,
+    -20,
+    60,
+    400,
+    50
+   ],
+   "cap": 1,
+   "import": true,
+   "export": true
+  },
+  "curtail_penalty": 30,
+  "intro": "À 8h, le soleil produit plus que la demande (−1). Il faut exporter ce surplus (au prix voisin, ici négatif : tu paies 20 €) ou l'écrêter (pénalité 30 €). La ligne vers l'Allemagne laisse passer 1 bloc par créneau, dans un sens ou dans l'autre : importer coûte le prix voisin, exporter rapporte le prix voisin et ajoute une case à remplir.",
+  "lesson": "Un surplus de renouvelables casse les rubans de nucléaire ; exporter permet au contraire de les prolonger.",
+  "optimum": {
+   "cost": 970,
+   "facture": 2130,
+   "co2": 6
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    1,
+    1,
+    0,
+    1
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "I",
+     "row": 0,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "row": 0,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 1,
+     "col": 0,
+     "len": 2
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 2,
+     "col": 0,
+     "len": 2
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 3,
+     "col": 4,
+     "len": 2
+    }
+   ]
+  },
+  "alternatives": []
+ },
+ {
+  "id": 7,
+  "title": "La montagne",
+  "levels": [
+   2,
+   3,
+   4,
+   5
+  ],
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "residual": [
+   3,
+   2,
+   4,
+   5,
+   3,
+   6,
+   7,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ],
+    "cost": 10,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "cost": 150,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "cost": 850,
+    "co2": 2
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "cost": 50,
+    "co2": 0,
+    "cap": 2
+   }
+  },
+  "step": 1,
+  "intro": "Grille difficile : rubans, gaz, TAC, 2 cases d'eau et une STEP. Vise le coût minimal, puis la facture minimale.",
+  "lesson": "Un seul pompage bien placé transforme deux pointes isolées en un long ruban.",
+  "optimum": {
+   "cost": 980,
+   "facture": 2340,
+   "co2": 4
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "step": [
+    {
+     "pump": 4,
+     "turbine": 6
+    }
+   ],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "B",
+     "row": 2,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 2,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 2,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "B",
+     "row": 4,
+     "col": 3,
+     "len": 1
+    },
+    {
+     "piece": "G",
+     "row": 4,
+     "col": 5,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 5,
+     "col": 5,
+     "len": 2
+    }
+   ]
+  },
+  "alternatives": []
+ },
+ {
+  "id": 8,
+  "title": "Plafond carbone",
+  "levels": [
+   2,
+   3,
+   7,
+   8,
+   9
+  ],
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "residual": [
+   2,
+   2,
+   4,
+   5,
+   4,
+   6,
+   5,
+   3
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     4,
+     5,
+     6,
+     7,
+     8
+    ],
+    "cost": 10,
+    "co2": 0,
+    "cap": 16
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5
+    ],
+    "cost": 120,
+    "co2": 3
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "cost": 150,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "cost": 850,
+    "co2": 2
+   }
+  },
+  "neighbor": {
+   "name": "Allemagne",
+   "price": [
+    40,
+    30,
+    90,
+    160,
+    140,
+    400,
+    200,
+    50
+   ],
+   "cap": 1,
+   "import": true,
+   "export": true
+  },
+  "co2_cap": 10,
+  "intro": "Grille difficile : 16 cases de nucléaire seulement (maintenance), du charbon (barre de 3 à 5, 120 €, 3 CO₂/case), du gaz (150 €, 1 CO₂/case), et la ligne vers l'Allemagne. Objectif du jour : CO₂ ≤ 10, puis coût minimal, puis facture minimale.",
+  "lesson": "Le charbon est moins cher que le gaz mais émet 3 fois plus : le plafond CO₂ change tout le programme d'appel.",
+  "optimum": {
+   "cost": 1970,
+   "facture": 3850,
+   "co2": 10
+  },
+  "solution": {
+   "exports": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   "step": [],
+   "curtail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "placements": [
+    {
+     "piece": "I",
+     "row": 0,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "row": 0,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 2,
+     "len": 6
+    },
+    {
+     "piece": "G",
+     "row": 1,
+     "col": 5,
+     "len": 2
+    },
+    {
+     "piece": "I",
+     "row": 1,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "row": 1,
+     "col": 7,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 2,
+     "len": 6
+    },
+    {
+     "piece": "G",
+     "row": 3,
+     "col": 3,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 3,
+     "col": 5,
+     "len": 2
+    },
+    {
+     "piece": "I",
+     "row": 3,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "G",
+     "row": 4,
+     "col": 5,
+     "len": 2
+    },
+    {
+     "piece": "I",
+     "row": 4,
+     "col": 3,
+     "len": 1
+    },
+    {
+     "piece": "G",
+     "row": 5,
+     "col": 5,
+     "len": 2
+    }
+   ]
+  },
+  "alternatives": [
+   {
+    "facture": 4050,
+    "co2": 10
+   },
+   {
+    "facture": 4050,
+    "co2": 10
+   },
+   {
+    "facture": 4110,
+    "co2": 10
+   },
+   {
+    "facture": 4350,
+    "co2": 10
+   },
+   {
+    "facture": 4510,
+    "co2": 10
+   }
+  ]
+ }
+]

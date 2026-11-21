@@ -1,0 +1,370 @@
+/*
+ * Every French text shown to the player: piece and country names, clue texts, rule violations,
+ * inventory status. The engine and the UI import from here; no player text lives elsewhere.
+ */
+import type { Clue, Grid, PieceId } from '../model/grid';
+
+interface PieceWords {
+  /** Palette label. */
+  name: string;
+  /** "le gaz" (sets the price). */
+  the: string;
+  /** "une centrale à gaz" (a running plant). */
+  a: string;
+  /** "de gaz" (cells of). */
+  of: string;
+}
+
+export const PIECE_WORDS: Record<PieceId, PieceWords> = {
+  N: { name: 'Nucléaire', the: 'le nucléaire', a: 'un réacteur', of: 'de nucléaire' },
+  B: { name: 'Barrage', the: 'le barrage', a: 'un barrage', of: 'de barrage' },
+  C: { name: 'Charbon', the: 'le charbon', a: 'une centrale à charbon', of: 'de charbon' },
+  G: { name: 'Gaz', the: 'le gaz', a: 'une centrale à gaz', of: 'de gaz' },
+  T: { name: 'TAC', the: 'la TAC', a: 'une TAC', of: 'de TAC' },
+};
+
+export const IMPORT_NAME = 'Import';
+/** Stands for the country in exchange messages when totals cover all countries. */
+export const ALL_COUNTRIES = 'tous pays confondus';
+export const STEP_NAME = 'STEP';
+
+interface CountryWords { to: string; from: string }
+
+/** Prepositions per country id; unknown ids fall back to the neighbor name. */
+const COUNTRY_WORDS: Record<string, CountryWords> = {
+  DE: { to: "vers l'Allemagne", from: "d'Allemagne" },
+  UK: { to: 'vers le Royaume-Uni', from: 'du Royaume-Uni' },
+  GB: { to: 'vers le Royaume-Uni', from: 'du Royaume-Uni' },
+  ES: { to: "vers l'Espagne", from: "d'Espagne" },
+  IT: { to: "vers l'Italie", from: "d'Italie" },
+  BE: { to: 'vers la Belgique', from: 'de Belgique' },
+  CH: { to: 'vers la Suisse', from: 'de Suisse' },
+};
+
+function countryWords(grid: Grid, id: string): CountryWords {
+  const known = COUNTRY_WORDS[id];
+  if (known) return known;
+  const name = grid.neighbors.find((nb) => nb.id === id)?.name ?? id;
+  return { to: `vers ${name}`, from: `de ${name}` };
+}
+
+export const countryTo = (grid: Grid, id: string) => countryWords(grid, id).to;
+export const countryFrom = (grid: Grid, id: string) => countryWords(grid, id).from;
+
+const plural = (k: number, one: string, many: string = `${one}s`) => `${k} ${k > 1 ? many : one}`;
+
+/** Label of column `col`, or the end of the day when `col` is past the last column. */
+export function columnLabel(grid: Grid, col: number): string {
+  const label = grid.columns[col];
+  if (label !== undefined) return label;
+  return `${Math.round((col * 24) / grid.columns.length)}h`;
+}
+
+/** "case de gaz", "case importée d'Allemagne" (key = piece id or I:<country>). */
+function cellsOf(grid: Grid, key: string, k: number): string {
+  if (key.startsWith('I:')) {
+    return k ? `${plural(k, 'case importée', 'cases importées')} ${countryFrom(grid, key.slice(2))}`
+      : `aucune case importée ${countryFrom(grid, key.slice(2))}`;
+  }
+  const of = PIECE_WORDS[key as PieceId]?.of ?? `de ${key}`;
+  return k ? `${plural(k, 'case')} ${of}` : `aucune case ${of}`;
+}
+
+/** French text of a clue, as the market document it stands for (§7). */
+export function clueText(grid: Grid, clue: Clue): string {
+  const at = (c: number) => columnLabel(grid, c);
+  switch (clue.type) {
+    case 'price':
+      return `À ${at(clue.col)}, c'est ${PIECE_WORDS[clue.piece].the} qui fixe le prix.`;
+    case 'bar':
+      return `${capitalize(PIECE_WORDS[clue.piece].a)} tourne de ${at(clue.col)} à ${at(clue.col + clue.len)}.`;
+    case 'length':
+      return `${capitalize(PIECE_WORDS[clue.piece].a)} tourne ${plural(clue.len, 'créneau', 'créneaux')} d'affilée.`;
+    case 'column':
+      return `Relevé de ${at(clue.col)} : ${Object.entries(clue.counts).map(([k, v]) => cellsOf(grid, k, v)).join(', ')}.`;
+    case 'flow': {
+      const k = clue.value;
+      if (clue.dir === 'export') {
+        const to = countryTo(grid, clue.country);
+        return k ? `À ${at(clue.col)}, ${plural(k, 'bloc part', 'blocs partent')} ${to}.`
+          : `À ${at(clue.col)}, aucun bloc ne part ${to}.`;
+      }
+      const from = countryFrom(grid, clue.country);
+      return k ? `À ${at(clue.col)}, ${plural(k, 'bloc arrive', 'blocs arrivent')} ${from}.`
+        : `À ${at(clue.col)}, aucun bloc n'arrive ${from}.`;
+    }
+    case 'exchanges': {
+      const multi = grid.neighbors.length > 1;
+      const parts: string[] = [];
+      for (const [id, k] of Object.entries(clue.exports ?? {})) {
+        const where = multi ? ` ${countryTo(grid, id)}` : '';
+        parts.push(k ? `${plural(k, 'bloc exporté', 'blocs exportés')}${where}` : `aucun bloc exporté${where}`);
+      }
+      for (const [id, k] of Object.entries(clue.imports ?? {})) {
+        const where = multi && id !== '*' ? ` ${countryFrom(grid, id)}` : '';
+        parts.push(k ? `${plural(k, 'bloc importé', 'blocs importés')}${where}` : `aucun bloc importé${where}`);
+      }
+      if (clue.step !== undefined) parts.push(clue.step ? plural(clue.step, 'pompage') : 'aucun pompage');
+      return `Aujourd'hui : ${parts.join(', ')}.`;
+    }
+    case 'engaged':
+      return `Déjà engagé : ${PIECE_WORDS[clue.piece].a} de ${at(clue.col)} à ${at(clue.col + clue.len)}, `
+        + `ligne ${clue.row + 1}.`;
+  }
+}
+
+function capitalize(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function lenText(lens: number[]): string {
+  const min = lens[0] ?? 1;
+  const max = lens[lens.length - 1] ?? min;
+  if (lens.length === 1) return plural(min, 'créneau', 'créneaux');
+  const contiguous = lens.every((l, i) => i === 0 || l === (lens[i - 1] ?? 0) + 1);
+  return contiguous ? `${min} à ${max} créneaux` : `${lens.join(', ')} créneaux`;
+}
+
+/** Rule violations, one function per reason. */
+export const MSG = {
+  bounds: () => 'La barre dépasse de la grille.',
+  length: (name: string, lens: number[]) => `La barre ${name} doit faire ${lenText(lens)}.`,
+  height: (name: string, heights: number[]) => `La barre ${name} doit faire ${heights.join(' ou ')} GW de haut.`,
+  silhouette: (col: string) => `Hors de la silhouette à ${col}.`,
+  overlap: () => 'Case déjà occupée.',
+  unavailable: (of: string) => `Pas de centrale ${of} dans cette grille.`,
+  unknownCountry: () => 'Ce pays n’est pas relié à la grille.',
+  inventoryBar: (name: string, len: number) => `Plus de barre ${name} de ${plural(len, 'créneau', 'créneaux')} dans l’inventaire.`,
+  inventoryCells: (name: string, total: number) => `Plus de case ${name} dans l’inventaire (${total} au total).`,
+  stock: (piece: string, of: string, total: number) => (piece === 'B'
+    ? `Plus d’eau dans le barrage : ${plural(total, 'case')} au plus.`
+    : `Plus de stock ${of} : ${plural(total, 'case')} au plus.`),
+  inventoryImports: (from: string, total: number) => `Plus d’import ${from} dans l’inventaire (${total} au total).`,
+  inventoryImportsAll: (total: number) => `Plus d’import dans l’inventaire (${total} au total, tous pays).`,
+  inventoryExports: (to: string, total: number) => `Plus d’export ${to} dans l’inventaire (${total} au total).`,
+  line: (to: string, col: string) => `Ligne ${to} saturée à ${col}.`,
+  exportRange: (col: string) => `Export impossible à ${col}.`,
+  surplus: (col: string) => `Surplus non absorbé à ${col} : il faut exporter ou pomper.`,
+  stepNone: () => 'Cette grille n’a pas de STEP.',
+  stepReversed: () => 'STEP inversée : le pompage doit précéder le turbinage.',
+  stepCount: (total: number) => `Toutes les paires STEP sont déjà posées (${total}).`,
+  co2: (got: number, cap: number) => `Plafond CO₂ dépassé : ${got} / ${cap}.`,
+  locked: () => 'Cette centrale est déjà engagée : on ne peut pas la retirer.',
+  nothingHere: () => 'Aucune centrale sur cette case.',
+  tooManyBars: (name: string, extra: number[]) => `Barres ${name} en trop : ${extra.join(', ')}.`,
+  tooManyCells: (name: string, got: number, want: number) => `Trop de cases ${name} : ${got} pour ${want}.`,
+  tooManyExports: (to: string, got: number, want: number) => `Trop d’exports ${to} : ${got} pour ${want}.`,
+  tooManyImports: (from: string, got: number, want: number) => `Trop d’imports ${from} : ${got} pour ${want}.`,
+  tooManySteps: (got: number, want: number) => `Trop de paires STEP : ${got} pour ${want}.`,
+};
+
+/** Reasons why a grid is not finished yet. */
+export const TODO = {
+  missing: (k: number) => `Il reste ${plural(k, 'case')} à couvrir.`,
+  bars: (name: string, left: number[]) => `Il reste à poser des barres ${name} : ${left.join(', ')}.`,
+  cells: (name: string, left: number) => `Il reste ${plural(left, 'case')} ${name} à poser.`,
+  exports: (to: string, left: number) => `Il reste ${plural(left, 'bloc')} à exporter ${to}.`,
+  imports: (from: string, left: number) => `Il reste ${plural(left, 'case')} à importer ${from}.`,
+  steps: (left: number) => `Il reste ${plural(left, 'paire')} STEP à poser.`,
+  clue: (text: string) => `Indice non respecté : ${text}`,
+  otherSolution: () => 'Pose valide, mais ce n’est pas la solution attendue.',
+};
+
+/** "de nucléaire", "d'import d'Allemagne": complement used by inventory messages. */
+export function ofPiece(grid: Grid, piece: string, country?: string): string {
+  if (piece === 'I') return country ? `d’import ${countryFrom(grid, country)}` : 'd’import';
+  return PIECE_WORDS[piece as PieceId]?.of ?? `de ${piece}`;
+}
+
+/** Inventory status labels for the UI. */
+export const INVENTORY = {
+  free: 'Disponible',
+  done: 'Tout posé',
+  left: (what: string) => `Reste : ${what}`,
+  over: (what: string) => `En trop : ${what}`,
+  stock: (used: number, max: number) => `${used} / ${max}`,
+};
+
+// ---- interface (home, game screen, print sheet) ------------------------------
+
+/** Deduction techniques (GAME-DESIGN.md §9): name and sentence for the player, by solver id. */
+export const TECHNIQUES: Record<string, { name: string; text: string }> = {
+  room: { name: 'Pas de place', text: 'Une barre ne peut ni dépasser de la silhouette ni chevaucher une barre déjà posée.' },
+  exhausted: { name: 'Inventaire épuisé', text: 'Quand toutes les cases d’une pièce sont trouvées, elle ne va nulle part ailleurs ; une barre plus longue que ce qu’il reste ne passe plus.' },
+  price_cap: { name: 'Le prix plafonne la colonne', text: 'Sous un prix publié, aucune case n’est plus chère que ce prix.' },
+  record: { name: 'Le relevé compte les cases', text: 'Un relevé atteint interdit d’autres cases de cette pièce ; s’il reste juste assez de cases possibles, elles y passent toutes.' },
+  flow: { name: 'Flux publié', text: 'Un flux publié fixe l’export ou l’import d’un créneau avec un pays.' },
+  single_cover: { name: 'Une seule barre pour cette case', text: 'Une case qu’une seule barre peut encore couvrir reçoit cette barre.' },
+  single_spot: { name: 'La barre qui ne tient qu’à un endroit', text: 'Une barre de l’inventaire qui n’a plus qu’une place possible y va.' },
+  program: { name: 'Programme publié', text: 'La barre annoncée par un programme va sur la seule ligne où elle tient.' },
+  silhouette: { name: 'La silhouette suit les barres', text: 'Un export ou un pompage qui laisserait une case impossible à couvrir est exclu.' },
+  swap: { name: 'Cases interchangeables', text: 'Quand on connaît le nombre de cases de chaque pièce dans une colonne, l’ordre ne compte pas.' },
+  top_price: { name: 'La case la plus chère', text: 'Un prix publié exige au moins une case de cette centrale dans la colonne : s’il n’y a qu’une place possible, c’est elle.' },
+  ribbon: { name: 'Le creux coupe le ruban', text: 'Chaque ligne se découpe en rubans entre les creux : une barre qui laisserait un bout impossible à remplir est exclue.' },
+  just_enough: { name: 'Inventaire juste', text: 'S’il reste exactement autant de cases possibles que de cases à poser pour une pièce, toutes sont à elle.' },
+  column_sum: { name: 'Compter la colonne', text: 'Une colonne a autant de cases que sa hauteur : connaissant les autres pièces, on déduit celle qui reste.' },
+  carbon: { name: 'Plafond carbone', text: 'Une barre qui ferait dépasser le plafond CO₂ est exclue.' },
+  share_out: { name: 'Répartition de l’inventaire', text: 'Les barres doivent toutes trouver une ligne : un découpage qui empêche les autres de se placer est exclu.' },
+  refuted: { name: 'Hypothèse réfutée', text: 'Si un choix mène à une impasse par les règles simples, il est exclu (une seule hypothèse, jamais imbriquée).' },
+};
+
+/** Clue kinds, as labels above each clue text. */
+export const CLUE_KIND: Record<Clue['type'], string> = {
+  price: 'Prix',
+  bar: 'Programme',
+  length: 'Durée de marche',
+  column: 'Relevé',
+  flow: 'Flux',
+  exchanges: 'Échanges du jour',
+  engaged: 'Déjà engagée',
+};
+
+/** Short plant names for the programme brackets and price tags drawn on the grid. */
+export const SHORT_NAME: Record<PieceId, string> = { N: 'Réacteur', B: 'Barrage', C: 'Charbon', G: 'Gaz', T: 'TAC' };
+
+/** Price tag on the grid: "€ Gaz", "€ Nucl.". */
+export const priceTag = (piece: PieceId) => {
+  const name = PIECE_WORDS[piece].name;
+  return `€ ${name.length > 6 ? `${name.slice(0, 4)}.` : name}`;
+};
+
+/** Programme bracket label: "Réacteur 4h → 20h". */
+export const programLabel = (grid: Grid, piece: PieceId, col: number, len: number) =>
+  `${SHORT_NAME[piece]} ${columnLabel(grid, col)} → ${columnLabel(grid, col + len)}`;
+
+/** Shape hint under a plant name in the order book: "ruban de 3 à 6", "1 case, pointe", "stock : 2 cases". */
+export function pieceHint(piece: PieceId, lens: number[], heights: number[], maxCells?: number): string {
+  if (maxCells !== undefined) return `stock : ${plural(maxCells, 'case')}`;
+  const minL = lens[0] ?? 1;
+  const maxL = lens[lens.length - 1] ?? minL;
+  const minH = heights[0] ?? 1;
+  let text: string;
+  if (maxL === 1 && heights.length === 1 && minH === 1) text = piece === 'T' ? '1 case, pointe' : '1 case';
+  else if (minL === maxL) text = plural(minL, 'créneau', 'créneaux');
+  else if (piece === 'N') text = `ruban de ${minL} à ${maxL}`;
+  else text = lens.length === maxL - minL + 1 ? `${minL} à ${maxL} créneaux` : `${lens.join(', ')} créneaux`;
+  if (heights.length > 1) text += `, ${heights.join(' ou ')} GW`;
+  else if (minH > 1) text += `, ${minH} GW minimum`;
+  return text;
+}
+
+/** "TAC à 8h, ligne 6", "Gaz de 4h à 12h, ligne 2" (rows count from 1 at the bottom). */
+export function placementLabel(grid: Grid, piece: string, country: string | undefined, row: number, col: number,
+  len: number, height = 1): string {
+  const name = piece === 'I' ? `Import ${countryFrom(grid, country ?? '')}` : PIECE_WORDS[piece as PieceId]?.name ?? piece;
+  const when = len === 1 ? `à ${columnLabel(grid, col)}` : `de ${columnLabel(grid, col)} à ${columnLabel(grid, col + len)}`;
+  const where = height > 1 ? `lignes ${row + 1} à ${row + height}` : `ligne ${row + 1}`;
+  return `${name} ${when}, ${where}`;
+}
+
+/** "4 min 12 s". */
+export function durationText(ms: number): string {
+  const s = Math.max(0, Math.round(ms / 1000));
+  const m = Math.floor(s / 60);
+  if (m >= 60) return `${Math.floor(m / 60)} h ${m % 60} min`;
+  return m ? `${m} min ${s % 60} s` : `${s} s`;
+}
+
+export const UI = {
+  appName: 'Dispatch',
+  kicker: 'Puzzle de logique',
+  tagline: 'Tu construis le programme d’appel du réseau électrique pour une journée : remplis exactement la courbe de demande avec des centrales, en respectant les indices du marché. On déduit, on ne calcule rien.',
+  rulesTitle: 'Règle du jeu',
+  rules: [
+    'Une case vaut 1 créneau en largeur et 1 GW en hauteur. Couvre chaque case de la silhouette exactement une fois.',
+    'Une centrale est un rectangle : sa largeur est sa durée de marche, sa hauteur sa puissance.',
+    'Respecte le carnet d’ordres et les indices du marché. Une seule solution.',
+  ],
+  daily: 'Grille du jour',
+  dailyLead: 'Une grille notée, choisie par la date.',
+  tutorials: 'Tutoriel',
+  tutorialsLead: 'Sept grilles, une technique chacune, avec l’inventaire exact.',
+  rated: 'Grilles notées',
+  ratedLead: 'Sans inventaire : les indices du marché suffisent à déduire la solution.',
+  status: { new: 'Pas commencée', started: 'En cours', done: 'Terminée' } as const,
+  play: 'Jouer',
+  resume: 'Reprendre',
+  review: 'Revoir',
+  back: 'Toutes les grilles',
+  tutorialOf: (k: number, n: number) => `Tutoriel ${k} sur ${n}`,
+  tutorialShort: (k: number) => `Tutoriel ${k}`,
+  ratedEyebrow: 'Grille notée',
+  noInventory: 'sans inventaire',
+  gridNumber: (id: number) => `Grille n° ${id}`,
+  techniqueOfDay: 'Technique du jour',
+  instructions: 'Consigne',
+  book: 'Carnet d’ordres',
+  bookHint: 'choisis une centrale, puis glisse sur la grille',
+  available: 'Centrales disponibles',
+  availableHint: 'formes autorisées, quantités à déduire',
+  importName: 'Import',
+  importHint: (country: string) => `${country}, 1 case`,
+  exchangesTitle: 'Échanges',
+  exportPill: (id: string, got: number, want: number) => `→ ${id} ${got} / ${want}`,
+  importPill: (id: string, got: number, want: number) => `← ${id} ${got} / ${want}`,
+  stepPill: (got: number, want: number) => `▲▼ ${got} / ${want} ${want > 1 ? 'paires' : 'paire'}`,
+  placed: (k: number) => `${k} ${k > 1 ? 'cases posées' : 'case posée'}`,
+  dayClues: 'Indices de la journée',
+  gridClues: 'Indices sur la grille',
+  cluesChecked: (k: number, n: number) => `${k} sur ${n} ${k > 1 ? 'vérifiés' : 'vérifié'}`,
+  gridCluesNote: 'Les indices liés à un créneau sont dessinés sur la grille : prix, relevés, programmes, flux.',
+  allClues: 'Tous les indices en texte',
+  clueState: { ok: 'vérifié', open: 'à vérifier', broken: 'contredit' } as const,
+  tools: { erase: 'Gomme', undo: 'Annuler', reset: 'Recommencer', print: 'Imprimer' },
+  toolsLabel: 'Outils',
+  co2: 'CO₂',
+  co2Points: (k: number, cap: number) => `${k} ${k > 1 ? 'points' : 'point'} sur ${cap}`,
+  co2Cap: 'plafond',
+  co2Left: (k: number) => (k >= 0 ? `${k} ${k > 1 ? 'restants' : 'restant'}` : `${-k} de trop`),
+  co2PerCell: (k: number) => `CO₂ ${k} par case`,
+  co2Detail: (parts: string[]) => parts.join(' · '),
+  co2Rule: (cap: number, per: string) => `${cap} points au plus ; points par case : ${per}.`,
+  co2Kind: 'Plafond CO₂',
+  neighborLine: (name: string, cap: number) => `${name} · ligne de ${cap} ${cap > 1 ? 'blocs' : 'bloc'} par créneau`,
+  stepLine: 'STEP · pompage ▲ puis turbinage ▼',
+  stepPump: '▲ pompe',
+  stepTurbine: '▼ turbine',
+  exportLabel: (name: string, col: string, value: number, imports: number) =>
+    `${name}, ${col} : ${value} exporté${value > 1 ? 's' : ''}${imports ? `, ${imports} importé${imports > 1 ? 's' : ''}` : ''}. Touche pour changer l’export.`,
+  exportLocked: (name: string, col: string) => `${name}, ${col} : flux publié, verrouillé.`,
+  stepCellLabel: (col: string) => `STEP à ${col}`,
+  hintChoose: 'Choisis une centrale dans le carnet, puis glisse sur la grille (ou touche la case de départ puis celle d’arrivée).',
+  hintSecondTap: (label: string) => `${label} : touche maintenant la case d’arrivée.`,
+  hintErase: 'Gomme : touche une centrale pour la retirer.',
+  poseOk: (label: string) => `${label} : la pose tient.`,
+  poseBad: (label: string, why: string) => `${label} : ${why.charAt(0).toLowerCase()}${why.slice(1)}`,
+  removed: (label: string) => `${label} retirée.`,
+  undone: 'Dernière action annulée.',
+  nothingToUndo: 'Rien à annuler.',
+  resetDone: 'Grille remise à zéro. « Annuler » la rétablit.',
+  stepPending: (col: string) => `Pompage à ${col} : touche un créneau plus tard pour le turbinage.`,
+  stepAdded: (pump: string, turbine: string) => `STEP : pompage à ${pump}, turbinage à ${turbine}.`,
+  stepRemoved: 'Paire STEP retirée.',
+  stepEarlier: 'Le turbinage doit venir après le pompage.',
+  invalidBars: (k: number) => `${k} ${k > 1 ? 'centrales ne tiennent plus' : 'centrale ne tient plus'} : hachurée${k > 1 ? 's' : ''} en rouge.`,
+  doneTitle: 'Programme bouclé',
+  doneText: (k: number, time: string) => (k
+    ? `Toutes les cases sont couvertes et ${k > 1 ? `les ${k} indices sont vrais` : 'l’indice est vrai'}. ${time}.`
+    : `Toutes les cases sont couvertes. ${time}.`),
+  next: 'Grille suivante',
+  home: 'Retour aux grilles',
+  gridAria: (title: string) => `Grille ${title}`,
+  scrollBoard: 'Faire défiler la grille',
+  cells: (k: number) => `${k} ${k > 1 ? 'cases' : 'case'}`,
+  pairs: (k: number) => `${k} ${k > 1 ? 'paires' : 'paire'}`,
+  noteBelowPaper: 'à noter sous la grille',
+  noteBelow: 'sous la grille',
+  importWord: 'import',
+  stepLastSlot: 'Pas de pompage sur le dernier créneau : aucun turbinage ne peut suivre.',
+  boardHelp: 'Flèches pour déplacer le curseur, Entrée pour poser (case de départ puis d’arrivée), Suppr pour retirer, Échap pour annuler.',
+  // Print sheet
+  printFoot: 'Couvre toute la silhouette. Une seule solution.',
+  printFootStep: 'Pompage ▲ et turbinage ▼ : note-les dans les cases sous la grille.',
+  printFootExports: 'Exports et imports : note-les dans les cases sous chaque créneau.',
+  printId: (id: number) => `Dispatch · n° ${id}`,
+  printTitle: 'Impression',
+  printAll: 'Imprimer toutes les grilles',
+  printThis: 'Imprimer cette grille',
+  printPreviewLead: 'Une grille par page A4, en couleur, sans corrigé.',
+  engagedTitle: 'Déjà engagée',
+};

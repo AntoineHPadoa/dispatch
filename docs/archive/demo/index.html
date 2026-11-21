@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spot-Élec démo</title>
+<!--
+  Spot-Elec playable demo UI.
+  - Loads grids.js (SPOT_GRIDS) and engine.js (SpotEngine); all rules, the pose verdict and the v2 score live in the engine.
+  - Pose mode (default): inventory, market clues, solved or not, no score. Target-score grids keep the v2 score and stars.
+  - Draw bars by dragging along a row, or tap a start cell then an end cell.
+-->
+<style>
+:root {
+  --bg: #f6f5f1; --panel: #ffffff; --text: #1d1f23; --muted: #62676f; --line: #d8d6cf;
+  --accent: #1f6feb; --ok: #1a8a4a; --bad: #d12f2f;
+  --cell-in: #ffffff; --cell-out: #ecebe6; --cell-line: #c9c7bf;
+  --c-N: #f2c230; --c-C: #5a3a1f; --c-G: #f08a24; --c-T: #d93a3a; --c-B: #2f7fd8; --c-I: #8a4fd0;
+  --t-N: #3a2e00; --t-C: #ffffff; --t-G: #3d1f00; --t-T: #ffffff; --t-B: #ffffff; --t-I: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171a; --panel: #1f2226; --text: #ececec; --muted: #9aa0a8; --line: #343840;
+    --accent: #5b9dff; --ok: #4cc27f; --bad: #ff6b6b;
+    --cell-in: #2b2f35; --cell-out: #1a1c20; --cell-line: #444952;
+    --c-C: #8a5c34;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171a; --panel: #1f2226; --text: #ececec; --muted: #9aa0a8; --line: #343840;
+  --accent: #5b9dff; --ok: #4cc27f; --bad: #ff6b6b;
+  --cell-in: #2b2f35; --cell-out: #1a1c20; --cell-line: #444952;
+  --c-C: #8a5c34;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--text); font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 16px; }
+h1 { font-size: 22px; margin: 0 0 12px; }
+h2 { font-size: 18px; margin: 0 0 6px; }
+.layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 16px; }
+@media (max-width: 760px) { .layout { grid-template-columns: 1fr; } }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+.stack > * + * { margin-top: 12px; }
+.muted { color: var(--muted); }
+button { font: inherit; color: inherit; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+button:hover { border-color: var(--accent); }
+button:disabled { opacity: .45; cursor: default; }
+.stars { letter-spacing: 2px; color: #e0a800; white-space: nowrap; }
+
+/* grid list */
+.glist { display: flex; flex-direction: column; gap: 6px; }
+.glist button { text-align: left; display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.glist button.sel { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.glist small { display: block; color: var(--muted); }
+@media (max-width: 760px) { .glist { flex-direction: row; flex-wrap: wrap; } .glist button { flex: 1 1 150px; } }
+
+/* palette */
+.palette { display: flex; flex-wrap: wrap; gap: 8px; }
+.tile { display: flex; align-items: center; gap: 8px; padding: 6px 10px; }
+.tile.sel { border-color: var(--accent); box-shadow: inset 0 0 0 2px var(--accent); }
+.tile.info { cursor: default; }
+.tile .sw { width: 26px; height: 26px; border-radius: 6px; display: grid; place-items: center; font-weight: 700; font-size: 14px; }
+.tile .meta { font-size: 12px; line-height: 1.25; text-align: left; }
+.tile.empty { opacity: .45; }
+
+/* board */
+.board-scroll { overflow-x: auto; padding-bottom: 6px; }
+.board { display: inline-block; user-select: none; -webkit-user-select: none; }
+.row { display: flex; }
+.cell { width: 46px; height: 40px; border: 1px solid var(--cell-line); background: var(--cell-in); position: relative; flex: none; display: grid; place-items: center; font-weight: 700; font-size: 13px; }
+.cell.out { background: var(--cell-out); border-color: transparent; opacity: .5; }
+.cell.bar { border-color: rgba(0,0,0,.35); }
+.cell.bar.start { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+.cell.bar.end { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+.cell.invalid { outline: 3px solid var(--bad); outline-offset: -3px; background-image: repeating-linear-gradient(45deg, rgba(209,47,47,.55) 0 6px, transparent 6px 12px); }
+.cell.hatch::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(135deg, rgba(120,120,120,.45) 0 4px, transparent 4px 9px); }
+.cell.curtail { background: repeating-linear-gradient(45deg, #9a9a9a 0 5px, #bdbdbd 5px 10px); border-style: dashed; opacity: .9; }
+.cell.curtail::before { content: "✕"; color: #555; font-size: 18px; }
+.cell.pv-ok { background: rgba(26,138,74,.45) !important; outline: 2px solid var(--ok); outline-offset: -2px; }
+.cell.pv-bad { background: rgba(209,47,47,.45) !important; outline: 2px solid var(--bad); outline-offset: -2px; }
+.cell.pending { outline: 3px dashed var(--accent); outline-offset: -3px; }
+.cell.in { cursor: crosshair; }
+.erase .cell.bar { cursor: not-allowed; }
+.colhead { width: 46px; flex: none; text-align: center; font-size: 12px; padding-top: 3px; }
+.colhead b { display: block; font-size: 13px; }
+.colinfo { width: 46px; flex: none; text-align: center; font-size: 11px; color: var(--muted); line-height: 1.2; min-height: 18px; }
+.colinfo .neg { color: var(--accent); font-weight: 600; }
+.exp { display: flex; justify-content: center; align-items: center; gap: 2px; }
+.exp button { padding: 0 5px; font-size: 13px; line-height: 18px; border-radius: 5px; }
+.stepbar .colinfo { min-height: 26px; }
+.stepbar button { padding: 0 4px; font-size: 14px; margin: 0 1px; border-radius: 5px; }
+.stepbar button.armed { border-color: var(--accent); }
+.stepbar.active .colinfo { background: rgba(31,111,235,.12); }
+.msg { min-height: 22px; margin-top: 8px; font-size: 14px; }
+.msg.bad { color: var(--bad); }
+.msg.ok { color: var(--ok); }
+
+/* pose mode */
+.glist h3 { font-size: 12px; margin: 8px 0 0; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; width: 100%; }
+.glist h3:first-child { margin-top: 0; }
+.glist .done { color: var(--ok); font-weight: 700; }
+.tile.done { border-color: var(--ok); }
+.tile.over { border-color: var(--bad); }
+.tile.todo .st { color: var(--text); }
+.tile .st { color: var(--muted); }
+.tile.done .st { color: var(--ok); }
+.tile.over .st { color: var(--bad); }
+.exlist { flex-basis: 100%; margin: 4px 0 0; padding: 0; list-style: none; font-size: 13px; display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.exlist li.done { color: var(--ok); }
+.exlist li.over { color: var(--bad); }
+.tuto { margin: 0 0 8px; padding: 8px 10px; border-radius: 8px; border-left: 4px solid var(--ok); background: var(--cell-out); }
+.tuto b { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.clues { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
+.clue { display: flex; gap: 8px; align-items: flex-start; padding: 8px 10px; border: 1px dashed var(--cell-line); border-radius: 6px; background: var(--cell-out); font-size: 14px; }
+.clue .mark { flex: none; width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--cell-line); display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+.clue.ok { border-style: solid; border-color: var(--ok); background: rgba(26,138,74,.14); }
+.clue.ok .mark { background: var(--ok); border-color: var(--ok); color: #fff; }
+.cell.locked { box-shadow: inset 0 0 0 2px rgba(0,0,0,.45); }
+.cell.locked.start::after { content: "🔒"; position: absolute; top: 0; right: 1px; font-size: 9px; }
+.verdict.bad { background: rgba(209,47,47,.1); }
+.verdict.bad ul { margin: 4px 0 0; padding-left: 18px; }
+.note { font-size: 12px; border: 1px solid var(--line); border-radius: 10px; padding: 0 6px; margin-left: 6px; color: var(--muted); font-weight: 400; }
+
+/* score */
+.score { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin-bottom: 8px; }
+.score div { background: var(--cell-out); border-radius: 8px; padding: 6px 10px; }
+.score b { display: block; font-size: 20px; }
+.score span { font-size: 12px; color: var(--muted); }
+.errors { margin: 6px 0 0; padding-left: 18px; color: var(--bad); font-size: 14px; }
+.verdict { margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: rgba(26,138,74,.14); }
+.verdict .lesson { margin-top: 6px; font-weight: 600; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.legend { font-size: 12px; color: var(--muted); }
+.objective { margin: 0 0 8px; padding: 8px 10px; border-radius: 8px; border-left: 4px solid var(--accent); background: var(--cell-out); }
+.objective b { display: block; }
+.objective ul { margin: 4px 0 0; padding-left: 18px; }
+.colprice { width: 46px; flex: none; text-align: center; font-weight: 700; font-size: 16px; padding: 2px 0; border-top: 2px solid var(--text); }
+.pricelabel { font-size: 12px; font-weight: 700; margin-top: 2px; }
+.nbhead { font-size: 12px; font-weight: 700; margin-top: 8px; }
+.cell small { font-size: 10px; }
+
+/* glossary */
+details.glossary summary { cursor: pointer; font-weight: 600; }
+.glossary dl { margin: 10px 0 0; display: grid; grid-template-columns: minmax(110px, max-content) minmax(0, 1fr); gap: 6px 14px; font-size: 14px; }
+.glossary dt { font-weight: 700; }
+.glossary dd { margin: 0; }
+.glossary h3 { font-size: 14px; margin: 14px 0 0; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.glossary .vs { margin: 10px 0 0; padding: 8px 10px; border-radius: 8px; background: var(--cell-out); font-size: 14px; }
+@media (max-width: 520px) { .glossary dl { grid-template-columns: 1fr; } .glossary dd { margin-bottom: 6px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Spot-Élec <span class="muted" style="font-weight:400">— programme d'appel</span></h1>
+  <div class="layout">
+    <aside class="panel">
+      <h2>Grilles</h2>
+      <div class="glist" id="gridList"></div>
+    </aside>
+    <main class="stack" id="main">
+      <section class="panel">
+        <h2 id="gTitle"></h2>
+        <p id="gIntro" style="margin:0 0 8px"></p>
+        <div id="tuto" class="tuto" hidden></div>
+        <div id="objective" class="objective"></div>
+        <div id="rules" class="legend"></div>
+      </section>
+      <section class="panel" id="cluesPanel">
+        <h2>Indices du marché</h2>
+        <ul class="clues" id="clues"></ul>
+      </section>
+      <section class="panel">
+        <h2 id="invTitle">Inventaire</h2>
+        <div class="palette" id="palette"></div>
+        <p class="legend" style="margin:8px 0 0">Glisse le long d'une ligne pour poser une barre, ou touche une case de départ puis une case d'arrivée. Clic droit sur une barre pour la retirer.</p>
+      </section>
+      <section class="panel">
+        <div class="board-scroll"><div class="board" id="board"></div></div>
+        <div class="msg" id="msg"></div>
+      </section>
+      <section class="panel" id="scorePanel"></section>
+      <details class="panel glossary" id="glossary">
+        <summary>Glossaire : puzzle de pose, inventaire, indices et techniques</summary>
+        <div class="vs"><b>Puzzle de pose</b> Chaque grille n’a qu’une seule pose possible. Pas de score : on déduit. La grille est réussie quand la silhouette est exactement pavée, que tout l’inventaire est posé (ni plus ni moins) et que chaque indice du marché est respecté. Comme au Sudoku, aucun essai-erreur n’est nécessaire : chaque pas se déduit.</div>
+
+        <h3>Le marché</h3>
+        <dl>
+          <dt>Créneau</dt><dd>Une colonne : une tranche horaire de la journée (0h, 4h…). Le marché spot fixe un prix par créneau, la veille pour le lendemain.</dd>
+          <dt>Case (bloc)</dt><dd>Une quantité d'électricité à produire pendant un créneau.</dd>
+          <dt>Demande résiduelle</dt><dd>La consommation moins ce que produisent déjà le fil de l'eau et les renouvelables (soleil, vent), fixés par la météo. C'est ce qu'il reste à produire avec les centrales pilotables.</dd>
+          <dt>Silhouette</dt><dd>La forme dessinée par la demande résiduelle (hauteur <i>h</i> de chaque colonne). Il faut la remplir exactement : l'électricité ne se stocke pas, production = consommation.</dd>
+          <dt>Programme d'appel</dt><dd>Le plan qui dit quelle centrale produit combien à chaque créneau. C'est ce que tu construis.</dd>
+          <dt>Merit order</dt><dd>L'ordre d'appel des centrales, de la moins chère à la plus chère (prix croissants).</dd>
+          <dt>Prix du créneau</dt><dd>Le prix de la centrale la plus chère appelée dans le créneau (prix marginal) : tout le créneau est payé à ce prix unique. C’est ce que publie un indice de prix.</dd>
+        </dl>
+
+        <h3>Inventaire</h3>
+        <dl>
+          <dt>Inventaire</dt><dd>Le carnet d’ordres du jour : les centrales appelées, à poser en entier, ni plus ni moins. Il indique, selon la grille, la longueur exacte de chaque barre, ou seulement le nombre de cases, ou simplement les technos disponibles (sans compte).</dd>
+          <dt>Reste à poser</dt><dd>Pour chaque techno, ce qu’il reste à poser : barres restantes, cases restantes, ou « disponible » quand l’inventaire ne donne aucun compte. Les exports, imports et paires de STEP ont aussi leur total.</dd>
+        </dl>
+
+        <h3>Indices du marché</h3>
+        <dl>
+          <dt>Prix publié</dt><dd>Le prix d’un créneau : sa case la plus chère vaut exactement ce prix.</dd>
+          <dt>Programme d’une centrale</dt><dd>Une centrale tourne exactement de telle heure à telle heure, sur la ligne de ton choix.</dd>
+          <dt>Relevé de production</dt><dd>Le nombre de cases de certaines technos dans un créneau (RTE publie ce relevé).</dd>
+          <dt>Centrale engagée</dt><dd>Une barre déjà posée par l’énoncé, à sa place exacte : elle ne s’efface pas.</dd>
+          <dt>Flux d’interconnexion</dt><dd>Le nombre de blocs exportés ou importés d’un pays à un créneau donné.</dd>
+        </dl>
+
+        <h3>Techniques</h3>
+        <dl>
+          <dt>Centrale engagée</dt><dd>Une barre déjà posée par l’énoncé est acquise.</dd>
+          <dt>Pas de place</dt><dd>Une barre ne peut ni dépasser de la silhouette ni chevaucher une barre déjà posée.</dd>
+          <dt>Inventaire épuisé</dt><dd>Quand toutes les cases d’une techno sont trouvées, elle ne va nulle part ailleurs ; une barre plus longue que ce qu’il reste ne passe plus.</dd>
+          <dt>Le prix plafonne la colonne</dt><dd>Sous un prix publié, aucune case n’est plus chère que ce prix.</dd>
+          <dt>Le relevé compte les cases</dt><dd>Un relevé de production donne le nombre de cases d’une techno dans la colonne : s’il est atteint, plus aucune ; s’il reste juste assez de cases possibles, elles y passent toutes.</dd>
+          <dt>Flux publié</dt><dd>Un flux d’interconnexion publié fixe l’export ou l’import d’un créneau avec un pays.</dd>
+          <dt>Une seule barre pour cette case</dt><dd>Une case à paver qu’une seule barre peut encore couvrir reçoit cette barre.</dd>
+          <dt>La barre qui ne tient qu’à un endroit</dt><dd>Une barre de l’inventaire qui n’a plus qu’une place possible y va.</dd>
+          <dt>Programme publié</dt><dd>La barre annoncée par un programme de centrale va sur la seule ligne où elle tient.</dd>
+          <dt>La silhouette suit les barres</dt><dd>Un export ou un pompage qui laisserait une case impossible à couvrir, ou une barre posée hors de la silhouette, est exclu.</dd>
+          <dt>Cases interchangeables</dt><dd>Quand on connaît le nombre de cases de chaque techno dans une colonne, l’ordre de ces cases ne compte pas : la composition est trouvée.</dd>
+          <dt>La case la plus chère</dt><dd>Un prix publié exige au moins une case à ce prix dans la colonne : s’il n’y a qu’une case possible, c’est elle.</dd>
+          <dt>Le creux coupe le ruban</dt><dd>Chaque ligne se découpe en rubans entre les creux : une barre qui laisserait un bout de ruban impossible à remplir est exclue, une barre présente dans tous les découpages est posée.</dd>
+          <dt>Inventaire juste</dt><dd>S’il reste exactement autant de cases possibles que de cases à poser pour une techno, toutes ces cases sont à elle.</dd>
+          <dt>Compter la colonne</dt><dd>Une colonne a autant de cases que sa hauteur : connaissant le compte des autres technos (relevés, inventaire, ligne d’échange, prix), on en déduit celui qui reste.</dd>
+          <dt>Plafond carbone</dt><dd>Une barre qui, ajoutée au CO₂ minimal déjà engagé, dépasserait le plafond est exclue.</dd>
+          <dt>Répartition de l’inventaire</dt><dd>Les barres de l’inventaire doivent toutes trouver une ligne : un découpage de ligne qui empêche les autres lignes de recevoir le reste est exclu.</dd>
+          <dt>Hypothèse réfutée</dt><dd>Si poser une barre (ou choisir un export) mène, par les règles simples, à une impasse, ce choix est exclu.</dd>
+        </dl>
+
+        <h3>Les centrales (pièces)</h3>
+        <dl>
+          <dt>N · Nucléaire</dt><dd>Très bon marché (prix 0), mais il ne fait pas de « dentelle » : un réacteur tourne plusieurs créneaux d'affilée, d'où les longues barres.</dd>
+          <dt>Ruban</dt><dd>Une barre horizontale de nucléaire : une production constante sur plusieurs créneaux. Un creux de demande coupe les rubans.</dd>
+          <dt>C · Charbon</dt><dd>Prix 1, moins cher que le gaz mais très émetteur (3 CO₂ par case).</dd>
+          <dt>G · Gaz (CCG)</dt><dd>Cycle combiné gaz : souple (2 ou 3 créneaux), prix 2, 1 CO₂ par case.</dd>
+          <dt>T · TAC</dt><dd>Turbine à combustion : démarre en quelques minutes pour passer la pointe, mais très chère (prix 5, 2 CO₂ par case).</dd>
+          <dt>B · Barrage</dt><dd>Hydraulique de lac : l'eau ne coûte presque rien à turbiner (prix 1), mais le stock est limité. Où la dépenser ?</dd>
+          <dt>STEP</dt><dd>Station de transfert d'énergie par pompage : on pompe de l'eau vers un lac quand la demande est basse (▲, une case de plus à produire) et on la turbine quand elle est haute (▼, une case de moins).</dd>
+          <dt>Pointe</dt><dd>Les créneaux où la demande est la plus haute (matin, soir). Une pointe courte et isolée ne se couvre qu'avec des pièces d'une case, souvent chères.</dd>
+        </dl>
+
+        <h3>Le voisin et le surplus</h3>
+        <dl>
+          <dt>I · Import</dt><dd>Acheter une case au pays voisin, au prix de son marché pour ce créneau.</dd>
+          <dt>Export</dt><dd>Vendre une case au voisin : une case de plus à produire, mais elle te rapporte le prix voisin (elle ne fait monter le prix du créneau que si elle est plus chère que le reste). Un voisin n’achète qu’un nombre limité de blocs sur la journée.</dd>
+          <dt>Budget d’export</dt><dd>Le nombre total de blocs qu’un voisin accepte d’acheter sur la journée (2 par défaut), en plus de la capacité de la ligne par créneau.</dd>
+          <dt>Interconnexion</dt><dd>La ligne électrique vers le voisin. Sa capacité limite import + export à chaque créneau.</dd>
+          <dt>Surplus</dt><dd>Quand les renouvelables produisent plus que la demande (demande résiduelle négative).</dd>
+          <dt>Prix négatif</dt><dd>Quand il y a trop d'électricité, il faut payer pour s'en débarrasser : exporter coûte au lieu de rapporter.</dd>
+          <dt>Écrêtement</dt><dd>Perdre volontairement la production en surplus (arrêter des éoliennes) : pénalité en points par case (2 par défaut).</dd>
+          <dt>CO₂</dt><dd>Les émissions de la journée. Certaines grilles imposent un plafond (le CO₂ importé compte).</dd>
+          <dt>CO₂ par pays</dt><dd>Avec plusieurs voisins, chaque case importée émet le CO₂ de son pays (par exemple 2 pour l’Allemagne, 0 pour la France) : ce CO₂ importé compte dans le plafond. L’export ne compte pas de CO₂.</dd>
+        </dl>
+
+        <h3>Grilles à score cible</h3>
+        <dl>
+          <dt>Score cible</dt><dd>Mode à part : « fais exactement N ». Le score est la somme des prix de créneau, moins les recettes d’export, plus l’écrêtement ; il faut tomber juste, pas seulement être le moins cher. Les étoiles ne comptent que dans ce mode : ★ grille complète, ★★ cible atteinte, ★★★ en plus le coût le plus bas et le moins de blocs échangés.</dd>
+          <dt>Prix lisse</dt><dd>Deux créneaux voisins ne diffèrent pas de plus d’un écart donné : pas de TAC isolée entre deux créneaux à 0, il faut « monter en pente ».</dd>
+          <dt>Souveraineté</dt><dd>Aucun import : les pointes se couvrent avec les moyens du pays (TAC, eau, STEP).</dd>
+          <dt>Plafond CO₂</dt><dd>Les émissions de la journée ne doivent pas dépasser un plafond ; elles ne comptent pas dans le score.</dd>
+        </dl>
+      </details>
+    </main>
+  </div>
+</div>
+<script src="grids.js"></script>
+<script src="engine.js"></script>
+<script>
+(function () {
+  'use strict';
+  var E = SpotEngine;
+  var GRIDS = SPOT_GRIDS;
+  var STORE_KEY = 'spot-elec-demo-v3';
+
+  var gridIndex = 0, grid, state, ev;
+  var tool = null;            // piece id, 'erase' or 'step'
+  var pendingStart = null;    // {row, col} for the tap-tap flow
+  var stepPending = null;     // pump column awaiting its turbine column
+  var viewedSolution = false;
+  var drag = null;
+  var progress = loadProgress();
+
+  function $(id) { return document.getElementById(id); }
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function fmt(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ').replace('-', '−'); }
+  function starText(n) { return '★★★'.slice(0, n) + '☆☆☆'.slice(0, 3 - n); }
+
+  function loadProgress() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      var p = raw ? JSON.parse(raw) : null;
+      if (p && p.stars && p.solved) return p;
+    } catch (e) { /* storage unavailable */ }
+    return { stars: {}, solved: {} };
+  }
+  function saveProgress() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(progress)); } catch (e) { /* ignore */ }
+  }
+
+  function selectGrid(i) {
+    gridIndex = i;
+    grid = GRIDS[i];
+    state = E.newState(grid);
+    viewedSolution = false;
+    pendingStart = null;
+    stepPending = null;
+    tool = E.isPose(grid) ? Object.keys(grid.inventory.pieces)[0] : Object.keys(grid.pieces)[0];
+    drawHeader();
+    refresh();
+    drawList();
+  }
+
+  function restart() {
+    state = E.newState(grid);
+    viewedSolution = false;
+    pendingStart = null;
+    stepPending = null;
+    refresh();
+  }
+
+  function showSolution() {
+    state = E.solutionState(grid);
+    viewedSolution = true;
+    pendingStart = null;
+    stepPending = null;
+    refresh();
+  }
+
+  function drawList() {
+    var box = $('gridList');
+    box.textContent = '';
+    var section = null;
+    GRIDS.forEach(function (g, i) {
+      if (g.section !== section) {
+        section = g.section;
+        box.appendChild(el('h3', '', section));
+      }
+      var b = el('button', i === gridIndex ? 'sel' : '');
+      var left = el('span');
+      left.appendChild(document.createTextNode(g.title));
+      var info = g.columns.length + ' créneaux';
+      if (g.section === 'Grilles' && g.title !== g.difficulty.rating_label) info = g.difficulty.rating_label + ' · ' + info;
+      if (!E.isPose(g)) info = 'Paliers ' + levelsText(g.levels) + ' · ' + info;
+      left.appendChild(el('small', '', info));
+      b.appendChild(left);
+      if (E.isPose(g)) b.appendChild(el('span', 'done', progress.solved[g.id] ? '✓' : ''));
+      else b.appendChild(el('span', 'stars', starText(progress.stars[g.id] || 0)));
+      b.onclick = function () { selectGrid(i); };
+      box.appendChild(b);
+    });
+  }
+
+  function levelsText(l) {
+    return l.length > 1 ? l[0] + '-' + l[l.length - 1] : String(l[0]);
+  }
+
+  function drawHeader() {
+    var pose = E.isPose(grid);
+    $('gTitle').textContent = (grid.section === 'Grilles' ? 'Grille ' : '') + grid.title;
+    if (pose && grid.section === 'Grilles') $('gTitle').appendChild(el('span', 'note', grid.difficulty.rating_label));
+    var tuto = $('tuto');
+    tuto.textContent = '';
+    tuto.hidden = !(pose && grid.section === 'Tutoriel');
+    if (!tuto.hidden) {
+      tuto.appendChild(el('b', '', 'Technique du jour'));
+      tuto.appendChild(document.createTextNode(grid.intro));
+    }
+    $('gIntro').textContent = tuto.hidden ? grid.intro : '';
+    $('gIntro').hidden = tuto.hidden ? false : true;
+    $('cluesPanel').hidden = !pose;
+    $('invTitle').hidden = !pose;
+    var obj = $('objective');
+    obj.textContent = '';
+    objectiveLines(grid).forEach(function (l, i) {
+      if (i === 0) obj.appendChild(el('b', '', l));
+      else {
+        var ul = obj.querySelector('ul') || obj.appendChild(el('ul'));
+        ul.appendChild(el('li', '', l));
+      }
+    });
+    var rules = [];
+    rules.push('Remplis chaque colonne jusqu’à sa hauteur, sans dépasser la silhouette.');
+    if (!pose) rules.push('Score = prix de chaque créneau (sa case la plus chère) additionnés, moins les recettes d’export, plus l’écrêtement.');
+    var nbs = E.neighbors(grid);
+    nbs.forEach(function (nb) {
+      rules.push((nb.multi ? 'Voisin ' + nb.name : 'Voisin : ' + nb.name) + ' (ligne de ' + nb.cap + ' bloc' + (nb.cap > 1 ? 's' : '') + ' par créneau' + (nb.canImport ? ', import' : '') + (nb.canExport ? ', export jusqu’à ' + nb.budget + ' bloc' + (nb.budget > 1 ? 's' : '') + ' sur la journée' : '') + (nb.co2 ? ', import à ' + nb.co2 + ' CO₂ par case' : '') + ').');
+    });
+    if (grid.step) rules.push('STEP : ' + grid.step + ' paire de pompage → turbinage.');
+    if (grid.curtail_penalty !== undefined) rules.push('Surplus écrêté : ' + grid.curtail_penalty + ' points par bloc.');
+    $('rules').textContent = rules.join(' ');
+  }
+
+  // Plain-French statement of the day's objective: first line = optimization, then constraints.
+  function objectiveLines(g) {
+    var o = g.objective || {}, c = E.constraints(g);
+    var lines = [];
+    if (E.isPose(g)) {
+      lines.push('Objectif du jour : pose tout l’inventaire pour remplir exactement la silhouette, en respectant chaque indice du marché.');
+      if (c.co2_cap != null) lines.push('Plafond CO₂ : ' + c.co2_cap + ' au plus' + (E.neighbors(g).some(function (n) { return n.co2; }) ? ' (le CO₂ importé compte).' : '.'));
+      return lines;
+    }
+    if (o.optimize === 'target') lines.push('Objectif du jour : fais exactement un score de ' + fmt(o.target) + '.');
+    else lines.push('Objectif du jour : fais le plus petit score possible.');
+    if (c.price_cap !== undefined) lines.push('Prix plafond : aucun créneau au-dessus de ' + c.price_cap + '.');
+    if (c.co2_cap !== undefined) lines.push('Plafond CO₂ : ' + c.co2_cap + ' au plus' + (E.neighbors(g).some(function (n) { return n.co2; }) ? ' (le CO₂ importé compte).' : '.'));
+    if (c.no_import) lines.push('Souveraineté : aucun import.');
+    if (c.smooth !== undefined) lines.push('Prix lisse : deux créneaux voisins ne diffèrent pas de plus de ' + c.smooth + '.');
+    return lines;
+  }
+
+  // Pose mode: the inventory replaces the price palette (what is left to lay, per piece and exchange).
+  function importWanted(nb) {
+    var plan = grid.inventory.imports || {};
+    return plan.I !== undefined ? plan.I > 0 : (plan[nb.id] || 0) > 0;
+  }
+
+  function inventoryTile(toolId, letter, name, it) {
+    var b = el('button', 'tile ' + it.status + (tool === toolId ? ' sel' : ''));
+    var sw = el('span', 'sw', letter);
+    sw.style.background = 'var(--c-' + toolId[0] + ')';
+    sw.style.color = 'var(--t-' + toolId[0] + ')';
+    b.appendChild(sw);
+    var meta = el('span', 'meta');
+    meta.appendChild(el('div', '', name[0].toUpperCase() + name.slice(1) + ' · ' + E.lenText(E.pieceDef(grid, toolId).len)));
+    meta.appendChild(el('div', 'st', (it.status === 'done' ? '✓ ' : '') + it.text));
+    b.appendChild(meta);
+    b.onclick = function () { setTool(toolId); };
+    return b;
+  }
+
+  function drawInventory() {
+    var box = $('palette');
+    box.textContent = '';
+    var items = ev.pose.inventory, byId = {};
+    items.forEach(function (it) { byId[it.id] = it; });
+    items.forEach(function (it) {
+      if (it.kind === 'piece') box.appendChild(inventoryTile(it.id, it.name, E.pieceName(grid, it.id), it));
+    });
+    E.neighbors(grid).forEach(function (nb) {
+      if (!nb.canImport || !importWanted(nb)) return;
+      box.appendChild(inventoryTile(nb.pieceId, 'I', E.pieceName(grid, nb.pieceId), byId['imp:' + nb.id] || byId['imp:*']));
+    });
+    var eb = el('button', 'tile' + (tool === 'erase' ? ' sel' : ''));
+    eb.appendChild(el('span', 'sw', '⌫'));
+    eb.appendChild(el('span', 'meta', 'Gomme'));
+    eb.onclick = function () { setTool('erase'); };
+    box.appendChild(eb);
+    if (grid.step) {
+      var sb = el('button', 'tile' + (tool === 'step' ? ' sel' : ''));
+      sb.appendChild(el('span', 'sw', '⇅'));
+      sb.appendChild(el('span', 'meta', 'STEP : clique le pompage ▲ puis le turbinage ▼ (' + state.step.length + ' / ' + grid.step + ')'));
+      sb.onclick = function () { setTool('step'); };
+      box.appendChild(sb);
+    }
+    var ul = el('ul', 'exlist');
+    items.forEach(function (it) {
+      if (it.kind !== 'exchange') return;
+      ul.appendChild(el('li', it.status, it.name + ' : ' + (it.status === 'done' ? '✓ ' : '') + it.text));
+    });
+    if (E.neighbors(grid).some(function (nb) { return nb.canExport; })) ul.appendChild(el('li', 'muted', 'Export : − / + sous chaque colonne'));
+    box.appendChild(ul);
+  }
+
+  function drawClues() {
+    var ul = $('clues');
+    ul.textContent = '';
+    if (!E.isPose(grid)) return;
+    ev.pose.clues.forEach(function (c) {
+      var li = el('li', 'clue' + (c.ok ? ' ok' : ''));
+      li.appendChild(el('span', 'mark', c.ok ? '✓' : ''));
+      li.appendChild(el('span', '', c.text));
+      ul.appendChild(li);
+    });
+    if (!ev.pose.clues.length) ul.appendChild(el('li', 'muted', 'Aucun indice : l’inventaire suffit.'));
+  }
+
+  function drawPalette() {
+    if (E.isPose(grid)) { drawInventory(); return; }
+    var box = $('palette');
+    box.textContent = '';
+    var importIds = E.neighbors(grid).filter(function (nb) { return nb.canImport; }).map(function (nb) { return nb.pieceId; });
+    Object.keys(grid.pieces).concat(importIds).forEach(function (id) {
+      var def = E.pieceDef(grid, id);
+      var b = el('button', 'tile' + (tool === id ? ' sel' : ''));
+      var base = id[0];
+      var sw = el('span', 'sw', E.isImport(id) ? 'I' : id);
+      sw.style.background = 'var(--c-' + base + ')';
+      sw.style.color = 'var(--t-' + base + ')';
+      b.appendChild(sw);
+      var meta = el('span', 'meta');
+      var pname = E.pieceName(grid, id);
+      var line1 = (pname[0].toUpperCase() + pname.slice(1)) + ' · ' + def.len.join('/') + ' créneau' + (def.len[def.len.length - 1] > 1 ? 'x' : '');
+      var line2 = (E.isImport(id) ? 'prix voisin du créneau' : 'prix ' + def.price) + ' · CO₂ ' + def.co2 + '/case';
+      meta.appendChild(el('div', '', line1));
+      meta.appendChild(el('div', '', line2));
+      if (def.cap !== undefined) {
+        var left = def.cap - (ev ? ev.used[id] || 0 : 0);
+        meta.appendChild(el('div', '', 'Reste ' + left + ' / ' + def.cap + ' cases'));
+        if (left <= 0) b.classList.add('empty');
+      }
+      b.appendChild(meta);
+      b.onclick = function () { setTool(id); };
+      box.appendChild(b);
+    });
+    var eb = el('button', 'tile' + (tool === 'erase' ? ' sel' : ''));
+    eb.appendChild(el('span', 'sw', '⌫'));
+    eb.appendChild(el('span', 'meta', 'Gomme'));
+    eb.onclick = function () { setTool('erase'); };
+    box.appendChild(eb);
+    if (E.neighbors(grid).some(function (nb) { return nb.canExport; })) {
+      var xb = el('div', 'tile info');
+      var sw = el('span', 'sw', '⇗');
+      sw.style.background = 'repeating-linear-gradient(135deg, #999 0 4px, #ccc 4px 9px)';
+      xb.appendChild(sw);
+      xb.appendChild(el('span', 'meta', 'Export : − / + sous chaque colonne'));
+      box.appendChild(xb);
+    }
+    if (grid.step) {
+      var sb = el('button', 'tile' + (tool === 'step' ? ' sel' : ''));
+      sb.appendChild(el('span', 'sw', '⇅'));
+      sb.appendChild(el('span', 'meta', 'STEP : clique le pompage ▲ puis le turbinage ▼ (' + state.step.length + ' / ' + grid.step + ')'));
+      sb.onclick = function () { setTool('step'); };
+      box.appendChild(sb);
+    }
+  }
+
+  function setTool(t) {
+    tool = t;
+    pendingStart = null;
+    stepPending = null;
+    setMsg('', '');
+    drawPalette();
+    drawBoard();
+  }
+
+  function setMsg(text, kind) {
+    var m = $('msg');
+    m.textContent = text;
+    m.className = 'msg' + (kind ? ' ' + kind : '');
+  }
+
+  function rowCount() {
+    var maxExp = 0, best = 1;
+    E.neighbors(grid).forEach(function (nb) { maxExp += E.maxExport(grid, nb.id); });
+    for (var c = 0; c < grid.columns.length; c++) {
+      best = Math.max(best, grid.residual[c] + maxExp + (grid.step || 0), ev.eff[c]);
+    }
+    return best;
+  }
+
+  function barAt(row, col) {
+    var i = E.barIndexAt(state, row, col);
+    return i < 0 ? null : { index: i, bar: state.bars[i] };
+  }
+
+  function drawBoard() {
+    var board = $('board');
+    board.textContent = '';
+    board.className = 'board' + (tool === 'erase' ? ' erase' : '');
+    var n = grid.columns.length, R = rowCount();
+    var pendingCol = stepPending !== null ? stepPending : -1;
+
+    for (var r = R - 1; r >= 0; r--) {
+      var row = el('div', 'row');
+      for (var c = 0; c < n; c++) {
+        var cell = el('div', 'cell');
+        cell.dataset.r = r;
+        cell.dataset.c = c;
+        var inSil = r < ev.eff[c];
+        cell.classList.add(inSil ? 'in' : 'out');
+        if (inSil && r >= ev.eff[c] - Math.max(0, E.totalExport(state, c))) cell.classList.add('hatch');
+        if (r === 0 && ev.curtail[c] > 0) { cell.classList.remove('out'); cell.classList.add('curtail'); }
+        var hit = barAt(r, c);
+        if (hit) {
+          var b = hit.bar;
+          cell.classList.add('bar');
+          cell.style.background = 'var(--c-' + b.piece[0] + ')';
+          cell.style.color = 'var(--t-' + b.piece[0] + ')';
+          if (c === b.col) {
+            cell.classList.add('start');
+            var lab = E.pieceLabel(grid, b.piece);
+            if (lab.length > 1) cell.appendChild(el('small', '', lab)); else cell.textContent = lab;
+          }
+          if (c === b.col + b.len - 1) cell.classList.add('end');
+          if (b.locked) cell.classList.add('locked');
+          if (ev.invalid[hit.index] !== undefined) { cell.classList.add('invalid'); cell.title = ev.invalid[hit.index]; }
+        }
+        if (pendingStart && pendingStart.row === r && pendingStart.col === c) cell.classList.add('pending');
+        row.appendChild(cell);
+      }
+      board.appendChild(row);
+    }
+
+    // Column labels
+    var heads = el('div', 'row');
+    for (c = 0; c < n; c++) {
+      var h = el('div', 'colhead');
+      h.appendChild(el('b', '', grid.columns[c]));
+      h.appendChild(document.createTextNode('h = ' + ev.h[c]));
+      heads.appendChild(h);
+    }
+    board.appendChild(heads);
+
+    // Slot price: what the player checks at the correction
+    if (!E.isPose(grid)) {
+      var prow = el('div', 'row');
+      for (c = 0; c < n; c++) prow.appendChild(el('div', 'colprice', ev.missingByCol[c] > 0 ? '…' : fmt(ev.colPrice[c])));
+      board.appendChild(prow);
+      board.appendChild(el('div', 'legend pricelabel', 'Prix du créneau (sa case la plus chère)'));
+    }
+
+    // Surplus
+    var sur = el('div', 'row');
+    for (c = 0; c < n; c++) {
+      var s = el('div', 'colinfo');
+      if (grid.residual[c] < 0) {
+        s.appendChild(el('span', 'neg', 'surplus ' + Math.abs(grid.residual[c])));
+        if (ev.curtail[c] > 0) s.appendChild(document.createTextNode(' écrêté ' + ev.curtail[c]));
+      }
+      sur.appendChild(s);
+    }
+    board.appendChild(sur);
+
+    // One block per neighbor: price, CO2 per imported cell, export (− / +), line usage, remaining export budget
+    E.neighbors(grid).forEach(function (nb) {
+      var used = E.exportsUsed(state, nb.id);
+      var left = nb.budget === null ? null : nb.budget - used;
+      var head = nb.name + ' — prix voisin';
+      if (nb.canImport) head += ', import ' + nb.co2 + ' CO₂/case';
+      if (nb.canExport) head += ', export − / + , ligne (export + import / ' + nb.cap + ')';
+      var hd = el('div', 'nbhead', head);
+      if (nb.canExport && left !== null) hd.appendChild(document.createTextNode(' · budget d’export restant : ' + left + ' / ' + nb.budget));
+      board.appendChild(hd);
+      var prices = el('div', 'row');
+      var ctrl = el('div', 'row');
+      for (var k = 0; k < n; k++) {
+        prices.appendChild(el('div', 'colinfo', fmt(nb.price[k])));
+        var cc = el('div', 'colinfo');
+        var cur = (state.exports[nb.id] || [])[k] || 0;
+        if (nb.canExport) {
+          var ex = el('div', 'exp');
+          var minus = el('button', '', '−'), plus = el('button', '', '+');
+          minus.onclick = exportHandler(nb.id, k, -1);
+          plus.onclick = exportHandler(nb.id, k, 1);
+          minus.disabled = cur <= 0;
+          plus.disabled = cur >= nb.cap || (left !== null && left <= 0);
+          ex.appendChild(minus);
+          ex.appendChild(el('span', '', String(cur)));
+          ex.appendChild(plus);
+          cc.appendChild(ex);
+        }
+        cc.appendChild(document.createTextNode((cur + E.importsInColumn(grid, state, k, nb.id, -1)) + ' / ' + nb.cap));
+        ctrl.appendChild(cc);
+      }
+      board.appendChild(prices);
+      board.appendChild(ctrl);
+    });
+
+    // STEP markers
+    if (grid.step) {
+      var sbar = el('div', 'row stepbar' + (tool === 'step' ? ' active' : ''));
+      for (c = 0; c < n; c++) {
+        var cell2 = el('div', 'colinfo');
+        state.step.forEach(function (pair, idx) {
+          if (pair.pump === this.c) cell2.appendChild(stepButton('▲', 'Retirer ce pompage', idx));
+          if (pair.turbine === this.c) cell2.appendChild(stepButton('▼', 'Retirer ce turbinage', idx));
+        }, { c: c });
+        if (tool === 'step') {
+          var col = c;
+          var pick = el('button', col === pendingCol ? 'armed' : '', col === pendingCol ? '…' : '+');
+          pick.title = stepPending === null ? 'Choisir comme créneau de pompage' : 'Choisir comme créneau de turbinage';
+          pick.onclick = function (col) { return function () { stepClick(col); }; }(col);
+          cell2.appendChild(pick);
+        }
+        sbar.appendChild(cell2);
+      }
+      board.appendChild(sbar);
+      board.appendChild(el('div', 'legend', 'STEP : ▲ pompage (ajoute une case), ▼ turbinage (en retire une)'));
+    }
+  }
+
+  function stepButton(glyph, title, idx) {
+    var b = el('button', '', glyph);
+    b.title = title;
+    b.onclick = function () { E.removeStep(state, idx); stepPending = null; refresh(); };
+    return b;
+  }
+
+  function stepClick(col) {
+    if (stepPending === null) {
+      if (state.step.length >= grid.step) { setMsg('Toutes les paires STEP sont posées : retire-en une d’abord.', 'bad'); return; }
+      stepPending = col;
+      setMsg('Pompage choisi à ' + grid.columns[col] + ' : choisis maintenant le créneau de turbinage (plus tard).', '');
+      drawBoard();
+      return;
+    }
+    var res = E.tryAddStep(grid, state, stepPending, col);
+    if (!res.ok) { setMsg(res.message, 'bad'); stepPending = null; drawBoard(); return; }
+    stepPending = null;
+    setMsg('', '');
+    refresh();
+  }
+
+  function exportHandler(nbId, c, delta) {
+    return function () {
+      E.setExport(grid, state, nbId, c, ((state.exports[nbId] || [])[c] || 0) + delta);
+      refresh();
+    };
+  }
+
+  // ---- bar drawing -------------------------------------------------------
+  function cellFromPoint(x, y) {
+    var e = document.elementFromPoint(x, y);
+    while (e && !(e.dataset && e.dataset.r !== undefined && e.classList.contains('cell'))) e = e.parentElement;
+    return e ? { row: +e.dataset.r, col: +e.dataset.c } : null;
+  }
+
+  function candidate(a, b) {
+    var lo = Math.min(a.col, b.col), hi = Math.max(a.col, b.col);
+    return { piece: tool, row: a.row, col: lo, len: hi - lo + 1 };
+  }
+
+  function clearPreview() {
+    var nodes = document.querySelectorAll('.pv-ok, .pv-bad');
+    for (var i = 0; i < nodes.length; i++) nodes[i].classList.remove('pv-ok', 'pv-bad');
+  }
+
+  function preview(bar) {
+    clearPreview();
+    var res = E.checkBar(grid, state, bar);
+    var cls = res.ok ? 'pv-ok' : 'pv-bad';
+    for (var k = bar.col; k < bar.col + bar.len; k++) {
+      var node = document.querySelector('.cell[data-r="' + bar.row + '"][data-c="' + k + '"]');
+      if (node) node.classList.add(cls);
+    }
+    setMsg(res.ok ? 'Relâche pour poser la barre ' + bar.piece + ' (' + bar.len + ' créneau' + (bar.len > 1 ? 'x' : '') + ').' : res.message, res.ok ? 'ok' : 'bad');
+  }
+
+  function commit(bar) {
+    var res = E.tryAddBar(grid, state, bar);
+    pendingStart = null;
+    clearPreview();
+    if (!res.ok) { setMsg(res.message, 'bad'); drawBoard(); return; }
+    setMsg('', '');
+    refresh();
+  }
+
+  function eraseAt(row, col) {
+    var i = E.barIndexAt(state, row, col);
+    if (i >= 0 && state.bars[i].locked) { setMsg('Cette centrale est déjà engagée : elle ne peut pas être retirée.', 'bad'); return false; }
+    if (E.removeBarAt(state, row, col)) { setMsg('', ''); refresh(); return true; }
+    return false;
+  }
+
+  var boardEl = $('board');
+  boardEl.addEventListener('contextmenu', function (e) {
+    var cell = cellFromPoint(e.clientX, e.clientY);
+    if (cell && E.barIndexAt(state, cell.row, cell.col) >= 0) {
+      e.preventDefault();
+      eraseAt(cell.row, cell.col);
+    }
+  });
+
+  boardEl.addEventListener('pointerdown', function (e) {
+    if (e.button !== 0) return;
+    var cell = cellFromPoint(e.clientX, e.clientY);
+    drag = cell ? { start: cell, moved: false } : null;
+  });
+
+  boardEl.addEventListener('pointermove', function (e) {
+    if (!drag || tool === 'erase' || tool === 'step' || e.buttons !== 1) return;
+    var cell = cellFromPoint(e.clientX, e.clientY);
+    if (!cell || cell.row !== drag.start.row) return;
+    if (cell.col !== drag.start.col) drag.moved = true;
+    if (drag.moved) preview(candidate(drag.start, cell));
+  });
+
+  window.addEventListener('pointercancel', function () { drag = null; clearPreview(); });
+
+  window.addEventListener('pointerup', function (e) {
+    if (!drag) return;
+    var d = drag;
+    drag = null;
+    var end = cellFromPoint(e.clientX, e.clientY);
+    if (!end) { clearPreview(); return; }
+    if (tool === 'erase') { if (end.row === d.start.row && end.col === d.start.col) eraseAt(end.row, end.col); return; }
+    if (!tool || tool === 'step') return;
+    var def = E.pieceDef(grid, tool);
+    if (end.row === d.start.row && end.col !== d.start.col) {
+      commit(candidate(d.start, end)); // drag
+      return;
+    }
+    if (end.row !== d.start.row || end.col !== d.start.col) { clearPreview(); return; }
+    // Tap on one cell
+    if (pendingStart && pendingStart.row === end.row) {
+      commit(candidate(pendingStart, end));
+    } else if (def.len.length === 1 && def.len[0] === 1) {
+      commit({ piece: tool, row: end.row, col: end.col, len: 1 });
+    } else {
+      pendingStart = end;
+      setMsg('Départ en ' + grid.columns[end.col] + ' : touche la case d’arrivée sur la même ligne.', '');
+      clearPreview();
+      drawBoard();
+    }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { pendingStart = null; stepPending = null; setMsg('', ''); drawBoard(); }
+  });
+
+  // ---- score -------------------------------------------------------------
+  function actionButtons(box) {
+    var act = el('div', 'actions');
+    var r = el('button', '', 'Recommencer'); r.onclick = restart;
+    var s = el('button', '', 'Voir la solution'); s.onclick = showSolution;
+    var nx = el('button', '', 'Grille suivante →'); nx.disabled = gridIndex >= GRIDS.length - 1;
+    nx.onclick = function () { selectGrid(gridIndex + 1); };
+    act.appendChild(r); act.appendChild(s); act.appendChild(nx);
+    box.appendChild(act);
+  }
+
+  // Pose mode verdict: solved or not, with the unmet constraints. No score, no cost.
+  function drawVerdict() {
+    var box = $('scorePanel');
+    box.textContent = '';
+    var moved = state.bars.some(function (b) { return !b.locked; }) || state.step.length > 0 ||
+      Object.keys(state.exports).some(function (k) { return E.exportsUsed(state, k) > 0; });
+    if (ev.pose.success) {
+      var v = el('div', 'verdict');
+      v.appendChild(el('b', '', viewedSolution ? '✓ Solution affichée' : '✓ Grille réussie'));
+      v.appendChild(el('div', '', 'La silhouette est pavée, l’inventaire posé en entier et tous les indices sont respectés.'));
+      box.appendChild(v);
+    } else if (moved) {
+      var bad = el('div', 'verdict bad');
+      bad.appendChild(el('b', '', 'Pas encore réussie : ' + ev.pose.unmet.length + ' contrainte' + (ev.pose.unmet.length > 1 ? 's' : '') + ' non tenue' + (ev.pose.unmet.length > 1 ? 's' : '')));
+      var ul = el('ul');
+      ev.pose.unmet.forEach(function (m) { ul.appendChild(el('li', '', m)); });
+      bad.appendChild(ul);
+      box.appendChild(bad);
+    } else {
+      box.appendChild(el('div', 'muted', 'Pose des barres pour remplir la silhouette : le verdict apparaît dès le premier coup.'));
+    }
+    actionButtons(box);
+  }
+
+  function drawScore() {
+    if (E.isPose(grid)) { drawVerdict(); return; }
+    var box = $('scorePanel');
+    box.textContent = '';
+    var sc = el('div', 'score');
+    function metric(label, value) {
+      var d = el('div');
+      d.appendChild(el('b', '', value));
+      d.appendChild(el('span', '', label));
+      sc.appendChild(d);
+    }
+    metric('Score' + (grid.objective.optimize === 'target' ? ' (cible ' + fmt(grid.objective.target) + ')' : ''), fmt(ev.score));
+    var cons = E.constraints(grid);
+    metric('Coût (départage)' + (grid.optimum.cost !== undefined ? ' · optimum ' + grid.optimum.cost : ''), fmt(ev.cost));
+    metric('CO₂' + (cons.co2_cap !== undefined ? ' (plafond ' + cons.co2_cap + ')' : ''), String(ev.co2));
+    metric('Blocs échangés', String(ev.swaps));
+    metric('Cases à paver', (ev.totalCells - ev.missing) + ' / ' + ev.totalCells);
+    box.appendChild(sc);
+
+    var caps = [];
+    Object.keys(grid.pieces).forEach(function (id) {
+      var cap = grid.pieces[id].cap;
+      if (cap !== undefined) caps.push(E.PIECE_NAMES[id] + ' : ' + (cap - ev.used[id]) + ' / ' + cap + ' cases restantes');
+    });
+    if (caps.length) box.appendChild(el('div', 'legend', caps.join(' · ')));
+
+    if (ev.errors.length) {
+      var ul = el('ul', 'errors');
+      var seen = {};
+      ev.errors.forEach(function (m) { if (!seen[m]) { seen[m] = 1; ul.appendChild(el('li', '', m)); } });
+      box.appendChild(ul);
+    } else if (ev.missing > 0) {
+      box.appendChild(el('div', 'muted', 'Il reste ' + ev.missing + ' case' + (ev.missing > 1 ? 's' : '') + ' à paver.'));
+    }
+
+    if (ev.complete) {
+      var v = el('div', 'verdict');
+      var stars = viewedSolution ? 'solution de référence' : starText(ev.stars);
+      var head = el('div');
+      head.appendChild(el('span', 'stars', stars));
+      head.appendChild(document.createTextNode(' Grille complète.'));
+      v.appendChild(head);
+      var isTarget = grid.objective.optimize === 'target';
+      v.appendChild(el('div', '', 'Score : ' + fmt(ev.score) + ' (' + fmt(ev.slotsTotal) + ' de créneaux − ' + fmt(ev.revenue) + ' d’export + ' + fmt(ev.penalty) + ' d’écrêtement), ' + (isTarget ? 'cible ' : 'optimum ') + fmt(ev.goal) + '. Coût : ' + fmt(ev.cost) + ', optimum ' + fmt(ev.optCost) + '.'));
+      if (ev.stars === 3 && grid.lesson) v.appendChild(el('div', 'lesson', grid.lesson));
+      else if (ev.stars === 2) {
+        var lack = ev.gap === 'cost'
+          ? 'des cases chères sont gâchées : coût ' + fmt(ev.cost) + ', optimum ' + fmt(ev.optCost) + ' (pas de TAC cachée sous un ruban).'
+          : 'trop d’échanges : ' + fmt(ev.swaps) + ' blocs échangés, optimum ' + fmt(ev.optTrades) + ' (ne commerce pas pour rien).';
+        v.appendChild(el('div', 'muted', (isTarget ? 'Cible atteinte' : 'Score optimal') + ', mais ' + lack));
+      }
+      else v.appendChild(el('div', 'muted', isTarget ? 'Vise exactement ' + fmt(ev.goal) + ' pour la 2e étoile.' : 'Cherche un score plus bas pour la 2e étoile.'));
+      box.appendChild(v);
+    }
+
+    actionButtons(box);
+  }
+
+  function refresh() {
+    ev = E.evaluate(grid, state);
+    if (E.isPose(grid)) {
+      if (ev.pose.success && !viewedSolution && !progress.solved[grid.id]) {
+        progress.solved[grid.id] = true;
+        saveProgress();
+        drawList();
+      }
+    } else if (ev.complete && !viewedSolution && ev.stars > (progress.stars[grid.id] || 0)) {
+      progress.stars[grid.id] = ev.stars;
+      saveProgress();
+      drawList();
+    }
+    drawPalette();
+    drawClues();
+    drawBoard();
+    drawScore();
+  }
+
+  selectGrid(0);
+})();
+</script>
+</body>
+</html>

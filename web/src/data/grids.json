@@ -1,0 +1,1975 @@
+[
+  {
+    "id": 1,
+    "title": "1. Poser l'inventaire",
+    "section": "tutorial",
+    "intro": "Pose toutes les centrales de l'inventaire, ni plus ni moins, en remplissant exactement la silhouette. Technique : « Cases interchangeables » : quand tu sais combien de cases de chaque techno va dans une colonne, l'ordre ne compte pas.",
+    "teaches": [
+      "swap"
+    ],
+    "columns": [
+      "0h",
+      "4h",
+      "8h",
+      "12h",
+      "16h",
+      "20h"
+    ],
+    "demand": [
+      2,
+      2,
+      4,
+      3,
+      2,
+      3
+    ],
+    "pieces": {
+      "N": {
+        "len": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "height": [
+          1
+        ],
+        "rank": 1,
+        "co2": 0
+      },
+      "G": {
+        "len": [
+          2,
+          3
+        ],
+        "height": [
+          1
+        ],
+        "rank": 4,
+        "co2": 1
+      },
+      "T": {
+        "len": [
+          1
+        ],
+        "height": [
+          1
+        ],
+        "rank": 5,
+        "co2": 2
+      }
+    },
+    "weather": {
+      "R": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "F": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "neighbors": [],
+    "step": false,
+    "co2_cap": null,
+    "inventory": {
+      "level": "exact",
+      "pieces": {
+        "N": {
+          "bars": [
+            6,
+            6
+          ]
+        },
+        "G": {
+          "bars": [
+            2
+          ]
+        },
+        "T": {
+          "cells": 2
+        }
+      }
+    },
+    "clues": [],
+    "solution": {
+      "exports": {},
+      "step": [],
+      "placements": [
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 0,
+          "len": 6
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 0,
+          "len": 6
+        },
+        {
+          "piece": "G",
+          "row": 2,
+          "col": 2,
+          "len": 2
+        },
+        {
+          "piece": "T",
+          "row": 2,
+          "col": 5,
+          "len": 1
+        },
+        {
+          "piece": "T",
+          "row": 3,
+          "col": 2,
+          "len": 1
+        }
+      ]
+    },
+    "difficulty": {
+      "rating": 1,
+      "label": "Facile",
+      "techniques": [
+        "swap"
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "title": "2. Le prix plafonne la colonne",
+    "section": "tutorial",
+    "intro": "Nouveau : un prix publié par la bourse. Sous un prix publié, aucune case n'est plus chère que cette centrale.",
+    "teaches": [
+      "price_cap"
+    ],
+    "columns": [
+      "0h",
+      "4h",
+      "8h",
+      "12h",
+      "16h",
+      "20h"
+    ],
+    "demand": [
+      2,
+      3,
+      2,
+      1,
+      3,
+      1
+    ],
+    "pieces": {
+      "N": {
+        "len": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "height": [
+          1
+        ],
+        "rank": 1,
+        "co2": 0
+      },
+      "B": {
+        "len": [
+          1
+        ],
+        "height": [
+          1
+        ],
+        "rank": 2,
+        "co2": 0
+      },
+      "T": {
+        "len": [
+          1
+        ],
+        "height": [
+          1
+        ],
+        "rank": 5,
+        "co2": 2
+      }
+    },
+    "weather": {
+      "R": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "F": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "neighbors": [],
+    "step": false,
+    "co2_cap": null,
+    "inventory": {
+      "level": "exact",
+      "pieces": {
+        "N": {
+          "bars": [
+            6,
+            3
+          ]
+        },
+        "B": {
+          "cells": 2
+        },
+        "T": {
+          "cells": 1
+        }
+      }
+    },
+    "clues": [
+      {
+        "type": "price",
+        "col": 4,
+        "piece": "B"
+      }
+    ],
+    "solution": {
+      "exports": {},
+      "step": [],
+      "placements": [
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 0,
+          "len": 6
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 0,
+          "len": 3
+        },
+        {
+          "piece": "B",
+          "row": 1,
+          "col": 4,
+          "len": 1
+        },
+        {
+          "piece": "T",
+          "row": 2,
+          "col": 1,
+          "len": 1
+        },
+        {
+          "piece": "B",
+          "row": 2,
+          "col": 4,
+          "len": 1
+        }
+      ]
+    },
+    "difficulty": {
+      "rating": 1,
+      "label": "Facile",
+      "techniques": [
+        "price_cap",
+        "swap"
+      ]
+    }
+  },
+  {
+    "id": 3,
+    "title": "3. Inventaire juste",
+    "section": "tutorial",
+    "intro": "S'il reste exactement autant de cases possibles que de cases à poser pour une techno, toutes ces cases sont à elle.",
+    "teaches": [
+      "just_enough"
+    ],
+    "columns": [
+      "0h",
+      "4h",
+      "8h",
+      "12h",
+      "16h",
+      "20h"
+    ],
+    "demand": [
+      4,
+      3,
+      2,
+      2,
+      4,
+      4
+    ],
+    "pieces": {
+      "N": {
+        "len": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "height": [
+          1
+        ],
+        "rank": 1,
+        "co2": 0
+      },
+      "G": {
+        "len": [
+          2,
+          3
+        ],
+        "height": [
+          1
+        ],
+        "rank": 4,
+        "co2": 1
+      }
+    },
+    "weather": {
+      "R": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "F": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "neighbors": [
+      {
+        "id": "DE",
+        "name": "Allemagne",
+        "cap": 1,
+        "co2": 3
+      }
+    ],
+    "step": false,
+    "co2_cap": null,
+    "inventory": {
+      "level": "exact",
+      "pieces": {
+        "N": {
+          "bars": [
+            6,
+            3,
+            3,
+            3,
+            3
+          ]
+        },
+        "G": {
+          "bars": [
+            2
+          ]
+        }
+      },
+      "exports": {
+        "DE": 2
+      },
+      "imports": {
+        "DE": 1
+      }
+    },
+    "clues": [],
+    "solution": {
+      "exports": {
+        "DE": [
+          0,
+          0,
+          1,
+          1,
+          0,
+          0
+        ]
+      },
+      "step": [],
+      "placements": [
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 0,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 3,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 0,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 3,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 2,
+          "col": 0,
+          "len": 6
+        },
+        {
+          "piece": "I",
+          "country": "DE",
+          "row": 3,
+          "col": 0,
+          "len": 1
+        },
+        {
+          "piece": "G",
+          "row": 3,
+          "col": 4,
+          "len": 2
+        }
+      ]
+    },
+    "difficulty": {
+      "rating": 2,
+      "label": "Moyen",
+      "techniques": [
+        "silhouette",
+        "room",
+        "just_enough",
+        "swap"
+      ]
+    }
+  },
+  {
+    "id": 4,
+    "title": "4. Le creux coupe le ruban",
+    "section": "tutorial",
+    "intro": "Chaque ligne se découpe en rubans entre les creux de demande. Une barre qui laisserait un bout de ruban impossible à remplir est exclue.",
+    "teaches": [
+      "ribbon"
+    ],
+    "columns": [
+      "0h",
+      "4h",
+      "8h",
+      "12h",
+      "16h",
+      "20h"
+    ],
+    "demand": [
+      3,
+      4,
+      3,
+      2,
+      2,
+      4
+    ],
+    "pieces": {
+      "N": {
+        "len": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "height": [
+          1
+        ],
+        "rank": 1,
+        "co2": 0
+      }
+    },
+    "weather": {
+      "R": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "F": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "neighbors": [
+      {
+        "id": "DE",
+        "name": "Allemagne",
+        "cap": 1,
+        "co2": 3
+      }
+    ],
+    "step": false,
+    "co2_cap": null,
+    "inventory": {
+      "level": "exact",
+      "pieces": {
+        "N": {
+          "bars": [
+            6,
+            3,
+            3,
+            3,
+            3
+          ]
+        }
+      },
+      "exports": {
+        "DE": 2
+      },
+      "imports": {
+        "DE": 2
+      }
+    },
+    "clues": [],
+    "solution": {
+      "exports": {
+        "DE": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          0
+        ]
+      },
+      "step": [],
+      "placements": [
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 0,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 3,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 0,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 3,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 2,
+          "col": 0,
+          "len": 6
+        },
+        {
+          "piece": "I",
+          "country": "DE",
+          "row": 3,
+          "col": 1,
+          "len": 1
+        },
+        {
+          "piece": "I",
+          "country": "DE",
+          "row": 3,
+          "col": 5,
+          "len": 1
+        }
+      ]
+    },
+    "difficulty": {
+      "rating": 2,
+      "label": "Moyen",
+      "techniques": [
+        "single_cover",
+        "silhouette",
+        "room",
+        "column_sum",
+        "ribbon",
+        "swap"
+      ]
+    }
+  },
+  {
+    "id": 5,
+    "title": "5. Flux publié et compter la colonne",
+    "section": "tutorial",
+    "intro": "Nouveau : la ligne vers l'Allemagne et un flux publié. Une colonne a autant de cases que sa hauteur : connaissant les autres, on déduit celle qui reste.",
+    "teaches": [
+      "flow",
+      "column_sum"
+    ],
+    "columns": [
+      "0h",
+      "4h",
+      "8h",
+      "12h",
+      "16h",
+      "20h"
+    ],
+    "demand": [
+      1,
+      1,
+      3,
+      2,
+      1,
+      1
+    ],
+    "pieces": {
+      "N": {
+        "len": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "height": [
+          1
+        ],
+        "rank": 1,
+        "co2": 0
+      }
+    },
+    "weather": {
+      "R": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "F": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "neighbors": [
+      {
+        "id": "DE",
+        "name": "Allemagne",
+        "cap": 1,
+        "co2": 3
+      }
+    ],
+    "step": false,
+    "co2_cap": null,
+    "inventory": {
+      "level": "exact",
+      "pieces": {
+        "N": {
+          "bars": [
+            3,
+            3
+          ]
+        }
+      },
+      "exports": {
+        "DE": 1
+      },
+      "imports": {
+        "DE": 4
+      }
+    },
+    "clues": [
+      {
+        "type": "flow",
+        "col": 0,
+        "country": "DE",
+        "dir": "import",
+        "value": 0
+      }
+    ],
+    "solution": {
+      "exports": {
+        "DE": [
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "step": [],
+      "placements": [
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 0,
+          "len": 3
+        },
+        {
+          "piece": "I",
+          "country": "DE",
+          "row": 0,
+          "col": 3,
+          "len": 1
+        },
+        {
+          "piece": "I",
+          "country": "DE",
+          "row": 0,
+          "col": 4,
+          "len": 1
+        },
+        {
+          "piece": "I",
+          "country": "DE",
+          "row": 0,
+          "col": 5,
+          "len": 1
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 1,
+          "len": 3
+        },
+        {
+          "piece": "I",
+          "country": "DE",
+          "row": 2,
+          "col": 2,
+          "len": 1
+        }
+      ]
+    },
+    "difficulty": {
+      "rating": 2,
+      "label": "Moyen",
+      "techniques": [
+        "flow",
+        "single_cover",
+        "room",
+        "silhouette",
+        "column_sum",
+        "exhausted"
+      ]
+    }
+  },
+  {
+    "id": 6,
+    "title": "6. La case la plus chère",
+    "section": "tutorial",
+    "intro": "Un prix publié exige au moins une case de cette centrale dans la colonne : s'il n'y a qu'une place possible, c'est elle.",
+    "teaches": [
+      "top_price"
+    ],
+    "columns": [
+      "0h",
+      "4h",
+      "8h",
+      "12h",
+      "16h",
+      "20h"
+    ],
+    "demand": [
+      6,
+      6,
+      6,
+      6,
+      6,
+      6
+    ],
+    "pieces": {
+      "N": {
+        "len": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "height": [
+          1
+        ],
+        "rank": 1,
+        "co2": 0
+      },
+      "G": {
+        "len": [
+          2,
+          3
+        ],
+        "height": [
+          1
+        ],
+        "rank": 4,
+        "co2": 1
+      }
+    },
+    "weather": {
+      "R": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "F": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "neighbors": [
+      {
+        "id": "DE",
+        "name": "Allemagne",
+        "cap": 1,
+        "co2": 3
+      }
+    ],
+    "step": false,
+    "co2_cap": null,
+    "inventory": {
+      "level": "exact",
+      "pieces": {
+        "N": {
+          "bars": [
+            6,
+            6,
+            6,
+            6,
+            6,
+            6
+          ]
+        },
+        "G": {
+          "bars": [
+            2
+          ]
+        }
+      },
+      "exports": {
+        "DE": 2
+      },
+      "imports": {
+        "DE": 0
+      }
+    },
+    "clues": [
+      {
+        "type": "price",
+        "col": 1,
+        "piece": "N"
+      },
+      {
+        "type": "price",
+        "col": 2,
+        "piece": "G"
+      }
+    ],
+    "solution": {
+      "exports": {
+        "DE": [
+          0,
+          0,
+          1,
+          1,
+          0,
+          0
+        ]
+      },
+      "step": [],
+      "placements": [
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 0,
+          "len": 6
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 0,
+          "len": 6
+        },
+        {
+          "piece": "N",
+          "row": 2,
+          "col": 0,
+          "len": 6
+        },
+        {
+          "piece": "N",
+          "row": 3,
+          "col": 0,
+          "len": 6
+        },
+        {
+          "piece": "N",
+          "row": 4,
+          "col": 0,
+          "len": 6
+        },
+        {
+          "piece": "N",
+          "row": 5,
+          "col": 0,
+          "len": 6
+        },
+        {
+          "piece": "G",
+          "row": 6,
+          "col": 2,
+          "len": 2
+        }
+      ]
+    },
+    "difficulty": {
+      "rating": 2,
+      "label": "Moyen",
+      "techniques": [
+        "price_cap",
+        "single_cover",
+        "room",
+        "exhausted",
+        "silhouette",
+        "top_price"
+      ]
+    }
+  },
+  {
+    "id": 7,
+    "title": "7. Pompage, relevé et programme",
+    "section": "tutorial",
+    "intro": "Nouveau : une STEP (pompage ▲ puis turbinage ▼), un relevé de production RTE et le programme publié d'une centrale.",
+    "teaches": [
+      "silhouette",
+      "record",
+      "program"
+    ],
+    "columns": [
+      "0h",
+      "3h",
+      "6h",
+      "9h",
+      "12h",
+      "15h",
+      "18h",
+      "21h"
+    ],
+    "demand": [
+      1,
+      3,
+      2,
+      3,
+      5,
+      4,
+      4,
+      3
+    ],
+    "pieces": {
+      "N": {
+        "len": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "height": [
+          1
+        ],
+        "rank": 1,
+        "co2": 0
+      }
+    },
+    "weather": {
+      "R": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "F": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "neighbors": [
+      {
+        "id": "DE",
+        "name": "Allemagne",
+        "cap": 1,
+        "co2": 3
+      }
+    ],
+    "step": true,
+    "co2_cap": null,
+    "inventory": {
+      "level": "exact",
+      "pieces": {
+        "N": {
+          "bars": [
+            4,
+            4,
+            4,
+            4,
+            3,
+            3,
+            3
+          ]
+        }
+      },
+      "exports": {
+        "DE": 2
+      },
+      "imports": {
+        "DE": 2
+      },
+      "step": 1
+    },
+    "clues": [
+      {
+        "type": "price",
+        "col": 1,
+        "piece": "N"
+      },
+      {
+        "type": "price",
+        "col": 4,
+        "piece": "N"
+      },
+      {
+        "type": "column",
+        "col": 3,
+        "counts": {
+          "N": 4
+        }
+      },
+      {
+        "type": "flow",
+        "col": 0,
+        "country": "DE",
+        "dir": "export",
+        "value": 1
+      },
+      {
+        "type": "flow",
+        "col": 2,
+        "country": "DE",
+        "dir": "export",
+        "value": 1
+      },
+      {
+        "type": "bar",
+        "piece": "N",
+        "col": 5,
+        "len": 3
+      }
+    ],
+    "solution": {
+      "exports": {
+        "DE": [
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "step": [
+        {
+          "pump": 3,
+          "turbine": 4
+        }
+      ],
+      "placements": [
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 0,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 3,
+          "len": 3
+        },
+        {
+          "piece": "I",
+          "country": "DE",
+          "row": 0,
+          "col": 6,
+          "len": 1
+        },
+        {
+          "piece": "I",
+          "country": "DE",
+          "row": 0,
+          "col": 7,
+          "len": 1
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 0,
+          "len": 4
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 4,
+          "len": 4
+        },
+        {
+          "piece": "N",
+          "row": 2,
+          "col": 1,
+          "len": 4
+        },
+        {
+          "piece": "N",
+          "row": 2,
+          "col": 5,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 3,
+          "col": 3,
+          "len": 4
+        }
+      ]
+    },
+    "difficulty": {
+      "rating": 2,
+      "label": "Moyen",
+      "techniques": [
+        "flow",
+        "room",
+        "price_cap",
+        "record",
+        "silhouette",
+        "ribbon",
+        "column_sum",
+        "program",
+        "swap"
+      ]
+    }
+  },
+  {
+    "id": 8,
+    "title": "Facile",
+    "section": "rated",
+    "intro": "Sans inventaire : tu connais les technos disponibles, pas leurs quantités. Seul le stock d'eau du barrage est connu : 2 cases au plus. Les indices du marché suffisent à déduire la seule pose.",
+    "columns": [
+      "0h",
+      "3h",
+      "6h",
+      "9h",
+      "12h",
+      "15h",
+      "18h",
+      "21h"
+    ],
+    "demand": [
+      1,
+      2,
+      1,
+      1,
+      1,
+      3,
+      2,
+      1
+    ],
+    "pieces": {
+      "N": {
+        "len": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "height": [
+          1
+        ],
+        "rank": 1,
+        "co2": 0
+      },
+      "B": {
+        "len": [
+          1
+        ],
+        "height": [
+          1
+        ],
+        "rank": 2,
+        "co2": 0
+      }
+    },
+    "weather": {
+      "R": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "F": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "neighbors": [
+      {
+        "id": "DE",
+        "name": "Allemagne",
+        "cap": 1,
+        "co2": 3
+      }
+    ],
+    "step": false,
+    "co2_cap": null,
+    "inventory": {
+      "level": "none",
+      "pieces": {
+        "N": {},
+        "B": {
+          "max_cells": 2
+        }
+      }
+    },
+    "clues": [
+      {
+        "type": "column",
+        "col": 7,
+        "counts": {
+          "N": 1
+        }
+      },
+      {
+        "type": "flow",
+        "col": 2,
+        "country": "DE",
+        "dir": "export",
+        "value": 0
+      },
+      {
+        "type": "exchanges",
+        "exports": {
+          "DE": 2
+        },
+        "imports": {
+          "DE": 0
+        }
+      }
+    ],
+    "solution": {
+      "exports": {
+        "DE": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0
+        ]
+      },
+      "step": [],
+      "placements": [
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 0,
+          "len": 5
+        },
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 5,
+          "len": 3
+        },
+        {
+          "piece": "B",
+          "row": 1,
+          "col": 1,
+          "len": 1
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 3,
+          "len": 4
+        },
+        {
+          "piece": "B",
+          "row": 2,
+          "col": 5,
+          "len": 1
+        }
+      ]
+    },
+    "difficulty": {
+      "rating": 1,
+      "label": "Facile",
+      "techniques": [
+        "flow",
+        "room",
+        "exhausted",
+        "record",
+        "single_cover",
+        "silhouette"
+      ]
+    }
+  },
+  {
+    "id": 9,
+    "title": "Moyen",
+    "section": "rated",
+    "intro": "Sans inventaire. Un seul relevé de production : à toi de découper les rubans.",
+    "columns": [
+      "0h",
+      "3h",
+      "6h",
+      "9h",
+      "12h",
+      "15h",
+      "18h",
+      "21h"
+    ],
+    "demand": [
+      4,
+      5,
+      5,
+      5,
+      6,
+      5,
+      4,
+      5
+    ],
+    "pieces": {
+      "N": {
+        "len": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "height": [
+          1
+        ],
+        "rank": 1,
+        "co2": 0
+      }
+    },
+    "weather": {
+      "R": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "F": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "neighbors": [
+      {
+        "id": "DE",
+        "name": "Allemagne",
+        "cap": 1,
+        "co2": 3
+      }
+    ],
+    "step": false,
+    "co2_cap": null,
+    "inventory": {
+      "level": "none",
+      "pieces": {
+        "N": {}
+      }
+    },
+    "clues": [
+      {
+        "type": "column",
+        "col": 3,
+        "counts": {
+          "N": 5
+        }
+      },
+      {
+        "type": "exchanges",
+        "exports": {
+          "DE": 0
+        },
+        "imports": {
+          "DE": 6
+        }
+      }
+    ],
+    "solution": {
+      "exports": {
+        "DE": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "step": [],
+      "placements": [
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 0,
+          "len": 5
+        },
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 5,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 0,
+          "len": 5
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 5,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 2,
+          "col": 0,
+          "len": 5
+        },
+        {
+          "piece": "N",
+          "row": 2,
+          "col": 5,
+          "len": 3
+        },
+        {
+          "piece": "I",
+          "country": "DE",
+          "row": 3,
+          "col": 0,
+          "len": 1
+        },
+        {
+          "piece": "I",
+          "country": "DE",
+          "row": 3,
+          "col": 1,
+          "len": 1
+        },
+        {
+          "piece": "I",
+          "country": "DE",
+          "row": 3,
+          "col": 2,
+          "len": 1
+        },
+        {
+          "piece": "N",
+          "row": 3,
+          "col": 3,
+          "len": 5
+        },
+        {
+          "piece": "N",
+          "row": 4,
+          "col": 1,
+          "len": 4
+        },
+        {
+          "piece": "I",
+          "country": "DE",
+          "row": 4,
+          "col": 5,
+          "len": 1
+        },
+        {
+          "piece": "I",
+          "country": "DE",
+          "row": 4,
+          "col": 7,
+          "len": 1
+        },
+        {
+          "piece": "I",
+          "country": "DE",
+          "row": 5,
+          "col": 4,
+          "len": 1
+        }
+      ]
+    },
+    "difficulty": {
+      "rating": 2,
+      "label": "Moyen",
+      "techniques": [
+        "record",
+        "single_cover",
+        "column_sum",
+        "ribbon",
+        "swap"
+      ]
+    }
+  },
+  {
+    "id": 10,
+    "title": "Difficile",
+    "section": "rated",
+    "intro": "Sans inventaire. Il faudra répartir les barres entre les lignes.",
+    "columns": [
+      "0h",
+      "3h",
+      "6h",
+      "9h",
+      "12h",
+      "15h",
+      "18h",
+      "21h"
+    ],
+    "demand": [
+      3,
+      4,
+      4,
+      3,
+      1,
+      3,
+      4,
+      4
+    ],
+    "pieces": {
+      "N": {
+        "len": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "height": [
+          1
+        ],
+        "rank": 1,
+        "co2": 0
+      }
+    },
+    "weather": {
+      "R": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "F": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "neighbors": [
+      {
+        "id": "DE",
+        "name": "Allemagne",
+        "cap": 1,
+        "co2": 3
+      }
+    ],
+    "step": false,
+    "co2_cap": null,
+    "inventory": {
+      "level": "none",
+      "pieces": {
+        "N": {}
+      }
+    },
+    "clues": [
+      {
+        "type": "column",
+        "col": 3,
+        "counts": {
+          "N": 3
+        }
+      },
+      {
+        "type": "column",
+        "col": 5,
+        "counts": {
+          "N": 3
+        }
+      },
+      {
+        "type": "exchanges",
+        "exports": {
+          "DE": 2
+        },
+        "imports": {
+          "DE": 2
+        }
+      }
+    ],
+    "solution": {
+      "exports": {
+        "DE": [
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0
+        ]
+      },
+      "step": [],
+      "placements": [
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 0,
+          "len": 4
+        },
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 4,
+          "len": 4
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 0,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 3,
+          "len": 5
+        },
+        {
+          "piece": "N",
+          "row": 2,
+          "col": 0,
+          "len": 4
+        },
+        {
+          "piece": "N",
+          "row": 2,
+          "col": 5,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 3,
+          "col": 0,
+          "len": 3
+        },
+        {
+          "piece": "I",
+          "country": "DE",
+          "row": 3,
+          "col": 6,
+          "len": 1
+        },
+        {
+          "piece": "I",
+          "country": "DE",
+          "row": 3,
+          "col": 7,
+          "len": 1
+        }
+      ]
+    },
+    "difficulty": {
+      "rating": 3,
+      "label": "Difficile",
+      "techniques": [
+        "silhouette",
+        "room",
+        "share_out",
+        "record",
+        "exhausted",
+        "single_cover"
+      ]
+    }
+  },
+  {
+    "id": 11,
+    "title": "Expert",
+    "section": "rated",
+    "intro": "Sans inventaire. Une hypothèse se réfute en quelques coups : laquelle ?",
+    "columns": [
+      "0h",
+      "3h",
+      "6h",
+      "9h",
+      "12h",
+      "15h",
+      "18h",
+      "21h"
+    ],
+    "demand": [
+      1,
+      3,
+      3,
+      5,
+      6,
+      6,
+      6,
+      5
+    ],
+    "pieces": {
+      "N": {
+        "len": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "height": [
+          1
+        ],
+        "rank": 1,
+        "co2": 0
+      }
+    },
+    "weather": {
+      "R": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "F": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "neighbors": [
+      {
+        "id": "DE",
+        "name": "Allemagne",
+        "cap": 1,
+        "co2": 3
+      }
+    ],
+    "step": false,
+    "co2_cap": null,
+    "inventory": {
+      "level": "none",
+      "pieces": {
+        "N": {}
+      }
+    },
+    "clues": [
+      {
+        "type": "column",
+        "col": 0,
+        "counts": {
+          "N": 1
+        }
+      },
+      {
+        "type": "column",
+        "col": 2,
+        "counts": {
+          "N": 3
+        }
+      },
+      {
+        "type": "exchanges",
+        "exports": {
+          "DE": 2
+        },
+        "imports": {
+          "DE": 0
+        }
+      }
+    ],
+    "solution": {
+      "exports": {
+        "DE": [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "step": [],
+      "placements": [
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 0,
+          "len": 5
+        },
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 5,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 1,
+          "len": 4
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 5,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 2,
+          "col": 1,
+          "len": 4
+        },
+        {
+          "piece": "N",
+          "row": 2,
+          "col": 5,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 3,
+          "col": 3,
+          "len": 5
+        },
+        {
+          "piece": "N",
+          "row": 4,
+          "col": 3,
+          "len": 5
+        },
+        {
+          "piece": "N",
+          "row": 5,
+          "col": 3,
+          "len": 5
+        }
+      ]
+    },
+    "difficulty": {
+      "rating": 4,
+      "label": "Expert",
+      "techniques": [
+        "record",
+        "silhouette",
+        "ribbon",
+        "refuted"
+      ]
+    }
+  }
+]

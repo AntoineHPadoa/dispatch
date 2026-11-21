@@ -1,0 +1,665 @@
+[
+  {
+    "id": 1,
+    "title": "Generated 1",
+    "columns": [
+      "0h",
+      "2h",
+      "4h",
+      "7h",
+      "9h",
+      "12h",
+      "14h",
+      "16h",
+      "19h",
+      "21h"
+    ],
+    "residual": [
+      5,
+      5,
+      6,
+      6,
+      6,
+      6,
+      -2,
+      4,
+      4,
+      3
+    ],
+    "pieces": {
+      "N": {
+        "len": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "price": 0,
+        "co2": 0
+      },
+      "B": {
+        "len": [
+          1
+        ],
+        "price": 1,
+        "co2": 0,
+        "cap": 2
+      },
+      "C": {
+        "len": [
+          3,
+          4,
+          5
+        ],
+        "price": 1,
+        "co2": 3
+      },
+      "G": {
+        "len": [
+          2,
+          3
+        ],
+        "price": 2,
+        "co2": 1
+      },
+      "T": {
+        "len": [
+          1
+        ],
+        "price": 5,
+        "co2": 2
+      }
+    },
+    "neighbor": {
+      "name": "Voisin",
+      "price": [
+        3,
+        2,
+        1,
+        2,
+        3,
+        3,
+        3,
+        3,
+        2,
+        0
+      ],
+      "cap": 1,
+      "export_budget": 2,
+      "import": true,
+      "export": true
+    },
+    "curtail_penalty": 2,
+    "step": 1,
+    "objective": {
+      "optimize": "min_score",
+      "target": null,
+      "constraints": {
+        "co2_cap": 12
+      }
+    },
+    "optimum": {
+      "score": -5,
+      "co2": 0
+    },
+    "solution": {
+      "exports": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0
+      ],
+      "step": [
+        {
+          "pump": 6,
+          "turbine": 8
+        }
+      ],
+      "curtail": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "placements": [
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 0,
+          "len": 6
+        },
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 7,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 0,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 3,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 7,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 2,
+          "col": 0,
+          "len": 6
+        },
+        {
+          "piece": "N",
+          "row": 2,
+          "col": 7,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 3,
+          "col": 0,
+          "len": 6
+        },
+        {
+          "piece": "B",
+          "row": 3,
+          "col": 7,
+          "len": 1
+        },
+        {
+          "piece": "N",
+          "row": 4,
+          "col": 0,
+          "len": 6
+        },
+        {
+          "piece": "B",
+          "row": 4,
+          "col": 7,
+          "len": 1
+        },
+        {
+          "piece": "N",
+          "row": 5,
+          "col": 2,
+          "len": 4
+        }
+      ]
+    },
+    "difficulty": {
+      "value": 19.7,
+      "cells": 45,
+      "mechanics": 8,
+      "decoys": "11",
+      "optimal_compositions": 1
+    }
+  },
+  {
+    "id": 2,
+    "title": "Generated 2",
+    "columns": [
+      "0h",
+      "2h",
+      "4h",
+      "7h",
+      "9h",
+      "12h",
+      "14h",
+      "16h",
+      "19h",
+      "21h"
+    ],
+    "residual": [
+      3,
+      1,
+      -1,
+      3,
+      4,
+      6,
+      6,
+      5,
+      5,
+      6
+    ],
+    "pieces": {
+      "N": {
+        "len": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "price": 0,
+        "co2": 0
+      },
+      "B": {
+        "len": [
+          1
+        ],
+        "price": 1,
+        "co2": 0,
+        "cap": 2
+      },
+      "C": {
+        "len": [
+          3,
+          4,
+          5
+        ],
+        "price": 1,
+        "co2": 3
+      },
+      "G": {
+        "len": [
+          2,
+          3
+        ],
+        "price": 2,
+        "co2": 1
+      },
+      "T": {
+        "len": [
+          1
+        ],
+        "price": 5,
+        "co2": 2
+      }
+    },
+    "neighbor": {
+      "name": "Voisin",
+      "price": [
+        4,
+        4,
+        2,
+        3,
+        1,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "cap": 1,
+      "export_budget": 2,
+      "import": true,
+      "export": true
+    },
+    "curtail_penalty": 2,
+    "step": 1,
+    "objective": {
+      "optimize": "min_score",
+      "target": null,
+      "constraints": {
+        "co2_cap": 12
+      }
+    },
+    "optimum": {
+      "score": -4,
+      "co2": 0
+    },
+    "solution": {
+      "exports": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "step": [
+        {
+          "pump": 2,
+          "turbine": 9
+        }
+      ],
+      "curtail": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "placements": [
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 0,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 3,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 6,
+          "len": 4
+        },
+        {
+          "piece": "B",
+          "row": 1,
+          "col": 0,
+          "len": 1
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 3,
+          "len": 4
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 7,
+          "len": 3
+        },
+        {
+          "piece": "B",
+          "row": 2,
+          "col": 0,
+          "len": 1
+        },
+        {
+          "piece": "N",
+          "row": 2,
+          "col": 3,
+          "len": 4
+        },
+        {
+          "piece": "N",
+          "row": 2,
+          "col": 7,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 3,
+          "col": 4,
+          "len": 6
+        },
+        {
+          "piece": "N",
+          "row": 4,
+          "col": 5,
+          "len": 5
+        },
+        {
+          "piece": "N",
+          "row": 5,
+          "col": 5,
+          "len": 3
+        }
+      ]
+    },
+    "difficulty": {
+      "value": 15.1,
+      "cells": 39,
+      "mechanics": 8,
+      "decoys": "2",
+      "optimal_compositions": 1
+    }
+  },
+  {
+    "id": 3,
+    "title": "Generated 3",
+    "columns": [
+      "0h",
+      "2h",
+      "4h",
+      "7h",
+      "9h",
+      "12h",
+      "14h",
+      "16h",
+      "19h",
+      "21h"
+    ],
+    "residual": [
+      3,
+      4,
+      3,
+      4,
+      3,
+      4,
+      5,
+      -2,
+      4,
+      5
+    ],
+    "pieces": {
+      "N": {
+        "len": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "price": 0,
+        "co2": 0
+      },
+      "B": {
+        "len": [
+          1
+        ],
+        "price": 1,
+        "co2": 0,
+        "cap": 2
+      },
+      "C": {
+        "len": [
+          3,
+          4,
+          5
+        ],
+        "price": 1,
+        "co2": 3
+      },
+      "G": {
+        "len": [
+          2,
+          3
+        ],
+        "price": 2,
+        "co2": 1
+      },
+      "T": {
+        "len": [
+          1
+        ],
+        "price": 5,
+        "co2": 2
+      }
+    },
+    "neighbor": {
+      "name": "Voisin",
+      "price": [
+        -2,
+        -2,
+        -2,
+        -2,
+        -2,
+        4,
+        0,
+        4,
+        -2,
+        -2
+      ],
+      "cap": 1,
+      "export_budget": 2,
+      "import": true,
+      "export": true
+    },
+    "curtail_penalty": 2,
+    "step": 1,
+    "objective": {
+      "optimize": "min_score",
+      "target": null,
+      "constraints": {
+        "co2_cap": 12
+      }
+    },
+    "optimum": {
+      "score": -2,
+      "co2": 8
+    },
+    "solution": {
+      "exports": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "step": [
+        {
+          "pump": 4,
+          "turbine": 5
+        }
+      ],
+      "curtail": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "placements": [
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 0,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 0,
+          "col": 3,
+          "len": 4
+        },
+        {
+          "piece": "G",
+          "row": 0,
+          "col": 8,
+          "len": 2
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 0,
+          "len": 3
+        },
+        {
+          "piece": "N",
+          "row": 1,
+          "col": 3,
+          "len": 4
+        },
+        {
+          "piece": "G",
+          "row": 1,
+          "col": 8,
+          "len": 2
+        },
+        {
+          "piece": "N",
+          "row": 2,
+          "col": 0,
+          "len": 4
+        },
+        {
+          "piece": "N",
+          "row": 2,
+          "col": 4,
+          "len": 3
+        },
+        {
+          "piece": "G",
+          "row": 2,
+          "col": 8,
+          "len": 2
+        },
+        {
+          "piece": "I",
+          "row": 3,
+          "col": 1,
+          "len": 1
+        },
+        {
+          "piece": "N",
+          "row": 3,
+          "col": 3,
+          "len": 4
+        },
+        {
+          "piece": "G",
+          "row": 3,
+          "col": 8,
+          "len": 2
+        },
+        {
+          "piece": "I",
+          "row": 4,
+          "col": 6,
+          "len": 1
+        },
+        {
+          "piece": "B",
+          "row": 4,
+          "col": 9,
+          "len": 1
+        }
+      ]
+    },
+    "difficulty": {
+      "value": 20.3,
+      "cells": 35,
+      "mechanics": 8,
+      "decoys": ">= 20",
+      "optimal_compositions": 1
+    }
+  }
+]
