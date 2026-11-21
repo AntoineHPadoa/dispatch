@@ -284,7 +284,7 @@ Le serveur Python local du labo importe le package ; la CLI fait la même chose 
 | `dispatch-solver check <fichier> [--id N \| --index N] [--ramp] [--cap K]` | une ligne JSON par grille : `valid`, `errors`, `compositions`, `matches_reference`, `deduction`, `rating`, `techniques`, `summary` | 0 si toutes valides, sinon 1 |
 | `dispatch-solver deduce <fichier> (--id N \| --index N) [--max-level k]` | trace complète (§6.4), puis résumé | 0 |
 | `dispatch-solver bulletin <fichier> (--id N \| --index N) [--seed S]` | bulletin régénéré (après retouche de la grille) | 0 |
-| `dispatch-solver check-published [fichier]` | ce que fait `check_unique.py` : toutes les grilles de `grids.json` uniques et déductibles, solution = référence | 0 ou 1 |
+| `dispatch-solver check-published [fichier] [--ramp]` | ce que fait `check_unique.py` : toutes les grilles de `grids.json` uniques et déductibles, solution = référence ; `--ramp` accepte les rampes (`api.check_published(grids, allow_ramp=True)`) | 0 ou 1 |
 
 Fonctions de bibliothèque correspondantes : `generate.lot.run_lot(lot, workers)` (lève `ValueError` sur un lot refusé), `generate.lot.check_lot(lot)` (lot normalisé, liste d'erreurs), `api.check_grid`, `api.deduce_grid`, `generate.bulletin.make_bulletin`. Elles rendent des dicts JSON.
 

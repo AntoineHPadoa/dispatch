@@ -2,7 +2,8 @@
 
 - check_grid(): validity, number of compositions, reference match, deduction result and rating.
 - deduce_grid(): full deduction trace.
-- check_published(): every grid of a file must be valid, unique, equal to its reference, deducible.
+- check_published(): every grid of a file must be valid, unique, equal to its reference, deducible
+  (allow_ramp=True accepts coal ramps).
 
 Example: check_grid(grid)["compositions"] == 1
 """
@@ -48,13 +49,16 @@ def deduce_grid(g: dict[str, Any], max_level: int = 4) -> dict[str, Any]:
     return deduce(g, max_level=max_level).to_dict(steps=True)
 
 
-def check_published(grids: list[dict[str, Any]]) -> tuple[bool, list[str]]:
-    """(ok, report lines) for the published grids: valid, one composition, the reference one, deducible."""
+def check_published(grids: list[dict[str, Any]], allow_ramp: bool = False) -> tuple[bool, list[str]]:
+    """(ok, report lines) for the published grids: valid, one composition, the reference one, deducible.
+
+    allow_ramp: accept coal ramps (`pieces.C.shape`), refused by default like in validate().
+    """
     ok = True
     lines = []
     numbers: dict[int, int] = {}
     for g in grids:
-        r = check_grid(g)
+        r = check_grid(g, allow_ramp=allow_ramp)
         gid = g.get("id")
         if not r["valid"]:
             lines.append(f"grid {gid}: invalid: {'; '.join(r['errors'])}")
