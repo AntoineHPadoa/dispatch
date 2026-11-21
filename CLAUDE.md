@@ -54,4 +54,4 @@ Skills in `.claude/skills/`: `add-grid` (create, convert, check, play a grid), `
 - Commit author: the repo's noreply address (`git config user.email`); the history is public.
 - `backup-before-squash` is a local-only branch (old history): never push it; push `main` only.
 - Every deliverable is reviewed by an agent other than its author: report in `docs/reviews/<task>.md`, captures in `docs/reviews/<task>/`.
-- Pushing to `main` publishes the site: push only when asked.
+- Pushing to `main` publishes the site. Workers commit on their own `v2-<topic>` branch in a worktree and never merge or push; the orchestrator merges into `main` and pushes once a deliverable has passed review and the finishing loop, with tests, typecheck and `check_unique.py` green.
