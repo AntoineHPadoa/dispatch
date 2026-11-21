@@ -1,0 +1,75 @@
+{
+ "lot": "nuit-rampe",
+ "kept": 20,
+ "size": 20,
+ "attempts": 71,
+ "rejects": {
+  "too_many_clues": 9,
+  "quota:clue_profile": 10,
+  "quota:family": 11,
+  "quota:mechanics": 9,
+  "not_unique": 1
+ },
+ "ratings": {
+  "Facile": 7,
+  "Moyen": 7,
+  "Difficile": 1,
+  "Expert": 5
+ },
+ "families": {
+  "nuit_plate": 2,
+  "pointe_soir": 3,
+  "plateau_hiver": 3,
+  "surplus_midi": 4,
+  "vent_nocturne": 3,
+  "deux_bosses": 2,
+  "midi_solaire": 3
+ },
+ "per_mix": {
+  "0": 6,
+  "1": 3,
+  "2": 3,
+  "3": 2,
+  "4": 2,
+  "5": 1,
+  "6": 1,
+  "7": 1,
+  "8": 1
+ },
+ "mechanics": {
+  "ramp:trap inventory:exact": 4,
+  "neighbors:1 ramp:trap inventory:exact": 4,
+  "neighbors:1 surplus ramp:trap inventory:none": 2,
+  "neighbors:1 surplus ramp:trap inventory:exact": 2,
+  "neighbors:1 ramp:trap inventory:none": 2,
+  "ramp:trap inventory:none": 4,
+  "neighbors:1 co2 ramp:trap inventory:none": 1,
+  "neighbors:1 step ramp:trap inventory:exact": 1
+ },
+ "clue_profiles": {
+  "": 5,
+  "bar column exchanges flow length price": 1,
+  "bar column exchanges price": 1,
+  "column": 5,
+  "exchanges price": 2,
+  "bar": 1,
+  "bar column price": 2,
+  "bar price": 1,
+  "bar column exchanges length price": 1,
+  "price": 1
+ },
+ "ramp_grids": 20,
+ "ramp_grids_with_technique": 12,
+ "ramp_techniques": {
+  "ramp_lone": 1,
+  "ramp_plateau": 17,
+  "ramp_relay": 0,
+  "ramp_shoulder": 11
+ },
+ "seconds": 32.9,
+ "seconds_per_kept_grid": 1.6,
+ "workers": 6,
+ "generator": "dispatch-solver 2.0.0",
+ "blocked_ramp": 0,
+ "errors": []
+}

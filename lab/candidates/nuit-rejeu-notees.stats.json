@@ -1,0 +1,13 @@
+{
+ "lot": "nuit-rejeu-notees",
+ "kept": 4,
+ "size": 4,
+ "ratings": {
+  "Facile": 1,
+  "Moyen": 1,
+  "Difficile": 1,
+  "Expert": 1
+ },
+ "comment": "Published rated grids, replayed blind in the lab for calibration.",
+ "generator": "dispatch-solver 2.0.0"
+}

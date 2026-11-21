@@ -1,0 +1,19 @@
+{
+ "lot": "nuit-rampe",
+ "size": 20,
+ "seed": 404,
+ "max_attempts": 900,
+ "comment": "Ramp lot: trapezoid ramp only (no stair), to measure how often a ramp technique is needed. Not playable in the lab until the game supports the ramp.",
+ "mix": [
+  {"weight": 3, "cols": 8, "ramp": "trap"},
+  {"weight": 3, "cols": 12, "ramp": "trap"},
+  {"weight": 2, "cols": 8, "ramp": "trap", "neighbors": 1},
+  {"weight": 2, "cols": 12, "ramp": "trap", "neighbors": 1},
+  {"weight": 2, "cols": 8, "ramp": "trap", "neighbors": 1, "inventory": "exact", "clue_types": ["column", "flow", "bar", "length"]},
+  {"weight": 1, "cols": 12, "ramp": "trap", "step": 1, "neighbors": 1},
+  {"weight": 1, "cols": 8, "ramp": "trap", "co2_cap": "auto", "neighbors": 1},
+  {"weight": 1, "cols": 6, "ramp": "trap"},
+  {"weight": 1, "cols": 12, "ramp": "trap", "pieces": "NBCGT", "surplus": true, "neighbors": 1}
+ ],
+ "quotas": {"max_same_family": 3, "max_same_mechanics": 4, "max_same_clue_profile": 5, "min_per_rating": 1, "min_per_mix": 1}
+}
