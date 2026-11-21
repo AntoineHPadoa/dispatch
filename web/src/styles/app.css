@@ -35,7 +35,7 @@ button { font: inherit; color: inherit; }
 
 /* ---- tools (pills) ---- */
 .tools { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
-.tool { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; color: var(--soft); background: transparent; border: 1px solid var(--hair); border-radius: 999px; padding: 6px 10px; cursor: pointer; text-decoration: none; min-height: 32px; }
+.tool { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; color: var(--soft); background: transparent; border: 1px solid var(--hair); border-radius: 999px; padding: 6px 8px; cursor: pointer; text-decoration: none; min-height: 32px; }
 .tool:hover { color: var(--ink); border-color: #d9cbd3; }
 .tool.on { color: var(--ink); border-color: var(--ink); }
 .tool:disabled { opacity: .45; cursor: default; }

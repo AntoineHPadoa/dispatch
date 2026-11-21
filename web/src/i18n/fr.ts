@@ -268,7 +268,7 @@ export const priceTagShort = (piece: PieceId) => `€ ${piece}`;
 export const programLabel = (grid: Grid, piece: PieceId, col: number, len: number) =>
   `${SHORT_NAME[piece]} ${columnLabel(grid, col)} → ${columnLabel(grid, col + len)}`;
 
-/** Shape hint under a plant name in the order book: "ruban de 3 à 6", "1 case, pointe", "stock : 2 cases". */
+/** Shape hint under a plant name in the order book: "ruban de 3 à 6 créneaux", "1 case, pointe", "stock : 2 cases". */
 export function pieceHint(piece: PieceId, lens: number[], heights: number[], maxCells?: number, shape: ShapeKind = 'rect'): string {
   if (maxCells !== undefined) return `stock : ${plural(maxCells, 'case')}`;
   if (shape !== 'rect') return `rampe de ${lenText(lens)}`;
@@ -278,7 +278,7 @@ export function pieceHint(piece: PieceId, lens: number[], heights: number[], max
   let text: string;
   if (maxL === 1 && heights.length === 1 && minH === 1) text = piece === 'T' ? '1 case, pointe' : '1 case';
   else if (minL === maxL) text = plural(minL, 'créneau', 'créneaux');
-  else if (piece === 'N') text = `ruban de ${minL} à ${maxL}`;
+  else if (piece === 'N') text = `ruban de ${minL} à ${maxL} créneaux`;
   else text = lens.length === maxL - minL + 1 ? `${minL} à ${maxL} créneaux` : `${lens.join(', ')} créneaux`;
   if (heights.length > 1) text += `, ${heights.join(' ou ')} GW`;
   else if (minH > 1) text += `, ${minH} GW minimum`;
@@ -448,6 +448,8 @@ export const UI = {
   printFootExports: 'Exports et imports : note-les sous chaque créneau. Remonte le trait épais d’une case par export.',
   printFootBoth: 'Note exports, imports, pompage ▲ et turbinage ▼ sous la grille. Le trait épais monte d’une case par export ou pompage, descend par turbinage.',
   printLegend: 'Publications du marché · par créneau',
+  /** Day clues on paper (totals, running lengths, CO2), apart from the slot legend. */
+  printDayTitle: 'Bilan du jour',
   printId: (id: number) => `Dispatch · n° ${id}`,
   printTitle: 'Impression',
   printAll: 'Imprimer toutes les grilles',

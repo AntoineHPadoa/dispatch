@@ -48,7 +48,7 @@ function priceCell(grid: Grid): [number, number] | null {
 /**
  * Silhouette of the sheet of the day, one sky icon per slot above, slot labels below.
  * Open sheet: the demand cell by cell, the price cell in pink. Finished sheet: the solution, every laid
- * rectangle in its plant colour (imports and exports included in the rectangles).
+ * rectangle in its plant colour; exported cells keep a dashed outline, as on the board.
  */
 export function sheetSilhouette(grid: Grid, weather: readonly WeatherKind[], labelFor: (k: WeatherKind) => string, label: string, done = false): string {
   const solved = done && grid.solution ? grid.solution : null;
@@ -80,6 +80,13 @@ export function sheetSilhouette(grid: Grid, weather: readonly WeatherKind[], lab
     }
     s += `<rect class="sil-piece" x="${p.col * cell + 1.5}" y="${top + (rows - p.row - hh) * cell + 1.5}" width="${p.len * cell - 3}" height="${hh * cell - 3}" rx="8" fill="${col.a}" stroke="${col.ink}" stroke-width="1.5"/>`;
   }
+  // Exports raise the silhouette above the demand: their cells get the dashed outline of the board's export cells.
+  heights.forEach((h, c) => {
+    const out = Object.values(solved?.exports ?? {}).reduce((a, e) => a + (e[c] ?? 0), 0);
+    for (let r = h - out; r < h; r++) {
+      s += `<rect class="sil-export" x="${c * cell + 4}" y="${top + (rows - 1 - r) * cell + 4}" width="${cell - 8}" height="${cell - 8}" rx="5" fill="none" stroke="${PIECE_COLORS.I.ink}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
+    }
+  });
   grid.columns.forEach((t, i) => {
     s += `<text x="${(i + 0.5) * cell}" y="${top + hBars + 14}" text-anchor="middle" font-family="Manrope, sans-serif" font-size="12" font-weight="700" fill="#8f8593">${esc(t)}</text>`;
   });

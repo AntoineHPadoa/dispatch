@@ -65,7 +65,7 @@ function dossierCard(d: Dossier, progress: Progress): string {
   return `<a class="dcard" href="#/dossier/${d.id}">
     <span class="dsil">${miniSilhouette(demand, 120, 48, done > 0)}</span>
     <span class="dtxt"><b>${esc(words.title)}</b><span>${esc(UI.dossierCount(total))}</span>
-      <span class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${total ? (done / total) * 100 : 0}%"></i></span>
+      <span class="bar" role="progressbar" aria-label="${esc(UI.dossierDone(done, total))}" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${total ? (done / total) * 100 : 0}%"></i></span>
       <span class="pcount${done ? ' on' : ''}">${esc(UI.dossierProgress(done, total))}</span></span></a>`;
 }
 
@@ -125,7 +125,7 @@ export function renderDossier(root: HTMLElement, d: Dossier, progress: Progress)
   root.innerHTML = `<div class="m home">
     ${siteHead()}
     <section class="glist"><div class="sh"><h1>${esc(words.title)}</h1><p>${esc(words.lead)}</p></div>
-      <div class="prog"><span>${esc(UI.dossierDone(done, total))}</span><span class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${total ? (done / total) * 100 : 0}%"></i></span></div>
+      <div class="prog"><span>${esc(UI.dossierDone(done, total))}</span><span class="bar" role="progressbar" aria-label="${esc(UI.dossierDone(done, total))}" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${total ? (done / total) * 100 : 0}%"></i></span></div>
       <ol class="fiches">${cards}</ol></section>
   </div>`;
 }

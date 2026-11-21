@@ -196,6 +196,9 @@ describe('home rendering', () => {
     expect(root.innerHTML).toContain('Bouclé');
     // The finished sheet shows its solution: one rectangle per placement, in plant colours.
     expect(root.innerHTML.match(/class="sil-piece"/g)).toHaveLength(done.solution.placements.length);
+    // Review S8 A6: every exported cell keeps a dashed outline above the demand.
+    const exported = Object.values(done.solution.exports).flat().reduce((x, y) => x + y, 0);
+    expect(root.innerHTML.match(/class="sil-export"/g) ?? []).toHaveLength(exported);
   });
 
   it('a finished STEP sheet: one silhouette cell per cell of the laid pieces', () => {
