@@ -41,6 +41,9 @@ export function stepPairIndexAt(state: PlayState, col: number): number {
   return state.step.findIndex((p) => p.pump === col || p.turbine === col);
 }
 
+/** An arrow tap: the chosen ▲ cancels the pending pump, any other arrow goes through stepTapResult. */
+export const stepArrowAction = (pending: number | null, col: number): 'cancel' | 'tap' => (pending === col ? 'cancel' : 'tap');
+
 /** What Undo does: drop the pending pump first (it is not recorded), else undo the last recorded action. */
 export function stepUndoPlan(pending: number | null): 'drop-pending' | 'undo' {
   return pending === null ? 'undo' : 'drop-pending';

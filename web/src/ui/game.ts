@@ -20,9 +20,9 @@ import {
   alongShape, cancel, idle, isFlat, moveTo, press, previewRect, release, tap, type Cell, type GestureState, type Rect, type Shape,
 } from './gesture';
 import { canUndo, push, reset, start, undo, type History } from './history';
-import { STEP_KEY, bookEntries, renderBook, renderChips, renderClues, renderCo2, type BookEntry } from './panels';
+import { STEP_KEY, bookEntries, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, type BookEntry } from './panels';
 import { esc, icon } from './palette';
-import { stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from './step';
+import { stepArrowAction, stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from './step';
 import { dailyGrid, nextGrid, recordState, type ProgressStore } from './progress';
 
 export interface GameContext {
@@ -222,12 +222,20 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     return { bar, check, rect: r };
   }
 
+  /** Arrows show while STEP is chosen and a pair is still to place (all published pairs laid: none). */
+  function stepModeOn(): boolean {
+    if (selected?.piece !== STEP_KEY || erase || ev.solved) return false;
+    const want = publishedStepPairs(grid);
+    return want === null || history.present.step.length < want || stepPending !== null;
+  }
+
   function drawBoard() {
     const pv = preview();
     const out = renderBoard({
       grid, state: history.present, ev, style: 'A', cell,
       preview: pv ? { rect: pv.rect, piece: pv.bar.piece, valid: pv.check.ok, replacing: pv.check.ok ? pv.check.replaced : [] } : null,
-      anchor: gesture.anchor, cursor: keyboard && document.activeElement === wrap ? cursor : null, stepPending, interactive: true,
+      anchor: gesture.anchor, cursor: keyboard && document.activeElement === wrap ? cursor : null, stepPending,
+      stepMode: stepModeOn(), interactive: true,
     });
     geo = out.geo;
     scroll.innerHTML = out.svg;
@@ -266,7 +274,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       m = { text: UI.hintSecondTap(labelOf(barOf(selected, { ...gesture.anchor, len: 1, height: 1 }))), tone: 'info' };
     } else {
       m = boardMessage(ev, m) ?? {
-        text: erase ? UI.hintErase : selected?.piece === STEP_KEY ? UI.hintStep
+        text: erase ? UI.hintErase : selected?.piece === STEP_KEY ? (stepPending !== null ? UI.stepPending(columnLabel(grid, stepPending)) : UI.hintStep)
           : UI.hintChoose(grid.inventory.level !== 'exact', grid.neighbors.length > 0),
         tone: 'info',
       };
@@ -501,6 +509,10 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     const col = Number(el.getAttribute('data-col'));
     if (el.getAttribute('data-act') === 'export') cycleExport(el.getAttribute('data-country') ?? '', col);
     else if (el.getAttribute('data-act') === 'step-tag') removePairAt(col);
+    else if (el.getAttribute('data-act') === 'step-arrow') {
+      if (stepArrowAction(stepPending, col) === 'cancel') { stepPending = null; message = { text: UI.stepPendingDropped, tone: 'info' }; drawBoard(); }
+      else stepTap(col);
+    }
     else if (el.getAttribute('data-act') === 'locked') say(UI.lockedTap(columnLabel(grid, col)), 'info');
     const again = scroll.querySelector<SVGElement>(`[data-act="${el.getAttribute('data-act')}"][data-col="${col}"]${el.getAttribute('data-country') ? `[data-country="${el.getAttribute('data-country')}"]` : ''}`);
     if (again && document.activeElement !== again && el === document.activeElement) again.focus();

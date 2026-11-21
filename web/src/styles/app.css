@@ -106,7 +106,9 @@ button.prow:hover { background: #faf4f7; }
 .count.over { color: var(--bad); font-weight: 800; }
 .xrow { cursor: default; }
 .step-glyph { font-size: .66rem; font-weight: 800; letter-spacing: .05em; color: #4f7fb8; background: #e3eefa; border: 1px solid #bfd7f1; border-radius: 6px; padding: 1px 6px; }
-.board-svg .step-tag.act { cursor: pointer; }
+.board-svg .step-tag.act, .board-svg .step-arrow.act { cursor: pointer; }
+.board-svg .step-arrow:focus { outline: none; }
+.board-svg .step-arrow:focus-visible circle { stroke: var(--accent); stroke-width: 2.5; }
 .board-svg .step-tag:focus { outline: none; }
 .board-svg .step-tag:focus-visible rect { stroke: var(--accent); stroke-width: 2.5; }
 .xpill { font-size: .72rem; font-weight: 800; border-radius: 999px; padding: 2px 9px; background: #d6c9f1; font-variant-numeric: tabular-nums; }

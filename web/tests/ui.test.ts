@@ -22,7 +22,7 @@ import {
 import { MSG, durationText } from '../src/i18n/fr';
 import { STEP_KEY, bookEntries, isDayClue, publishedStepPairs, renderBook, renderCo2, richClueText } from '../src/ui/panels';
 import { renderSheet, slotLegend } from '../src/ui/print';
-import { stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from '../src/ui/step';
+import { stepArrowAction, stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from '../src/ui/step';
 import { UI } from '../src/i18n/fr';
 
 const grids = gridsJson as unknown as Grid[];
@@ -424,8 +424,12 @@ describe('STEP in the order book', () => {
     expect(svg).not.toContain('STEP · pompage');
     expect(svg.match(/data-act="step-tag"/g)?.length).toBe(2);
     expect(svg).toContain('class="step-link"');
-    const pending = renderBoard({ grid: g7, state: initialState(g7), ev: null, style: 'A', cell: 50, stepPending: 2 }).svg;
-    expect(pending).toContain('class="step-pending"');
+    const arrows = renderBoard({ grid: g7, state: initialState(g7), ev: null, style: 'A', cell: 50, stepMode: true, interactive: true }).svg;
+    expect(arrows.match(/data-act="step-arrow"/g)?.length).toBe(7); // ▲ on every slot but the last
+    expect(arrows).not.toContain('step-pending');
+    const turbine = renderBoard({ grid: g7, state: initialState(g7), ev: null, style: 'A', cell: 50, stepMode: true, interactive: true, stepPending: 2 }).svg;
+    expect(turbine.match(/data-act="step-arrow"/g)?.length).toBe(1 + 5); // chosen ▲ + ▼ on the 5 later slots
+    expect(renderBoard({ grid: g7, state: initialState(g7), ev: null, style: 'A', cell: 50, interactive: true }).svg).not.toContain('step-arrow');
     expect(boardGeometry(g7, 'A', 50).bottomRows).toBe(1);
   });
 
@@ -598,6 +602,12 @@ describe('STEP pump without its turbine (pending pump, not in the undo history)'
     expect(stepUndoPlan(1)).toBe('drop-pending');
     expect(stepUndoPlan(0)).toBe('drop-pending');
     expect(stepUndoPlan(null)).toBe('undo');
+  });
+
+  it('the chosen ▲ cancels the pump; another arrow goes through the tap logic', () => {
+    expect(stepArrowAction(3, 3)).toBe('cancel');
+    expect(stepArrowAction(3, 5)).toBe('tap');
+    expect(stepArrowAction(null, 3)).toBe('tap');
   });
 
   it('the eraser on the pending slot drops the pump; elsewhere it keeps it', () => {

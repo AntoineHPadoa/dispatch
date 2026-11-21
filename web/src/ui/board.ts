@@ -35,7 +35,10 @@ export interface BoardInput {
   preview?: BoardPreview | null;
   anchor?: Cell | null;
   cursor?: Cell | null;
+  /** Slot of the chosen pump while the turbine is still to choose (screen). */
   stepPending?: number | null;
+  /** STEP chosen in the book: arrows ▲ (pump) then ▼ (turbine) show above the columns. */
+  stepMode?: boolean;
   /** Interactive pills (neighbors, STEP) get focus and button roles. */
   interactive?: boolean;
 }
@@ -86,14 +89,11 @@ export interface BoardGeometry {
 }
 
 /** Number of tags stacked above each column (prices, records, STEP pairs on screen). */
-function tagsPerColumn(grid: Grid, state: PlayState, style: BoardStyle): number[] {
+function tagsPerColumn(grid: Grid, style: BoardStyle): number[] {
   const t = grid.columns.map(() => 0);
   for (const cl of grid.clues) if (cl.type === 'price' || cl.type === 'column') t[cl.col]! += 1;
-  if (style === 'A') {
-    const steps = new Set<number>();
-    for (const s of state.step) { steps.add(s.pump); steps.add(s.turbine); }
-    steps.forEach((c) => { if (c >= 0 && c < t.length) t[c]! += 1; });
-  }
+  // One slot per column for the STEP arrows and pair tags, so the board never jumps when the mode opens.
+  if (style === 'A' && grid.step) for (let c = 0; c < t.length; c++) t[c]! += 1;
   return t;
 }
 
@@ -124,7 +124,7 @@ export function boardGeometry(grid: Grid, style: BoardStyle, cell: number, state
   const colMax = res.map((r, c) => weather[c]! + Math.max(0, r + extraAt(c)));
   const rows = Math.max(1, ...colMax);
   const st = state ?? { bars: [], exports: {}, step: [] };
-  const tags = tagsPerColumn(grid, st, style);
+  const tags = tagsPerColumn(grid, style);
   // Paper: every tag sits above the rectangle, outside the grid.
   const tops = style === 'B' ? res.map(() => rows) : columnTops(grid, st, style, weather);
   const need = Math.max(0, ...tags.map((k, c) => (k ? k * 22 + 6 - (rows - tops[c]!) * cell : 0)));
@@ -311,8 +311,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   const stack = grid.columns.map(() => 0);
   const barTop = grid.columns.map(() => 0);
   if (A) for (const b of state.bars) for (let c = b.col; c < Math.min(n, b.col + b.len); c++) barTop[c] = Math.max(barTop[c]!, b.row + barHeight(b));
-  const pendingAt = A ? input.stepPending ?? null : null;
-  const topOf = (c: number) => (A ? weather[c]! + Math.max(sil[c]! + turbines[c]! + (pendingAt === c ? 1 : 0), barTop[c]!) : H);
+  const topOf = (c: number) => (A ? weather[c]! + Math.max(sil[c]! + turbines[c]!, barTop[c]!) : H);
   const tagY = (c: number) => y(topOf(c) - 1) - 24 - stack[c]!++ * 22;
   // A pill centred on `mid`, kept inside the board; a verified pill grows by 10 to hold its tick.
   // `content(textCentre, left)` draws what is inside.
@@ -359,15 +358,14 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   });
   if (A) {
     // STEP tags: "▲ pompe" over the pumped column, "▼ turbine" over the turbined one, linked by a
-    // faint line; a tap on a tag removes its pair. A pending pump shows a dashed tag.
+    // faint line; a tap on a tag removes its pair. In STEP mode, arrows ▲ then ▼ sit in the same band.
     const tagAt = new Map<number, { left: number; right: number; y: number }>();
     let tags = '';
     const pending = input.stepPending ?? null;
     for (let c = 0; c < n; c++) {
-      const isPending = pending === c;
-      if (!pumps[c] && !turbines[c] && !isPending) continue;
+      if (!pumps[c] && !turbines[c]) continue;
       const ty = tagY(c);
-      const pump = pumps[c]! > 0 || isPending;
+      const pump = pumps[c]! > 0;
       const full = cell >= 48;
       const label = pump && turbines[c] ? '▲▼' : pump ? (full ? UI.stepPump : '▲') : full ? UI.stepTurbine : '▼';
       const w = full ? Math.max(cell - 8, label.length * 5 + 12) : cell - 8;
@@ -376,11 +374,10 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       tagAt.set(c, { left, right: left + w, y: ty + 9 });
       const k = state.step.findIndex((q) => q.pump === c || q.turbine === c);
       const pair = k >= 0 ? state.step[k] : undefined;
-      const act = input.interactive && pair && !isPending
+      const act = input.interactive && pair
         ? ` data-act="step-tag" data-col="${c}" tabindex="0" role="button" aria-label="${esc(UI.stepTagLabel(columnLabel(grid, pair.pump), columnLabel(grid, pair.turbine)))}"` : '';
       tags += `<g class="tag step-tag${act ? ' act' : ''}"${act}>`
         + pill(mid, ty, w, pump ? '#e3eefa' : '#eef0f3', pump ? PIECE_COLORS.B.ink : '#b9b3bf', (tc) => T(tc, ty + 12.5, label, { size: full ? 8.5 : 9.5 }), null)
-          .replace('<rect ', isPending ? '<rect stroke-dasharray="3 2" stroke-width="1.6" ' : '<rect ')
         + '</g>';
     }
     for (const q of state.step) {
@@ -389,9 +386,22 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       if (a && b) s += `<path class="step-link" d="M${a.right} ${a.y} L${b.left} ${b.y}" stroke="${PIECE_COLORS.B.ink}" stroke-opacity=".5" stroke-width="1.2" stroke-dasharray="2 3" fill="none" pointer-events="none"/>`;
     }
     s += tags;
-    if (pending !== null && pending >= 0 && pending < n) {
-      const { bx, by, w } = box(pending, weather[pending]! + sil[pending]! + turbines[pending]!);
-      s += `<rect class="step-pending" x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" fill-opacity=".6" stroke="${PIECE_COLORS.B.ink}" stroke-opacity=".7" stroke-width="1.6" stroke-dasharray="4 3" pointer-events="none"/>`;
+    if (input.stepMode) {
+      // ▲ over each slot to choose the pump; once chosen, it stays filled and ▼ shows on later slots.
+      const r = Math.min(11, cell / 2 - 3);
+      for (let c = 0; c < n; c++) {
+        const chosen = pending === c;
+        const kind = pending === null ? (c < n - 1 ? 'up' : null) : chosen ? 'up' : c > pending ? 'down' : null;
+        if (!kind) continue;
+        const ty = tagY(c);
+        const cx = x(c) + cell / 2;
+        const cy = ty + 9;
+        const col = PIECE_COLORS.B.ink;
+        const label = kind === 'up' ? (chosen ? UI.stepArrowChosen(columnLabel(grid, c)) : UI.stepArrowPump(columnLabel(grid, c))) : UI.stepArrowTurbine(columnLabel(grid, c));
+        const act = input.interactive ? ` data-act="step-arrow" data-col="${c}" tabindex="0" role="button" aria-label="${esc(label)}"` : '';
+        s += `<g class="step-arrow${act ? ' act' : ''}"${act}><circle cx="${cx}" cy="${cy}" r="${r}" fill="${chosen ? col : '#e3eefa'}" stroke="${col}" stroke-width="1.4"/>`
+          + T(cx, cy + 4, kind === 'up' ? '▲' : '▼', { size: 11, color: chosen ? '#fff' : col }) + '</g>';
+      }
     }
   }
 
