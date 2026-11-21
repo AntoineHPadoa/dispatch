@@ -12,6 +12,7 @@ Printable logic puzzle on the power grid: fill the day's demand curve with power
   - `src/data/grids.json` — the 11 grids (7 tutorial, 4 rated).
   - `scripts/convert-grids.ts` (prototype format → §14), `scripts/check_unique.py` (every grid unique, equal to its reference and deducible, with `dispatch_solver`).
   - `tests/` — Vitest: grids, engine, place-over, convert, UI logic, shared reference grids.
+- `lab/` — grid lab (the human's creation tool): `lab_server.py` (local JSON API, standard library only), `run.sh` (one launch command), `candidates/` (lots written by `dispatch-solver generate`), `lots/`, `plays.jsonl`, `notes.json`, `players.json`; tests in `lab/tests/`. Page: `web/lab.html` + `web/src/lab/` (dev server only, never in the published build).
 - `solver/` — Python package `dispatch_solver` (OR-Tools CP-SAT), §14 native: validator (port of `validateGrid`, same messages), cell-by-cell shapes (rectangles, tall pieces, coal ramps `trap`/`stair` behind a flag), exact solver (uniqueness on the composition), human-deduction solver (§9 techniques, traces, provisional rating), generator (lots with imposed diversity, minimal clues, bulletin drafts), CLI `dispatch-solver`. Design: `docs/next/solver-v2.md`. The old pose-format solver is in `docs/archive/solver-v1/`.
 - `fixtures/grids/` — shared reference grids (valid, invalid, unpublishable, each with `expect`), played by pytest and by `web/tests/reference.test.ts`; rebuilt by `solver/scripts/build_fixtures.py`.
 - `lab/` — grid lab data: `lots/<lot>.json` (generator configs and quotas), `candidates/<lot>.json` (§14 grids + `lab` block: measures, bulletin draft) and `.stats.json`.
@@ -40,6 +41,11 @@ uv sync                   # creates .venv
 .venv/bin/dispatch-solver generate ../lab/lots/demo-01.json         # fill a lot into lab/candidates/
 ```
 
+```bash
+lab/run.sh                # lab server (8765) + Vite; open http://localhost:5173/dispatch/lab.html
+solver/.venv/bin/python -m pytest lab/tests -q   # lab server tests
+```
+
 Skills in `.claude/skills/`: `add-grid` (create, convert, check, play a grid), `run-app` (servers, headless Chrome captures, print PDF), `deploy` (workflow, checking the live site).
 
 ## Conventions
@@ -49,6 +55,7 @@ Skills in `.claude/skills/`: `add-grid` (create, convert, check, play a grid), `
 - Grids follow §14 and must pass `validateGrid()`; change the format in `grid.ts`, the validator and `GAME-DESIGN.md` §14 together.
 - A piece's legal shapes are its allowed widths × allowed heights. A STEP grid publishes its number of pairs (`inventory.step`, or `step` in an `exchanges` clue). A price clue names a plant, never a value, and never sits on a column with an import.
 - A grid is solved on its composition (cells per piece and column, exports, pumping, turbining), not on the drawing.
+- The lab plays the real game screen blind (no solver rating or techniques until the end); its measures go to `lab/plays.jsonl` through the server, never to `localStorage`. Promotion writes `web/src/data/grids.json`: run `check_unique.py` and commit it like any grid change.
 - Progress lives in `localStorage` under `dispatch:progress:v1`: renaming the key wipes players' progress.
 - UI follows `docs/style-reference.html`; the page never scrolls horizontally (check at 320 px).
 

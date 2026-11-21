@@ -33,7 +33,12 @@ export interface GameContext {
   store: ProgressStore;
   navigate: (hash: string) => void;
   print: (grid: Grid) => void;
+  /** Optional observer of play events (the lab counts errors, undos, erasures). */
+  onEvent?: (event: GameEvent) => void;
 }
+
+/** What the player did: a refused or clue-breaking pose, an undo, an erasure, a reset, the solve. */
+export type GameEvent = 'error' | 'undo' | 'erase' | 'reset' | 'solved';
 
 export type Tone = 'ok' | 'bad' | 'info';
 
@@ -346,7 +351,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
 
   function afterChange(wasSolved: boolean) {
     ev = evaluate(grid, history.present);
-    if (ev.solved && !wasSolved) frozenElapsed = elapsedBase + (Date.now() - sessionStart);
+    if (ev.solved && !wasSolved) { frozenElapsed = elapsedBase + (Date.now() - sessionStart); ctx.onEvent?.('solved'); }
     if (!ev.solved) frozenElapsed = null;
     save();
   }
@@ -365,8 +370,13 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     const bar = barOf(selected, r);
     const res = placeOver(grid, history.present, bar);
     // A pose that contradicts a clue is allowed (the player may try things), but the message says so.
-    if (res.ok) commit(res.state, (before) => poseMessage(grid, labelOf(bar), res.replaced, newlyBroken(before.clues, ev.clues)));
-    else { message = { text: UI.poseBad(labelOf(bar), res.error.message), tone: 'bad' }; drawBoard(); }
+    if (res.ok) {
+      commit(res.state, (before) => {
+        const m = poseMessage(grid, labelOf(bar), res.replaced, newlyBroken(before.clues, ev.clues));
+        if (m.tone === 'bad') ctx.onEvent?.('error');
+        return m;
+      });
+    } else { ctx.onEvent?.('error'); message = { text: UI.poseBad(labelOf(bar), res.error.message), tone: 'bad' }; drawBoard(); }
   }
 
   function removeAt(c: Cell) {
@@ -376,7 +386,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     if (i < 0 && isStepCell(c) && removePairAt(c.col)) return;
     const bar = i >= 0 ? history.present.bars[i] : undefined;
     const res = remove(grid, history.present, c.row, c.col);
-    if (res.ok && bar) commit(res.state, UI.removed(labelOf(bar)), 'info');
+    if (res.ok && bar) { ctx.onEvent?.('erase'); commit(res.state, UI.removed(labelOf(bar)), 'info'); }
     else if (!res.ok) say(res.error.message, 'bad');
   }
 
@@ -611,6 +621,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       }
       if (!canUndo(history)) { say(UI.nothingToUndo, 'info'); return; }
       const wasSolved = ev.solved;
+      ctx.onEvent?.('undo');
       history = undo(history);
       afterChange(wasSolved);
       message = { text: UI.undone, tone: 'info' };
@@ -624,6 +635,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
         return;
       }
       const wasSolved = ev.solved;
+      ctx.onEvent?.('reset');
       history = reset(history, initial);
       gesture = idle();
       stepPending = null;

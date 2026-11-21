@@ -44,3 +44,11 @@ One grid = one A4 page (`src/styles/print.css`); `#/imprimer/tout` gives one pag
 ## Stop
 
 Kill the server when done (`kill %1`, or the PID of `vite`), so the port is free next time.
+
+## The lab (grid creation tool)
+
+- One command from the repo root: `lab/run.sh` starts the lab server (port 8765) and Vite (port 5173, proxies `/dispatch/api` to the server). Open `http://localhost:5173/dispatch/lab.html`.
+- Routes: `#/` lot table · `#/partie/<lot>/<i>` blind game · `#/fin/<lot>/<i>` end of game (rating, reveal) · `#/gardees` kept grids, bulletin, promotion.
+- Data is in `lab/`: `candidates/<lot>.json`, `plays.jsonl`, `notes.json`, `players.json` (two player names). Delete `plays.jsonl` / `notes.json` after a test session you do not want to keep.
+- Generating a lot and promoting a grid need `dispatch_solver` (`cd solver && uv sync`); without it the page works on existing candidates (`lab/candidates/demo.json` is a demo lot built from published grids).
+- Capture: `../.claude/skills/run-app/capture.sh "http://localhost:5173/dispatch/lab.html#/" 1280 /tmp/lab.png`.
