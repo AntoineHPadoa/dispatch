@@ -285,7 +285,8 @@ describe('board and game helpers', () => {
     expect(cellAt(geo, 50 * 3 + 10, (geo.rows - 3) * 50 + 10)).toEqual({ row: 2, col: 3 });
     expect(cellAt(geo, -1, 10)).toBeNull();
     expect(cellAt(geo, 50 * g.columns.length + 1, 10)).toBeNull();
-    expect(boardGeometry(g, 'B', 40).rows).toBe(Math.max(...g.demand));
+    // Paper is a full rectangle at the same maximum height as the screen.
+    expect(boardGeometry(g, 'B', 40).rows).toBe(top);
   });
 
   it('export flows are fixed from the start and re-applied on saved boards', () => {
@@ -496,7 +497,7 @@ describe('review S6.3 round 1', () => {
     expect(legend).toContain('<li>9h : 4 nucléaire</li>');
     expect(legend).toContain('<li>0h : 1 bloc exporté vers l’Allemagne</li>');
     expect(legend).toContain('<li>15h → 24h : un réacteur tourne</li>');
-    expect(renderSheet(g7, 7)).toContain('Exports, imports, pompage ▲ et turbinage ▼');
+    expect(renderSheet(g7, 7)).toContain(UI.printFootBoth);
     expect(slotLegend(byId(1))).toBe('');
   });
 });

@@ -251,6 +251,9 @@ export const priceTag = (piece: PieceId) => {
   return `€ ${name.length > 6 ? `${name.slice(0, 4)}.` : name}`;
 };
 
+/** Price tag on paper, short to save room: "€ N", "€ G". */
+export const priceTagShort = (piece: PieceId) => `€ ${piece}`;
+
 /** Programme bracket label: "Réacteur 4h → 20h". */
 export const programLabel = (grid: Grid, piece: PieceId, col: number, len: number) =>
   `${SHORT_NAME[piece]} ${columnLabel(grid, col)} → ${columnLabel(grid, col + len)}`;
@@ -411,10 +414,10 @@ export const UI = {
   stepLastSlot: 'Pas de pompage sur le dernier créneau : aucun turbinage ne peut suivre.',
   boardHelp: 'Flèches pour déplacer le curseur, Entrée pour poser (case de départ puis d’arrivée), Suppr pour retirer, Échap pour annuler.',
   // Print sheet
-  printFoot: 'Couvre toute la silhouette. Une seule solution.',
-  printFootStep: 'Pompage ▲ et turbinage ▼ : note-les dans les cases sous la grille.',
-  printFootExports: 'Exports et imports : note-les dans les cases sous chaque créneau.',
-  printFootBoth: 'Exports, imports, pompage ▲ et turbinage ▼ : note-les dans les cases sous la grille.',
+  printFoot: 'Couvre tout ce qui est sous le trait épais. Une seule solution.',
+  printFootStep: 'Pompage ▲ et turbinage ▼ : note-les sous la grille. Remonte le trait épais d’une case par pompage, descends-le par turbinage.',
+  printFootExports: 'Exports et imports : note-les sous chaque créneau. Remonte le trait épais d’une case par export.',
+  printFootBoth: 'Note exports, imports, pompage ▲ et turbinage ▼ sous la grille. Remonte le trait épais d’une case par export ou pompage, descends-le par turbinage.',
   printLegend: 'Indices sur la grille',
   printId: (id: number) => `Dispatch · n° ${id}`,
   printTitle: 'Impression',

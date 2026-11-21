@@ -9,7 +9,7 @@ import type { Clue, Grid, PieceId } from '../model/grid';
 import {
   barHeight, exportsAt, importsAt, rawSilhouette, residual, type Evaluation, type PlayState, type ClueStatus,
 } from '../engine';
-import { UI, columnLabel, priceTag, programLabel } from '../i18n/fr';
+import { UI, columnLabel, priceTag, priceTagShort, programLabel } from '../i18n/fr';
 import type { Cell, Rect } from './gesture';
 import {
   BAD, ICONS, INK_A, INK_B, OK, PIECE_COLORS, SOFT_A, SOFT_B, ACCENT, colorKey, esc,
@@ -118,7 +118,6 @@ export function boardGeometry(grid: Grid, style: BoardStyle, cell: number, state
   const exportTotal = exact ? Object.values(grid.inventory.exports ?? {}).reduce((a, b) => a + b, 0) : Infinity;
   /** Most the silhouette can rise in column `c`: exports (published ones are fixed) plus pumping. */
   const extraAt = (c: number) => {
-    if (style !== 'A') return 0;
     const exports = grid.neighbors.reduce((a, nb) => a + (locked.get(`${nb.id}:${c}`) ?? nb.cap), 0);
     return Math.min(exports, exportTotal) + maxStepPairs(grid);
   };
@@ -126,7 +125,8 @@ export function boardGeometry(grid: Grid, style: BoardStyle, cell: number, state
   const rows = Math.max(1, ...colMax);
   const st = state ?? { bars: [], exports: {}, step: [] };
   const tags = tagsPerColumn(grid, st, style);
-  const tops = columnTops(grid, st, style, weather);
+  // Paper: every tag sits above the rectangle, outside the grid.
+  const tops = style === 'B' ? res.map(() => rows) : columnTops(grid, st, style, weather);
   const need = Math.max(0, ...tags.map((k, c) => (k ? k * 22 + 6 - (rows - tops[c]!) * cell : 0)));
   const topPad = Math.max(8, need);
   const programRows = programLanes(grid).reduce((m, l) => Math.max(m, l.lane + 1), 0);
@@ -233,6 +233,13 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
         s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" stroke="${col}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
       }
     }
+    // Paper: the grid is a full rectangle; cells above the demand line are plain white too.
+    if (!A) {
+      for (let r = k; r < H - weather[c]!; r++) {
+        const { bx, by, w } = box(c, weather[c]! + r);
+        s += `<rect x="${bx}" y="${by}" width="${w}" height="${w}" fill="#fff" stroke="#c7d5d1" stroke-width=".8"/>`;
+      }
+    }
     for (let t = 0; t < turbines[c]!; t++) {
       const { bx, by, w } = box(c, weather[c]! + k + t);
       s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="none" stroke="${soft}" stroke-opacity=".6" stroke-width="1.2" stroke-dasharray="2 3"/>`
@@ -297,7 +304,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       const top = y(weather[c]! + sil[c]!, 0);
       d += ` L${x(c)} ${top} L${x(c + 1)} ${top}`;
     }
-    s += `<path d="${d} L${n * cell} ${H * cell} Z" fill="none" stroke="${ink}" stroke-width="1.6" stroke-linejoin="round"/>`;
+    s += `<path d="${d} L${n * cell} ${H * cell} Z" fill="none" stroke="${ink}" stroke-width="3.2" stroke-linejoin="miter"/>`;
   }
 
   // ---- tags above the columns: price, record, STEP
@@ -305,7 +312,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   const barTop = grid.columns.map(() => 0);
   if (A) for (const b of state.bars) for (let c = b.col; c < Math.min(n, b.col + b.len); c++) barTop[c] = Math.max(barTop[c]!, b.row + barHeight(b));
   const pendingAt = A ? input.stepPending ?? null : null;
-  const topOf = (c: number) => weather[c]! + Math.max(sil[c]! + turbines[c]! + (pendingAt === c ? 1 : 0), barTop[c]!);
+  const topOf = (c: number) => (A ? weather[c]! + Math.max(sil[c]! + turbines[c]! + (pendingAt === c ? 1 : 0), barTop[c]!) : H);
   const tagY = (c: number) => y(topOf(c) - 1) - 24 - stack[c]!++ * 22;
   // A pill centred on `mid`, kept inside the board; a verified pill grows by 10 to hold its tick.
   // `content(textCentre, left)` draws what is inside.
@@ -330,7 +337,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     if (cl.type !== 'price') return;
     const ty = tagY(cl.col);
     const mid = x(cl.col) + cell / 2;
-    const label = priceTag(cl.piece);
+    const label = A ? priceTag(cl.piece) : priceTagShort(cl.piece);
     const w = Math.max(cell - 6, label.length * 5.6 + 10);
     s += `<g class="tag">${pill(mid, ty, w, A ? fill(cl.piece) : '#fff', A ? null : ink, (tc) => T(tc, ty + 12.5, label), statusOf(i))}`
       + `<path d="M${mid - 4} ${ty + 18} l4 4 l4 -4z" fill="${A ? fill(cl.piece) : ink}"/></g>`;
