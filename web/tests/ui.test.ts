@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import gridsJson from '../src/data/grids.json';
 import type { Grid } from '../src/model/grid';
-import { evaluate, newGame, place, solutionState } from '../src/engine';
+import { evaluate, newGame, place, rawSilhouette, solutionState } from '../src/engine';
 import {
   alongShape, cancel, idle, isFlat, isSingleCell, moveTo, press, previewRect, rectBetween, release, tap, type Shape,
 } from '../src/ui/gesture';
@@ -14,7 +14,7 @@ import {
   ProgressStore, STORAGE_KEY, emptyProgress, isPlayState, nextGrid, parseProgress,
   playOrder, recordState, statusOf, type KeyValueStore,
 } from '../src/ui/progress';
-import { boardLead, boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard, stepTagLabels } from '../src/ui/board';
+import { bandPlan, boardLead, boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard, stepTagLabels } from '../src/ui/board';
 import {
   applyLockedExports, boardMessage, bulletinTag, displayTitle, exportTap, initialState, isInitialState, newlyBroken, nextExportValue,
   poseMessage, techniqueLine,
@@ -735,19 +735,39 @@ describe('board card: fixed layout, price row, export rows', () => {
     }
   });
 
-  it('a reserve is drawn only when the grid has a neighbor or a STEP', () => {
-    expect(draw(byId(1)).svg).not.toContain('class="reserve"');
-    expect(draw(byId(2)).svg).not.toContain('class="reserve"');
-    for (const id of [6, 7, 10, 11]) expect(draw(byId(id)).svg).toContain('class="reserve"');
+  it('nothing is drawn above the demand until an export or a pumping is laid: the room is reserved, empty', () => {
+    for (const id of [1, 2, 6, 10, 11]) {
+      const svg = draw(byId(id)).svg;
+      expect(svg).not.toContain('class="reserve"');
+      expect(svg).not.toContain('stroke="#8f78cf" stroke-width="1.6" stroke-dasharray="4 3"'); // no dashed violet cell
+    }
+    // The card keeps the room: rows reach above the highest demand when the grid can export.
+    for (const id of [6, 10, 11]) {
+      const g = byId(id);
+      expect(boardGeometry(g, 'A', 50).rows).toBeGreaterThan(Math.max(...g.demand));
+    }
+    const g1 = byId(1);
+    expect(boardGeometry(g1, 'A', 50).rows).toBe(Math.max(...g1.demand));
   });
 
-  it('an export fills a reserve cell: the reserve stays drawn above, nothing else changes', () => {
+  it('an export draws a dashed violet cell above its column; the card does not move', () => {
     const g = byId(11);
-    const before = draw(g).svg.match(/class="reserve"/g)?.length ?? 0;
+    const before = draw(g);
     const r = exportTap(g, initialState(g), 'DE', 2);
     expect(r.state).not.toBeNull();
-    const after = draw(g, r.state!).svg.match(/class="reserve"/g)?.length ?? 0;
-    expect(after).toBe(before - 1);
+    const after = draw(g, r.state!);
+    expect(after.svg).toContain('stroke="#8f78cf" stroke-width="1.6" stroke-dasharray="4 3"');
+    expect(viewBox(after.svg)).toBe(viewBox(before.svg));
+  });
+
+  it('a pump chosen but not yet turbined already shows its dashed blue cell; the turbine only once laid', () => {
+    const g = byId(7);
+    const st = initialState(g);
+    const plain = renderBoard({ grid: g, state: st, ev: evaluate(g, st), style: 'A', cell: 50, stepMode: true, interactive: true });
+    const pend = renderBoard({ grid: g, state: st, ev: evaluate(g, st), style: 'A', cell: 50, stepMode: true, interactive: true, stepPending: 3 });
+    const blue = (svg: string) => (svg.match(/stroke="#6f9bd0" stroke-width="1.6" stroke-dasharray="4 3"/g) ?? []).length;
+    expect(blue(pend.svg)).toBe(blue(plain.svg) + 1);
+    expect(viewBox(pend.svg)).toBe(viewBox(plain.svg));
   });
 
   it('price tags sit under the hours, below the grid, not above the columns', () => {
@@ -756,11 +776,14 @@ describe('board card: fixed layout, price row, export rows', () => {
     const hoursY = geo.rows * 50;
     const prices = [...svg.matchAll(/<g class="tag"><rect x="[\d.]+" y="([\d.-]+)"/g)].map((m) => Number(m[1]));
     expect(g.clues.filter((c) => c.type === 'price').length).toBeGreaterThan(0);
-    // Every price pill is below the hour labels (record tags above the columns have a negative or small y).
+    // Every price and record pill is below the hour labels, in the band; none is above the columns.
     const below = prices.filter((y) => y > hoursY);
-    expect(below.length).toBe(g.clues.filter((c) => c.type === 'price').length);
-    expect(geo.priceRows).toBe(1);
-    expect(boardGeometry(byId(10), 'A', 50).priceRows).toBe(0); // no price clue: no row
+    expect(below.length).toBe(g.clues.filter((c) => c.type === 'price' || c.type === 'column').length);
+    expect(prices.every((y) => y > hoursY)).toBe(true);
+    expect(geo.bandHeight).toBeGreaterThan(0);
+    expect(boardGeometry(byId(2), 'A', 50).bandHeight).toBeGreaterThan(0); // tutorial 2 has price clues
+    expect(boardGeometry(byId(1), 'A', 50).bandHeight).toBe(0); // no slot clue: no band
+    expect(boardGeometry(byId(11), 'A', 50).bandHeight).toBeGreaterThan(0); // the daily grid has records
   });
 
   it('neighbouring price tags never overlap, even with a 30 px cell', () => {
@@ -775,6 +798,96 @@ describe('board card: fixed layout, price row, export rows', () => {
     }
     // Tight cell: the short label "€ N" replaces the long one.
     expect(draw(byId(6), undefined, 30).svg).toContain('>€ ');
+  });
+
+  it('two price tags on neighbouring slots share one line, from 30 to 60 px cells', () => {
+    for (let cell = 30; cell <= 60; cell += 2) {
+      const prices = bandPlan(byId(6), cell).items.filter((it) => it.kind === 'price');
+      expect(prices.length).toBe(2);
+      expect(prices.map((it) => it.lane)).toEqual([0, 0]);
+      // Same on a synthetic grid: prices on every slot stay on one line.
+      const g = byId(6);
+      g.clues = g.columns.map((_, col) => ({ type: 'price' as const, col, piece: 'N' as const }));
+      expect(new Set(bandPlan(g, cell).items.map((it) => it.lane))).toEqual(new Set([0]));
+    }
+    // Tutorial 7 at 50 px: the record on slot 3 and the price on slot 4 share the line too.
+    const g7 = byId(7);
+    const laneAt = (type: string, col: number) => bandPlan(g7, 50).items.find((it) => {
+      const cl = g7.clues[it.index]!;
+      return cl.type === type && 'col' in cl && cl.col === col;
+    })!.lane;
+    expect(laneAt('column', 3)).toBe(laneAt('price', 4));
+  });
+
+  it('G7: the 9h record and the 12h price share one line from 30 to 60 px cells', () => {
+    const g7 = byId(7);
+    const item = (type: string, col: number, cell: number) => bandPlan(g7, cell).items.find((it) => {
+      const cl = g7.clues[it.index]!;
+      return cl.type === type && 'col' in cl && cl.col === col;
+    })!;
+    for (let cell = 30; cell <= 60; cell += 2) {
+      const col9 = g7.clues.find((c) => c.type === 'column');
+      expect(col9).toBeTruthy();
+      const rec = item('column', (col9 as { col: number }).col, cell);
+      expect(rec.x2 - rec.x1).toBeLessThanOrEqual(cell - 2);
+      const prices = bandPlan(g7, cell).items.filter((it) => it.kind === 'price');
+      for (const p of prices) if (Math.abs(p.mid - rec.mid) < cell * 4) expect(p.lane).toBe(rec.lane);
+    }
+  });
+
+  it('paper: the programme bar sits clear of the thick demand contour', () => {
+    const g = grids.find((x) => x.clues.some((c) => c.type === 'bar'))!;
+    const svg = renderBoard({ grid: g, state: initialState(g), ev: null, style: 'B', cell: 40 }).svg;
+    const geo = boardGeometry(g, 'B', 40);
+    const m = svg.match(new RegExp(`<rect x="[\\d.]+" y="([\\d.]+)" width="[\\d.]+" height="4" rx="2"`));
+    expect(Number(m![1])).toBeGreaterThanOrEqual(geo.rows * 40 + 3.2 / 2 + 1);
+  });
+
+  it('no two clues overlap on any published grid, verified or not, from 30 to 60 px', () => {
+    const pills = (svg: string, from: number) => [...svg.matchAll(/<rect x="([\d.-]+)" y="([\d.-]+)" width="([\d.]+)" height="18" rx="9"/g)]
+      .map((m) => ({ x1: Number(m[1]), y: Number(m[2]), x2: Number(m[1]) + Number(m[3]) }))
+      .filter((p) => p.y > from);
+    for (const g of grids) {
+      for (const cell of [30, 36, 44, 50, 60]) {
+        for (const state of [initialState(g), solutionState(g)]) {
+          const { svg, geo } = renderBoard({ grid: g, state, ev: evaluate(g, state), style: 'A', cell, interactive: true });
+          const band = pills(svg, geo.rows * cell);
+          const count = g.clues.filter((c) => c.type === 'price' || c.type === 'column' || c.type === 'bar').length;
+          expect(band.length).toBe(count);
+          for (const a of band) for (const b of band) {
+            if (a === b || Math.abs(a.y - b.y) >= 18) continue;
+            expect(a.x2 <= b.x1 || b.x2 <= a.x1, `grid ${g.id}, cell ${cell}`).toBe(true);
+          }
+          // Inside the board, and above the export rows.
+          for (const p of band) {
+            expect(p.x1).toBeGreaterThanOrEqual(geo.lead);
+            expect(p.x2).toBeLessThanOrEqual(geo.lead + g.columns.length * cell);
+            expect(p.y + 18).toBeLessThanOrEqual(geo.rows * cell + 24 + geo.bandHeight);
+          }
+        }
+      }
+    }
+  });
+
+  it('STEP arrows and tags hang on the current top of their column; the card does not move', () => {
+    const g = byId(7);
+    const st = initialState(g);
+    const arrows = (svg: string) => new Map([...svg.matchAll(/data-act="step-arrow" data-col="(\d+)"[^>]*><circle cx="[\d.]+" cy="([\d.-]+)"/g)].map((m) => [Number(m[1]), Number(m[2])]));
+    const top = (s: typeof st, c: number) => (g.weather.R[c] ?? 0) + (g.weather.F[c] ?? 0) + Math.max(0, rawSilhouette(g, s)[c]!);
+    const plain = renderBoard({ grid: g, state: st, ev: evaluate(g, st), style: 'A', cell: 50, stepMode: true, interactive: true });
+    const H = plain.geo.rows;
+    const a = arrows(plain.svg);
+    expect(a.size).toBe(g.columns.length - 1);
+    for (const [c, cy] of a) expect(cy).toBe((H - top(st, c)) * 50 - 24 + 9);
+    // Pending pump on slot 3: its arrow rises by one cell; the other arrows stay; the viewBox too.
+    const pend = renderBoard({ grid: g, state: st, ev: evaluate(g, st), style: 'A', cell: 50, stepMode: true, interactive: true, stepPending: 3 });
+    const b = arrows(pend.svg);
+    expect(b.get(3)).toBe(a.get(3)! - 50);
+    for (const [c, cy] of b) if (c > 3 && a.has(c)) expect(cy).toBe(a.get(c));
+    expect(b.get(g.columns.length - 1)).toBe((H - top(st, g.columns.length - 1)) * 50 - 15); // ▼ on the last slot
+    expect(pend.svg.match(/viewBox="([^"]+)"/)![1]).toBe(plain.svg.match(/viewBox="([^"]+)"/)![1]);
+    // Every arrow stays inside the card, whatever the column height.
+    for (const cy of [...a.values(), ...b.values()]) expect(cy - 11).toBeGreaterThanOrEqual(-plain.geo.topPad);
   });
 
   it('two neighbours: one export row each, distinct positions, viewBox stable after an export', () => {
