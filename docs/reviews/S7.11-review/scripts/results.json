@@ -1,0 +1,1102 @@
+[
+ {
+  "name": "home→grille du jour @1280: logo fixed",
+  "ok": true,
+  "detail": "[66,26,36,36] → [66,26,36,36] (#/grille/11)"
+ },
+ {
+  "name": "grille du jour @1280: no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "grille du jour @1280: board under the logo, inside the card",
+  "ok": true,
+  "detail": "{\"top\":128.5,\"logo\":[66,26,36,36],\"card\":[66,104,536,543]}"
+ },
+ {
+  "name": "grille du jour @1280: no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "home→grille du jour @375: logo fixed",
+  "ok": true,
+  "detail": "[16,18,36,36] → [16,18,36,36] (#/grille/11)"
+ },
+ {
+  "name": "grille du jour @375: no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "grille du jour @375: board under the logo, inside the card",
+  "ok": true,
+  "detail": "{\"top\":255.203125,\"logo\":[16,18,36,36],\"card\":[16,234.7,343,365]}"
+ },
+ {
+  "name": "grille du jour @375: no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "home→grille du jour @320: logo fixed",
+  "ok": true,
+  "detail": "[16,18,36,36] → [16,18,36,36] (#/grille/11)"
+ },
+ {
+  "name": "grille du jour @320: no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "grille du jour @320: board under the logo, inside the card",
+  "ok": true,
+  "detail": "{\"top\":255.203125,\"logo\":[16,18,36,36],\"card\":[16,234.7,288,316]}"
+ },
+ {
+  "name": "grille du jour @320: no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@1280 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G3@1280 card radius/border/fill = right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@1280 whole board inside the card (no clipping at the edges)",
+  "ok": true,
+  "detail": "{\"l\":87.640625,\"r\":463.5,\"t\":128.5,\"b\":498,\"card\":[66,104,416,423]}"
+ },
+ {
+  "name": "G3@1280 board fits without inner scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G3@1280 card top level with the title eyebrow",
+  "ok": true,
+  "detail": "104 vs 104"
+ },
+ {
+  "name": "G3@1280 export cell fills (→1)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@1280 export takes one reserve cell",
+  "ok": true,
+  "detail": "6 → 5"
+ },
+ {
+  "name": "G3@1280 card, board, logo, title, prices fixed after export",
+  "ok": true,
+  "detail": "{\"before\":[[66,104,416,423],[81,119,386,389],[66,26,36,36]],\"after\":[[66,104,416,423],[81,119,386,389],[66,26,36,36]]}"
+ },
+ {
+  "name": "G3@1280 after export: board top 128.5 under logo bottom 62",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@1280 after export: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@1280 second tap clears (cap 1)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@1280 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G6@1280 card radius/border/fill = right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 whole board inside the card (no clipping at the edges)",
+  "ok": true,
+  "detail": "{\"l\":87.640625,\"r\":463.5,\"t\":128.5,\"b\":642,\"card\":[66,104,416,567]}"
+ },
+ {
+  "name": "G6@1280 board fits without inner scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G6@1280 card top level with the title eyebrow",
+  "ok": true,
+  "detail": "104 vs 104"
+ },
+ {
+  "name": "G6@1280 price pills under the hours",
+  "ok": true,
+  "detail": "[{\"y\":441,\"mid\":112,\"hours\":420,\"cell\":60,\"lead\":22},{\"y\":441,\"mid\":172,\"hours\":420,\"cell\":60,\"lead\":22}]"
+ },
+ {
+  "name": "G6@1280 export cell fills (→1)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 export takes one reserve cell",
+  "ok": true,
+  "detail": "6 → 5"
+ },
+ {
+  "name": "G6@1280 card, board, logo, title, prices fixed after export",
+  "ok": true,
+  "detail": "{\"before\":[[66,104,416,567],[81,119,386,533],[66,26,36,36]],\"after\":[[66,104,416,567],[81,119,386,533],[66,26,36,36]]}"
+ },
+ {
+  "name": "G6@1280 after export: board top 128.5 under logo bottom 62",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 after export: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 second tap clears (cap 1)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@1280 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G7@1280 card radius/border/fill = right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@1280 whole board inside the card (no clipping at the edges)",
+  "ok": true,
+  "detail": "{\"l\":87.640625,\"r\":583.5,\"t\":148.5,\"b\":688,\"card\":[66,104,536,613]}"
+ },
+ {
+  "name": "G7@1280 board fits without inner scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G7@1280 card top level with the title eyebrow",
+  "ok": true,
+  "detail": "104 vs 104"
+ },
+ {
+  "name": "G7@1280 price pills under the hours",
+  "ok": true,
+  "detail": "[{\"y\":441,\"mid\":112,\"hours\":420,\"cell\":60,\"lead\":22},{\"y\":441,\"mid\":292,\"hours\":420,\"cell\":60,\"lead\":22}]"
+ },
+ {
+  "name": "G7@1280 export refused (both published exports locked)",
+  "ok": true,
+  "detail": "Plus d’export vers l’Allemagne dans l’inventaire (2 au total)."
+ },
+ {
+  "name": "G7@1280 card, board, logo, title, prices fixed after export",
+  "ok": true,
+  "detail": "{\"before\":[[66,104,536,613],[81,119,506,579],[66,26,36,36]],\"after\":[[66,104,536,613],[81,119,506,579],[66,26,36,36]]}"
+ },
+ {
+  "name": "G7@1280 after export: board top 148.5 under logo bottom 62",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@1280 after export: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@1280 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G10@1280 card radius/border/fill = right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 whole board inside the card (no clipping at the edges)",
+  "ok": true,
+  "detail": "{\"l\":87.640625,\"r\":583.5,\"t\":128.5,\"b\":498,\"card\":[66,104,536,423]}"
+ },
+ {
+  "name": "G10@1280 board fits without inner scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G10@1280 card top level with the title eyebrow",
+  "ok": true,
+  "detail": "104 vs 104"
+ },
+ {
+  "name": "G10@1280 export cell fills (→1)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 export takes one reserve cell",
+  "ok": true,
+  "detail": "8 → 7"
+ },
+ {
+  "name": "G10@1280 card, board, logo, title, prices fixed after export",
+  "ok": true,
+  "detail": "{\"before\":[[66,104,536,423],[81,119,506,389],[66,26,36,36]],\"after\":[[66,104,536,423],[81,119,506,389],[66,26,36,36]]}"
+ },
+ {
+  "name": "G10@1280 after export: board top 128.5 under logo bottom 62",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 after export: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 second tap clears (cap 1)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@375 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G3@375 card radius/border/fill = right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@375 whole board inside the card (no clipping at the edges)",
+  "ok": true,
+  "detail": "{\"l\":34.140625,\"r\":344,\"t\":333.953125,\"b\":642.453125,\"card\":[16,313.5,343,354]}"
+ },
+ {
+  "name": "G3@375 board fits without inner scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G3@375 export cell fills (→1)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@375 export takes one reserve cell",
+  "ok": true,
+  "detail": "6 → 5"
+ },
+ {
+  "name": "G3@375 card, board, logo, title, prices fixed after export",
+  "ok": true,
+  "detail": "{\"before\":[[16,313.5,343,354],[27.5,324.5,320,328],[16,18,36,36]],\"after\":[[16,313.5,343,354],[27.5,324.5,320,328],[16,18,36,36]]}"
+ },
+ {
+  "name": "G3@375 after export: board top 333.953125 under logo bottom 54",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@375 after export: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@375 second tap clears (cap 1)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@375 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G6@375 card radius/border/fill = right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 whole board inside the card (no clipping at the edges)",
+  "ok": true,
+  "detail": "{\"l\":34.140625,\"r\":344,\"t\":274.890625,\"b\":705.390625,\"card\":[16,254.4,343,476]}"
+ },
+ {
+  "name": "G6@375 board fits without inner scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G6@375 price pills under the hours",
+  "ok": true,
+  "detail": "[{\"y\":364,\"mid\":95.5,\"hours\":343,\"cell\":49,\"lead\":22},{\"y\":364,\"mid\":144.5,\"hours\":343,\"cell\":49,\"lead\":22}]"
+ },
+ {
+  "name": "G6@375 export cell fills (→1)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 export takes one reserve cell",
+  "ok": true,
+  "detail": "6 → 5"
+ },
+ {
+  "name": "G6@375 card, board, logo, title, prices fixed after export",
+  "ok": true,
+  "detail": "{\"before\":[[16,254.4,343,476],[27.5,265.4,320,450],[16,18,36,36]],\"after\":[[16,254.4,343,476],[27.5,265.4,320,450],[16,18,36,36]]}"
+ },
+ {
+  "name": "G6@375 after export: board top 274.890625 under logo bottom 54",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 after export: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 second tap clears (cap 1)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@375 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G7@375 card radius/border/fill = right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@375 whole board inside the card (no clipping at the edges)",
+  "ok": true,
+  "detail": "{\"l\":33.140625,\"r\":346.5,\"t\":387.8125,\"b\":757.3125,\"card\":[16,347.3,343,435]}"
+ },
+ {
+  "name": "G7@375 board fits without inner scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G7@375 price pills under the hours",
+  "ok": true,
+  "detail": "[{\"y\":280,\"mid\":77.5,\"hours\":259,\"cell\":37,\"lead\":22},{\"y\":280,\"mid\":188.5,\"hours\":259,\"cell\":37,\"lead\":22}]"
+ },
+ {
+  "name": "G7@375 export refused (both published exports locked)",
+  "ok": true,
+  "detail": "Plus d’export vers l’Allemagne dans l’inventaire (2 au total)."
+ },
+ {
+  "name": "G7@375 card, board, logo, title, prices fixed after export",
+  "ok": true,
+  "detail": "{\"before\":[[16,347.3,343,435],[26.5,358.3,322,409],[16,18,36,36]],\"after\":[[16,347.3,343,435],[26.5,358.3,322,409],[16,18,36,36]]}"
+ },
+ {
+  "name": "G7@375 after export: board top 387.8125 under logo bottom 54",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@375 after export: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@375 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G10@375 card radius/border/fill = right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 whole board inside the card (no clipping at the edges)",
+  "ok": true,
+  "detail": "{\"l\":33.140625,\"r\":345,\"t\":255.203125,\"b\":500.703125,\"card\":[16,234.7,343,291]}"
+ },
+ {
+  "name": "G10@375 board fits without inner scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G10@375 export cell fills (→1)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 export takes one reserve cell",
+  "ok": true,
+  "detail": "8 → 7"
+ },
+ {
+  "name": "G10@375 card, board, logo, title, prices fixed after export",
+  "ok": true,
+  "detail": "{\"before\":[[16,234.7,343,291],[26.5,245.7,322,265],[16,18,36,36]],\"after\":[[16,234.7,343,291],[26.5,245.7,322,265],[16,18,36,36]]}"
+ },
+ {
+  "name": "G10@375 after export: board top 255.203125 under logo bottom 54",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 after export: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 second tap clears (cap 1)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@320 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G3@320 card radius/border/fill = right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@320 whole board inside the card (no clipping at the edges)",
+  "ok": true,
+  "detail": "{\"l\":33.640625,\"r\":289.5,\"t\":353.640625,\"b\":614.140625,\"card\":[16,333.1,288,306]}"
+ },
+ {
+  "name": "G3@320 board fits without inner scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G3@320 export cell fills (→1)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@320 export takes one reserve cell",
+  "ok": true,
+  "detail": "6 → 5"
+ },
+ {
+  "name": "G3@320 card, board, logo, title, prices fixed after export",
+  "ok": true,
+  "detail": "{\"before\":[[16,333.1,288,306],[27,344.1,266,280],[16,18,36,36]],\"after\":[[16,333.1,288,306],[27,344.1,266,280],[16,18,36,36]]}"
+ },
+ {
+  "name": "G3@320 after export: board top 353.640625 under logo bottom 54",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@320 after export: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@320 second tap clears (cap 1)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@320 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G6@320 card radius/border/fill = right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 whole board inside the card (no clipping at the edges)",
+  "ok": true,
+  "detail": "{\"l\":33.640625,\"r\":289.5,\"t\":274.890625,\"b\":639.390625,\"card\":[16,254.4,288,410]}"
+ },
+ {
+  "name": "G6@320 board fits without inner scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G6@320 price pills under the hours",
+  "ok": true,
+  "detail": "[{\"y\":301,\"mid\":82,\"hours\":280,\"cell\":40,\"lead\":22},{\"y\":301,\"mid\":122,\"hours\":280,\"cell\":40,\"lead\":22}]"
+ },
+ {
+  "name": "G6@320 export cell fills (→1)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 export takes one reserve cell",
+  "ok": true,
+  "detail": "6 → 5"
+ },
+ {
+  "name": "G6@320 card, board, logo, title, prices fixed after export",
+  "ok": true,
+  "detail": "{\"before\":[[16,254.4,288,410],[27,265.4,266,384],[16,18,36,36]],\"after\":[[16,254.4,288,410],[27,265.4,266,384],[16,18,36,36]]}"
+ },
+ {
+  "name": "G6@320 after export: board top 274.890625 under logo bottom 54",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 after export: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 second tap clears (cap 1)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@320 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G7@320 card radius/border/fill = right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@320 whole board inside the card (no clipping at the edges)",
+  "ok": true,
+  "detail": "{\"l\":33.640625,\"r\":291,\"t\":407.5,\"b\":728,\"card\":[16,367,288,386]}"
+ },
+ {
+  "name": "G7@320 board fits without inner scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G7@320 price pills under the hours",
+  "ok": true,
+  "detail": "[{\"y\":231,\"mid\":67,\"hours\":210,\"cell\":30,\"lead\":22},{\"y\":231,\"mid\":157,\"hours\":210,\"cell\":30,\"lead\":22}]"
+ },
+ {
+  "name": "G7@320 export refused (both published exports locked)",
+  "ok": true,
+  "detail": "Plus d’export vers l’Allemagne dans l’inventaire (2 au total)."
+ },
+ {
+  "name": "G7@320 card, board, logo, title, prices fixed after export",
+  "ok": true,
+  "detail": "{\"before\":[[16,367,288,386],[27,378,266,360],[16,18,36,36]],\"after\":[[16,367,288,386],[27,378,266,360],[16,18,36,36]]}"
+ },
+ {
+  "name": "G7@320 after export: board top 407.5 under logo bottom 54",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@320 after export: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@320 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G10@320 card radius/border/fill = right-hand cards",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 whole board inside the card (no clipping at the edges)",
+  "ok": true,
+  "detail": "{\"l\":33.640625,\"r\":289.5,\"t\":255.203125,\"b\":465.703125,\"card\":[16,234.7,288,256]}"
+ },
+ {
+  "name": "G10@320 board fits without inner scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G10@320 export cell fills (→1)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 export takes one reserve cell",
+  "ok": true,
+  "detail": "8 → 7"
+ },
+ {
+  "name": "G10@320 card, board, logo, title, prices fixed after export",
+  "ok": true,
+  "detail": "{\"before\":[[16,234.7,288,256],[27,245.7,266,230],[16,18,36,36]],\"after\":[[16,234.7,288,256],[27,245.7,266,230],[16,18,36,36]]}"
+ },
+ {
+  "name": "G10@320 after export: board top 255.203125 under logo bottom 54",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 after export: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 second tap clears (cap 1)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1 (no neighbor, no STEP): no reserve row",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G1: no export row",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2 (no neighbor, no STEP): no reserve row",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G2: no export row",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@1280 pumping (▲ at 8h): nothing moves",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@1280 pending pump: reserve unchanged until the turbine",
+  "ok": true,
+  "detail": "14 → 14"
+ },
+ {
+  "name": "G7 STEP@1280 pumped block under the logo",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@1280 pair laid (2 tags)",
+  "ok": true,
+  "detail": "2"
+ },
+ {
+  "name": "G7 STEP@1280 pair takes one reserve cell",
+  "ok": true,
+  "detail": "14 → 13"
+ },
+ {
+  "name": "G7 STEP@1280 turbining: nothing moves",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@1280 no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@1280 undo removes the pair",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G7 STEP@1280 undo: nothing moves",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@1280 eraser removes the pair",
+  "ok": true,
+  "detail": "0 tags left"
+ },
+ {
+  "name": "G7 STEP@1280 eraser: nothing moves, reserve back",
+  "ok": true,
+  "detail": "14"
+ },
+ {
+  "name": "G7 STEP@1280 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@375 pumping (▲ at 8h): nothing moves",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@375 pending pump: reserve unchanged until the turbine",
+  "ok": true,
+  "detail": "14 → 14"
+ },
+ {
+  "name": "G7 STEP@375 pumped block under the logo",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@375 pair laid (2 tags)",
+  "ok": true,
+  "detail": "2"
+ },
+ {
+  "name": "G7 STEP@375 pair takes one reserve cell",
+  "ok": true,
+  "detail": "14 → 13"
+ },
+ {
+  "name": "G7 STEP@375 turbining: nothing moves",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@375 no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@375 undo removes the pair",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G7 STEP@375 undo: nothing moves",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@375 eraser removes the pair",
+  "ok": true,
+  "detail": "0 tags left"
+ },
+ {
+  "name": "G7 STEP@375 eraser: nothing moves, reserve back",
+  "ok": true,
+  "detail": "14"
+ },
+ {
+  "name": "G7 STEP@375 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@320 pumping (▲ at 8h): nothing moves",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@320 pending pump: reserve unchanged until the turbine",
+  "ok": true,
+  "detail": "14 → 14"
+ },
+ {
+  "name": "G7 STEP@320 pumped block under the logo",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@320 pair laid (2 tags)",
+  "ok": true,
+  "detail": "2"
+ },
+ {
+  "name": "G7 STEP@320 pair takes one reserve cell",
+  "ok": true,
+  "detail": "14 → 13"
+ },
+ {
+  "name": "G7 STEP@320 turbining: nothing moves",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@320 no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@320 undo removes the pair",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G7 STEP@320 undo: nothing moves",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@320 eraser removes the pair",
+  "ok": true,
+  "detail": "0 tags left"
+ },
+ {
+  "name": "G7 STEP@320 eraser: nothing moves, reserve back",
+  "ok": true,
+  "detail": "14"
+ },
+ {
+  "name": "G7 STEP@320 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@1280 order book without « Échanges »",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@1280 card « Publications du marché »",
+  "ok": true,
+  "detail": "Carnet d’ordres touche une centrale pour la choisir | Publications du marché 0 sur 1 vérifié"
+ },
+ {
+  "name": "G3@1280 imposed exchanges listed first",
+  "ok": true,
+  "detail": "Aujourd’hui : 2 blocs exportés, 1 bloc importé."
+ },
+ {
+  "name": "G3@375 order book without « Échanges »",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@375 card « Publications du marché »",
+  "ok": true,
+  "detail": "Carnet d’ordres touche une centrale pour la choisir | Publications du marché 0 sur 1 vérifié"
+ },
+ {
+  "name": "G3@375 imposed exchanges listed first",
+  "ok": true,
+  "detail": "Aujourd’hui : 2 blocs exportés, 1 bloc importé."
+ },
+ {
+  "name": "G6@1280 order book without « Échanges »",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 card « Publications du marché »",
+  "ok": true,
+  "detail": "Carnet d’ordres touche une centrale pour la choisir | Publications du marché 0 sur 3 vérifié"
+ },
+ {
+  "name": "G6@1280 imposed exchanges listed first",
+  "ok": true,
+  "detail": "Aujourd’hui : 2 blocs exportés, aucun bloc importé."
+ },
+ {
+  "name": "G6@375 order book without « Échanges »",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 card « Publications du marché »",
+  "ok": true,
+  "detail": "Carnet d’ordres touche une centrale pour la choisir | Publications du marché 0 sur 3 vérifié"
+ },
+ {
+  "name": "G6@375 imposed exchanges listed first",
+  "ok": true,
+  "detail": "Aujourd’hui : 2 blocs exportés, aucun bloc importé."
+ },
+ {
+  "name": "G7@1280 order book without « Échanges »",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@1280 card « Publications du marché »",
+  "ok": true,
+  "detail": "Carnet d’ordres touche une centrale pour la choisir | Publications du marché 2 sur 7 vérifiés"
+ },
+ {
+  "name": "G7@1280 imposed exchanges listed first",
+  "ok": true,
+  "detail": "Aujourd’hui : 2 blocs exportés, 2 blocs importés, 1 pompage."
+ },
+ {
+  "name": "G7@375 order book without « Échanges »",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@375 card « Publications du marché »",
+  "ok": true,
+  "detail": "Carnet d’ordres touche une centrale pour la choisir | Publications du marché 2 sur 7 vérifiés"
+ },
+ {
+  "name": "G7@375 imposed exchanges listed first",
+  "ok": true,
+  "detail": "Aujourd’hui : 2 blocs exportés, 2 blocs importés, 1 pompage."
+ },
+ {
+  "name": "G10@1280 order book without « Échanges »",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 card « Publications du marché »",
+  "ok": true,
+  "detail": "Centrales disponibles formes autorisées, quantités à déduire | Publications du marché 0 sur 3 vérifié"
+ },
+ {
+  "name": "G10@375 order book without « Échanges »",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 card « Publications du marché »",
+  "ok": true,
+  "detail": "Centrales disponibles formes autorisées, quantités à déduire | Publications du marché 0 sur 3 vérifié"
+ },
+ {
+  "name": "sheet G6: « Publications du marché »",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "sheet G6: no « Échanges » row in the book",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "sheet G6: export row « DE » cells",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "sheet G6: no reserve drawn on paper",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "sheet G6: PDF fits one A4 page",
+  "ok": true,
+  "detail": "1 pages"
+ },
+ {
+  "name": "sheet G7: « Publications du marché »",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "sheet G7: no « Échanges » row in the book",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "sheet G7: export row « DE » cells",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "sheet G7: no reserve drawn on paper",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "sheet G7: PDF fits one A4 page",
+  "ok": true,
+  "detail": "1 pages"
+ }
+]
