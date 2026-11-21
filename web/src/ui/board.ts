@@ -520,7 +520,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
 
   const vb = `-2 ${-geo.topPad} ${geo.width} ${geo.height}`;
   return {
-    svg: `<svg class="board-svg" data-cell="${cell}" data-rows="${H}" data-top="${geo.topPad}" width="${geo.width}" height="${geo.height}" viewBox="${vb}" xmlns="http://www.w3.org/2000/svg">${s}</svg>`,
+    svg: `<svg class="board-svg" data-cell="${cell}" data-lead="${geo.lead}" data-rows="${H}" data-top="${geo.topPad}" width="${geo.width}" height="${geo.height}" viewBox="${vb}" xmlns="http://www.w3.org/2000/svg">${s}</svg>`,
     geo,
   };
 }
