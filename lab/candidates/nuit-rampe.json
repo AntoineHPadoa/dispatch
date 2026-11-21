@@ -1,0 +1,5594 @@
+[
+ {
+  "id": 1,
+  "title": "Montée en charge",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   7,
+   7,
+   7,
+   7,
+   8,
+   7,
+   7,
+   6
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5
+    ],
+    "shape": "trap",
+    "rank": 3,
+    "co2": 3
+   }
+  },
+  "weather": {
+   "R": [
+    1,
+    0,
+    0,
+    0,
+    1,
+    1,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      5,
+      5,
+      5,
+      5,
+      5,
+      4,
+      4,
+      4,
+      3,
+      3,
+      3,
+      3
+     ]
+    },
+    "C": {
+     "bars": [
+      3
+     ]
+    }
+   },
+   "exports": {},
+   "imports": {}
+  },
+  "clues": [],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 6,
+     "col": 1,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "C",
+     "row": 5,
+     "col": 5,
+     "len": 3
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": [
+    "exhausted"
+   ]
+  },
+  "lab": {
+   "seed": 100350403,
+   "aim": 4,
+   "family": "nuit_plate",
+   "mechanics": [
+    "ramp:trap",
+    "inventory:exact"
+   ],
+   "clue_profile": [],
+   "trace_summary": {
+    "steps": 2,
+    "level2_steps": 0,
+    "single_effect_steps": 0,
+    "order": [
+     "exhausted"
+    ],
+    "techniques": {
+     "exhausted": 2
+    },
+    "shape_steps": {
+     "exhausted:ramp_trap": 1
+    }
+   },
+   "ramp_techniques": {},
+   "bulletin": {
+    "title": "Montée en charge",
+    "text": "Peu de relief aujourd'hui : la base fait l'essentiel. Le charbon monte en charge, tient son plateau, puis redescend.",
+    "weather": [
+     "wind",
+     "moon",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 0.03,
+   "mix": 0,
+   "lot": "nuit-rampe",
+   "index": 0
+  }
+ },
+ {
+  "id": 2,
+  "title": "Tout le monde rentre",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   3,
+   2,
+   3,
+   4,
+   2,
+   4,
+   6,
+   3
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5
+    ],
+    "shape": "trap",
+    "rank": 3,
+    "co2": 3
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "BE",
+    "name": "Belgique",
+    "cap": 1,
+    "co2": 1
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      4,
+      4,
+      4,
+      3
+     ]
+    },
+    "C": {
+     "bars": [
+      3
+     ]
+    },
+    "G": {
+     "bars": [
+      2
+     ]
+    },
+    "T": {
+     "cells": 3
+    }
+   },
+   "exports": {
+    "BE": 0
+   },
+   "imports": {
+    "BE": 0
+   }
+  },
+  "clues": [],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "T",
+     "row": 2,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "G",
+     "row": 2,
+     "col": 2,
+     "len": 2
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "C",
+     "row": 2,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 4,
+     "col": 6,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 5,
+     "col": 6,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": [
+    "exhausted",
+    "room"
+   ]
+  },
+  "lab": {
+   "seed": 107461125,
+   "aim": 4,
+   "family": "pointe_soir",
+   "mechanics": [
+    "neighbors:1",
+    "ramp:trap",
+    "inventory:exact"
+   ],
+   "clue_profile": [],
+   "trace_summary": {
+    "steps": 5,
+    "level2_steps": 0,
+    "single_effect_steps": 1,
+    "order": [
+     "exhausted",
+     "room"
+    ],
+    "techniques": {
+     "exhausted": 4,
+     "room": 1
+    },
+    "shape_steps": {
+     "room:ramp_trap": 1,
+     "exhausted:ramp_trap": 1
+    }
+   },
+   "ramp_techniques": {},
+   "bulletin": {
+    "title": "Tout le monde rentre",
+    "text": "La consommation grimpe jusqu'à 18h. La centrale à charbon démarre et s'arrête en douceur.",
+    "weather": [
+     "moon",
+     "moon",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 0.02,
+   "mix": 4,
+   "lot": "nuit-rampe",
+   "index": 1
+  }
+ },
+ {
+  "id": 3,
+  "title": "Journée froide",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   3,
+   4,
+   7,
+   7,
+   7,
+   7,
+   7,
+   3
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5
+    ],
+    "shape": "trap",
+    "rank": 3,
+    "co2": 3
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      5,
+      5,
+      4,
+      3
+     ]
+    },
+    "C": {
+     "bars": [
+      5,
+      5,
+      4,
+      3
+     ]
+    },
+    "T": {
+     "cells": 2
+    }
+   },
+   "exports": {},
+   "imports": {}
+  },
+  "clues": [],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "C",
+     "row": 1,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "T",
+     "row": 2,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "C",
+     "row": 3,
+     "col": 1,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 2,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 6,
+     "col": 2,
+     "len": 5
+    },
+    {
+     "piece": "C",
+     "row": 0,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "C",
+     "row": 2,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 3,
+     "len": 4
+    },
+    {
+     "piece": "T",
+     "row": 1,
+     "col": 7,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 4,
+   "label": "Expert",
+   "techniques": [
+    "exhausted",
+    "ramp_plateau",
+    "ramp_shoulder",
+    "refuted",
+    "ribbon",
+    "room",
+    "share_out",
+    "single_cover",
+    "single_spot"
+   ]
+  },
+  "lab": {
+   "seed": 97370967,
+   "aim": 4,
+   "family": "plateau_hiver",
+   "mechanics": [
+    "ramp:trap",
+    "inventory:exact"
+   ],
+   "clue_profile": [],
+   "trace_summary": {
+    "steps": 17,
+    "level2_steps": 9,
+    "single_effect_steps": 7,
+    "order": [
+     "share_out",
+     "refuted",
+     "ribbon",
+     "single_cover",
+     "ramp_plateau",
+     "ramp_shoulder",
+     "single_spot",
+     "room",
+     "exhausted"
+    ],
+    "techniques": {
+     "share_out": 3,
+     "refuted": 3,
+     "ribbon": 3,
+     "single_cover": 1,
+     "ramp_plateau": 2,
+     "ramp_shoulder": 1,
+     "single_spot": 1,
+     "room": 1,
+     "exhausted": 2
+    },
+    "shape_steps": {
+     "share_out:ramp_trap": 1,
+     "refuted:ramp_trap": 3,
+     "ribbon:ramp_trap": 2,
+     "single_cover:ramp_trap": 1,
+     "single_spot:ramp_trap": 1,
+     "ramp_plateau:ramp_trap": 1
+    }
+   },
+   "ramp_techniques": {
+    "ramp_plateau": 2,
+    "ramp_shoulder": 1
+   },
+   "bulletin": {
+    "title": "Journée froide",
+    "text": "Le froid tient la demande haute toute la journée. Le charbon monte en charge, tient son plateau, puis redescend.",
+    "weather": [
+     "moon",
+     "moon",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 1.17,
+   "mix": 0,
+   "lot": "nuit-rampe",
+   "index": 2
+  }
+ },
+ {
+  "id": 4,
+  "title": "Frontière ouverte",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   4,
+   3,
+   4,
+   4,
+   7,
+   4,
+   6,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5
+    ],
+    "shape": "trap",
+    "rank": 3,
+    "co2": 3
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    4,
+    5,
+    2,
+    0,
+    0
+   ],
+   "F": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "DE",
+    "name": "Allemagne",
+    "cap": 1,
+    "co2": 2
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "C": {},
+    "T": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "price",
+    "col": 0,
+    "piece": "N"
+   },
+   {
+    "type": "column",
+    "col": 7,
+    "counts": {
+     "T": 0
+    }
+   },
+   {
+    "type": "bar",
+    "piece": "C",
+    "col": 5,
+    "len": 3
+   },
+   {
+    "type": "exchanges",
+    "exports": {
+     "DE": 3
+    }
+   },
+   {
+    "type": "length",
+    "piece": "N",
+    "len": 4
+   },
+   {
+    "type": "flow",
+    "col": 6,
+    "country": "DE",
+    "dir": "import",
+    "value": 1
+   }
+  ],
+  "solution": {
+   "exports": {
+    "DE": [
+     0,
+     1,
+     0,
+     1,
+     0,
+     1,
+     0,
+     0
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "C",
+     "row": 1,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 3,
+     "col": 6,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "row": 4,
+     "col": 6,
+     "len": 1,
+     "country": "DE"
+    },
+    {
+     "piece": "I",
+     "row": 2,
+     "col": 7,
+     "len": 1,
+     "country": "DE"
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "column_sum",
+    "length",
+    "price_cap",
+    "program",
+    "ramp_plateau",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 438512762,
+   "aim": 2,
+   "family": "surplus_midi",
+   "mechanics": [
+    "neighbors:1",
+    "surplus",
+    "ramp:trap",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "bar",
+    "column",
+    "exchanges",
+    "flow",
+    "length",
+    "price"
+   ],
+   "trace_summary": {
+    "steps": 17,
+    "level2_steps": 4,
+    "single_effect_steps": 5,
+    "order": [
+     "price_cap",
+     "record",
+     "single_cover",
+     "room",
+     "silhouette",
+     "column_sum",
+     "ribbon",
+     "program",
+     "ramp_plateau",
+     "length"
+    ],
+    "techniques": {
+     "price_cap": 1,
+     "record": 2,
+     "single_cover": 1,
+     "room": 5,
+     "silhouette": 1,
+     "column_sum": 2,
+     "ribbon": 2,
+     "program": 1,
+     "ramp_plateau": 1,
+     "length": 1
+    },
+    "shape_steps": {
+     "price_cap:ramp_trap": 1,
+     "ribbon:ramp_trap": 2,
+     "program:ramp_trap": 1
+    }
+   },
+   "ramp_techniques": {
+    "ramp_plateau": 1
+   },
+   "bulletin": {
+    "title": "Frontière ouverte",
+    "text": "À 9h, le soleil produit plus que le pays ne consomme. La centrale à charbon démarre et s'arrête en douceur.",
+    "weather": [
+     "moon",
+     "moon",
+     "cloud",
+     "sun",
+     "sun",
+     "sun",
+     "cloud",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 0.95,
+   "mix": 0,
+   "lot": "nuit-rampe",
+   "index": 3
+  }
+ },
+ {
+  "id": 5,
+  "title": "Le surplus de midi",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   3,
+   4,
+   3,
+   3,
+   5,
+   4,
+   5,
+   3
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5
+    ],
+    "shape": "trap",
+    "rank": 3,
+    "co2": 3
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    4,
+    4,
+    1,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "UK",
+    "name": "Royaume-Uni",
+    "cap": 1,
+    "co2": 1
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      3,
+      3
+     ]
+    },
+    "C": {
+     "bars": [
+      4,
+      3,
+      3
+     ]
+    },
+    "T": {
+     "cells": 2
+    }
+   },
+   "exports": {
+    "UK": 1
+   },
+   "imports": {
+    "UK": 0
+   }
+  },
+  "clues": [],
+  "solution": {
+   "exports": {
+    "UK": [
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     0
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "C",
+     "row": 2,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "C",
+     "row": 0,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "C",
+     "row": 2,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 4,
+     "col": 6,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 1,
+     "col": 7,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": [
+    "exhausted",
+    "ramp_plateau",
+    "ramp_shoulder",
+    "room",
+    "single_cover",
+    "single_spot"
+   ]
+  },
+  "lab": {
+   "seed": 876453863,
+   "aim": 3,
+   "family": "surplus_midi",
+   "mechanics": [
+    "neighbors:1",
+    "surplus",
+    "ramp:trap",
+    "inventory:exact"
+   ],
+   "clue_profile": [],
+   "trace_summary": {
+    "steps": 11,
+    "level2_steps": 0,
+    "single_effect_steps": 4,
+    "order": [
+     "exhausted",
+     "room",
+     "single_cover",
+     "single_spot",
+     "ramp_plateau",
+     "ramp_shoulder"
+    ],
+    "techniques": {
+     "exhausted": 3,
+     "room": 3,
+     "single_cover": 2,
+     "single_spot": 1,
+     "ramp_plateau": 1,
+     "ramp_shoulder": 1
+    },
+    "shape_steps": {
+     "room:ramp_trap": 2,
+     "single_spot:ramp_trap": 1,
+     "ramp_plateau:ramp_trap": 1,
+     "single_cover:ramp_trap": 1,
+     "exhausted:ramp_trap": 1
+    }
+   },
+   "ramp_techniques": {
+    "ramp_plateau": 1,
+    "ramp_shoulder": 1
+   },
+   "bulletin": {
+    "title": "Le surplus de midi",
+    "text": "Le soleil déborde à 9h : il faut écouler le surplus. Le charbon monte en charge, tient son plateau, puis redescend.",
+    "weather": [
+     "moon",
+     "moon",
+     "cloud",
+     "sun",
+     "sun",
+     "cloud",
+     "cloud",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 0.02,
+   "mix": 4,
+   "lot": "nuit-rampe",
+   "index": 4
+  }
+ },
+ {
+  "id": 6,
+  "title": "Un jour tranquille",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   7,
+   7,
+   8,
+   8,
+   8,
+   8,
+   7,
+   7
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5
+    ],
+    "shape": "trap",
+    "rank": 3,
+    "co2": 3
+   }
+  },
+  "weather": {
+   "R": [
+    1,
+    0,
+    0,
+    1,
+    1,
+    0,
+    0,
+    1
+   ],
+   "F": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  "neighbors": [],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      5,
+      5,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      3,
+      3
+     ]
+    },
+    "C": {
+     "bars": [
+      3,
+      3
+     ]
+    }
+   },
+   "exports": {},
+   "imports": {}
+  },
+  "clues": [],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "C",
+     "row": 5,
+     "col": 1,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "C",
+     "row": 5,
+     "col": 4,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 5,
+     "len": 3
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": [
+    "exhausted",
+    "room",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 174194465,
+   "aim": 4,
+   "family": "nuit_plate",
+   "mechanics": [
+    "ramp:trap",
+    "inventory:exact"
+   ],
+   "clue_profile": [],
+   "trace_summary": {
+    "steps": 3,
+    "level2_steps": 0,
+    "single_effect_steps": 0,
+    "order": [
+     "single_cover",
+     "room",
+     "exhausted"
+    ],
+    "techniques": {
+     "single_cover": 1,
+     "room": 1,
+     "exhausted": 1
+    },
+    "shape_steps": {
+     "single_cover:ramp_trap": 1,
+     "room:ramp_trap": 1,
+     "exhausted:ramp_trap": 1
+    }
+   },
+   "ramp_techniques": {},
+   "bulletin": {
+    "title": "Un jour tranquille",
+    "text": "La demande reste presque plate toute la journée. Le charbon monte en charge, tient son plateau, puis redescend.",
+    "weather": [
+     "wind",
+     "moon",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "wind"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 0.03,
+   "mix": 0,
+   "lot": "nuit-rampe",
+   "index": 5
+  }
+ },
+ {
+  "id": 7,
+  "title": "Échanges du jour",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "2h",
+   "4h",
+   "6h",
+   "8h",
+   "10h",
+   "12h",
+   "14h",
+   "16h",
+   "18h",
+   "20h",
+   "22h"
+  ],
+  "demand": [
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   6,
+   6,
+   4,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "shape": "trap",
+    "rank": 3,
+    "co2": 3
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    3,
+    3,
+    3,
+    0,
+    0,
+    1,
+    1,
+    1,
+    0,
+    0,
+    3,
+    3
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "BE",
+    "name": "Belgique",
+    "cap": 1,
+    "co2": 1
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "C": {},
+    "G": {},
+    "T": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "price",
+    "col": 6,
+    "piece": "N"
+   },
+   {
+    "type": "price",
+    "col": 11,
+    "piece": "N"
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 0,
+    "len": 6
+   },
+   {
+    "type": "price",
+    "col": 8,
+    "piece": "G"
+   },
+   {
+    "type": "column",
+    "col": 8,
+    "counts": {
+     "G": 1
+    }
+   },
+   {
+    "type": "exchanges",
+    "exports": {
+     "BE": 1
+    }
+   },
+   {
+    "type": "price",
+    "col": 4,
+    "piece": "C"
+   },
+   {
+    "type": "column",
+    "col": 9,
+    "counts": {
+     "N": 3
+    }
+   },
+   {
+    "type": "exchanges",
+    "imports": {
+     "BE": 0
+    }
+   },
+   {
+    "type": "column",
+    "col": 3,
+    "counts": {
+     "N": 2
+    }
+   }
+  ],
+  "solution": {
+   "exports": {
+    "BE": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     0
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "C",
+     "row": 2,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 3,
+     "col": 3,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 6,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 6,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 6,
+     "len": 4
+    },
+    {
+     "piece": "C",
+     "row": 3,
+     "col": 7,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 5,
+     "col": 8,
+     "len": 2
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 9,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 4,
+     "col": 9,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "price_cap",
+    "program",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 890955806,
+   "aim": 2,
+   "family": "vent_nocturne",
+   "mechanics": [
+    "neighbors:1",
+    "ramp:trap",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "bar",
+    "column",
+    "exchanges",
+    "price"
+   ],
+   "trace_summary": {
+    "steps": 16,
+    "level2_steps": 3,
+    "single_effect_steps": 1,
+    "order": [
+     "price_cap",
+     "record",
+     "single_cover",
+     "room",
+     "silhouette",
+     "program",
+     "ribbon"
+    ],
+    "techniques": {
+     "price_cap": 1,
+     "record": 4,
+     "single_cover": 2,
+     "room": 4,
+     "silhouette": 1,
+     "program": 1,
+     "ribbon": 3
+    },
+    "shape_steps": {
+     "price_cap:ramp_trap": 1,
+     "single_cover:ramp_trap": 2,
+     "room:ramp_trap": 3,
+     "record:ramp_trap": 2
+    }
+   },
+   "ramp_techniques": {},
+   "bulletin": {
+    "title": "Échanges du jour",
+    "text": "Les éoliennes tournent fort la nuit, moins le jour. La ligne vers la Belgique reste ouverte.",
+    "weather": [
+     "wind",
+     "wind",
+     "wind",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "wind",
+     "wind"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 5.17,
+   "mix": 3,
+   "lot": "nuit-rampe",
+   "index": 6
+  }
+ },
+ {
+  "id": 8,
+  "title": "Ligne chargée",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   4,
+   3,
+   8,
+   7,
+   8,
+   7,
+   7,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5
+    ],
+    "shape": "trap",
+    "rank": 3,
+    "co2": 3
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "ES",
+    "name": "Espagne",
+    "cap": 1,
+    "co2": 0
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      3,
+      3
+     ]
+    },
+    "C": {
+     "bars": [
+      5,
+      5,
+      4,
+      4,
+      4
+     ]
+    },
+    "T": {
+     "cells": 4
+    }
+   },
+   "exports": {
+    "ES": 5
+   },
+   "imports": {
+    "ES": 0
+   }
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 1,
+    "counts": {
+     "C": 3
+    }
+   }
+  ],
+  "solution": {
+   "exports": {
+    "ES": [
+     0,
+     1,
+     0,
+     1,
+     1,
+     1,
+     0,
+     1
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "C",
+     "row": 0,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "T",
+     "row": 1,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 2,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "C",
+     "row": 2,
+     "col": 1,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 2,
+     "len": 3
+    },
+    {
+     "piece": "C",
+     "row": 5,
+     "col": 2,
+     "len": 5
+    },
+    {
+     "piece": "T",
+     "row": 6,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "C",
+     "row": 1,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "C",
+     "row": 3,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 2,
+     "col": 7,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 4,
+   "label": "Expert",
+   "techniques": [
+    "exhausted",
+    "ramp_plateau",
+    "ramp_shoulder",
+    "record",
+    "refuted",
+    "ribbon",
+    "room",
+    "share_out",
+    "silhouette",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 79522650,
+   "aim": 3,
+   "family": "plateau_hiver",
+   "mechanics": [
+    "neighbors:1",
+    "ramp:trap",
+    "inventory:exact"
+   ],
+   "clue_profile": [
+    "column"
+   ],
+   "trace_summary": {
+    "steps": 28,
+    "level2_steps": 13,
+    "single_effect_steps": 11,
+    "order": [
+     "record",
+     "single_cover",
+     "ribbon",
+     "share_out",
+     "refuted",
+     "ramp_plateau",
+     "room",
+     "ramp_shoulder",
+     "exhausted",
+     "silhouette"
+    ],
+    "techniques": {
+     "record": 1,
+     "single_cover": 3,
+     "ribbon": 7,
+     "share_out": 5,
+     "refuted": 1,
+     "ramp_plateau": 2,
+     "room": 1,
+     "ramp_shoulder": 3,
+     "exhausted": 4,
+     "silhouette": 1
+    },
+    "shape_steps": {
+     "ribbon:ramp_trap": 3,
+     "refuted:ramp_trap": 1,
+     "single_cover:ramp_trap": 2,
+     "ramp_plateau:ramp_trap": 1,
+     "room:ramp_trap": 1,
+     "share_out:ramp_trap": 2,
+     "ramp_shoulder:ramp_trap": 1,
+     "exhausted:ramp_trap": 1
+    }
+   },
+   "ramp_techniques": {
+    "ramp_plateau": 2,
+    "ramp_shoulder": 3
+   },
+   "bulletin": {
+    "title": "Ligne chargée",
+    "text": "De 6h au soir, le chauffage maintient un plateau. L'Espagne peut acheter ou vendre selon la ligne.",
+    "weather": [
+     "moon",
+     "moon",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 1.78,
+   "mix": 2,
+   "lot": "nuit-rampe",
+   "index": 7
+  }
+ },
+ {
+  "id": 9,
+  "title": "Trop de soleil",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "2h",
+   "4h",
+   "6h",
+   "8h",
+   "10h",
+   "12h",
+   "14h",
+   "16h",
+   "18h",
+   "20h",
+   "22h"
+  ],
+  "demand": [
+   5,
+   4,
+   4,
+   3,
+   5,
+   4,
+   7,
+   5,
+   5,
+   6,
+   6,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "shape": "trap",
+    "rank": 3,
+    "co2": 3
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    2,
+    5,
+    6,
+    4,
+    1,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "DE",
+    "name": "Allemagne",
+    "cap": 1,
+    "co2": 2
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "C": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "price",
+    "col": 11,
+    "piece": "N"
+   },
+   {
+    "type": "exchanges",
+    "exports": {
+     "DE": 2
+    }
+   },
+   {
+    "type": "exchanges",
+    "imports": {
+     "DE": 2
+    }
+   }
+  ],
+  "solution": {
+   "exports": {
+    "DE": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "I",
+     "row": 4,
+     "col": 0,
+     "len": 1,
+     "country": "DE"
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 6,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 8,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 8,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 8,
+     "len": 4
+    },
+    {
+     "piece": "C",
+     "row": 4,
+     "col": 8,
+     "len": 3
+    },
+    {
+     "piece": "I",
+     "row": 5,
+     "col": 10,
+     "len": 1,
+     "country": "DE"
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 4,
+   "label": "Expert",
+   "techniques": [
+    "column_sum",
+    "price_cap",
+    "refuted",
+    "ribbon",
+    "room",
+    "share_out",
+    "silhouette",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 711053034,
+   "aim": 1,
+   "family": "surplus_midi",
+   "mechanics": [
+    "neighbors:1",
+    "surplus",
+    "ramp:trap",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "exchanges",
+    "price"
+   ],
+   "trace_summary": {
+    "steps": 19,
+    "level2_steps": 12,
+    "single_effect_steps": 3,
+    "order": [
+     "price_cap",
+     "single_cover",
+     "silhouette",
+     "room",
+     "ribbon",
+     "column_sum",
+     "share_out",
+     "refuted"
+    ],
+    "techniques": {
+     "price_cap": 1,
+     "single_cover": 2,
+     "silhouette": 2,
+     "room": 2,
+     "ribbon": 5,
+     "column_sum": 1,
+     "share_out": 5,
+     "refuted": 1
+    },
+    "shape_steps": {
+     "price_cap:ramp_trap": 1,
+     "ribbon:ramp_trap": 4,
+     "share_out:ramp_trap": 4,
+     "refuted:ramp_trap": 1,
+     "single_cover:ramp_trap": 1
+    }
+   },
+   "ramp_techniques": {},
+   "bulletin": {
+    "title": "Trop de soleil",
+    "text": "Le soleil déborde à 10h : il faut écouler le surplus. L'Allemagne peut acheter ou vendre selon la ligne.",
+    "weather": [
+     "moon",
+     "moon",
+     "moon",
+     "cloud",
+     "sun",
+     "sun",
+     "sun",
+     "sun",
+     "cloud",
+     "cloud",
+     "moon",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 2.48,
+   "mix": 1,
+   "lot": "nuit-rampe",
+   "index": 8
+  }
+ },
+ {
+  "id": 10,
+  "title": "Réveil et dîner",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "2h",
+   "4h",
+   "6h",
+   "8h",
+   "10h",
+   "12h",
+   "14h",
+   "16h",
+   "18h",
+   "20h",
+   "22h"
+  ],
+  "demand": [
+   2,
+   2,
+   1,
+   3,
+   5,
+   3,
+   2,
+   2,
+   3,
+   5,
+   4,
+   2
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "shape": "trap",
+    "rank": 3,
+    "co2": 3
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      6,
+      6,
+      4,
+      3
+     ]
+    },
+    "C": {
+     "bars": [
+      3
+     ]
+    },
+    "G": {
+     "bars": [
+      2,
+      2
+     ]
+    },
+    "T": {
+     "cells": 4
+    }
+   },
+   "exports": {},
+   "imports": {}
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 9,
+    "counts": {
+     "N": 3
+    }
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "G",
+     "row": 1,
+     "col": 0,
+     "len": 2
+    },
+    {
+     "piece": "C",
+     "row": 1,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 2,
+     "col": 3,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 3,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 4,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 6,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 8,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 8,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 3,
+     "col": 9,
+     "len": 2
+    },
+    {
+     "piece": "T",
+     "row": 4,
+     "col": 9,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "exhausted",
+    "just_enough",
+    "ramp_plateau",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover",
+    "single_spot"
+   ]
+  },
+  "lab": {
+   "seed": 243462401,
+   "aim": 3,
+   "family": "deux_bosses",
+   "mechanics": [
+    "ramp:trap",
+    "inventory:exact"
+   ],
+   "clue_profile": [
+    "column"
+   ],
+   "trace_summary": {
+    "steps": 15,
+    "level2_steps": 2,
+    "single_effect_steps": 2,
+    "order": [
+     "record",
+     "single_cover",
+     "room",
+     "exhausted",
+     "ribbon",
+     "just_enough",
+     "single_spot",
+     "ramp_plateau"
+    ],
+    "techniques": {
+     "record": 1,
+     "single_cover": 3,
+     "room": 4,
+     "exhausted": 3,
+     "ribbon": 1,
+     "just_enough": 1,
+     "single_spot": 1,
+     "ramp_plateau": 1
+    },
+    "shape_steps": {
+     "record:ramp_trap": 1,
+     "ribbon:ramp_trap": 1,
+     "just_enough:ramp_trap": 1,
+     "single_spot:ramp_trap": 1
+    }
+   },
+   "ramp_techniques": {
+    "ramp_plateau": 1
+   },
+   "bulletin": {
+    "title": "Réveil et dîner",
+    "text": "La demande monte deux fois : au réveil et vers 18h. Le charbon monte en charge, tient son plateau, puis redescend.",
+    "weather": [
+     "moon",
+     "moon",
+     "moon",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "moon",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 0.62,
+   "mix": 1,
+   "lot": "nuit-rampe",
+   "index": 9
+  }
+ },
+ {
+  "id": 11,
+  "title": "Plein soleil",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   3,
+   3,
+   4,
+   4,
+   6,
+   4,
+   5,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5
+    ],
+    "shape": "trap",
+    "rank": 3,
+    "co2": 3
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    2,
+    4,
+    1,
+    0,
+    0
+   ],
+   "F": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "UK",
+    "name": "Royaume-Uni",
+    "cap": 1,
+    "co2": 1
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      5,
+      3,
+      3
+     ]
+    },
+    "C": {
+     "bars": [
+      3,
+      3
+     ]
+    },
+    "T": {
+     "cells": 1
+    }
+   },
+   "exports": {
+    "UK": 2
+   },
+   "imports": {
+    "UK": 0
+   }
+  },
+  "clues": [
+   {
+    "type": "bar",
+    "piece": "C",
+    "col": 1,
+    "len": 3
+   }
+  ],
+  "solution": {
+   "exports": {
+    "UK": [
+     0,
+     0,
+     0,
+     1,
+     0,
+     1,
+     0,
+     0
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 1,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "C",
+     "row": 1,
+     "col": 1,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "C",
+     "row": 2,
+     "col": 5,
+     "len": 3
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 3,
+   "label": "Difficile",
+   "techniques": [
+    "exhausted",
+    "program",
+    "ramp_plateau",
+    "room",
+    "share_out",
+    "silhouette",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 455028381,
+   "aim": 3,
+   "family": "midi_solaire",
+   "mechanics": [
+    "neighbors:1",
+    "ramp:trap",
+    "inventory:exact"
+   ],
+   "clue_profile": [
+    "bar"
+   ],
+   "trace_summary": {
+    "steps": 11,
+    "level2_steps": 1,
+    "single_effect_steps": 4,
+    "order": [
+     "share_out",
+     "program",
+     "ramp_plateau",
+     "room",
+     "exhausted",
+     "single_cover",
+     "silhouette"
+    ],
+    "techniques": {
+     "share_out": 1,
+     "program": 1,
+     "ramp_plateau": 1,
+     "room": 2,
+     "exhausted": 3,
+     "single_cover": 2,
+     "silhouette": 1
+    },
+    "shape_steps": {
+     "share_out:ramp_trap": 1,
+     "program:ramp_trap": 1,
+     "room:ramp_trap": 2,
+     "single_cover:ramp_trap": 1,
+     "exhausted:ramp_trap": 1
+    }
+   },
+   "ramp_techniques": {
+    "ramp_plateau": 1
+   },
+   "bulletin": {
+    "title": "Plein soleil",
+    "text": "À midi, les panneaux font une bonne part du travail. Le Royaume-Uni peut acheter ou vendre selon la ligne.",
+    "weather": [
+     "moon",
+     "moon",
+     "cloud",
+     "sun",
+     "sun",
+     "cloud",
+     "cloud",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 0.32,
+   "mix": 2,
+   "lot": "nuit-rampe",
+   "index": 10
+  }
+ },
+ {
+  "id": 12,
+  "title": "Le creux de midi",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "demand": [
+   5,
+   5,
+   5,
+   5,
+   7,
+   6
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3
+    ],
+    "shape": "trap",
+    "rank": 3,
+    "co2": 3
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    2,
+    4,
+    1,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "C": {},
+    "G": {},
+    "T": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "price",
+    "col": 5,
+    "piece": "G"
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 0,
+    "len": 6
+   },
+   {
+    "type": "column",
+    "col": 1,
+    "counts": {
+     "T": 0
+    }
+   },
+   {
+    "type": "column",
+    "col": 1,
+    "counts": {
+     "G": 1
+    }
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "C",
+     "row": 2,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 3,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "G",
+     "row": 4,
+     "col": 0,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 1,
+     "col": 4,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 2,
+     "col": 4,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 3,
+     "col": 4,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 4,
+     "col": 4,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 5,
+     "col": 4,
+     "len": 2
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": [
+    "price_cap",
+    "program",
+    "record",
+    "room",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 161143859,
+   "aim": 1,
+   "family": "midi_solaire",
+   "mechanics": [
+    "ramp:trap",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "bar",
+    "column",
+    "price"
+   ],
+   "trace_summary": {
+    "steps": 9,
+    "level2_steps": 0,
+    "single_effect_steps": 2,
+    "order": [
+     "price_cap",
+     "record",
+     "single_cover",
+     "room",
+     "program"
+    ],
+    "techniques": {
+     "price_cap": 1,
+     "record": 2,
+     "single_cover": 2,
+     "room": 3,
+     "program": 1
+    },
+    "shape_steps": {
+     "single_cover:ramp_trap": 1,
+     "room:ramp_trap": 2
+    }
+   },
+   "ramp_techniques": {},
+   "bulletin": {
+    "title": "Le creux de midi",
+    "text": "Le soleil de midi creuse la demande. Le charbon monte en charge, tient son plateau, puis redescend.",
+    "weather": [
+     "moon",
+     "cloud",
+     "sun",
+     "sun",
+     "cloud",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 0.18,
+   "mix": 7,
+   "lot": "nuit-rampe",
+   "index": 11
+  }
+ },
+ {
+  "id": 13,
+  "title": "Deux pointes",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "2h",
+   "4h",
+   "6h",
+   "8h",
+   "10h",
+   "12h",
+   "14h",
+   "16h",
+   "18h",
+   "20h",
+   "22h"
+  ],
+  "demand": [
+   2,
+   4,
+   3,
+   5,
+   9,
+   5,
+   4,
+   3,
+   5,
+   8,
+   6,
+   3
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "shape": "trap",
+    "rank": 3,
+    "co2": 3
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    2,
+    1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "UK",
+    "name": "Royaume-Uni",
+    "cap": 1,
+    "co2": 1
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      6,
+      6,
+      5,
+      4,
+      3,
+      3
+     ]
+    },
+    "C": {
+     "bars": [
+      3,
+      3
+     ]
+    },
+    "T": {
+     "cells": 6
+    }
+   },
+   "exports": {
+    "UK": 1
+   },
+   "imports": {
+    "UK": 0
+   }
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 4,
+    "counts": {
+     "T": 2
+    }
+   }
+  ],
+  "solution": {
+   "exports": {
+    "UK": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 1,
+     "len": 5
+    },
+    {
+     "piece": "T",
+     "row": 2,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "C",
+     "row": 3,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 5,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 6,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 6,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 8,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 8,
+     "len": 3
+    },
+    {
+     "piece": "C",
+     "row": 3,
+     "col": 8,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 5,
+     "col": 9,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 6,
+     "col": 9,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 4,
+     "col": 10,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": [
+    "exhausted",
+    "record",
+    "room",
+    "silhouette",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 949216231,
+   "aim": 3,
+   "family": "deux_bosses",
+   "mechanics": [
+    "neighbors:1",
+    "ramp:trap",
+    "inventory:exact"
+   ],
+   "clue_profile": [
+    "column"
+   ],
+   "trace_summary": {
+    "steps": 9,
+    "level2_steps": 0,
+    "single_effect_steps": 1,
+    "order": [
+     "record",
+     "single_cover",
+     "room",
+     "silhouette",
+     "exhausted"
+    ],
+    "techniques": {
+     "record": 1,
+     "single_cover": 1,
+     "room": 2,
+     "silhouette": 1,
+     "exhausted": 4
+    },
+    "shape_steps": {
+     "single_cover:ramp_trap": 1,
+     "room:ramp_trap": 2,
+     "exhausted:ramp_trap": 1
+    }
+   },
+   "ramp_techniques": {},
+   "bulletin": {
+    "title": "Deux pointes",
+    "text": "Un premier pic le matin, un second vers 18h. Le Royaume-Uni peut acheter ou vendre selon la ligne.",
+    "weather": [
+     "moon",
+     "moon",
+     "moon",
+     "cloud",
+     "cloud",
+     "cloud",
+     "sun",
+     "cloud",
+     "cloud",
+     "cloud",
+     "moon",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 0.41,
+   "mix": 3,
+   "lot": "nuit-rampe",
+   "index": 12
+  }
+ },
+ {
+  "id": 14,
+  "title": "La courbe en canard",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   3,
+   4,
+   4,
+   4,
+   5,
+   5,
+   5,
+   5
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5
+    ],
+    "shape": "trap",
+    "rank": 3,
+    "co2": 3
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    2,
+    4,
+    1,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "C": {},
+    "T": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "bar",
+    "piece": "C",
+    "col": 0,
+    "len": 5
+   },
+   {
+    "type": "price",
+    "col": 1,
+    "piece": "C"
+   },
+   {
+    "type": "price",
+    "col": 5,
+    "piece": "C"
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "C",
+     "row": 0,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "T",
+     "row": 1,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "C",
+     "row": 2,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 3,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "C",
+     "row": 3,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 4,
+     "col": 7,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "price_cap",
+    "program",
+    "ramp_plateau",
+    "ramp_shoulder",
+    "ribbon",
+    "room",
+    "single_cover",
+    "top_price"
+   ]
+  },
+  "lab": {
+   "seed": 492405879,
+   "aim": 1,
+   "family": "midi_solaire",
+   "mechanics": [
+    "ramp:trap",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "bar",
+    "price"
+   ],
+   "trace_summary": {
+    "steps": 17,
+    "level2_steps": 5,
+    "single_effect_steps": 8,
+    "order": [
+     "price_cap",
+     "single_cover",
+     "room",
+     "program",
+     "ramp_plateau",
+     "ramp_shoulder",
+     "ribbon",
+     "top_price"
+    ],
+    "techniques": {
+     "price_cap": 1,
+     "single_cover": 5,
+     "room": 2,
+     "program": 1,
+     "ramp_plateau": 2,
+     "ramp_shoulder": 1,
+     "ribbon": 4,
+     "top_price": 1
+    },
+    "shape_steps": {
+     "single_cover:ramp_trap": 2,
+     "room:ramp_trap": 2,
+     "program:ramp_trap": 1,
+     "ramp_plateau:ramp_trap": 1,
+     "ribbon:ramp_trap": 3
+    }
+   },
+   "ramp_techniques": {
+    "ramp_plateau": 2,
+    "ramp_shoulder": 1
+   },
+   "bulletin": {
+    "title": "La courbe en canard",
+    "text": "À midi, les panneaux font une bonne part du travail. Le charbon monte en charge, tient son plateau, puis redescend.",
+    "weather": [
+     "moon",
+     "moon",
+     "cloud",
+     "sun",
+     "sun",
+     "cloud",
+     "cloud",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 0.31,
+   "mix": 0,
+   "lot": "nuit-rampe",
+   "index": 13
+  }
+ },
+ {
+  "id": 15,
+  "title": "Rafales nocturnes",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   4,
+   4,
+   3,
+   3,
+   4,
+   5,
+   5,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5
+    ],
+    "shape": "trap",
+    "rank": 3,
+    "co2": 3
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    3,
+    3,
+    0,
+    1,
+    1,
+    0,
+    0,
+    3
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "ES",
+    "name": "Espagne",
+    "cap": 1,
+    "co2": 0
+   }
+  ],
+  "step": false,
+  "co2_cap": 14,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "C": {},
+    "T": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "price",
+    "col": 5,
+    "piece": "C"
+   },
+   {
+    "type": "exchanges",
+    "imports": {
+     "ES": 0
+    }
+   },
+   {
+    "type": "exchanges",
+    "exports": {
+     "ES": 2
+    }
+   }
+  ],
+  "solution": {
+   "exports": {
+    "ES": [
+     0,
+     0,
+     0,
+     1,
+     1,
+     0,
+     0,
+     0
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 2,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 2,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "C",
+     "row": 3,
+     "col": 4,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 4,
+     "col": 6,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "carbon",
+    "price_cap",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 838428202,
+   "aim": 2,
+   "family": "vent_nocturne",
+   "mechanics": [
+    "neighbors:1",
+    "co2",
+    "ramp:trap",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "exchanges",
+    "price"
+   ],
+   "trace_summary": {
+    "steps": 10,
+    "level2_steps": 4,
+    "single_effect_steps": 0,
+    "order": [
+     "price_cap",
+     "single_cover",
+     "room",
+     "silhouette",
+     "carbon",
+     "ribbon",
+     "record"
+    ],
+    "techniques": {
+     "price_cap": 1,
+     "single_cover": 1,
+     "room": 1,
+     "silhouette": 2,
+     "carbon": 1,
+     "ribbon": 3,
+     "record": 1
+    },
+    "shape_steps": {
+     "single_cover:ramp_trap": 1,
+     "room:ramp_trap": 1,
+     "carbon:ramp_trap": 1
+    }
+   },
+   "ramp_techniques": {},
+   "bulletin": {
+    "title": "Rafales nocturnes",
+    "text": "Le vent souffle la nuit et soulage la base. La ligne vers l'Espagne reste ouverte.",
+    "weather": [
+     "wind",
+     "wind",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "wind"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 0.7,
+   "mix": 6,
+   "lot": "nuit-rampe",
+   "index": 14
+  }
+ },
+ {
+  "id": 16,
+  "title": "La soirée sous tension",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "2h",
+   "4h",
+   "6h",
+   "8h",
+   "10h",
+   "12h",
+   "14h",
+   "16h",
+   "18h",
+   "20h",
+   "22h"
+  ],
+  "demand": [
+   3,
+   3,
+   3,
+   4,
+   4,
+   4,
+   5,
+   4,
+   7,
+   8,
+   7,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "shape": "trap",
+    "rank": 3,
+    "co2": 3
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    3,
+    1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "ES",
+    "name": "Espagne",
+    "cap": 1,
+    "co2": 0
+   }
+  ],
+  "step": true,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      5,
+      4,
+      3,
+      3
+     ]
+    },
+    "C": {
+     "bars": [
+      5,
+      4,
+      3,
+      3
+     ]
+    },
+    "T": {
+     "cells": 1
+    }
+   },
+   "exports": {
+    "ES": 0
+   },
+   "imports": {
+    "ES": 0
+   },
+   "step": 1
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 5,
+    "counts": {
+     "N": 0
+    }
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [
+    {
+     "pump": 2,
+     "turbine": 11
+    }
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "T",
+     "row": 1,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "C",
+     "row": 1,
+     "col": 1,
+     "len": 4
+    },
+    {
+     "piece": "C",
+     "row": 0,
+     "col": 4,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 7,
+     "len": 5
+    },
+    {
+     "piece": "C",
+     "row": 1,
+     "col": 7,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 8,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 8,
+     "len": 3
+    },
+    {
+     "piece": "C",
+     "row": 5,
+     "col": 8,
+     "len": 3
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 4,
+   "label": "Expert",
+   "techniques": [
+    "exhausted",
+    "ramp_plateau",
+    "record",
+    "refuted",
+    "ribbon",
+    "room",
+    "share_out",
+    "silhouette",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 666399368,
+   "aim": 4,
+   "family": "pointe_soir",
+   "mechanics": [
+    "neighbors:1",
+    "step",
+    "ramp:trap",
+    "inventory:exact"
+   ],
+   "clue_profile": [
+    "column"
+   ],
+   "trace_summary": {
+    "steps": 21,
+    "level2_steps": 9,
+    "single_effect_steps": 6,
+    "order": [
+     "exhausted",
+     "room",
+     "record",
+     "refuted",
+     "silhouette",
+     "ribbon",
+     "share_out",
+     "single_cover",
+     "ramp_plateau"
+    ],
+    "techniques": {
+     "exhausted": 1,
+     "room": 4,
+     "record": 1,
+     "refuted": 2,
+     "silhouette": 2,
+     "ribbon": 2,
+     "share_out": 5,
+     "single_cover": 3,
+     "ramp_plateau": 1
+    },
+    "shape_steps": {
+     "room:ramp_trap": 3,
+     "refuted:ramp_trap": 2,
+     "single_cover:ramp_trap": 2
+    }
+   },
+   "ramp_techniques": {
+    "ramp_plateau": 1
+   },
+   "bulletin": {
+    "title": "La soirée sous tension",
+    "text": "Le pic arrive à 18h, quand tout s'allume. La ligne vers l'Espagne reste ouverte.",
+    "weather": [
+     "moon",
+     "moon",
+     "moon",
+     "cloud",
+     "cloud",
+     "cloud",
+     "sun",
+     "cloud",
+     "cloud",
+     "cloud",
+     "moon",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 8.25,
+   "mix": 5,
+   "lot": "nuit-rampe",
+   "index": 15
+  }
+ },
+ {
+  "id": 17,
+  "title": "Le pic de 19 heures",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "2h",
+   "4h",
+   "6h",
+   "8h",
+   "10h",
+   "12h",
+   "14h",
+   "16h",
+   "18h",
+   "20h",
+   "22h"
+  ],
+  "demand": [
+   3,
+   3,
+   3,
+   3,
+   4,
+   3,
+   3,
+   4,
+   5,
+   5,
+   5,
+   3
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "shape": "trap",
+    "rank": 3,
+    "co2": 3
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    2,
+    1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "C": {},
+    "T": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 0,
+    "counts": {
+     "N": 3
+    }
+   },
+   {
+    "type": "price",
+    "col": 8,
+    "piece": "C"
+   },
+   {
+    "type": "price",
+    "col": 5,
+    "piece": "N"
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 0,
+    "len": 5
+   },
+   {
+    "type": "price",
+    "col": 11,
+    "piece": "N"
+   },
+   {
+    "type": "price",
+    "col": 7,
+    "piece": "C"
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "T",
+     "row": 3,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "C",
+     "row": 0,
+     "col": 6,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 7,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 8,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 8,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 8,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 9,
+     "len": 3
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "price_cap",
+    "program",
+    "ramp_plateau",
+    "ramp_shoulder",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover",
+    "top_price"
+   ]
+  },
+  "lab": {
+   "seed": 13213041,
+   "aim": 2,
+   "family": "pointe_soir",
+   "mechanics": [
+    "ramp:trap",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "bar",
+    "column",
+    "price"
+   ],
+   "trace_summary": {
+    "steps": 17,
+    "level2_steps": 5,
+    "single_effect_steps": 4,
+    "order": [
+     "price_cap",
+     "record",
+     "single_cover",
+     "room",
+     "ribbon",
+     "top_price",
+     "ramp_plateau",
+     "ramp_shoulder",
+     "program"
+    ],
+    "techniques": {
+     "price_cap": 1,
+     "record": 1,
+     "single_cover": 3,
+     "room": 4,
+     "ribbon": 4,
+     "top_price": 1,
+     "ramp_plateau": 1,
+     "ramp_shoulder": 1,
+     "program": 1
+    },
+    "shape_steps": {
+     "price_cap:ramp_trap": 1,
+     "record:ramp_trap": 1,
+     "room:ramp_trap": 1,
+     "ribbon:ramp_trap": 3,
+     "single_cover:ramp_trap": 1
+    }
+   },
+   "ramp_techniques": {
+    "ramp_plateau": 1,
+    "ramp_shoulder": 1
+   },
+   "bulletin": {
+    "title": "Le pic de 19 heures",
+    "text": "La consommation grimpe jusqu'à 20h. La centrale à charbon démarre et s'arrête en douceur.",
+    "weather": [
+     "moon",
+     "moon",
+     "moon",
+     "cloud",
+     "cloud",
+     "cloud",
+     "sun",
+     "cloud",
+     "cloud",
+     "cloud",
+     "moon",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 1.6,
+   "mix": 1,
+   "lot": "nuit-rampe",
+   "index": 16
+  }
+ },
+ {
+  "id": 18,
+  "title": "Vent de nuit",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   6,
+   6,
+   4,
+   5,
+   5,
+   8,
+   7,
+   6
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5
+    ],
+    "shape": "trap",
+    "rank": 3,
+    "co2": 3
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    4,
+    4,
+    0,
+    0,
+    1,
+    1,
+    0,
+    4
+   ],
+   "F": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "UK",
+    "name": "Royaume-Uni",
+    "cap": 1,
+    "co2": 1
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "C": {},
+    "G": {},
+    "T": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 4,
+    "counts": {
+     "C": 4
+    }
+   },
+   {
+    "type": "exchanges",
+    "exports": {
+     "UK": 1
+    }
+   },
+   {
+    "type": "bar",
+    "piece": "C",
+    "col": 1,
+    "len": 4
+   },
+   {
+    "type": "price",
+    "col": 7,
+    "piece": "N"
+   },
+   {
+    "type": "exchanges",
+    "imports": {
+     "UK": 0
+    }
+   },
+   {
+    "type": "length",
+    "piece": "G",
+    "len": 2
+   }
+  ],
+  "solution": {
+   "exports": {
+    "UK": [
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "T",
+     "row": 0,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "C",
+     "row": 0,
+     "col": 1,
+     "len": 4
+    },
+    {
+     "piece": "C",
+     "row": 2,
+     "col": 2,
+     "len": 3
+    },
+    {
+     "piece": "C",
+     "row": 1,
+     "col": 4,
+     "len": 3
+    },
+    {
+     "piece": "C",
+     "row": 3,
+     "col": 4,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 5,
+     "col": 5,
+     "len": 2
+    },
+    {
+     "piece": "T",
+     "row": 2,
+     "col": 6,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 4,
+     "col": 6,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": [
+    "length",
+    "price_cap",
+    "program",
+    "ramp_plateau",
+    "ramp_shoulder",
+    "record",
+    "room",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 544185889,
+   "aim": 2,
+   "family": "vent_nocturne",
+   "mechanics": [
+    "neighbors:1",
+    "ramp:trap",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "bar",
+    "column",
+    "exchanges",
+    "length",
+    "price"
+   ],
+   "trace_summary": {
+    "steps": 22,
+    "level2_steps": 0,
+    "single_effect_steps": 8,
+    "order": [
+     "price_cap",
+     "record",
+     "room",
+     "single_cover",
+     "program",
+     "ramp_plateau",
+     "ramp_shoulder",
+     "length"
+    ],
+    "techniques": {
+     "price_cap": 1,
+     "record": 2,
+     "room": 7,
+     "single_cover": 2,
+     "program": 1,
+     "ramp_plateau": 4,
+     "ramp_shoulder": 4,
+     "length": 1
+    },
+    "shape_steps": {
+     "price_cap:ramp_trap": 1,
+     "room:ramp_trap": 2,
+     "program:ramp_trap": 1,
+     "ramp_plateau:ramp_trap": 2,
+     "ramp_shoulder:ramp_trap": 3
+    }
+   },
+   "ramp_techniques": {
+    "ramp_plateau": 4,
+    "ramp_shoulder": 4
+   },
+   "bulletin": {
+    "title": "Vent de nuit",
+    "text": "Les éoliennes tournent fort la nuit, moins le jour. La ligne vers le Royaume-Uni reste ouverte.",
+    "weather": [
+     "wind",
+     "wind",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "wind"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 1.43,
+   "mix": 2,
+   "lot": "nuit-rampe",
+   "index": 17
+  }
+ },
+ {
+  "id": 19,
+  "title": "Grand froid",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   3,
+   3,
+   6,
+   6,
+   7,
+   6,
+   6,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5
+    ],
+    "shape": "trap",
+    "rank": 3,
+    "co2": 3
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  "neighbors": [],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "C": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "price",
+    "col": 5,
+    "piece": "C"
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 2,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 2,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 2,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "C",
+     "row": 2,
+     "col": 5,
+     "len": 3
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "ramp_plateau",
+    "ribbon",
+    "single_cover",
+    "top_price"
+   ]
+  },
+  "lab": {
+   "seed": 694609355,
+   "aim": 2,
+   "family": "plateau_hiver",
+   "mechanics": [
+    "ramp:trap",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "price"
+   ],
+   "trace_summary": {
+    "steps": 8,
+    "level2_steps": 6,
+    "single_effect_steps": 1,
+    "order": [
+     "ribbon",
+     "top_price",
+     "single_cover",
+     "ramp_plateau"
+    ],
+    "techniques": {
+     "ribbon": 5,
+     "top_price": 1,
+     "single_cover": 1,
+     "ramp_plateau": 1
+    },
+    "shape_steps": {
+     "ribbon:ramp_trap": 5,
+     "single_cover:ramp_trap": 1
+    }
+   },
+   "ramp_techniques": {
+    "ramp_plateau": 1
+   },
+   "bulletin": {
+    "title": "Grand froid",
+    "text": "Le froid tient la demande haute toute la journée. La centrale à charbon démarre et s'arrête en douceur.",
+    "weather": [
+     "moon",
+     "moon",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 0.07,
+   "mix": 0,
+   "lot": "nuit-rampe",
+   "index": 18
+  }
+ },
+ {
+  "id": 20,
+  "title": "Midi en excédent",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "2h",
+   "4h",
+   "6h",
+   "8h",
+   "10h",
+   "12h",
+   "14h",
+   "16h",
+   "18h",
+   "20h",
+   "22h"
+  ],
+  "demand": [
+   4,
+   4,
+   4,
+   5,
+   4,
+   4,
+   7,
+   5,
+   5,
+   7,
+   6,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 2,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "shape": "trap",
+    "rank": 3,
+    "co2": 3
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    2,
+    5,
+    6,
+    4,
+    1,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "UK",
+    "name": "Royaume-Uni",
+    "cap": 1,
+    "co2": 1
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      5,
+      5,
+      4,
+      4,
+      4,
+      4,
+      4,
+      3
+     ]
+    },
+    "B": {
+     "cells": 3
+    },
+    "C": {
+     "bars": [
+      3,
+      3
+     ]
+    }
+   },
+   "exports": {
+    "UK": 3
+   },
+   "imports": {
+    "UK": 0
+   }
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 9,
+    "counts": {
+     "C": 1
+    }
+   }
+  ],
+  "solution": {
+   "exports": {
+    "UK": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "B",
+     "row": 4,
+     "col": 3,
+     "len": 1
+    },
+    {
+     "piece": "C",
+     "row": 0,
+     "col": 6,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 8,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 8,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 8,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 9,
+     "len": 3
+    },
+    {
+     "piece": "C",
+     "row": 4,
+     "col": 9,
+     "len": 3
+    },
+    {
+     "piece": "B",
+     "row": 5,
+     "col": 9,
+     "len": 1
+    },
+    {
+     "piece": "B",
+     "row": 6,
+     "col": 9,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 4,
+   "label": "Expert",
+   "techniques": [
+    "exhausted",
+    "ramp_lone",
+    "refuted",
+    "share_out",
+    "silhouette",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 934970331,
+   "aim": 4,
+   "family": "surplus_midi",
+   "mechanics": [
+    "neighbors:1",
+    "surplus",
+    "ramp:trap",
+    "inventory:exact"
+   ],
+   "clue_profile": [
+    "column"
+   ],
+   "trace_summary": {
+    "steps": 13,
+    "level2_steps": 8,
+    "single_effect_steps": 4,
+    "order": [
+     "single_cover",
+     "ramp_lone",
+     "share_out",
+     "refuted",
+     "exhausted",
+     "silhouette"
+    ],
+    "techniques": {
+     "single_cover": 3,
+     "ramp_lone": 1,
+     "share_out": 6,
+     "refuted": 1,
+     "exhausted": 1,
+     "silhouette": 1
+    },
+    "shape_steps": {
+     "ramp_lone:ramp_trap": 1,
+     "share_out:ramp_trap": 4,
+     "refuted:ramp_trap": 1,
+     "single_cover:ramp_trap": 1
+    }
+   },
+   "ramp_techniques": {
+    "ramp_lone": 1
+   },
+   "bulletin": {
+    "title": "Midi en excédent",
+    "text": "Le soleil déborde à 10h : il faut écouler le surplus. La centrale à charbon démarre et s'arrête en douceur.",
+    "weather": [
+     "moon",
+     "moon",
+     "moon",
+     "cloud",
+     "sun",
+     "sun",
+     "sun",
+     "sun",
+     "cloud",
+     "cloud",
+     "moon",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 2.83,
+   "mix": 8,
+   "lot": "nuit-rampe",
+   "index": 19
+  }
+ }
+]

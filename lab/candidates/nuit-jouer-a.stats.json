@@ -1,0 +1,82 @@
+{
+ "lot": "nuit-jouer-a",
+ "kept": 20,
+ "size": 20,
+ "attempts": 221,
+ "rejects": {
+  "trivial": 52,
+  "too_many_clues": 19,
+  "one_plant": 66,
+  "quota:clue_profile": 33,
+  "quota:family": 18,
+  "quota:mix": 1,
+  "quota:rating": 1
+ },
+ "ratings": {
+  "Facile": 4,
+  "Moyen": 8,
+  "Difficile": 5,
+  "Expert": 3
+ },
+ "families": {
+  "deux_bosses": 3,
+  "plateau_hiver": 2,
+  "surplus_midi": 3,
+  "vent_nocturne": 3,
+  "midi_solaire": 3,
+  "pointe_soir": 3,
+  "nuit_plate": 3
+ },
+ "per_mix": {
+  "0": 4,
+  "1": 1,
+  "2": 2,
+  "3": 3,
+  "4": 2,
+  "5": 4,
+  "6": 1,
+  "7": 2,
+  "8": 1
+ },
+ "mechanics": {
+  "neighbors:1 tall inventory:exact": 2,
+  "neighbors:1 step inventory:exact": 1,
+  "stock inventory:exact": 2,
+  "neighbors:1 surplus inventory:exact": 2,
+  "inventory:exact": 1,
+  "stock inventory:none": 2,
+  "neighbors:1 inventory:exact": 2,
+  "neighbors:1 tall inventory:none": 1,
+  "neighbors:1 inventory:none": 2,
+  "neighbors:2 co2 inventory:exact": 1,
+  "inventory:none": 1,
+  "neighbors:1 surplus inventory:none": 1,
+  "neighbors:3 inventory:exact": 1,
+  "neighbors:2 co2 inventory:none": 1
+ },
+ "clue_profiles": {
+  "column flow": 3,
+  "": 5,
+  "column": 4,
+  "bar column price": 2,
+  "bar column exchanges price": 2,
+  "column exchanges flow price": 1,
+  "column length price": 1,
+  "bar column exchanges flow price": 1,
+  "exchanges price": 1
+ },
+ "ramp_grids": 0,
+ "ramp_grids_with_technique": 0,
+ "ramp_techniques": {
+  "ramp_lone": 0,
+  "ramp_plateau": 0,
+  "ramp_relay": 0,
+  "ramp_shoulder": 0
+ },
+ "seconds": 59.3,
+ "seconds_per_kept_grid": 3.0,
+ "workers": 6,
+ "generator": "dispatch-solver 2.0.0",
+ "blocked_ramp": 0,
+ "errors": []
+}
