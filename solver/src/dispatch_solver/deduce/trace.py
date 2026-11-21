@@ -1,9 +1,12 @@
 """Deduction techniques (GAME-DESIGN.md §9), trace steps and the result of a deduction run.
 
-- RULES: id, French name, level and the sentence shown to the player (tutorial). Ids are the ones the
-  grids and web/src/i18n/fr.ts already use; `length` is new (the `length` clue had no technique).
-- Step: one application of a technique, with what it changed (placements, silhouette), where (cells),
-  why (clue indices) and which shapes were involved (rect, tall, ramp_trapezoid, ramp_stair).
+- RULES: id, French name, level and the sentence shown to the player, identical to TECHNIQUES in
+  web/src/i18n/fr.ts and to GAME-DESIGN.md §9 (tested). `given` is level 0 and not shown.
+- RAMP_RULES: the four trapezoid techniques (docs/next/rampe.md §2), counted per grid in lab.ramp_techniques.
+- Step: one application of a technique, with what it changed (placements, silhouette), where (cells,
+  columns), why (clue indices), which shapes were involved (rect, tall, ramp_trap, ramp_stair), the
+  exchanges it fixed ({country: {"export": [[col, value]]}, "step": [[pump, turbine]]}) and `scope: "day"`
+  when a day total was used.
 - Result.summary(): the measures kept for the lab and the difficulty calibration.
 """
 
@@ -24,84 +27,74 @@ class Rule:
 
 
 RULE_LIST = [
-    Rule("given", "Centrale engagée", 0, "Une centrale déjà posée par l'énoncé est acquise."),
+    Rule("given", "Centrale engagée", 0, "Une centrale déjà posée par l’énoncé est acquise."),
     Rule(
-        "room",
-        "Pas de place",
-        1,
-        "Une centrale ne peut ni dépasser de la silhouette ni chevaucher une centrale déjà posée.",
+        "room", "Pas de place", 1, "Une barre ne peut ni dépasser de la silhouette ni chevaucher une barre déjà posée."
     ),
     Rule(
         "exhausted",
         "Inventaire épuisé",
         1,
-        "Quand toutes les cases d'une pièce sont trouvées, elle ne va nulle part ailleurs ; une centrale plus "
-        "grande que ce qu'il reste ne passe plus.",
+        "Quand toutes les cases d’une pièce sont trouvées, elle ne va nulle part ailleurs ; une barre plus longue que ce qu’il reste ne passe plus.",
     ),
     Rule(
-        "price_cap", "Le prix plafonne la colonne", 1, "Sous un prix publié, aucune case n'est plus chère que ce prix."
+        "price_cap", "Le prix plafonne la colonne", 1, "Sous un prix publié, aucune case n’est plus chère que ce prix."
     ),
     Rule(
         "record",
         "Le relevé compte les cases",
         1,
-        "Un relevé (d'un créneau ou de la journée) donne un nombre de cases ou d'échanges : s'il est atteint, "
-        "plus aucun ; s'il reste juste assez de places possibles, elles y passent toutes.",
+        "Un relevé atteint interdit d’autres cases de cette pièce ; s’il reste juste assez de cases possibles, elles y passent toutes. Les échanges du jour se comptent de même.",
     ),
-    Rule(
-        "flow", "Flux publié", 1, "Un flux d'interconnexion publié fixe l'export ou l'import d'un créneau avec un pays."
-    ),
+    Rule("flow", "Flux publié", 1, "Un flux publié fixe l’export ou l’import d’un créneau avec un pays."),
     Rule(
         "single_cover",
-        "Une seule centrale pour cette case",
+        "Une seule barre pour cette case",
         1,
-        "Une case à couvrir qu'une seule centrale peut encore couvrir la reçoit.",
+        "Une case qu’une seule barre peut encore couvrir reçoit cette barre.",
     ),
     Rule(
         "single_spot",
-        "La centrale qui ne tient qu'à un endroit",
+        "La barre qui ne tient qu’à un endroit",
         1,
-        "Une centrale de l'inventaire qui n'a plus qu'une place possible y va.",
+        "Une barre de l’inventaire qui n’a plus qu’une place possible y va.",
     ),
-    Rule("program", "Programme publié", 1, "La centrale annoncée par un programme va à la seule place où elle tient."),
+    Rule("program", "Programme publié", 1, "La barre annoncée par un programme va sur la seule ligne où elle tient."),
     Rule(
         "length",
         "Durée de marche",
         1,
-        "La centrale dont on connaît la durée de marche va à la seule place où cette durée tient.",
+        "La barre dont on connaît la durée de marche va à la seule place où cette durée tient.",
     ),
     Rule(
         "silhouette",
-        "La silhouette suit les centrales",
+        "La silhouette suit les barres",
         1,
-        "Un export ou un pompage qui laisserait une case impossible à couvrir, ou une centrale posée hors de la "
-        "silhouette, est exclu.",
+        "Un export ou un pompage qui laisserait une case impossible à couvrir est exclu.",
     ),
     Rule(
         "swap",
         "Cases interchangeables",
         1,
-        "Quand on connaît le nombre de cases de chaque pièce dans une colonne, l'ordre ne compte pas.",
+        "Quand on connaît le nombre de cases de chaque pièce dans une colonne, l’ordre ne compte pas.",
     ),
     Rule(
         "top_price",
         "La case la plus chère",
         2,
-        "Un prix publié exige au moins une case de cette centrale dans la colonne : s'il n'y a qu'une place "
-        "possible, c'est elle.",
+        "Un prix publié exige au moins une case de cette centrale dans la colonne : s’il n’y a qu’une place possible, c’est elle.",
     ),
     Rule(
         "ribbon",
         "Le creux coupe le ruban",
         2,
-        "Chaque ligne se découpe en rubans entre les creux : une centrale qui laisserait un bout impossible à "
-        "remplir est exclue, une centrale présente dans tous les découpages est posée.",
+        "Chaque ligne se découpe en rubans entre les creux : une barre qui laisserait un bout impossible à remplir est exclue.",
     ),
     Rule(
         "just_enough",
         "Inventaire juste",
         2,
-        "S'il reste exactement autant de cases possibles que de cases à poser pour une pièce, toutes sont à elle.",
+        "S’il reste exactement autant de cases possibles que de cases à poser pour une pièce, toutes sont à elle.",
     ),
     Rule(
         "column_sum",
@@ -109,39 +102,36 @@ RULE_LIST = [
         2,
         "Une colonne a autant de cases que sa hauteur : connaissant les autres pièces, on déduit celle qui reste.",
     ),
-    Rule("carbon", "Plafond carbone", 2, "Une centrale qui ferait dépasser le plafond CO₂ est exclue."),
+    Rule("carbon", "Plafond carbone", 2, "Une barre qui ferait dépasser le plafond CO₂ est exclue."),
     Rule(
         "ramp_plateau",
         "Le plateau barre la ligne du dessus",
         1,
-        "Au-dessus de sa base, la rampe occupe aussi la ligne suivante sur tout son plateau : aucun ruban de "
-        "cette ligne ne la traverse.",
+        "Au-dessus de sa base, la rampe occupe aussi la ligne suivante sur tout son plateau : aucun ruban de cette ligne ne la traverse.",
     ),
     Rule(
         "ramp_shoulder",
-        "L'épaule appelle une case",
+        "L’épaule appelle une case",
         1,
-        "La case au-dessus d'une épaule est fermée côté plateau : seule une pièce d'une case, ou une barre qui "
-        "s'arrête pile là, peut la couvrir.",
+        "La case au-dessus d’une épaule est fermée côté plateau : seule une pièce d’une case, ou une barre qui s’arrête pile là, peut la couvrir.",
     ),
     Rule(
         "ramp_lone",
         "Une case seule est une épaule",
         2,
-        "Une seule case de rampe dans une colonne, c'est une épaule : la rampe continue à deux cases d'un côté "
-        "et s'arrête de l'autre.",
+        "Une seule case de rampe dans une colonne, c’est une épaule : la rampe continue à deux cases d’un côté et s’arrête de l’autre.",
     ),
     Rule(
         "ramp_relay",
         "Deux épaules se relaient",
         3,
-        "Deux cases de rampe sans plateau autour : une rampe s'arrête et une autre démarre sur son épaule.",
+        "Deux cases de rampe sans plateau autour : une rampe s’arrête et une autre démarre sur son épaule.",
     ),
     Rule(
         "share_out",
-        "Répartition de l'inventaire",
+        "Répartition de l’inventaire",
         3,
-        "Les centrales doivent toutes trouver une ligne : un découpage qui empêche les autres de se placer est exclu.",
+        "Les barres doivent toutes trouver une ligne : un découpage qui empêche les autres de se placer est exclu.",
     ),
     Rule(
         "refuted",

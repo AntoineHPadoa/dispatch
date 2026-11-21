@@ -44,7 +44,54 @@ def test_day_total_is_a_record_step():
     ex_clues = [i for i, c in enumerate(g["clues"]) if c["type"] == "exchanges"]
     assert ex_clues
     res = deduce(g)
-    assert any(s.rule == "record" and set(ex_clues) & set(s.clues) for s in res.steps)
+    steps = [s for s in res.steps if s.rule == "record" and set(ex_clues) & set(s.clues)]
+    assert steps and all(s.scope == "day" for s in steps)
+    assert all(s.to_dict()["scope"] == "day" for s in steps)
+
+
+def test_exchanges_are_structured():
+    """S4.2 C3: a fixed export is a structured change with its slot, not only French text."""
+    fx = json.loads((FIXTURES / "valid-surplus-export.json").read_text())
+    res = deduce(fx["grid"])
+    fixed = [s for s in res.steps if s.exchanges]
+    assert fixed
+    for s in fixed:
+        for country, ch in s.exchanges.items():
+            if country != "step":
+                assert all(c in s.columns for c, _v in ch["export"])
+
+
+def test_inventory_totals_are_steps():
+    """S4.2 C3: the exact inventory's exchange totals are applied by a traced step, not silently."""
+    g = next(x for x in published() if x["id"] == 7)
+    res = deduce(g)
+    assert any(s.rule == "exhausted" and s.scope == "day" for s in res.steps)
+
+
+def test_swap_needs_local_counts():
+    """S4.2 C1: counting the column height is Compter la colonne (level 2), not Cases interchangeables."""
+    fx = json.loads((FIXTURES / "valid-trap-swap-hides-column-sum-col-record.json").read_text())
+    res = deduce(fx["grid"])
+    assert res.solved and res.rating == 2 and "column_sum" in res.techniques()
+
+
+def test_refutation_has_a_budget():
+    """S4.2 C7: a stuck grid gives up within a bounded time."""
+    import time
+
+    fx = json.loads((FIXTURES / "unpublishable-unique-but-stuck.json").read_text())
+    t = time.perf_counter()
+    assert deduce(fx["grid"], record=False).status == "stuck"
+    assert time.perf_counter() - t < 10
+
+
+def test_ramp_techniques_in_traces():
+    """rv8 C5: the trapezoid techniques of the study are named in the traces."""
+    found = set()
+    for name in ("valid-ramp-study-T2.json", "valid-ramp-study-T3.json", "valid-technique-ramp-shoulder.json"):
+        res = deduce(json.loads((FIXTURES / name).read_text())["grid"])
+        found |= {s.rule for s in res.steps}
+    assert {"ramp_lone", "ramp_plateau", "ramp_shoulder"} <= found
 
 
 def test_trace_fields():

@@ -138,7 +138,7 @@ Chaque étape est un objet JSON :
  "cells": [[0, 3], [0, 4]], "clues": [2], "shapes": ["rect"]}
 ```
 
-- `cells` : où la technique a porté ; `clues` : indices utilisés ; `shapes` : formes en jeu (`rect`, `tall`, `ramp_trapezoid`, `ramp_stair`).
+- `cells` : où la technique a porté ; `columns` : créneaux dont un échange ou un compte a changé ; `clues` : indices utilisés ; `shapes` : formes en jeu (`rect`, `tall`, `ramp_trap`, `ramp_stair`) ; `scope: "day"` quand un total du jour a servi.
 - **Résumé** (dans la sortie du générateur et pour le labo) : techniques et nombre d'emplois, nombre d'étapes, étapes de niveau ≥ 2, ordre de première apparition, nombre de « goulots » (tours où une seule occurrence d'une seule technique s'appliquait).
 - **Repérer une technique due à la rampe** (S1.2) : deux signaux. (1) une étape dont `shapes` contient une rampe et que la même grille, rampe remplacée par un rectangle de même aire, ne produit pas ; (2) une grille unique (CP-SAT) mais **bloquée** avec les règles du §9 : le générateur la garde à part (`blocked_unique`) avec l'état au blocage, pour lecture humaine. C'est là qu'une technique nouvelle se voit.
 
@@ -174,29 +174,33 @@ Arguments :
 - **Valides** (environ 20) : les 11 grilles publiées ; plus des grilles faites à la main pour ce que les 11 ne couvrent pas : deux et trois voisins, pièce haute, `max_cells`, plafond CO₂ par pays, surplus, indice `length`, `exchanges` partiel (exports seuls, imports `"*"`), STEP sans inventaire, rampe trapèze, rampe escalier.
 - **Invalides** : une par contrôle du validateur (environ 15, message attendu) ; plus trois grilles bien formées mais fausses : deux compositions, solution de référence qui viole un indice, unique mais bloquée (`deduction: "blocked"`).
 - **Vitest** (`web/tests/reference.test.ts`) : `validateGrid` rend `valid` et les erreurs attendues ; pour une grille valide, `evaluate()` sur la solution de référence est `solved`, et la composition est celle attendue. Les fixtures `requires: ["ramp"]` sont sautées jusqu'à S6.
-- **pytest** : `validate()` donne le même verdict (même liste d'erreurs, à la formulation près, via des codes d'erreur communs), `compositions` et `deduction` / `rating` / `techniques` attendus.
+- **pytest** : `validate()` donne le même verdict (même liste d'erreurs, **messages identiques** : pas de codes d'erreur, les messages anglais des deux validateurs sont le contrat ; ceux des fixtures invalides sont écrits à la main dans `build_fixtures.py`), `compositions` et `deduction` / `rating` / `techniques` attendus.
 - Toute nouvelle règle de format se teste d'abord par une fixture : c'est le contrat entre les deux langages.
 
 ## 9. Générateur
 
 ### 9.1 Paramètres (une configuration)
 
+Format réel (S4.6), vérifié avant tout tirage par `check_lot()` : une clé inconnue ou une valeur hors liste refuse le lot entier (code de sortie 2, la liste des erreurs sur stderr, rien d'écrit).
+
 | Paramètre | Valeurs | Défaut |
 |---|---|---|
-| `cols` | 6 à 12 (libellés tirés des pas de 4 h, 3 h, 2 h) | 8 |
-| `silhouette` | famille (§9.2) ou `any` | `any` |
-| `height` | hauteur max de la demande | 6 |
-| `pieces` | sous-ensemble de N,B,C,G,T, formes autorisées par pièce | N,G,T |
-| `tall` | pièces hautes (ex. `C:1-2`) | aucune |
-| `ramp` | `G:trapezoid`, `C:stair`… (drapeau) | aucune |
-| `neighbors` | 0 à 3, avec `cap` et CO₂ | 0 |
-| `step` | nombre de paires | 0 |
-| `surplus`, `co2_cap`, `max_cells` | mécaniques optionnelles §5 | non |
-| `inventory` | `exact` ou `none` | `none` |
-| `clue_types` | sous-ensemble de price, bar, length, column, flow, exchanges | tous sauf `engaged` |
-| `rating` | note visée (1 à 4) ou libre | libre |
+| `weight` | nombre > 0 (poids dans le mélange) | 1 |
+| `cols` | 6, 8 ou 12 (créneaux de 4 h, 3 h, 2 h) | 8 |
+| `family` | famille (§9.2) ou `any` | `any` |
+| `height` | hauteur max du résiduel, 4 à 8 | tirée dans 5-7 |
+| `pieces` | lettres parmi N, B, C, G, T (`"NCGT"`, virgules tolérées) | `"NGT"` |
+| `tall` | `true` : charbon 1 ou 2 de haut | `false` |
+| `ramp` | `"trap"` ou `"stair"` (toujours le charbon) | aucune |
+| `neighbors` | 0 à 5 | 0 |
+| `step` | 0 à 2 paires | 0 |
+| `surplus` | `true` : famille `surplus_midi` | `false` |
+| `co2_cap` | `"auto"` (CO₂ de la référence) ou entier | aucun |
+| `stock` | cases d'eau du barrage (`max_cells` de B) | aucun |
+| `inventory` | `"exact"` ou `"none"` | `"none"` |
+| `clue_types` | liste parmi price, column, flow, bar, length, exchanges | toutes |
+| `rating` | note imposée (1 à 4) : niveau visé et rejet des autres | libre |
 | `max_clues` | rejet au-delà | nombre de créneaux |
-| `seed` | graine | 1 |
 
 ### 9.2 Silhouettes et météo
 
@@ -219,20 +223,22 @@ Familles nommées, chacune avec une demande et une météo cohérentes : `pointe
 
 ### 9.5 Lots et diversité imposée
 
-Un **lot** est un fichier JSON : taille visée, liste pondérée de configurations, quotas. Exemple :
+Un **lot** est un fichier JSON : `lot` (nom de fichier), `size`, `seed`, `max_attempts` (défaut 15 × `size`), `mix` (configurations pondérées, §9.1), `quotas`, `comment` (libre). Exemple réel (`lab/lots/demo-01.json`, extrait) :
 
 ```json
-{"lot": "demo-01", "size": 20, "seed": 7,
+{"lot": "demo-01", "size": 20, "seed": 7, "max_attempts": 600,
  "mix": [{"weight": 3, "cols": 8, "neighbors": 1},
-         {"weight": 2, "cols": 10, "neighbors": 2, "co2_cap": "auto"},
+         {"weight": 2, "cols": 12, "neighbors": 2, "co2_cap": "auto"},
          {"weight": 2, "cols": 8, "step": 1, "neighbors": 1},
-         {"weight": 2, "cols": 8, "ramp": "G:trapezoid"},
-         {"weight": 1, "cols": 8, "ramp": "C:stair", "pieces": "N,C,G,T"},
-         {"weight": 1, "cols": 12, "pieces": "N,B,C,G,T", "tall": "C:1-2", "surplus": true}],
- "quotas": {"max_same_silhouette": 3, "max_same_mechanics": 4, "min_per_rating": 2,
+         {"weight": 3, "cols": 8, "ramp": "trap"},
+         {"weight": 2, "cols": 8, "ramp": "trap", "neighbors": 1, "inventory": "exact",
+          "clue_types": ["column", "flow", "bar", "length"]},
+         {"weight": 1, "cols": 12, "pieces": "NBCGT", "tall": true, "surplus": true, "neighbors": 1}],
+ "quotas": {"max_same_family": 3, "max_same_mechanics": 4, "min_per_rating": 2,
             "max_same_clue_profile": 4}}
 ```
 
+- Quotas connus : `max_same_family` (alias accepté : `max_same_silhouette`), `max_same_mechanics`, `max_same_clue_profile`, `min_per_rating`, `min_per_mix`.
 - Le lot tire jusqu'à remplir la taille ; une candidate qui ferait dépasser un quota est rejetée (`quota`).
 - **Mécaniques** d'une grille = l'ensemble {voisins (nombre), STEP, surplus, CO₂, pièce haute, rampe, inventaire} ; **profil d'indices** = l'ensemble des types utilisés.
 - Les quotas par défaut sont un choix ouvert (C4).
@@ -270,17 +276,19 @@ Un **lot** est un fichier JSON : taille visée, liste pondérée de configuratio
 
 ## 11. Interface pour le labo (S5)
 
-Le serveur Python local du labo importe le package ; la CLI fait la même chose en ligne de commande. Données dans `lab/`, versionnées.
+Le serveur Python local du labo importe le package ; la CLI fait la même chose en ligne de commande (depuis `solver/`, `.venv/bin/dispatch-solver`). Données dans `lab/`, versionnées. Une grille se désigne par `--id N` (son id) ou `--index N` (sa position dans le fichier, à partir de 0, = `lab.index`).
 
-| Commande | Sortie |
-|---|---|
-| `dispatch-solver generate --lot lab/lots/demo-01.json` | `lab/candidates/demo-01.json` (liste de grilles §14 + `lab`) et `lab/candidates/demo-01.stats.json` (tirages, rejets par raison, temps) |
-| `dispatch-solver check <fichier> [--id N]` | JSON par grille : `valid`, `errors`, `compositions`, `deduction`, `rating`, `techniques` |
-| `dispatch-solver deduce <fichier> --id N [--max-level k]` | trace complète (§6.4), puis résumé |
-| `dispatch-solver bulletin <fichier> --id N` | bulletin régénéré (après retouche de la grille) |
-| `dispatch-solver check-published` | ce que fait `check_unique.py` : toutes les grilles de `grids.json` uniques et déductibles, solution = référence |
+| Commande | Sortie | Code de sortie |
+|---|---|---|
+| `dispatch-solver generate <lot> [--out DIR] [--workers N]` | `DIR/<lot>.json` (grilles §14 + `lab`), `DIR/<lot>.stats.json` (tirages, rejets, notes, rampes, temps) ; `DIR` = `lab/candidates/` par défaut, 6 processus | 0 lot plein ; 1 lot partiel (fichiers écrits) ; 2 lot refusé (rien d'écrit) |
+| `dispatch-solver check <fichier> [--id N \| --index N] [--ramp] [--cap K]` | une ligne JSON par grille : `valid`, `errors`, `compositions`, `matches_reference`, `deduction`, `rating`, `techniques`, `summary` | 0 si toutes valides, sinon 1 |
+| `dispatch-solver deduce <fichier> (--id N \| --index N) [--max-level k]` | trace complète (§6.4), puis résumé | 0 |
+| `dispatch-solver bulletin <fichier> (--id N \| --index N) [--seed S]` | bulletin régénéré (après retouche de la grille) | 0 |
+| `dispatch-solver check-published [fichier]` | ce que fait `check_unique.py` : toutes les grilles de `grids.json` uniques et déductibles, solution = référence | 0 ou 1 |
 
-Fonctions de bibliothèque correspondantes (`generate_lot`, `check_grid`, `deduce_grid`, `make_bulletin`), qui rendent des dicts JSON. Les parties jouées, notes et préférées (`lab/plays.jsonl`, `lab/notes.json`) et la promotion vers `grids.json` sont à S5.
+Fonctions de bibliothèque correspondantes : `generate.lot.run_lot(lot, workers)` (lève `ValueError` sur un lot refusé), `generate.lot.check_lot(lot)` (lot normalisé, liste d'erreurs), `api.check_grid`, `api.deduce_grid`, `generate.bulletin.make_bulletin`. Elles rendent des dicts JSON.
+
+Bloc `lab` d'une candidate : `lot`, `index` (0…), `seed`, `aim` (niveau visé), `mix` (entrée du mélange), `family`, `mechanics` (`ramp:trap`, `neighbors:2`…), `clue_profile`, `trace_summary` (dont `level2_steps`), `ramp_techniques` (`{id: emplois}` des 4 techniques de rampe), `bulletin` (`title`, `text`, `weather`), `generator`, `seconds`. `stats.json` ajoute `ramp_grids`, `ramp_grids_with_technique`, `ramp_techniques`, `seconds_per_kept_grid`, `errors` (20 premiers tirages en erreur).
 
 ## 12. Choix ouverts
 
@@ -316,3 +324,11 @@ Fonctions de bibliothèque correspondantes (`generate_lot`, `check_grid`, `deduc
 - **Pose de référence** : une configuration avec rampe ou pièce haute exige au moins une telle pose ; un plafond CO₂ automatique nul est rejeté (`trivial`).
 - **Bulletin** : les pays prennent leur article (« l'Allemagne », « le Royaume-Uni »).
 - **Lot de démonstration** `lab/lots/demo-01.json` : 20 grilles en 11 min (6 processus), 468 tirages ; 7 familles ; notes 3 / 13 / 2 / 2 ; 7 rampes (5 trapèzes, 2 escaliers) ; toutes revérifiées (valides, uniques, référence, déduction). Aucune grille à rampe « unique mais bloquée » sur ce lot (`blocked_ramp: 0`).
+
+## 16. Corrections S4.6 (revues S4.2, S4.3, labo)
+
+- **Contrat** : §9.1, §9.5 et §11 décrivent le format réel ; lot validé avant tirage ; `--index` ; codes de sortie.
+- **Note** : le générateur a un levier, le niveau visé (`aim`) ; « Cases interchangeables » ne compte plus la hauteur de colonne (c'est « Compter la colonne », niveau 2) ; la note reste la technique la plus avancée, `level2_steps` est dans `lab.trace_summary` pour le calibrage S5.3.
+- **Rampe** : trapèze seul dans les lots (l'escalier reste dans le code et les fixtures, hors lots, `rampe.md` §8) ; largeurs tirées et relais ; 4 techniques nommées (`ramp_plateau`, `ramp_shoulder` niveau 1, `ramp_lone` niveau 2, `ramp_relay` niveau 3), mesurées dans `lab.ramp_techniques`. Le contrefactuel « rampe remplacée par un rectangle » (signal 1 du §6.4) n'est pas implémenté : les techniques nommées le remplacent.
+- **Coût** : un plateau (`Puzzle`) par grille pour tous les essais d'indices ; déduction complète seulement près de la fin ; file de travail continue ; « Hypothèse réfutée » plafonnée (`MAX_REFUTE_WORK`) et limitée aux poses qui touchent une case ouverte.
+

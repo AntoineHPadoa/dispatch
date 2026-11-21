@@ -14,7 +14,7 @@ The game reads `web/src/data/grids.json`: a list of grids in the §14 format (`G
 ```bash
 cd ../solver
 .venv/bin/dispatch-solver generate ../lab/lots/demo-01.json      # writes lab/candidates/demo-01.json and .stats.json
-.venv/bin/dispatch-solver check ../lab/candidates/demo-01.json --id 4 --ramp   # verdict of one candidate
+.venv/bin/dispatch-solver check ../lab/candidates/demo-01.json --id 4 --ramp   # verdict of one candidate (grid id; --index 3 = 4th grid, lab.index)
 ```
 
 - A lot (`lab/lots/*.json`) mixes configurations (`cols` 6, 8 or 12, `neighbors`, `step`, `ramp`, `tall`, `surplus`, `co2_cap`, `stock`, `inventory`, `clue_types`, `rating`) under diversity quotas; see `solver/src/dispatch_solver/generate/lot.py`.

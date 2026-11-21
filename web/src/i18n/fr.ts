@@ -228,6 +228,10 @@ export const TECHNIQUES: Record<string, { name: string; text: string }> = {
   just_enough: { name: 'Inventaire juste', text: 'S’il reste exactement autant de cases possibles que de cases à poser pour une pièce, toutes sont à elle.' },
   column_sum: { name: 'Compter la colonne', text: 'Une colonne a autant de cases que sa hauteur : connaissant les autres pièces, on déduit celle qui reste.' },
   carbon: { name: 'Plafond carbone', text: 'Une barre qui ferait dépasser le plafond CO₂ est exclue.' },
+  ramp_plateau: { name: 'Le plateau barre la ligne du dessus', text: 'Au-dessus de sa base, la rampe occupe aussi la ligne suivante sur tout son plateau : aucun ruban de cette ligne ne la traverse.' },
+  ramp_shoulder: { name: 'L’épaule appelle une case', text: 'La case au-dessus d’une épaule est fermée côté plateau : seule une pièce d’une case, ou une barre qui s’arrête pile là, peut la couvrir.' },
+  ramp_lone: { name: 'Une case seule est une épaule', text: 'Une seule case de rampe dans une colonne, c’est une épaule : la rampe continue à deux cases d’un côté et s’arrête de l’autre.' },
+  ramp_relay: { name: 'Deux épaules se relaient', text: 'Deux cases de rampe sans plateau autour : une rampe s’arrête et une autre démarre sur son épaule.' },
   share_out: { name: 'Répartition de l’inventaire', text: 'Les barres doivent toutes trouver une ligne : un découpage qui empêche les autres de se placer est exclu.' },
   refuted: { name: 'Hypothèse réfutée', text: 'Si un choix mène à une impasse par les règles simples, il est exclu (une seule hypothèse, jamais imbriquée).' },
 };

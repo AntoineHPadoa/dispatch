@@ -68,7 +68,7 @@ Chacune s'active par grille. Elles créent du choix, et c'est ce choix qui fait 
   - À chaque créneau : imports + exports avec ce pays ≤ capacité de la ligne.
   - Plusieurs voisins possibles (ex. Allemagne, Royaume-Uni, Espagne), chacun avec sa ligne.
   - Les voisins n'ont **pas de prix** : seuls la capacité et les indices comptent.
-- **Surplus** : une colonne de demande résiduelle négative doit être absorbée par des exports (pas d'écrêtement). Un surplus casse les rubans de nucléaire, un export permet de les prolonger.
+- **Surplus** : une colonne de demande résiduelle négative doit être absorbée par des exports ou par un pompage de STEP (pas d'écrêtement). Un surplus casse les rubans de nucléaire, un export permet de les prolonger.
 - **STEP (stockage par pompage)** : une paire pompage ▲ / turbinage ▼. Le pompage ajoute une case à remplir dans un créneau, le turbinage en retire une dans un créneau **plus tard**. Le nombre de paires est fixé par la grille. Usage typique : remplir un creux pour prolonger un ruban, raboter une pointe.
 - **Plafond CO₂** : la somme du CO₂ des cases posées ne dépasse pas le plafond. Avec plusieurs voisins, chaque pays a son **CO₂ par case importée** : sous plafond, le choix du pays devient une vraie décision. Le contrôle se fait en comptant des cases.
 
@@ -124,13 +124,19 @@ Note = la technique la plus avancée nécessaire, à la Sudoku. Chaque technique
 | 1 | Durée de marche | La barre dont on connaît la durée de marche va à la seule place où cette durée tient. |
 | 1 | La silhouette suit les barres | Un export ou un pompage qui laisserait une case impossible à couvrir est exclu. |
 | 1 | Cases interchangeables | Quand on connaît le nombre de cases de chaque pièce dans une colonne, l'ordre ne compte pas. |
+| 1 | Le plateau barre la ligne du dessus | Au-dessus de sa base, la rampe occupe aussi la ligne suivante sur tout son plateau : aucun ruban de cette ligne ne la traverse. |
+| 1 | L'épaule appelle une case | La case au-dessus d'une épaule est fermée côté plateau : seule une pièce d'une case, ou une barre qui s'arrête pile là, peut la couvrir. |
 | 2 | La case la plus chère | Un prix publié exige au moins une case de cette centrale dans la colonne : s'il n'y a qu'une place possible, c'est elle. |
 | 2 | Le creux coupe le ruban | Chaque ligne se découpe en rubans entre les creux : une barre qui laisserait un bout impossible à remplir est exclue. |
 | 2 | Inventaire juste | S'il reste exactement autant de cases possibles que de cases à poser pour une pièce, toutes sont à elle. |
 | 2 | Compter la colonne | Une colonne a autant de cases que sa hauteur : connaissant les autres pièces, on déduit celle qui reste. |
 | 2 | Plafond carbone | Une barre qui ferait dépasser le plafond CO₂ est exclue. |
+| 2 | Une case seule est une épaule | Une seule case de rampe dans une colonne, c'est une épaule : la rampe continue à deux cases d'un côté et s'arrête de l'autre. |
 | 3 | Répartition de l'inventaire | Les barres doivent toutes trouver une ligne : un découpage qui empêche les autres de se placer est exclu. |
+| 3 | Deux épaules se relaient | Deux cases de rampe sans plateau autour : une rampe s'arrête et une autre démarre sur son épaule. |
 | 4 | Hypothèse réfutée | Si un choix mène à une impasse par les règles simples, il est exclu (une seule hypothèse, jamais imbriquée). |
+
+Les quatre techniques de rampe (trapèze, `docs/next/rampe.md` §2) ne servent qu'aux grilles dont le charbon est une rampe ; leurs niveaux sont provisoires. « Cases interchangeables » ne compte que les cases sûres et les relevés de la colonne : quand il faut la hauteur de la colonne, c'est « Compter la colonne ». Les noms et phrases sont les mêmes dans `web/src/i18n/fr.ts` et dans les traces du solveur (testé).
 
 **Ce qui crée la difficulté** (constaté sur les tirages) : des choix réels, c'est-à-dire un voisin, un STEP ou l'absence d'inventaire. Sans voisin et avec un inventaire exact, les grilles sont toujours faciles.
 
@@ -143,14 +149,14 @@ Les techniques sont écrites pour des barres d'une case de haut, les seules du p
 Le générateur (`solver/`, `dispatch_solver.generate`) produit des **lots** de grilles candidates pour le labo.
 
 1. **Tirer une journée** : 6, 8 ou 12 créneaux ; une famille de silhouette (pointe du soir, deux bosses, midi solaire, surplus de midi, nuit plate, plateau d'hiver, vent de nuit) donne la demande et la météo (soleil le jour, vent la nuit) ; les centrales disponibles et les mécaniques actives (voisins, STEP, surplus, plafond CO₂, stock d'un barrage, pièce haute, rampe).
-2. **Pose de référence plausible** : l'ordre d'appel réel (somme des rangs minimale, le moins cher d'abord), avec un départage aléatoire entre poses de même coût ; une rampe ou une pièce haute demandée doit y figurer.
+2. **Pose de référence plausible** : l'ordre d'appel réel (somme des rangs minimale, le moins cher d'abord), avec un départage aléatoire entre poses de même coût ; une rampe ou une pièce haute demandée doit y figurer. Pour la rampe, un bonus tiré par case de rampe varie les largeurs, et une grille sur trois en demande deux (relais).
 3. **Inventaire** au format voulu (exact ou sans inventaire) ; seules les centrales de la pose de référence sont listées.
-4. **Choisir les indices** : réserve de tout ce que la référence peut publier ; on ajoute un à un l'indice qui laisse le moins de cases indécises (techniques de niveaux 1-2), en préférant un type pas encore utilisé, jusqu'à ce que la déduction aboutisse ; puis on retire ceux qui ne servent plus. Retirer n'importe quel indice restant casse la déduction (§8.3).
-5. **Contrôles** : une seule composition (CP-SAT), déduction complète (§9), note provisoire et mesures (techniques, nombre d'étapes, étapes de niveau ≥ 2). Rejets nommés et comptés : `infeasible`, `trivial`, `not_unique`, `blocked`, `too_many_clues` (au-delà du nombre de créneaux), `rating_mismatch`, `duplicate`, `quota`.
-6. **Diversité imposée** : un lot mélange des configurations pondérées et applique des quotas (par défaut sur 20 grilles : au plus 3 par famille de silhouette, 4 par ensemble de mécaniques, 4 par profil d'indices, au moins 2 par note).
+4. **Choisir les indices** : réserve de tout ce que la référence peut publier ; on ajoute un à un l'indice qui laisse le moins de cases indécises (techniques de niveaux 1-2), en préférant un type pas encore utilisé, jusqu'à ce que la déduction aboutisse avec les techniques jusqu'au **niveau visé** ; puis on retire ceux qui ne servent plus. Retirer n'importe quel indice restant casse la déduction (§8.3). Le niveau visé est le levier sur la note : 1 donne des grilles faciles ; pour 3 et 4, l'indice est tiré parmi ceux qui font progresser, avec un inventaire exact et sans prix (recette mesurée).
+5. **Contrôles** : une seule composition (CP-SAT), déduction complète (§9), note provisoire et mesures (techniques, nombre d'étapes, étapes de niveau ≥ 2). Rejets nommés et comptés : `infeasible`, `trivial`, `one_plant` (une seule centrale dans la référence), `not_unique`, `blocked`, `too_many_clues` (au-delà du nombre de créneaux), `rating_mismatch`, `duplicate` (même résiduel à un décalage vertical près, ou même composition), `quota`, `error:<type>` (un tirage qui plante ne stoppe pas le lot).
+6. **Diversité imposée** : un lot mélange des configurations pondérées et applique des quotas (par défaut sur 20 grilles : au plus 3 par famille de silhouette, 4 par ensemble de mécaniques, 4 par profil d'indices, au moins 2 par note). Les tirages visent d'abord les notes qui manquent ; une grille finie refusée seulement pour réserver une note attend dans une réserve.
 7. **Bulletin** : titre, court texte et ciel par créneau, écrits par gabarits à partir de ce que voit le joueur (jamais de la solution). Le brouillon va dans le bloc `lab` ; le labo lui donne un numéro et une date à la promotion.
 
-Sortie : `lab/candidates/<lot>.json` (grilles §14 plus un bloc `lab` : famille, mécaniques, profil d'indices, résumé de la trace, brouillon de bulletin) et `<lot>.stats.json` (tirages, rejets, répartition). Le bloc `lab` est retiré quand une grille entre dans le jeu.
+Sortie : `lab/candidates/<lot>.json` (grilles §14 plus un bloc `lab` : famille, mécaniques, profil d'indices, niveau visé, résumé de la trace, techniques de rampe employées, brouillon de bulletin) et `<lot>.stats.json` (tirages, rejets, répartition). Le bloc `lab` est retiré quand une grille entre dans le jeu.
 
 ## 11. Tutoriel
 
