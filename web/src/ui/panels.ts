@@ -9,7 +9,7 @@ import {
 } from '../engine';
 import { CLUE_KIND, PIECE_WORDS, UI, countryFrom, pieceHint } from '../i18n/fr';
 import { CLUE_ICON, PIECE_COLORS, colorKey, esc, icon } from './palette';
-import { isRamp, profile, shapeKind, type ShapeKind } from '../model/shapes';
+import { cellCount, isRamp, profile, shapeKind, type ShapeKind } from '../model/shapes';
 
 /** A selectable entry of the book: a plant id, or `I:<country>` for imports. */
 export type PieceKey = string;
@@ -251,7 +251,7 @@ export function renderCo2(grid: Grid, state: PlayState): string {
   const parts = new Map<string, number>();
   for (const b of state.bars) {
     const k = b.piece === IMPORT_PIECE ? 'I' : b.piece;
-    parts.set(k, (parts.get(k) ?? 0) + co2PerCell(grid, b) * b.len * (b.height ?? 1));
+    parts.set(k, (parts.get(k) ?? 0) + co2PerCell(grid, b) * cellCount(grid, b));
   }
   const total = [...parts.values()].reduce((a, b) => a + b, 0);
   const scale = Math.max(cap, total) || 1;

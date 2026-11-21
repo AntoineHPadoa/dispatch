@@ -43,7 +43,7 @@ export function checkShape(grid: Grid, bar: Placement): Check {
   const name = ofPiece(grid, bar.piece, bar.country);
   if (!lens.includes(bar.len)) return fail('length', MSG.length(name, lens));
   if (!heights.includes(barHeight(bar))) return fail('height', MSG.height(name, heights));
-  if (bar.row < 0 || bar.col < 0 || bar.col + bar.len > n) return fail('bounds', MSG.bounds());
+  if (bar.row < 0 || bar.col < 0 || bar.col + bar.len > n) return fail('bounds', MSG.bounds(bar.piece !== IMPORT_PIECE && isRamp(shapeKind(grid.pieces[bar.piece]))));
   return OK;
 }
 
@@ -95,7 +95,7 @@ export function checkBudget(grid: Grid, state: PlayState, bar: Placement, skip =
     const name = ofPiece(grid, bar.piece);
     if (spec.bars) {
       const placed = state.bars.filter((b, i) => i !== skip && b.piece === bar.piece && b.len === bar.len).length;
-      if (placed >= spec.bars.filter((l) => l === bar.len).length) return fail('inventory', MSG.inventoryBar(name, bar.len));
+      if (placed >= spec.bars.filter((l) => l === bar.len).length) return fail('inventory', MSG.inventoryBar(name, bar.len, isRamp(shapeKind(grid.pieces[bar.piece]))));
     }
     if (spec.cells !== undefined && pieceCells(grid, state, bar.piece, skip) + cells > spec.cells) {
       return fail('inventory', MSG.inventoryCells(name, spec.cells));

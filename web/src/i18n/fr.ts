@@ -3,7 +3,7 @@
  * inventory status. The engine and the UI import from here; no player text lives elsewhere.
  */
 import type { Clue, Grid, PieceId } from '../model/grid';
-import type { ShapeKind } from '../model/shapes';
+import { isRamp, shapeKind, type ShapeKind } from '../model/shapes';
 
 interface PieceWords {
   /** Palette label. */
@@ -110,7 +110,7 @@ export function clueText(grid: Grid, clue: Clue): string {
     }
     case 'engaged':
       return `Déjà engagé : ${PIECE_WORDS[clue.piece].a} de ${at(clue.col)} à ${at(clue.col + clue.len)}, `
-        + `ligne ${clue.row + 1}.`;
+        + `${isRamp(shapeKind(grid.pieces[clue.piece])) ? 'base ' : ''}ligne ${clue.row + 1}.`;
   }
 }
 
@@ -150,7 +150,7 @@ function lenText(lens: number[]): string {
 
 /** Rule violations, one function per reason. */
 export const MSG = {
-  bounds: () => 'La barre dépasse de la grille.',
+  bounds: (ramp = false) => `La ${ramp ? 'rampe' : 'barre'} dépasse de la grille.`,
   length: (name: string, lens: number[]) => `La barre ${name} doit faire ${lenText(lens)}.`,
   rampLength: (lens: number[]) => `Une rampe de charbon fait ${lenText(lens)}.`,
   height: (name: string, heights: number[]) => `La barre ${name} doit faire ${heights.join(' ou ')} GW de haut.`,
@@ -158,7 +158,7 @@ export const MSG = {
   overlap: () => 'Case déjà occupée.',
   unavailable: (of: string) => `Pas de centrale ${of} dans cette grille.`,
   unknownCountry: () => 'Ce pays n’est pas relié à la grille.',
-  inventoryBar: (name: string, len: number) => `Plus de barre ${name} de ${plural(len, 'créneau', 'créneaux')} dans l’inventaire.`,
+  inventoryBar: (name: string, len: number, ramp = false) => `Plus de ${ramp ? 'rampe' : 'barre'} ${name} de ${plural(len, 'créneau', 'créneaux')} dans l’inventaire.`,
   inventoryCells: (name: string, total: number) => `Plus de case ${name} dans l’inventaire (${total} au total).`,
   stock: (piece: string, of: string, total: number) => (piece === 'B'
     ? `Plus d’eau dans le barrage (${plural(total, 'case')} au plus).`
@@ -236,10 +236,6 @@ export const TECHNIQUES: Record<string, { name: string; text: string }> = {
   ramp_relay: { name: 'Deux épaules se relaient', text: 'Deux cases de rampe sans plateau autour : une rampe s’arrête et une autre démarre sur son épaule.' },
   share_out: { name: 'Répartition de l’inventaire', text: 'Les barres doivent toutes trouver une ligne : un découpage qui empêche les autres de se placer est exclu.' },
   refuted: { name: 'Hypothèse réfutée', text: 'Si un choix mène à une impasse par les règles simples, il est exclu (une seule hypothèse, jamais imbriquée).' },
-  ramp_plateau: { name: 'Le plateau barre la ligne du dessus', text: 'Au-dessus de sa base, la rampe occupe aussi la ligne suivante sur tout son plateau : aucun ruban de cette ligne ne la traverse.' },
-  ramp_shoulder: { name: 'L’épaule appelle une case', text: 'La case au-dessus d’une épaule est fermée côté plateau : seule une pièce d’une case, ou une barre qui s’arrête pile là, peut la couvrir.' },
-  ramp_single: { name: 'Une case seule est une épaule', text: 'Une seule case de rampe dans une colonne, c’est une épaule : la rampe continue à deux cases d’un côté et s’arrête de l’autre.' },
-  ramp_relay: { name: 'Deux épaules se relaient', text: 'Deux cases de rampe sans plateau autour : une rampe s’arrête et une autre démarre sur son épaule.' },
 };
 
 /** Clue kinds, as labels above each clue text. */
@@ -402,7 +398,7 @@ export const UI = {
   hintSecondTap: (label: string) => `${label} : touche maintenant la case d’arrivée.`,
   hintErase: 'Gomme : touche une centrale pour la retirer.',
   poseOk: (label: string) => `${label} : la pose tient.`,
-  /** "Remplace 1 barre de gaz et 2 imports d’Allemagne" (bars covered by a new placement). */
+  /** "Remplace 1 barre de gaz et 2 imports d’Allemagne", "1 rampe de charbon" (bars covered by a new placement). */
   replaces: (grid: Grid, bars: readonly { piece: string; country?: string }[]) => {
     const counts = new Map<string, number>();
     for (const b of bars) {
@@ -411,7 +407,7 @@ export const UI = {
     }
     const parts = [...counts].map(([key, k]) => (key.startsWith('I:')
       ? `${plural(k, 'import')} ${countryFrom(grid, key.slice(2))}`
-      : `${plural(k, 'barre')} ${PIECE_WORDS[key as PieceId]?.of ?? key}`));
+      : `${plural(k, isRamp(shapeKind(grid.pieces[key as PieceId])) ? 'rampe' : 'barre')} ${PIECE_WORDS[key as PieceId]?.of ?? key}`));
     const list = parts.length > 1 ? `${parts.slice(0, -1).join(', ')} et ${parts[parts.length - 1]}` : parts[0] ?? '';
     return `Remplace ${list}`;
   },

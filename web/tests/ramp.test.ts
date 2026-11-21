@@ -1,10 +1,8 @@
 /*
  * Coal ramp tests: shapes cell by cell, validator, engine rules and composition, board outline,
- * order book glyph, gesture, and parity with the Python reference grids (fixtures/grids).
- * - The parity block reads FIXTURES_DIR (default ../fixtures/grids) and is skipped when absent.
+ * order book glyph, gesture. Parity with the Python reference grids (fixtures/grids, ramps included)
+ * is in reference.test.ts.
  */
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { validateGrid, type Grid, type Placement } from '../src/model/grid';
 import { cellCount, cellsOf, profile } from '../src/model/shapes';
@@ -13,9 +11,10 @@ import {
   solutionState, type ActionResult, type PlayState,
 } from '../src/engine';
 import { renderBoard, roundedPath, skyline } from '../src/ui/board';
-import { bookEntries, renderBook } from '../src/ui/panels';
+import { bookEntries, renderBook, renderCo2 } from '../src/ui/panels';
+import { sheetSilhouette } from '../src/ui/home-art';
 import { isFlat, rectBetween } from '../src/ui/gesture';
-import { placementLabel } from '../src/i18n/fr';
+import { MSG, UI, clueText, placementLabel } from '../src/i18n/fr';
 import { PIECE_COLORS } from '../src/ui/palette';
 
 /** Study grid T1: exact inventory, no clue; the plateau bars the row above the base. */
@@ -202,24 +201,53 @@ describe('book, texts and gesture', () => {
   });
 });
 
-const FIXTURES = resolve(process.env.FIXTURES_DIR ?? join(__dirname, '..', '..', 'fixtures', 'grids'));
-
-describe.skipIf(!existsSync(FIXTURES))('parity with the Python reference grids', () => {
-  const files = existsSync(FIXTURES) ? readdirSync(FIXTURES).filter((f) => f.endsWith('.json')).sort() : [];
-  type Fixture = { grid: Grid; expect: { valid: boolean; compositions?: number; deduction?: string; composition?: unknown; reference_solves?: boolean } };
-  const load = (f: string) => JSON.parse(readFileSync(join(FIXTURES, f), 'utf8')) as Fixture;
-
-  it.each(files)('%s: same validity verdict', (f) => {
-    const fx = load(f);
-    expect(validateGrid(fx.grid).ok).toBe(fx.expect.valid);
+describe('review fixes', () => {
+  it('the CO2 gauge counts a ramp by its cells, like the engine', () => {
+    const g = t1({ co2_cap: 20 });
+    const s = solutionState(g);
+    expect(co2Total(g, s)).toBe(14);
+    const html = renderCo2(g, s);
+    expect(html).toContain(UI.co2Points(14, 20));
+    expect(html).toContain('charbon 12');
   });
 
-  it.each(files)('%s: the reference composition matches the solver', (f) => {
-    const fx = load(f);
-    if (!fx.expect.valid || fx.expect.composition === undefined) return;
-    const comp = composition(fx.grid, solutionState(fx.grid));
-    const cells = comp.cells.map((c) => Object.fromEntries(Object.entries(c).filter(([, v]) => v > 0)));
-    expect({ ...comp, cells }).toEqual(fx.expect.composition);
-    if (fx.expect.compositions === 1 && fx.expect.deduction === 'solved') expect(evaluate(fx.grid, solutionState(fx.grid)).solved).toBe(true);
+  it('shape: null is refused, as in Python', () => {
+    const g = t1();
+    const bad = { ...g, pieces: { ...g.pieces, C: { ...g.pieces.C!, shape: null } } };
+    expect(validateGrid(bad).errors).toContain('pieces.C.shape: one of rect, trap, stair expected');
+  });
+
+  it('the finished sheet of the day draws a ramp as one outline', () => {
+    const g = t1();
+    const svg = sheetSilhouette(g, ['sun', 'sun', 'sun', 'sun', 'sun', 'sun'], () => '', 'x', true);
+    expect(svg).toMatch(new RegExp(`<path class="sil-piece" d="M[^"]+" fill="${PIECE_COLORS.C.a}"`));
+    expect(svg.match(/<rect class="sil-piece"/g)).toHaveLength(3);
+  });
+
+  it('messages name a ramp a ramp', () => {
+    const g = t1();
+    const full = ok(place(g, newGame(g), C(1, 0, 3)));
+    const r = place(g, full, C(0, 3, 3));
+    expect(!r.ok && r.error.message).toBe(MSG.inventoryBar('de charbon', 3, true));
+    expect(MSG.inventoryBar('de charbon', 3, true)).toMatch(/^Plus de rampe /);
+    const out = place(g, newGame(g), C(1, 4, 3));
+    expect(!out.ok && out.error.message).toBe('La rampe dépasse de la grille.');
+    expect(UI.replaces(g, [{ piece: 'C' }])).toBe('Remplace 1 rampe de charbon');
+    expect(UI.replaces(g, [{ piece: 'N' }])).toBe('Remplace 1 barre de nucléaire');
+  });
+
+  it('an engaged ramp is named by its base row', () => {
+    expect(clueText(t1(), { type: 'engaged', piece: 'C', row: 1, col: 0, len: 3 })).toBe('Déjà engagé : une centrale à charbon de 0h à 12h, base ligne 2.');
+  });
+
+  it('a stair ramp (validated, not in the game yet) is drawn as one outline', () => {
+    const g = t1({
+      pieces: { ...t1().pieces, C: { len: [2, 3, 4], shape: 'stair', rank: 3, co2: 3 } },
+      inventory: { level: 'exact', pieces: { N: { bars: [3, 6] }, C: { bars: [3] }, T: { cells: 1 } } },
+    });
+    const s: PlayState = { ...newGame(g), bars: [C(1, 0, 3)] };
+    expect(cellCount(g, C(1, 0, 3))).toBe(5);
+    const svg = renderBoard({ grid: g, state: s, ev: null, style: 'A', cell: 50 }).svg;
+    expect(svg.match(new RegExp(`<path d="M[^"]+" fill="${PIECE_COLORS.C.a}"`, 'g'))).toHaveLength(1);
   });
 });

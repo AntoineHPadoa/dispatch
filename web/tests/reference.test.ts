@@ -3,7 +3,8 @@
  * - Validity: validateGrid() finds exactly the expected errors (same messages as the Python validator).
  * - Valid publishable grids: the reference solution is solved by the engine and its composition is the
  *   one the Python solvers found.
- * - Grids that need a feature the web engine does not have yet (`requires`, e.g. ramps) are skipped.
+ * - Grids that need a feature the web engine does not have yet (`requires`) are skipped; ramps are supported.
+ * - The folder must exist: a missing one fails the run instead of skipping the parity.
  */
 import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -28,9 +29,11 @@ interface Fixture {
 }
 
 const DIR = resolve(__dirname, '../../fixtures/grids');
-const SUPPORTED = new Set<string>([]);
+const SUPPORTED = new Set<string>(['ramp']);
+// Only about the Python allow_ramp flag: the game always accepts ramps.
+const PYTHON_ONLY = new Set(['invalid-ramp-disabled.json']);
 const fixtures = readdirSync(DIR)
-  .filter((f) => f.endsWith('.json'))
+  .filter((f) => f.endsWith('.json') && !PYTHON_ONLY.has(f))
   .sort()
   .map((f) => ({ file: f, ...(JSON.parse(readFileSync(resolve(DIR, f), 'utf8')) as Fixture) }));
 const playable = fixtures.filter((fx) => fx.expect.requires.every((r) => SUPPORTED.has(r)));

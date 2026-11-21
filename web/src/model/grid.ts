@@ -304,7 +304,7 @@ export function validateGrid(raw: unknown): ValidationResult {
       pieceIds.add(id);
       if (!isObj(def)) { err(`pieces.${id}: object expected`); continue; }
       if (!isSizeList(def.len)) err(`pieces.${id}.len: ascending positive integers expected`);
-      const kind = def.shape ?? 'rect';
+      const kind = def.shape === undefined ? 'rect' : def.shape;
       if (!(SHAPE_KINDS as readonly unknown[]).includes(kind)) {
         err(`pieces.${id}.shape: one of ${SHAPE_KINDS.join(', ')} expected`);
       } else if (kind !== 'rect') {
