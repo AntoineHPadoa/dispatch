@@ -245,3 +245,34 @@ export function co2RuleText(grid: Grid): string | null {
   return UI.co2Rule(grid.co2_cap, per.join(', '));
 }
 
+
+/** Used / total of a book entry for the compact row ('' when nothing to count). */
+function entryCount(grid: Grid, state: PlayState, e: BookEntry): string {
+  const inv = grid.inventory;
+  if (e.piece === STEP_KEY) {
+    const want = publishedStepPairs(grid);
+    return want === null ? '' : `${state.step.length}/${want}`;
+  }
+  if (inv.level !== 'exact') return '';
+  if (e.piece === IMPORT_PIECE) {
+    const want = inv.imports?.[e.country ?? ''] ?? inv.imports?.[ANY_COUNTRY];
+    return want === undefined ? '' : `${importCells(state, e.country ?? '')}/${want}`;
+  }
+  const spec = inv.pieces[e.piece as PieceId] ?? {};
+  if (spec.bars) return `${state.bars.filter((b) => b.piece === e.piece).length}/${spec.bars.length}`;
+  const total = spec.cells ?? spec.max_cells;
+  return total === undefined ? '' : `${pieceCells(state, e.piece as PieceId)}/${total}`;
+}
+
+/** Compact row of plants (phone, under the board): a tap chooses the plant; the eraser is an icon. */
+export function renderChips(grid: Grid, state: PlayState, selected: PieceKey | null, erasing: boolean): string {
+  const chips = bookEntries(grid).map((e) => {
+    const sel = selected === e.key;
+    const c = PIECE_COLORS[colorKey(e.piece)];
+    const mark = e.piece === STEP_KEY ? `<span class="step-glyph" aria-hidden="true">▲▼</span>`
+      : `<i class="sw" style="background:${c.a};border-color:${c.ink}"></i>`;
+    const n = entryCount(grid, state, e);
+    return `<button type="button" class="chip${sel ? ' sel' : ''}" data-piece="${esc(e.key)}" aria-pressed="${sel}">${mark}<b>${esc(name(e))}</b>${n ? `<small>${esc(n)}</small>` : ''}</button>`;
+  }).join('');
+  return `<div class="chips-row">${chips}</div>` + `<button type="button" class="chip erase-chip${erasing ? ' sel' : ''}" data-tool="erase" aria-pressed="${erasing}" aria-label="${esc(UI.tools.erase)}" title="${esc(UI.tools.erase)}">${icon('erase')}</button>`;
+}

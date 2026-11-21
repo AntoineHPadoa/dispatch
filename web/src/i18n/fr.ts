@@ -334,6 +334,7 @@ export const UI = {
   gridCluesNote: 'Les indices liés à un créneau sont dessinés sur la grille : prix, relevés, programmes, flux.',
   allClues: 'Tous les indices en texte',
   clueState: { ok: 'vérifié', open: 'à vérifier', broken: 'contredit' } as const,
+  chipsLabel: 'Centrales',
   tools: { erase: 'Gomme', undo: 'Annuler', reset: 'Recommencer', print: 'Imprimer' },
   toolsLabel: 'Outils',
   co2: 'CO₂',

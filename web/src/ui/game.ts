@@ -20,7 +20,7 @@ import {
   alongShape, cancel, idle, isFlat, moveTo, press, previewRect, release, tap, type Cell, type GestureState, type Rect, type Shape,
 } from './gesture';
 import { canUndo, push, reset, start, undo, type History } from './history';
-import { STEP_KEY, bookEntries, renderBook, renderClues, renderCo2, type BookEntry } from './panels';
+import { STEP_KEY, bookEntries, renderBook, renderChips, renderClues, renderCo2, type BookEntry } from './panels';
 import { esc, icon } from './palette';
 import { stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from './step';
 import { dailyGrid, nextGrid, recordState, type ProgressStore } from './progress';
@@ -179,8 +179,9 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       </div>
       <input type="range" class="board-slider" min="0" max="0" value="0" aria-label="${esc(UI.scrollBoard)}" hidden>
       <p id="board-help-${grid.id}" class="sr-only">${esc(UI.boardHelp)}</p>
+      <div class="chips" role="toolbar" aria-label="${esc(UI.chipsLabel)}"></div>
       <div class="tools" role="toolbar" aria-label="${esc(UI.toolsLabel)}">
-        <button type="button" class="tool" data-tool="erase" aria-pressed="false">${icon('erase')}${esc(UI.tools.erase)}</button>
+        <button type="button" class="tool erase-tool" data-tool="erase" aria-pressed="false">${icon('erase')}${esc(UI.tools.erase)}</button>
         <button type="button" class="tool" data-tool="undo">${icon('undo')}${esc(UI.tools.undo)}</button>
         <button type="button" class="tool" data-tool="reset">${icon('reset')}${esc(UI.tools.reset)}</button>
         <button type="button" class="tool print-tool" data-tool="print">${icon('print')}${esc(UI.tools.print)}</button>
@@ -196,6 +197,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   const side = root.querySelector<HTMLElement>('.side')!;
   const msgSlot = root.querySelector<HTMLElement>('.msg-slot')!;
   const tools = root.querySelector<HTMLElement>('.tools')!;
+  const chipsEl = root.querySelector<HTMLElement>('.chips')!;
   // Tool clicks (toolbar and end banner) are caught on this screen's own element, so a grid
   // opened before never reacts to them.
   const gameEl = root.querySelector<HTMLElement>('.game')!;
@@ -278,6 +280,11 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     msgSlot.innerHTML = html;
   }
 
+  function drawChips() {
+    chipsEl.innerHTML = renderChips(grid, history.present, selected?.key ?? null, erase);
+    chipsEl.querySelector('.chips-row .sel')?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+  }
+
   function drawSide() {
     const bookTitle = grid.inventory.level === 'exact' ? UI.book : UI.available;
     const bookHint = grid.inventory.level === 'exact' ? UI.bookHint : UI.availableHint;
@@ -298,6 +305,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   function drawAll() {
     drawBoard();
     drawSide();
+    drawChips();
     drawTools();
   }
 
@@ -629,6 +637,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   wrap.addEventListener('blur', onWrapBlur);
   gameEl.addEventListener('click', onToolClick);
   side.addEventListener('click', onSideClick);
+  chipsEl.addEventListener('click', onSideClick);
   /** Leaving saves the clock, but never makes a grid nobody played look started. */
   const onLeave = () => { if (history.past.length || ctx.store.get().grids[String(grid.id)]) save(); };
   window.addEventListener('pagehide', onLeave);
