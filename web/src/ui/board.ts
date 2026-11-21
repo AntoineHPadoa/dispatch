@@ -7,8 +7,8 @@
  * - Fixed layout: the card never moves while the player exports or pumps. Rows cover the highest
  *   reach of every column, so the room above the demand is reserved from the start but drawn empty:
  *   a dashed cell shows only where an export or a pumping has been laid.
- * - Slot clues (price, record, programme) sit in one band under the slot hours, aligned on the
- *   columns; each neighbor has a row of cells under the band, headed by its id in a left gutter, and
+ * - Slot clues (price, record, programme name) share one band under the slot hours, aligned on the
+ *   columns; a programme's range is a thin bar right under the grid. Each neighbor has a row of cells under the band, headed by its id in a left gutter, and
  *   a tap on a cell exports a block in that slot.
  */
 import type { Grid, PieceId } from '../model/grid';
@@ -47,8 +47,6 @@ export interface BoardInput {
   stepMode?: boolean;
   /** Interactive pills (neighbors, STEP) get focus and button roles. */
   interactive?: boolean;
-  /** Placement of the slot clues under the hours (mockups compare two). */
-  bands?: BandLayout;
 }
 
 /** Export flow clues fix the export of one column: `country:col` -> value. */
@@ -114,9 +112,9 @@ function tagsPerColumn(grid: Grid, style: BoardStyle): number[] {
 
 
 // ---- slot-clue band under the hours
-export type BandLayout = 'rows' | 'shared';
 const BAND_PITCH = 26;
-const BAR_PITCH = 32;
+/** Width a pill takes once verified: it grows by 10 for its tick, unless that overflows its slot (tick on the corner). */
+const tickedWidth = (w: number, cell: number): number => (w + 10 > cell - 2 ? w : w + 10);
 
 type BandKind = 'price' | 'column' | 'bar';
 export interface BandItem {
@@ -128,7 +126,7 @@ export interface BandItem {
   w: number;
   /** Centre of the pill (user units). */
   mid: number;
-  /** Extent of the item (pill with its tick, bracket for a programme), for the packing. */
+  /** Extent of the item (pill as wide as once verified, programme bar), for the packing. */
   x1: number;
   x2: number;
   /** Top of the item inside the band, and its lane in its group. */
@@ -142,18 +140,18 @@ export interface BandPlan { items: BandItem[]; height: number; /** Shift of the 
 
 /**
  * Where each slot clue sits under the hours. Every item is centred on its slot (a programme on its
- * range); items that would touch go on the next lane of their group, so nothing overlaps whatever the
- * play state. 'rows': one group per kind (price, record, programme), each aligned on the columns;
- * 'shared': one group for all, programmes drawn as a thin bar under the grid.
+ * range) and reserves the width it takes once verified; items that would come closer than 4 go on
+ * the next lane, so nothing overlaps whatever the play state. Programmes draw their range as a thin
+ * bar under the grid, which pushes the hours and the band down by 4.
  */
-export function bandPlan(grid: Grid, cell: number, layout: BandLayout = 'rows'): BandPlan {
+export function bandPlan(grid: Grid, cell: number): BandPlan {
   const X0 = boardLead(grid);
   const xs = (c: number) => X0 + c * cell;
   const minX = X0;
   const maxX = X0 + grid.columns.length * cell;
   const raw: Omit<BandItem, 'top' | 'lane'>[] = [];
   const extent = (mid: number, w: number) => {
-    const tot = w + 10;
+    const tot = tickedWidth(w, cell);
     const px = Math.min(Math.max(mid - tot / 2, minX), Math.max(minX, maxX - tot));
     return [px, px + tot] as const;
   };
@@ -181,32 +179,23 @@ export function bandPlan(grid: Grid, cell: number, layout: BandLayout = 'rows'):
       raw.push({ kind: 'bar', index, label, w, mid, x1: Math.min(p1, r1), x2: Math.max(p2, r2), range: [r1, r2] });
     }
   });
-  const groups: BandKind[][] = layout === 'rows' ? [['price'], ['column'], ['bar']] : [['price', 'column', 'bar']];
   const items: BandItem[] = [];
-  // 'shared': the thin bar under the grid pushes the hour labels and the band down by 4.
-  let top = layout === 'shared' && raw.some((r) => r.kind === 'bar') ? 4 : 0;
-  const start = top;
-  for (const kinds of groups) {
-    const members = raw.filter((r) => kinds.includes(r.kind)).sort((a, b) => a.x1 - b.x1 || a.index - b.index);
-    if (!members.length) continue;
-    const pitch = layout === 'rows' && kinds[0] === 'bar' ? BAR_PITCH : BAND_PITCH;
-    const ends: number[] = [];
-    for (const m of members) {
-      let lane = ends.findIndex((e) => e + 4 <= m.x1);
-      if (lane < 0) { lane = ends.length; ends.push(0); }
-      ends[lane] = m.x2;
-      items.push({ ...m, lane, top: top + lane * pitch });
-    }
-    top += ends.length * pitch;
+  const offset = raw.some((r) => r.kind === 'bar') ? 4 : 0;
+  const ends: number[] = [];
+  for (const m of [...raw].sort((a, b) => a.x1 - b.x1 || a.index - b.index)) {
+    let lane = ends.findIndex((e) => e + 4 <= m.x1);
+    if (lane < 0) { lane = ends.length; ends.push(0); }
+    ends[lane] = m.x2;
+    items.push({ ...m, lane, top: offset + lane * BAND_PITCH });
   }
-  return { items, height: top, offset: start };
+  return { items, height: ends.length ? offset + ends.length * BAND_PITCH : 0, offset };
 }
 
 /**
  * Board sizes. The row count covers the highest the silhouette can go (exports up to the line
  * capacity, STEP pairs), so the rows under the grid never move while the player exports.
  */
-export function boardGeometry(grid: Grid, style: BoardStyle, cell: number, bands: BandLayout = 'rows'): BoardGeometry {
+export function boardGeometry(grid: Grid, style: BoardStyle, cell: number): BoardGeometry {
   const n = grid.columns.length;
   const res = residual(grid);
   const weather = grid.columns.map((_, c) => (grid.weather.R[c] ?? 0) + (grid.weather.F[c] ?? 0));
@@ -226,7 +215,7 @@ export function boardGeometry(grid: Grid, style: BoardStyle, cell: number, bands
   const tops = style === 'B' ? res.map(() => rows) : colMax;
   const need = Math.max(0, ...tags.map((k, c) => (k ? k * 22 + 6 - (rows - tops[c]!) * cell : 0)));
   const topPad = Math.max(8, need);
-  const bandHeight = bandPlan(grid, cell, bands).height;
+  const bandHeight = bandPlan(grid, cell).height;
   // Export rows (one per neighbor); STEP: chosen from the order book on screen, a row of boxes on paper.
   const bottomRows = grid.neighbors.length + (grid.step && style === 'B' ? 1 : 0);
   const lead = boardLead(grid);
@@ -264,8 +253,8 @@ let uid = 0;
 export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometry } {
   const { grid, state, ev, style, cell } = input;
   const A = style === 'A';
-  const geo = boardGeometry(grid, style, cell, input.bands);
-  const plan = bandPlan(grid, cell, input.bands);
+  const geo = boardGeometry(grid, style, cell);
+  const plan = bandPlan(grid, cell);
   const { n, rows: H, weather } = geo;
   const ink = A ? INK_A : INK_B;
   const soft = A ? SOFT_A : SOFT_B;
@@ -418,9 +407,11 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   }
 
   // ---- tags above the columns: STEP (the slot clues are drawn under the hours)
-  // Tags sit above the highest reach of their column: fixed, whatever the player has laid.
+  // STEP tags and arrows hang on the current top of their column (pumped, exported and turbined
+  // cells included, plus the pending pump); topPad keeps room above the highest reach, so the card
+  // never moves when a column rises.
   const stack = grid.columns.map(() => 0);
-  const topOf = (c: number) => (A ? geo.reach[c]! : H);
+  const topOf = (c: number) => weather[c]! + sil[c]! + turbines[c]! + (input.stepPending === c ? 1 : 0);
   const tagY = (c: number) => y(topOf(c) - 1) - 24 - stack[c]!++ * 22;
   // A pill centred on `mid`, kept inside the board; a verified pill grows by 10 to hold its tick.
   // `content(textCentre, left)` draws what is inside.
@@ -516,16 +507,9 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       const color = A ? PIECE_COLORS[cl.piece as PieceId].ink : ink;
       const stroke = st === 'broken' ? BAD : color;
       const [r1, r2] = it.range;
-      let py: number;
-      if (input.bands === 'shared') {
-        // A thin bar right under the grid on the programme's range; its label sits in the band.
-        s += `<rect x="${r1}" y="${H * cell + 1}" width="${r2 - r1}" height="4" rx="2" fill="${stroke}"/>`;
-        py = bandY + it.top + 3;
-      } else {
-        const by = bandY + it.top + 8;
-        s += `<path d="M${r1} ${by - 5} V${by} H${r2} V${by - 5}" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round"/>`;
-        py = by + 3;
-      }
+      // A thin bar right under the grid on the programme's range; its name sits in the band.
+      s += `<rect x="${r1}" y="${H * cell + 1}" width="${r2 - r1}" height="4" rx="2" fill="${stroke}"/>`;
+      const py = bandY + it.top + 3;
       s += pill(it.mid, py, it.w, A ? fill(cl.piece as PieceId) : '#fff', A ? null : ink, (tc) => T(tc, py + 12.5, it.label), st);
     }
   }

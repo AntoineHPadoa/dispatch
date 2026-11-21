@@ -246,7 +246,6 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       preview: pv ? { rect: pv.rect, piece: pv.bar.piece, valid: pv.check.ok, replacing: pv.check.ok ? pv.check.replaced : [] } : null,
       anchor: gesture.anchor, cursor: keyboard && document.activeElement === wrap ? cursor : null, stepPending,
       stepMode: stepModeOn(), interactive: true,
-      bands: (window as unknown as { __bands?: 'rows' | 'shared' }).__bands, // TEMP: mockups compare two placements
     });
     geo = out.geo;
     scroll.innerHTML = out.svg;

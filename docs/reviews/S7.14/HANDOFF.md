@@ -24,3 +24,14 @@ Branche `v2-board-tags` (worktree `/Users/padoa/Programs/spot-elec-wt/v2-board-t
 3. Vérification Playwright à 1280 / 375 / 320 px (modèle : `docs/reviews/S7.11-review/after/scripts/check.mjs`), captures dans `docs/reviews/S7.14/`.
 4. `npm test`, `npm run typecheck`, `npm run build`, `check_unique.py` (grilles inchangées ; venv du dépôt principal : `solver/.venv/bin/python scripts/check_unique.py` depuis `/Users/padoa/Programs/spot-elec/web`).
 5. Ne pas fusionner ni pousser ; statut S7.14 puis `agentdeck ctl produce` des livrables.
+
+## Suite (fx9) : fait
+
+- **Maquette régénérée** depuis le vrai code (variante b seule), même URL ; **validée par l'humain (q685)**. Captures `mock/`, script `scripts/mock.mjs`, déplacements mesurés `mock/moves.json`.
+- **Variante b seule** : `BandLayout`, `'rows'`, `BAR_PITCH` et l'accolade retirés ; `bandPlan(grid, cell)` n'a qu'une bande ; `window.__bands` retiré de `game.ts`.
+- **Prix voisins sur une même ligne** : l'étendue réservée suit `pill()` (`tickedWidth` : +10 seulement si la coche tient dans le créneau, sinon coche en coin). Tutoriel 6 : une ligne de 30 à 60 px ; G7 : relevé 9h et prix 12h sur la même ligne.
+- **Flèches STEP** : `tagY` ancre sur la hauteur courante (météo + silhouette + turbinages + 1 si pompage en attente) ; `topPad` inchangé (portée max).
+- **Feuille imprimée** : même bande sous le rectangle, barre fine du programme ; en-tête de `print.ts` à jour ; `printCell` estime la bande avec `bandPlan`. PDF `print/sheet-g{6,7,10,11}.pdf`, captures `check/sheet-g*.png`.
+- **Tests** : 3 tests de placement ajoutés (prix voisins 30-60 px, aucun chevauchement sur les 11 grilles à 5 tailles de case vérifiées ou non, flèches STEP au haut de colonne) ; 222 verts ; typecheck, build, `check_unique.py` verts (grilles inchangées).
+- **Chrome** (`scripts/check.mjs`, 204/204 OK, `check/results.json`) : 11 grilles × 1280/375/320 sans scroll horizontal, plateau dans la carte, aucun chevauchement ; export (tutoriel 6, G10, grille du jour) et pompage/turbinage G7 : carte, grille et logo immobiles ; ▲ ▼ à 0–12 unités du haut de leur colonne ; feuilles G6/G7/G10/G11 sans indice au-dessus du rectangle.
+- **Limite** : à 320 px sur G7, le nom du programme est large ; le prix de 12h passe sur une 2e ligne (sans chevauchement).

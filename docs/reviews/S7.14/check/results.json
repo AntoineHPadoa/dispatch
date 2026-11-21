@@ -1,0 +1,1022 @@
+[
+ {
+  "name": "G1@1280 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G1@1280 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[66,104,394,306],\"svg\":[81,119,364,272],\"logo\":[66,26,36,36],\"topmost\":128.5,\"bottommost\":384,\"leftmost\":84.5,\"rightmost\":441.5}"
+ },
+ {
+  "name": "G1@1280 no two clues overlap in the band (0 pills, 0 line(s))",
+  "ok": true,
+  "detail": "[]"
+ },
+ {
+  "name": "G1@1280 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@1280 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G2@1280 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[66,104,394,276],\"svg\":[81,119,364,242],\"logo\":[66,26,36,36],\"topmost\":128.5,\"bottommost\":348,\"leftmost\":84.5,\"rightmost\":441.5}"
+ },
+ {
+  "name": "G2@1280 no two clues overlap in the band (1 pills, 1 line(s))",
+  "ok": true,
+  "detail": "[{\"x1\":243,\"x2\":297,\"y\":203}]"
+ },
+ {
+  "name": "G2@1280 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@1280 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G3@1280 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[66,104,416,423],\"svg\":[81,119,386,389],\"logo\":[66,26,36,36],\"topmost\":188.5,\"bottommost\":500,\"leftmost\":87.640625,\"rightmost\":463.5}"
+ },
+ {
+  "name": "G3@1280 no two clues overlap in the band (0 pills, 0 line(s))",
+  "ok": true,
+  "detail": "[]"
+ },
+ {
+  "name": "G3@1280 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@1280 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G4@1280 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[66,104,416,423],\"svg\":[81,119,386,389],\"logo\":[66,26,36,36],\"topmost\":188.5,\"bottommost\":500,\"leftmost\":87.640625,\"rightmost\":463.5}"
+ },
+ {
+  "name": "G4@1280 no two clues overlap in the band (0 pills, 0 line(s))",
+  "ok": true,
+  "detail": "[]"
+ },
+ {
+  "name": "G4@1280 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@1280 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G5@1280 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[66,104,416,363],\"svg\":[81,119,386,329],\"logo\":[66,26,36,36],\"topmost\":188.5,\"bottommost\":440,\"leftmost\":87.640625,\"rightmost\":463.5}"
+ },
+ {
+  "name": "G5@1280 no two clues overlap in the band (0 pills, 0 line(s))",
+  "ok": true,
+  "detail": "[]"
+ },
+ {
+  "name": "G5@1280 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G6@1280 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[66,104,416,573],\"svg\":[81,119,386,539],\"logo\":[66,26,36,36],\"topmost\":188.5,\"bottommost\":646,\"leftmost\":87.640625,\"rightmost\":463.5}"
+ },
+ {
+  "name": "G6@1280 no two clues overlap in the band (2 pills, 1 line(s))",
+  "ok": true,
+  "detail": "[{\"x1\":85,\"x2\":139,\"y\":443},{\"x1\":145,\"x2\":199,\"y\":443}]"
+ },
+ {
+  "name": "G6@1280 both prices on one line",
+  "ok": true,
+  "detail": "[{\"x1\":85,\"x2\":139,\"y\":443},{\"x1\":145,\"x2\":199,\"y\":443}]"
+ },
+ {
+  "name": "G6@1280 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@1280 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G7@1280 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[66,104,536,597],\"svg\":[81,119,506,563],\"logo\":[66,26,36,36],\"topmost\":268.5,\"bottommost\":670,\"leftmost\":87.640625,\"rightmost\":583.5}"
+ },
+ {
+  "name": "G7@1280 no two clues overlap in the band (4 pills, 1 line(s))",
+  "ok": true,
+  "detail": "[{\"x1\":85,\"x2\":139,\"y\":447},{\"x1\":214,\"x2\":250,\"y\":447},{\"x1\":265,\"x2\":319,\"y\":447},{\"x1\":355.3,\"x2\":468.7,\"y\":447}]"
+ },
+ {
+  "name": "G7@1280 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@1280 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G8@1280 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[66,104,536,393],\"svg\":[81,119,506,359],\"logo\":[66,26,36,36],\"topmost\":188.5,\"bottommost\":466,\"leftmost\":87.640625,\"rightmost\":583.5}"
+ },
+ {
+  "name": "G8@1280 no two clues overlap in the band (1 pills, 1 line(s))",
+  "ok": true,
+  "detail": "[{\"x1\":454,\"x2\":490,\"y\":263}]"
+ },
+ {
+  "name": "G8@1280 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@1280 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G9@1280 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[66,104,536,573],\"svg\":[81,119,506,539],\"logo\":[66,26,36,36],\"topmost\":188.5,\"bottommost\":646,\"leftmost\":87.640625,\"rightmost\":583.5}"
+ },
+ {
+  "name": "G9@1280 no two clues overlap in the band (1 pills, 1 line(s))",
+  "ok": true,
+  "detail": "[{\"x1\":214,\"x2\":250,\"y\":443}]"
+ },
+ {
+  "name": "G9@1280 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G10@1280 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[66,104,536,453],\"svg\":[81,119,506,419],\"logo\":[66,26,36,36],\"topmost\":188.5,\"bottommost\":526,\"leftmost\":87.640625,\"rightmost\":583.5}"
+ },
+ {
+  "name": "G10@1280 no two clues overlap in the band (2 pills, 1 line(s))",
+  "ok": true,
+  "detail": "[{\"x1\":214,\"x2\":250,\"y\":323},{\"x1\":334,\"x2\":370,\"y\":323}]"
+ },
+ {
+  "name": "G10@1280 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@1280 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G11@1280 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[66,104,536,573],\"svg\":[81,119,506,539],\"logo\":[66,26,36,36],\"topmost\":188.5,\"bottommost\":646,\"leftmost\":87.640625,\"rightmost\":583.5}"
+ },
+ {
+  "name": "G11@1280 no two clues overlap in the band (2 pills, 1 line(s))",
+  "ok": true,
+  "detail": "[{\"x1\":34,\"x2\":70,\"y\":443},{\"x1\":154,\"x2\":190,\"y\":443}]"
+ },
+ {
+  "name": "G11@1280 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@375 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G1@375 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[16,299.9,343,270],\"svg\":[26.5,310.9,322,244],\"logo\":[16,18,36,36],\"topmost\":320.375,\"bottommost\":547.875,\"leftmost\":30,\"rightmost\":345}"
+ },
+ {
+  "name": "G1@375 no two clues overlap in the band (0 pills, 0 line(s))",
+  "ok": true,
+  "detail": "[]"
+ },
+ {
+  "name": "G1@375 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@375 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G2@375 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[16,254.4,343,247],\"svg\":[26.5,265.4,322,221],\"logo\":[16,18,36,36],\"topmost\":274.890625,\"bottommost\":473.390625,\"leftmost\":30,\"rightmost\":345}"
+ },
+ {
+  "name": "G2@375 no two clues overlap in the band (1 pills, 1 line(s))",
+  "ok": true,
+  "detail": "[{\"x1\":215,\"x2\":262,\"y\":182}]"
+ },
+ {
+  "name": "G2@375 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@375 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G3@375 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[16,313.5,343,354],\"svg\":[27.5,324.5,320,328],\"logo\":[16,18,36,36],\"topmost\":382.953125,\"bottommost\":644.453125,\"leftmost\":34.140625,\"rightmost\":344}"
+ },
+ {
+  "name": "G3@375 no two clues overlap in the band (0 pills, 0 line(s))",
+  "ok": true,
+  "detail": "[]"
+ },
+ {
+  "name": "G3@375 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@375 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G4@375 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[16,254.4,343,354],\"svg\":[27.5,265.4,320,328],\"logo\":[16,18,36,36],\"topmost\":323.890625,\"bottommost\":585.390625,\"leftmost\":34.140625,\"rightmost\":344}"
+ },
+ {
+  "name": "G4@375 no two clues overlap in the band (0 pills, 0 line(s))",
+  "ok": true,
+  "detail": "[]"
+ },
+ {
+  "name": "G4@375 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@375 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G5@375 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[16,298.7,343,305],\"svg\":[27.5,309.7,320,279],\"logo\":[16,18,36,36],\"topmost\":368.21875,\"bottommost\":580.71875,\"leftmost\":34.140625,\"rightmost\":344}"
+ },
+ {
+  "name": "G5@375 no two clues overlap in the band (0 pills, 0 line(s))",
+  "ok": true,
+  "detail": "[]"
+ },
+ {
+  "name": "G5@375 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G6@375 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[16,254.4,343,482],\"svg\":[27.5,265.4,320,456],\"logo\":[16,18,36,36],\"topmost\":323.890625,\"bottommost\":709.390625,\"leftmost\":34.140625,\"rightmost\":344}"
+ },
+ {
+  "name": "G6@375 no two clues overlap in the band (2 pills, 1 line(s))",
+  "ok": true,
+  "detail": "[{\"x1\":74,\"x2\":117,\"y\":366},{\"x1\":123,\"x2\":166,\"y\":366}]"
+ },
+ {
+  "name": "G6@375 both prices on one line",
+  "ok": true,
+  "detail": "[{\"x1\":74,\"x2\":117,\"y\":366},{\"x1\":123,\"x2\":166,\"y\":366}]"
+ },
+ {
+  "name": "G6@375 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@375 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G7@375 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[16,347.3,343,445],\"svg\":[26.5,358.3,322,419],\"logo\":[16,18,36,36],\"topmost\":461.8125,\"bottommost\":765.3125,\"leftmost\":33.140625,\"rightmost\":346.5}"
+ },
+ {
+  "name": "G7@375 no two clues overlap in the band (4 pills, 2 line(s))",
+  "ok": true,
+  "detail": "[{\"x1\":62,\"x2\":93,\"y\":286},{\"x1\":135.5,\"x2\":167.5,\"y\":286},{\"x1\":173,\"x2\":204,\"y\":286},{\"x1\":204.60000000000002,\"x2\":318,\"y\":312}]"
+ },
+ {
+  "name": "G7@375 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@375 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G8@375 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[16,274.1,343,284],\"svg\":[26.5,285.1,322,258],\"logo\":[16,18,36,36],\"topmost\":331.578125,\"bottommost\":531.078125,\"leftmost\":33.140625,\"rightmost\":345}"
+ },
+ {
+  "name": "G8@375 no two clues overlap in the band (1 pills, 1 line(s))",
+  "ok": true,
+  "detail": "[{\"x1\":283.5,\"x2\":315.5,\"y\":171}]"
+ },
+ {
+  "name": "G8@375 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@375 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G9@375 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[16,234.7,343,395],\"svg\":[26.5,245.7,322,369],\"logo\":[16,18,36,36],\"topmost\":292.203125,\"bottommost\":602.703125,\"leftmost\":33.140625,\"rightmost\":345}"
+ },
+ {
+  "name": "G9@375 no two clues overlap in the band (1 pills, 1 line(s))",
+  "ok": true,
+  "detail": "[{\"x1\":135.5,\"x2\":167.5,\"y\":282}]"
+ },
+ {
+  "name": "G9@375 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G10@375 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[16,234.7,343,321],\"svg\":[26.5,245.7,322,295],\"logo\":[16,18,36,36],\"topmost\":292.203125,\"bottommost\":528.703125,\"leftmost\":33.140625,\"rightmost\":345}"
+ },
+ {
+  "name": "G10@375 no two clues overlap in the band (2 pills, 1 line(s))",
+  "ok": true,
+  "detail": "[{\"x1\":135.5,\"x2\":167.5,\"y\":208},{\"x1\":209.5,\"x2\":241.5,\"y\":208}]"
+ },
+ {
+  "name": "G10@375 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@375 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G11@375 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[16,234.7,343,395],\"svg\":[26.5,245.7,322,369],\"logo\":[16,18,36,36],\"topmost\":292.203125,\"bottommost\":602.703125,\"leftmost\":33.140625,\"rightmost\":345}"
+ },
+ {
+  "name": "G11@375 no two clues overlap in the band (2 pills, 1 line(s))",
+  "ok": true,
+  "detail": "[{\"x1\":24.5,\"x2\":56.5,\"y\":282},{\"x1\":98.5,\"x2\":130.5,\"y\":282}]"
+ },
+ {
+  "name": "G11@375 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G1@320 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G1@320 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[16,319.6,288,234],\"svg\":[26,330.6,268,208],\"logo\":[16,18,36,36],\"topmost\":340.0625,\"bottommost\":531.5625,\"leftmost\":29.5,\"rightmost\":290.5}"
+ },
+ {
+  "name": "G1@320 no two clues overlap in the band (0 pills, 0 line(s))",
+  "ok": true,
+  "detail": "[]"
+ },
+ {
+  "name": "G1@320 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G2@320 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G2@320 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[16,279,288,220],\"svg\":[26,290,268,194],\"logo\":[16,18,36,36],\"topmost\":299.53125,\"bottommost\":471.03125,\"leftmost\":29.5,\"rightmost\":290.5}"
+ },
+ {
+  "name": "G2@320 no two clues overlap in the band (1 pills, 1 line(s))",
+  "ok": true,
+  "detail": "[{\"x1\":179,\"x2\":217,\"y\":155}]"
+ },
+ {
+  "name": "G2@320 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G3@320 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G3@320 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[16,333.1,288,306],\"svg\":[27,344.1,266,280],\"logo\":[16,18,36,36],\"topmost\":393.640625,\"bottommost\":616.140625,\"leftmost\":33.640625,\"rightmost\":289.5}"
+ },
+ {
+  "name": "G3@320 no two clues overlap in the band (0 pills, 0 line(s))",
+  "ok": true,
+  "detail": "[]"
+ },
+ {
+  "name": "G3@320 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G4@320 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G4@320 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[16,298.7,288,306],\"svg\":[27,309.7,266,280],\"logo\":[16,18,36,36],\"topmost\":359.21875,\"bottommost\":581.71875,\"leftmost\":33.640625,\"rightmost\":289.5}"
+ },
+ {
+  "name": "G4@320 no two clues overlap in the band (0 pills, 0 line(s))",
+  "ok": true,
+  "detail": "[]"
+ },
+ {
+  "name": "G4@320 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G5@320 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G5@320 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[16,318.4,288,266],\"svg\":[27,329.4,266,240],\"logo\":[16,18,36,36],\"topmost\":378.90625,\"bottommost\":561.40625,\"leftmost\":33.640625,\"rightmost\":289.5}"
+ },
+ {
+  "name": "G5@320 no two clues overlap in the band (0 pills, 0 line(s))",
+  "ok": true,
+  "detail": "[]"
+ },
+ {
+  "name": "G5@320 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G6@320 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[16,254.4,288,416],\"svg\":[27,265.4,266,390],\"logo\":[16,18,36,36],\"topmost\":314.890625,\"bottommost\":643.390625,\"leftmost\":33.640625,\"rightmost\":289.5}"
+ },
+ {
+  "name": "G6@320 no two clues overlap in the band (2 pills, 1 line(s))",
+  "ok": true,
+  "detail": "[{\"x1\":65,\"x2\":99,\"y\":303},{\"x1\":105,\"x2\":139,\"y\":303}]"
+ },
+ {
+  "name": "G6@320 both prices on one line",
+  "ok": true,
+  "detail": "[{\"x1\":65,\"x2\":99,\"y\":303},{\"x1\":105,\"x2\":139,\"y\":303}]"
+ },
+ {
+  "name": "G6@320 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7@320 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G7@320 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[16,367,288,396],\"svg\":[27,378,266,370],\"logo\":[16,18,36,36],\"topmost\":467.5,\"bottommost\":736,\"leftmost\":33.640625,\"rightmost\":291}"
+ },
+ {
+  "name": "G7@320 no two clues overlap in the band (4 pills, 2 line(s))",
+  "ok": true,
+  "detail": "[{\"x1\":54,\"x2\":80,\"y\":237},{\"x1\":111,\"x2\":143,\"y\":237},{\"x1\":144,\"x2\":170,\"y\":263},{\"x1\":148.60000000000002,\"x2\":262,\"y\":237}]"
+ },
+ {
+  "name": "G7@320 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G8@320 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G8@320 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[16,293.8,288,256],\"svg\":[27,304.8,266,230],\"logo\":[16,18,36,36],\"topmost\":344.265625,\"bottommost\":522.765625,\"leftmost\":33.640625,\"rightmost\":291}"
+ },
+ {
+  "name": "G8@320 no two clues overlap in the band (1 pills, 1 line(s))",
+  "ok": true,
+  "detail": "[{\"x1\":230,\"x2\":262,\"y\":143}]"
+ },
+ {
+  "name": "G8@320 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G9@320 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G9@320 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[16,234.7,288,346],\"svg\":[27,245.7,266,320],\"logo\":[16,18,36,36],\"topmost\":285.203125,\"bottommost\":553.703125,\"leftmost\":33.640625,\"rightmost\":289.5}"
+ },
+ {
+  "name": "G9@320 no two clues overlap in the band (1 pills, 1 line(s))",
+  "ok": true,
+  "detail": "[{\"x1\":111,\"x2\":143,\"y\":233}]"
+ },
+ {
+  "name": "G9@320 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G10@320 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[16,234.7,288,286],\"svg\":[27,245.7,266,260],\"logo\":[16,18,36,36],\"topmost\":285.203125,\"bottommost\":493.703125,\"leftmost\":33.640625,\"rightmost\":289.5}"
+ },
+ {
+  "name": "G10@320 no two clues overlap in the band (2 pills, 1 line(s))",
+  "ok": true,
+  "detail": "[{\"x1\":111,\"x2\":143,\"y\":173},{\"x1\":171,\"x2\":203,\"y\":173}]"
+ },
+ {
+  "name": "G10@320 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@320 no horizontal scroll",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "G11@320 board inside the card, under the logo",
+  "ok": true,
+  "detail": "{\"card\":[16,234.7,288,346],\"svg\":[27,245.7,266,320],\"logo\":[16,18,36,36],\"topmost\":285.203125,\"bottommost\":553.703125,\"leftmost\":33.640625,\"rightmost\":289.5}"
+ },
+ {
+  "name": "G11@320 no two clues overlap in the band (2 pills, 1 line(s))",
+  "ok": true,
+  "detail": "[{\"x1\":22,\"x2\":54,\"y\":233},{\"x1\":81,\"x2\":113,\"y\":233}]"
+ },
+ {
+  "name": "G11@320 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 export: nothing moves (card, board, logo)",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[66,104,416,573],\"svg\":[81,119,386,539],\"logo\":[66,26,36,36],\"topmost\":188.5,\"bottommost\":646,\"leftmost\":87.640625,\"rightmost\":463.5},\"after\":{\"card\":[66,104,416,573],\"svg\":[81,119,386,539],\"logo\":[66,26,36,36],\"topmost\":129.5,\"bottommost\":646,\"leftmost\":87.640625,\"rightmost\":463.5}}"
+ },
+ {
+  "name": "G6@1280 export: one dashed violet cell appears",
+  "ok": true,
+  "detail": "0 → 1"
+ },
+ {
+  "name": "G6@1280 export: still no overlap in the band",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@1280 export: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 export: nothing moves (card, board, logo)",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[66,104,536,453],\"svg\":[81,119,506,419],\"logo\":[66,26,36,36],\"topmost\":188.5,\"bottommost\":526,\"leftmost\":87.640625,\"rightmost\":583.5},\"after\":{\"card\":[66,104,536,453],\"svg\":[81,119,506,419],\"logo\":[66,26,36,36],\"topmost\":188.5,\"bottommost\":526,\"leftmost\":87.640625,\"rightmost\":583.5}}"
+ },
+ {
+  "name": "G10@1280 export: one dashed violet cell appears",
+  "ok": true,
+  "detail": "0 → 1"
+ },
+ {
+  "name": "G10@1280 export: still no overlap in the band",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@1280 export: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@1280 export: nothing moves (card, board, logo)",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[66,104,536,573],\"svg\":[81,119,506,539],\"logo\":[66,26,36,36],\"topmost\":188.5,\"bottommost\":646,\"leftmost\":87.640625,\"rightmost\":583.5},\"after\":{\"card\":[66,104,536,573],\"svg\":[81,119,506,539],\"logo\":[66,26,36,36],\"topmost\":188.5,\"bottommost\":646,\"leftmost\":87.640625,\"rightmost\":583.5}}"
+ },
+ {
+  "name": "G11@1280 export: one dashed violet cell appears",
+  "ok": true,
+  "detail": "0 → 1"
+ },
+ {
+  "name": "G11@1280 export: still no overlap in the band",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@1280 export: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 export: nothing moves (card, board, logo)",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[16,254.4,343,482],\"svg\":[27.5,265.4,320,456],\"logo\":[16,18,36,36],\"topmost\":323.890625,\"bottommost\":709.390625,\"leftmost\":34.140625,\"rightmost\":344},\"after\":{\"card\":[16,254.4,343,482],\"svg\":[27.5,265.4,320,456],\"logo\":[16,18,36,36],\"topmost\":275.890625,\"bottommost\":709.390625,\"leftmost\":34.140625,\"rightmost\":344}}"
+ },
+ {
+  "name": "G6@375 export: one dashed violet cell appears",
+  "ok": true,
+  "detail": "0 → 1"
+ },
+ {
+  "name": "G6@375 export: still no overlap in the band",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@375 export: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 export: nothing moves (card, board, logo)",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[16,234.7,343,321],\"svg\":[26.5,245.7,322,295],\"logo\":[16,18,36,36],\"topmost\":292.203125,\"bottommost\":528.703125,\"leftmost\":33.140625,\"rightmost\":345},\"after\":{\"card\":[16,234.7,343,321],\"svg\":[26.5,245.7,322,295],\"logo\":[16,18,36,36],\"topmost\":292.203125,\"bottommost\":528.703125,\"leftmost\":33.140625,\"rightmost\":345}}"
+ },
+ {
+  "name": "G10@375 export: one dashed violet cell appears",
+  "ok": true,
+  "detail": "0 → 1"
+ },
+ {
+  "name": "G10@375 export: still no overlap in the band",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@375 export: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@375 export: nothing moves (card, board, logo)",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[16,234.7,343,395],\"svg\":[26.5,245.7,322,369],\"logo\":[16,18,36,36],\"topmost\":292.203125,\"bottommost\":602.703125,\"leftmost\":33.140625,\"rightmost\":345},\"after\":{\"card\":[16,234.7,343,395],\"svg\":[26.5,245.7,322,369],\"logo\":[16,18,36,36],\"topmost\":292.203125,\"bottommost\":602.703125,\"leftmost\":33.140625,\"rightmost\":345}}"
+ },
+ {
+  "name": "G11@375 export: one dashed violet cell appears",
+  "ok": true,
+  "detail": "0 → 1"
+ },
+ {
+  "name": "G11@375 export: still no overlap in the band",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@375 export: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 export: nothing moves (card, board, logo)",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[16,254.4,288,416],\"svg\":[27,265.4,266,390],\"logo\":[16,18,36,36],\"topmost\":314.890625,\"bottommost\":643.390625,\"leftmost\":33.640625,\"rightmost\":289.5},\"after\":{\"card\":[16,254.4,288,416],\"svg\":[27,265.4,266,390],\"logo\":[16,18,36,36],\"topmost\":275.890625,\"bottommost\":643.390625,\"leftmost\":33.640625,\"rightmost\":289.5}}"
+ },
+ {
+  "name": "G6@320 export: one dashed violet cell appears",
+  "ok": true,
+  "detail": "0 → 1"
+ },
+ {
+  "name": "G6@320 export: still no overlap in the band",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G6@320 export: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 export: nothing moves (card, board, logo)",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[16,234.7,288,286],\"svg\":[27,245.7,266,260],\"logo\":[16,18,36,36],\"topmost\":285.203125,\"bottommost\":493.703125,\"leftmost\":33.640625,\"rightmost\":289.5},\"after\":{\"card\":[16,234.7,288,286],\"svg\":[27,245.7,266,260],\"logo\":[16,18,36,36],\"topmost\":285.203125,\"bottommost\":493.703125,\"leftmost\":33.640625,\"rightmost\":289.5}}"
+ },
+ {
+  "name": "G10@320 export: one dashed violet cell appears",
+  "ok": true,
+  "detail": "0 → 1"
+ },
+ {
+  "name": "G10@320 export: still no overlap in the band",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G10@320 export: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@320 export: nothing moves (card, board, logo)",
+  "ok": true,
+  "detail": "{\"before\":{\"card\":[16,234.7,288,346],\"svg\":[27,245.7,266,320],\"logo\":[16,18,36,36],\"topmost\":285.203125,\"bottommost\":553.703125,\"leftmost\":33.640625,\"rightmost\":289.5},\"after\":{\"card\":[16,234.7,288,346],\"svg\":[27,245.7,266,320],\"logo\":[16,18,36,36],\"topmost\":285.203125,\"bottommost\":553.703125,\"leftmost\":33.640625,\"rightmost\":289.5}}"
+ },
+ {
+  "name": "G11@320 export: one dashed violet cell appears",
+  "ok": true,
+  "detail": "0 → 1"
+ },
+ {
+  "name": "G11@320 export: still no overlap in the band",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G11@320 export: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@1280 every ▲ sits just above the top of its column (gap 0–12)",
+  "ok": true,
+  "detail": "[{\"c\":0,\"gap\":6.5},{\"c\":1,\"gap\":5.5},{\"c\":2,\"gap\":6.5},{\"c\":3,\"gap\":5.5},{\"c\":4,\"gap\":5.5},{\"c\":5,\"gap\":5.5},{\"c\":6,\"gap\":5.5}]"
+ },
+ {
+  "name": "G7 STEP@1280 STEP mode: nothing moves",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@1280 pending pump: ▲ and ▼ on their column tops",
+  "ok": true,
+  "detail": "[{\"c\":2,\"gap\":6.5},{\"c\":3,\"gap\":5.5},{\"c\":4,\"gap\":5.5},{\"c\":5,\"gap\":5.5},{\"c\":6,\"gap\":5.5},{\"c\":7,\"gap\":5.5}]"
+ },
+ {
+  "name": "G7 STEP@1280 pending pump: nothing moves",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@1280 pair laid: 2 tags, nothing moves",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@1280 pair laid: board under the logo, inside the card",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@1280 no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@1280 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@375 every ▲ sits just above the top of its column (gap 0–12)",
+  "ok": true,
+  "detail": "[{\"c\":0,\"gap\":6.5},{\"c\":1,\"gap\":5.5},{\"c\":2,\"gap\":6.5},{\"c\":3,\"gap\":5.5},{\"c\":4,\"gap\":5.5},{\"c\":5,\"gap\":5.5},{\"c\":6,\"gap\":5.5}]"
+ },
+ {
+  "name": "G7 STEP@375 STEP mode: nothing moves",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@375 pending pump: ▲ and ▼ on their column tops",
+  "ok": true,
+  "detail": "[{\"c\":2,\"gap\":6.5},{\"c\":3,\"gap\":5.5},{\"c\":4,\"gap\":5.5},{\"c\":5,\"gap\":5.5},{\"c\":6,\"gap\":5.5},{\"c\":7,\"gap\":5.5}]"
+ },
+ {
+  "name": "G7 STEP@375 pending pump: nothing moves",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@375 pair laid: 2 tags, nothing moves",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@375 pair laid: board under the logo, inside the card",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@375 no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@375 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@320 every ▲ sits just above the top of its column (gap 0–12)",
+  "ok": true,
+  "detail": "[{\"c\":0,\"gap\":6.5},{\"c\":1,\"gap\":5.5},{\"c\":2,\"gap\":6.5},{\"c\":3,\"gap\":5.5},{\"c\":4,\"gap\":5.5},{\"c\":5,\"gap\":5.5},{\"c\":6,\"gap\":5.5}]"
+ },
+ {
+  "name": "G7 STEP@320 STEP mode: nothing moves",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@320 pending pump: ▲ and ▼ on their column tops",
+  "ok": true,
+  "detail": "[{\"c\":2,\"gap\":6.5},{\"c\":3,\"gap\":5.5},{\"c\":4,\"gap\":5.5},{\"c\":5,\"gap\":5.5},{\"c\":6,\"gap\":5.5},{\"c\":7,\"gap\":5.5}]"
+ },
+ {
+  "name": "G7 STEP@320 pending pump: nothing moves",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@320 pair laid: 2 tags, nothing moves",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@320 pair laid: board under the logo, inside the card",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@320 no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "G7 STEP@320 no JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "sheet G6: slot clues under the rectangle, none above (2 pills)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "sheet G6: no overlap in the band",
+  "ok": true,
+  "detail": "[{\"x1\":74,\"x2\":117,\"y\":415},{\"x1\":123,\"x2\":166,\"y\":415}]"
+ },
+ {
+  "name": "sheet G6: both prices on one line",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "sheet G7: slot clues under the rectangle, none above (4 pills)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "sheet G7: no overlap in the band",
+  "ok": true,
+  "detail": "[{\"x1\":70,\"x2\":109,\"y\":387},{\"x1\":161.5,\"x2\":197.5,\"y\":387},{\"x1\":205,\"x2\":244,\"y\":387},{\"x1\":257.8,\"x2\":371.2,\"y\":387}]"
+ },
+ {
+  "name": "sheet G10: slot clues under the rectangle, none above (2 pills)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "sheet G10: no overlap in the band",
+  "ok": true,
+  "detail": "[{\"x1\":207,\"x2\":243,\"y\":371},{\"x1\":323,\"x2\":359,\"y\":371}]"
+ },
+ {
+  "name": "sheet G11: slot clues under the rectangle, none above (2 pills)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "sheet G11: no overlap in the band",
+  "ok": true,
+  "detail": "[{\"x1\":28.5,\"x2\":64.5,\"y\":415},{\"x1\":126.5,\"x2\":162.5,\"y\":415}]"
+ }
+]
