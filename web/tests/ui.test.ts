@@ -14,13 +14,13 @@ import {
   ProgressStore, STORAGE_KEY, emptyProgress, isPlayState, nextGrid, parseProgress,
   playOrder, recordState, statusOf, type KeyValueStore,
 } from '../src/ui/progress';
-import { boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard } from '../src/ui/board';
+import { boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard, stepTagLabels } from '../src/ui/board';
 import {
   applyLockedExports, boardMessage, bulletinTag, displayTitle, exportTap, initialState, isInitialState, newlyBroken, nextExportValue,
   poseMessage, techniqueLine,
 } from '../src/ui/game';
 import { MSG, durationText } from '../src/i18n/fr';
-import { STEP_KEY, bookEntries, isDayClue, publishedStepPairs, renderBook, renderChips, renderCo2, richClueText } from '../src/ui/panels';
+import { STEP_KEY, bookEntries, isDayClue, orderClues, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, richClueText } from '../src/ui/panels';
 import { renderSheet, slotLegend } from '../src/ui/print';
 import { stepArrowAction, stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from '../src/ui/step';
 import { UI } from '../src/i18n/fr';
@@ -272,8 +272,8 @@ describe('board and game helpers', () => {
     expect(cellAt(geo, 50 * 3 + 10, (geo.rows - 3) * 50 + 10)).toEqual({ row: 2, col: 3 });
     expect(cellAt(geo, -1, 10)).toBeNull();
     expect(cellAt(geo, 50 * g.columns.length + 1, 10)).toBeNull();
-    // Paper is a full rectangle at the same maximum height as the screen.
-    expect(boardGeometry(g, 'B', 40).rows).toBe(top);
+    // Paper is a full rectangle: the screen's maximum height plus one blank row above every column.
+    expect(boardGeometry(g, 'B', 40).rows).toBe(top + 1);
   });
 
   it('export flows are fixed from the start and re-applied on saved boards', () => {
@@ -423,12 +423,13 @@ describe('STEP in the order book', () => {
     expect(renderBook(free, newGame(free), null)).toContain('paires à déduire');
   });
 
-  it('screen: no STEP row; tags removable by a tap, linked by a line; pending pump drawn', () => {
+  it('screen: no STEP row; tags removable by a tap, no link line; pending pump drawn', () => {
     const s = { ...initialState(g7), step: [{ pump: 3, turbine: 4 }] };
     const svg = renderBoard({ grid: g7, state: s, ev: evaluate(g7, s), style: 'A', cell: 50, interactive: true }).svg;
     expect(svg).not.toContain('STEP · pompage');
     expect(svg.match(/data-act="step-tag"/g)?.length).toBe(2);
-    expect(svg).toContain('class="step-link"');
+    expect(svg).not.toContain('step-link');
+    expect(svg).not.toMatch(/[▲▼]\d/); // one pair: no number
     const arrows = renderBoard({ grid: g7, state: initialState(g7), ev: null, style: 'A', cell: 50, stepMode: true, interactive: true }).svg;
     expect(arrows.match(/data-act="step-arrow"/g)?.length).toBe(7); // ▲ on every slot but the last
     expect(arrows).not.toContain('step-pending');
@@ -436,6 +437,32 @@ describe('STEP in the order book', () => {
     expect(turbine.match(/data-act="step-arrow"/g)?.length).toBe(1 + 5); // chosen ▲ + ▼ on the 5 later slots
     expect(renderBoard({ grid: g7, state: initialState(g7), ev: null, style: 'A', cell: 50, interactive: true }).svg).not.toContain('step-arrow');
     expect(boardGeometry(g7, 'A', 50).bottomRows).toBe(1);
+  });
+
+  it('STEP numbering: tag icons carry the pair number only when the grid has several pairs', () => {
+    const pairs = [{ pump: 1, turbine: 3 }, { pump: 3, turbine: 5 }];
+    expect(stepTagLabels(pairs, 1, true)).toEqual(['▲1']);
+    expect(stepTagLabels(pairs, 3, true)).toEqual(['▲2', '▼1']);
+    expect(stepTagLabels(pairs, 5, true)).toEqual(['▼2']);
+    expect(stepTagLabels(pairs, 3, false)).toEqual(['▲', '▼']);
+    const multi = { ...g7, inventory: { ...g7.inventory, step: 2 } };
+    expect(maxStepPairs(multi)).toBe(2);
+    const s = { ...initialState(multi), step: pairs };
+    const svg = renderBoard({ grid: multi, state: s, ev: null, style: 'A', cell: 50 }).svg;
+    for (const l of ['▲1', '▲2', '▼1', '▼2']) expect(svg).toContain(l);
+    const arrows = renderBoard({ grid: multi, state: { ...initialState(multi), step: [pairs[0]!] }, ev: null, style: 'A', cell: 50, stepMode: true, interactive: true }).svg;
+    expect(arrows).toContain('▲2'); // next pair to place
+  });
+
+  it('STEP numbering: two pairs pumping at the same slot keep both numbers, compact tag widens', () => {
+    const multi = { ...g7, inventory: { ...g7.inventory, step: 2 } };
+    const s = { ...initialState(multi), step: [{ pump: 1, turbine: 3 }, { pump: 1, turbine: 5 }] };
+    for (const cell of [50, 34]) {
+      const svg = renderBoard({ grid: multi, state: s, ev: null, style: 'A', cell }).svg;
+      expect(svg).toContain('▲1▲2');
+    }
+    const both = { ...initialState(multi), step: [{ pump: 1, turbine: 3 }, { pump: 3, turbine: 5 }] };
+    expect(renderBoard({ grid: multi, state: both, ev: null, style: 'A', cell: 34 }).svg).toContain('▲2▼1');
   });
 
   it('paper keeps its STEP boxes and draws no pair', () => {
@@ -645,5 +672,30 @@ describe('phone hint', () => {
   it('points to the row under the board below 860 px', () => {
     expect(UI.hintChoose(false, false, true)).toContain('la rangée sous la grille');
     expect(UI.hintChoose(false, false)).toContain('le carnet');
+  });
+});
+
+describe('clue card (every clue in text, time order)', () => {
+  const slotOf = (c: Grid['clues'][number]) => ('col' in c && typeof c.col === 'number' ? c.col : -1);
+
+  it('puts day clues first, then slot clues by column, keeping grid order on ties', () => {
+    for (const grid of grids) {
+      const ordered = orderClues(grid.clues.map((clue) => ({ clue })));
+      expect(ordered).toHaveLength(grid.clues.length);
+      const cols = ordered.map((r) => slotOf(r.clue));
+      expect(cols).toEqual([...cols].sort((a, b) => a - b));
+      const dayCount = grid.clues.filter((c) => slotOf(c) < 0).length;
+      expect(ordered.slice(0, dayCount).every((r) => slotOf(r.clue) < 0)).toBe(true);
+    }
+  });
+
+  it('lists every clue, with no collapsed list', () => {
+    for (const grid of grids) {
+      if (!grid.clues.length) continue;
+      const ev = evaluate(grid, newGame(grid));
+      const html = renderClues(grid, ev.clues);
+      expect(html.match(/<li class="clue"/g)?.length ?? 0).toBe(grid.clues.length);
+      expect(html).not.toContain('<details');
+    }
   });
 });

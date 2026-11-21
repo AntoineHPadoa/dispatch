@@ -13,9 +13,10 @@ import { localIsoDate, weekdayIndex } from '../model/bulletin';
 import type { Grid, Placement } from '../model/grid';
 import {
   barIndexAt, checkPlaceOver, evaluate, newGame, placeOver, remove, removeStep, setExport, exportsAt,
-  importsAt, type ClueReport, type Evaluation, type PlayState,
+  importsAt, residual, type ClueReport, type Evaluation, type PlayState,
 } from '../engine';
 import { MSG, TECHNIQUES, UI, columnLabel, countryTo, durationText, placementLabel, slotClueShort } from '../i18n/fr';
+import { siteHead } from './home-art';
 import { lockedExports, renderBoard, cellAt, type BoardGeometry } from './board';
 import {
   alongShape, cancel, idle, isFlat, moveTo, press, previewRect, release, tap, type Cell, type GestureState, type Rect, type Shape,
@@ -42,7 +43,7 @@ export type Tone = 'ok' | 'bad' | 'info';
 
 const LONG_PRESS_MS = 550;
 const MIN_CELL = 32;
-const MAX_CELL = 54;
+const MAX_CELL = 60;
 
 /** Initial board: engaged plants and the exports fixed by published flows. */
 export function initialState(grid: Grid): PlayState {
@@ -179,9 +180,9 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     : '';
 
   root.innerHTML = `<div class="m game">
-    <header class="top">
-      <div class="title"><a class="backlink" href="#/">${icon('back')}${esc(UI.back)}</a>
-        <div class="eyebrow">${esc(eyebrow)}</div><h1>${esc(displayTitle(grid))}</h1></div>
+    ${siteHead()}
+    <header class="ttl">
+      <div class="title"><div class="eyebrow">${esc(eyebrow)}</div><h1>${esc(displayTitle(grid))}</h1></div>
       <span class="diff ${DIFF_CLASS[grid.difficulty.rating] ?? 'd1'}">${esc(grid.difficulty.label)}</span>
     </header>
     ${intro}
@@ -250,6 +251,10 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       stepMode: stepModeOn(), interactive: true,
     });
     geo = out.geo;
+    // Desktop: the board rises so its highest cell lines up with the eyebrow of the title column.
+    const resid = residual(grid);
+    const topCells = Math.max(...geo.weather.map((w, c) => w + Math.max(0, resid[c] ?? 0)));
+    gameEl.style.setProperty('--lift', `${Math.max(0, Math.round(geo.topPad + (geo.rows - topCells) * cell))}px`);
     scroll.innerHTML = out.svg;
     wrap.classList.toggle('placing', !!selected && !erase);
     wrap.classList.toggle('pan', !!selected && !erase && isFlat(shapeOf(selected)));

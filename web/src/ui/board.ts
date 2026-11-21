@@ -50,6 +50,16 @@ export function lockedExports(grid: Grid): Map<string, number> {
   return m;
 }
 
+const STEP_BLUE = '#e3eefa';
+
+/** Icons of the STEP tags in column `c`: ▲ for a pump, ▼ for a turbine, with the pair number when `numbered`. */
+export function stepTagLabels(step: readonly { pump: number; turbine: number }[], c: number, numbered: boolean): string[] {
+  const out: string[] = [];
+  step.forEach((q, i) => { if (q.pump === c) out.push(`▲${numbered ? i + 1 : ''}`); });
+  step.forEach((q, i) => { if (q.turbine === c) out.push(`▼${numbered ? i + 1 : ''}`); });
+  return out;
+}
+
 /** Most STEP pairs the board may hold (inventory or exchanges clue; the validator requires one). */
 export function maxStepPairs(grid: Grid): number {
   if (!grid.step) return 0;
@@ -122,7 +132,8 @@ export function boardGeometry(grid: Grid, style: BoardStyle, cell: number, state
     return Math.min(exports, exportTotal) + maxStepPairs(grid);
   };
   const colMax = res.map((r, c) => weather[c]! + Math.max(0, r + extraAt(c)));
-  const rows = Math.max(1, ...colMax);
+  // Paper: one blank row above the highest point any column can reach.
+  const rows = Math.max(1, ...colMax) + (style === 'B' ? 1 : 0);
   const st = state ?? { bars: [], exports: {}, step: [] };
   const tags = tagsPerColumn(grid, style);
   // Paper: every tag sits above the rectangle, outside the grid.
@@ -357,38 +368,36 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     s += `<g class="tag">${pill(x(cl.col) + cell / 2, ty, w, '#fff', A ? '#d9cbd3' : ink, inner, statusOf(i))}</g>`;
   });
   if (A) {
-    // STEP tags: "▲ pompe" over the pumped column, "▼ turbine" over the turbined one, linked by a
-    // faint line; a tap on a tag removes its pair. In STEP mode, arrows ▲ then ▼ sit in the same band.
-    const tagAt = new Map<number, { left: number; right: number; y: number }>();
+    // STEP tags: "▲ pompe" over the pumped column, "▼ turbine" over the turbined one, both light blue
+    // (the shared colour and icons tell the pair); a tap on a tag removes its pair. With several pairs
+    // each icon carries its pair number. In STEP mode, arrows ▲ then ▼ sit in the same band.
     let tags = '';
     const pending = input.stepPending ?? null;
+    const numbered = maxStepPairs(grid) > 1;
     for (let c = 0; c < n; c++) {
       if (!pumps[c] && !turbines[c]) continue;
       const ty = tagY(c);
       const pump = pumps[c]! > 0;
       const full = cell >= 48;
-      const label = pump && turbines[c] ? '▲▼' : pump ? (full ? UI.stepPump : '▲') : full ? UI.stepTurbine : '▼';
-      const w = full ? Math.max(cell - 8, label.length * 5 + 12) : cell - 8;
+      const labels = stepTagLabels(state.step, c, numbered);
+      // The word ("pompe" / "turbine") only goes on a lone icon; several icons in one tag are joined.
+      const word = pump ? UI.stepPumpWord : UI.stepTurbineWord;
+      const label = labels.length === 1 && full ? `${labels[0]} ${word}` : labels.join('');
+      const w = full ? Math.max(cell - 8, label.length * 5 + 12) : Math.max(cell - 8, label.length * 5.5 + 8);
       const mid = x(c) + cell / 2;
-      const left = Math.min(Math.max(mid - w / 2, 0), Math.max(0, W - w));
-      tagAt.set(c, { left, right: left + w, y: ty + 9 });
       const k = state.step.findIndex((q) => q.pump === c || q.turbine === c);
       const pair = k >= 0 ? state.step[k] : undefined;
       const act = input.interactive && pair
         ? ` data-act="step-tag" data-col="${c}" tabindex="0" role="button" aria-label="${esc(UI.stepTagLabel(columnLabel(grid, pair.pump), columnLabel(grid, pair.turbine)))}"` : '';
       tags += `<g class="tag step-tag${act ? ' act' : ''}"${act}>`
-        + pill(mid, ty, w, pump ? '#e3eefa' : '#eef0f3', pump ? PIECE_COLORS.B.ink : '#b9b3bf', (tc) => T(tc, ty + 12.5, label, { size: full ? 8.5 : 9.5 }), null)
+        + pill(mid, ty, w, STEP_BLUE, PIECE_COLORS.B.ink, (tc) => T(tc, ty + 12.5, label, { size: full ? 8.5 : 9.5 }), null)
         + '</g>';
-    }
-    for (const q of state.step) {
-      const a = tagAt.get(q.pump);
-      const b = tagAt.get(q.turbine);
-      if (a && b) s += `<path class="step-link" d="M${a.right} ${a.y} L${b.left} ${b.y}" stroke="${PIECE_COLORS.B.ink}" stroke-opacity=".5" stroke-width="1.2" stroke-dasharray="2 3" fill="none" pointer-events="none"/>`;
     }
     s += tags;
     if (input.stepMode) {
       // ▲ over each slot to choose the pump; once chosen, it stays filled and ▼ shows on later slots.
       const r = Math.min(11, cell / 2 - 3);
+      const nextPair = state.step.length + 1;
       for (let c = 0; c < n; c++) {
         const chosen = pending === c;
         const kind = pending === null ? (c < n - 1 ? 'up' : null) : chosen ? 'up' : c > pending ? 'down' : null;
@@ -399,8 +408,8 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
         const col = PIECE_COLORS.B.ink;
         const label = kind === 'up' ? (chosen ? UI.stepArrowChosen(columnLabel(grid, c)) : UI.stepArrowPump(columnLabel(grid, c))) : UI.stepArrowTurbine(columnLabel(grid, c));
         const act = input.interactive ? ` data-act="step-arrow" data-col="${c}" tabindex="0" role="button" aria-label="${esc(label)}"` : '';
-        s += `<g class="step-arrow${act ? ' act' : ''}"${act}><circle cx="${cx}" cy="${cy}" r="${r}" fill="${chosen ? col : '#e3eefa'}" stroke="${col}" stroke-width="1.4"/>`
-          + T(cx, cy + 4, kind === 'up' ? '▲' : '▼', { size: 11, color: chosen ? '#fff' : col }) + '</g>';
+        s += `<g class="step-arrow${act ? ' act' : ''}"${act}><circle cx="${cx}" cy="${cy}" r="${r}" fill="${chosen ? col : STEP_BLUE}" stroke="${col}" stroke-width="1.4"/>`
+          + T(cx, cy + 4, (kind === 'up' ? '▲' : '▼') + (numbered ? String(nextPair) : ''), { size: numbered ? 9 : 11, color: chosen ? '#fff' : col }) + '</g>';
       }
     }
   }
@@ -475,7 +484,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   });
   if (grid.step && !A) {
     const ry = baseY + grid.neighbors.length * 40;
-    s += T(0, ry + 8, UI.stepLine, { anchor: 'start', w: 700, size: 9, color: soft });
+    s += T(0, ry + 8, maxStepPairs(grid) > 1 ? UI.stepLineNumbered : UI.stepLine, { anchor: 'start', w: 700, size: 9, color: soft });
     for (let c = 0; c < n; c++) {
       const px = x(c) + 6;
       const w = cell - 12;
