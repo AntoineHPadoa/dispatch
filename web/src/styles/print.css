@@ -31,6 +31,8 @@
 .a4 .legend li::before { content: "· "; color: #6c7d78; }
 .a4 .foot { margin-top: auto; display: flex; justify-content: space-between; gap: 12px; color: #6c7d78; font-size: 7.5pt; border-top: 1px solid #c7d5d1; padding-top: 2mm; }
 
+.a4 .foot > span:last-child { flex: none; white-space: nowrap; }
+
 @media print {
   @page { size: A4; margin: 0; }
   html, body { background: #fff !important; }

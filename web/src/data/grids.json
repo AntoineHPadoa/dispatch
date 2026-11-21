@@ -1381,6 +1381,22 @@
         "single_cover",
         "silhouette"
       ]
+    },
+    "bulletin": {
+      "number": 211,
+      "title": "Nuit calme",
+      "text": "Le réseau respire : la demande reste basse presque toute la journée, avec un petit pic en début d’après-midi. Le barrage ne garde que deux cases d’eau en réserve.",
+      "weather": [
+        "moon",
+        "moon",
+        "cloud",
+        "sun",
+        "sun",
+        "sun",
+        "cloud",
+        "moon"
+      ],
+      "published": "2026-11-18"
     }
   },
   {
@@ -1596,6 +1612,22 @@
         "ribbon",
         "swap"
       ]
+    },
+    "bulletin": {
+      "number": 212,
+      "title": "Plateau de midi",
+      "text": "Le froid s’installe et la demande reste haute toute la journée, sans vraie vallée. Le ruban nucléaire porte l’essentiel, le reste se joue sur les marges.",
+      "weather": [
+        "moon",
+        "cloud",
+        "cloud",
+        "sun",
+        "sun",
+        "cloud",
+        "wind",
+        "moon"
+      ],
+      "published": "2026-11-19"
     }
   },
   {
@@ -1785,6 +1817,22 @@
         "exhausted",
         "single_cover"
       ]
+    },
+    "bulletin": {
+      "number": 213,
+      "title": "Creux de midi",
+      "text": "Le soleil de midi soulage le réseau : la demande s’effondre au milieu de la journée, puis repart de plus belle matin et soir. Les rubans longs vont devoir se couper.",
+      "weather": [
+        "moon",
+        "cloud",
+        "sun",
+        "sun",
+        "sun",
+        "sun",
+        "cloud",
+        "moon"
+      ],
+      "published": "2026-11-20"
     }
   },
   {
@@ -1970,6 +2018,22 @@
         "ribbon",
         "refuted"
       ]
+    },
+    "bulletin": {
+      "number": 214,
+      "title": "Plateau d’après-midi",
+      "text": "Le froid monte et la demande grimpe jusqu’à 6 GW dès midi, sans redescendre avant la nuit. Seul le nucléaire répond à l’appel : la France exporte vers l’Allemagne, qui attend deux blocs, et chaque bloc compte.",
+      "weather": [
+        "moon",
+        "moon",
+        "cloud",
+        "sun",
+        "sun",
+        "wind",
+        "wind",
+        "moon"
+      ],
+      "published": "2026-11-21"
     }
   }
 ]

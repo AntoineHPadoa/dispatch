@@ -1,0 +1,929 @@
+{
+ "T1": {
+  "demand": [
+   3,
+   3,
+   2,
+   2,
+   2,
+   2
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "C": {
+    "kind": "trap",
+    "len": [
+     3,
+     4,
+     5
+    ]
+   },
+   "T": {
+    "len": [
+     1
+    ]
+   }
+  },
+  "clues": [],
+  "layout": [
+   {
+    "piece": "N",
+    "row": 0,
+    "col": 0,
+    "len": 6,
+    "height": 1
+   },
+   {
+    "piece": "C",
+    "row": 1,
+    "col": 0,
+    "len": 3,
+    "height": 1
+   },
+   {
+    "piece": "T",
+    "row": 2,
+    "col": 0,
+    "len": 1,
+    "height": 1
+   },
+   {
+    "piece": "N",
+    "row": 1,
+    "col": 3,
+    "len": 3,
+    "height": 1
+   }
+  ],
+  "inventory": {
+   "N": {
+    "bars": [
+     3,
+     6
+    ]
+   },
+   "C": {
+    "bars": [
+     3
+    ]
+   },
+   "T": {
+    "cells": 1
+   }
+  },
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ]
+ },
+ "T2": {
+  "demand": [
+   2,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   2
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "C": {
+    "kind": "trap",
+    "len": [
+     3,
+     4,
+     5
+    ]
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ]
+   },
+   "T": {
+    "len": [
+     1
+    ]
+   }
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 3,
+    "counts": {
+     "C": 1
+    }
+   },
+   {
+    "type": "price",
+    "col": 1,
+    "piece": "G"
+   },
+   {
+    "type": "column",
+    "col": 0,
+    "counts": {
+     "N": 1
+    }
+   }
+  ],
+  "layout": [
+   {
+    "piece": "N",
+    "row": 0,
+    "col": 0,
+    "len": 4,
+    "height": 1
+   },
+   {
+    "piece": "N",
+    "row": 0,
+    "col": 4,
+    "len": 4,
+    "height": 1
+   },
+   {
+    "piece": "C",
+    "row": 1,
+    "col": 3,
+    "len": 4,
+    "height": 1
+   },
+   {
+    "piece": "G",
+    "row": 1,
+    "col": 0,
+    "len": 3,
+    "height": 1
+   },
+   {
+    "piece": "G",
+    "row": 2,
+    "col": 1,
+    "len": 3,
+    "height": 1
+   },
+   {
+    "piece": "T",
+    "row": 1,
+    "col": 7,
+    "len": 1,
+    "height": 1
+   },
+   {
+    "piece": "T",
+    "row": 2,
+    "col": 6,
+    "len": 1,
+    "height": 1
+   }
+  ],
+  "inventory": {
+   "N": {
+    "bars": [
+     4,
+     4
+    ]
+   },
+   "C": {
+    "bars": [
+     4
+    ]
+   },
+   "G": {
+    "bars": [
+     3,
+     3
+    ]
+   },
+   "T": {
+    "cells": 2
+   }
+  },
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ]
+ },
+ "T3": {
+  "demand": [
+   2,
+   3,
+   3,
+   3,
+   2,
+   1
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "C": {
+    "kind": "trap",
+    "len": [
+     3,
+     4,
+     5
+    ]
+   },
+   "T": {
+    "len": [
+     1
+    ]
+   }
+  },
+  "clues": [
+   {
+    "type": "bar",
+    "piece": "C",
+    "col": 2,
+    "len": 4
+   },
+   {
+    "type": "column",
+    "col": 1,
+    "counts": {
+     "N": 2
+    }
+   }
+  ],
+  "layout": [
+   {
+    "piece": "N",
+    "row": 1,
+    "col": 0,
+    "len": 3,
+    "height": 1
+   },
+   {
+    "piece": "N",
+    "row": 2,
+    "col": 1,
+    "len": 3,
+    "height": 1
+   },
+   {
+    "piece": "C",
+    "row": 0,
+    "col": 2,
+    "len": 4,
+    "height": 1
+   },
+   {
+    "piece": "T",
+    "row": 0,
+    "col": 0,
+    "len": 1,
+    "height": 1
+   },
+   {
+    "piece": "T",
+    "row": 0,
+    "col": 1,
+    "len": 1,
+    "height": 1
+   }
+  ],
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ]
+ },
+ "T4": {
+  "demand": [
+   3,
+   3,
+   3,
+   3,
+   4,
+   4,
+   3,
+   2
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "C": {
+    "kind": "trap",
+    "len": [
+     3,
+     4,
+     5
+    ]
+   },
+   "T": {
+    "len": [
+     1
+    ]
+   }
+  },
+  "clues": [],
+  "layout": [
+   {
+    "piece": "N",
+    "row": 0,
+    "col": 0,
+    "len": 4,
+    "height": 1
+   },
+   {
+    "piece": "N",
+    "row": 0,
+    "col": 4,
+    "len": 4,
+    "height": 1
+   },
+   {
+    "piece": "C",
+    "row": 1,
+    "col": 0,
+    "len": 4,
+    "height": 1
+   },
+   {
+    "piece": "N",
+    "row": 1,
+    "col": 4,
+    "len": 4,
+    "height": 1
+   },
+   {
+    "piece": "T",
+    "row": 2,
+    "col": 0,
+    "len": 1,
+    "height": 1
+   },
+   {
+    "piece": "C",
+    "row": 2,
+    "col": 3,
+    "len": 4,
+    "height": 1
+   }
+  ],
+  "inventory": {
+   "N": {
+    "bars": [
+     4,
+     4,
+     4
+    ]
+   },
+   "C": {
+    "bars": [
+     4,
+     4
+    ]
+   },
+   "T": {
+    "cells": 1
+   }
+  },
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ]
+ },
+ "E1": {
+  "demand": [
+   2,
+   3,
+   3,
+   3,
+   3,
+   2,
+   2,
+   2
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "C": {
+    "kind": "stair",
+    "len": [
+     2,
+     3,
+     4
+    ]
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ]
+   },
+   "T": {
+    "len": [
+     1
+    ]
+   }
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 4,
+    "counts": {
+     "C": 1
+    }
+   },
+   {
+    "type": "column",
+    "col": 0,
+    "counts": {
+     "N": 1
+    }
+   }
+  ],
+  "layout": [
+   {
+    "piece": "N",
+    "row": 0,
+    "col": 0,
+    "len": 4,
+    "height": 1
+   },
+   {
+    "piece": "N",
+    "row": 0,
+    "col": 4,
+    "len": 4,
+    "height": 1
+   },
+   {
+    "piece": "C",
+    "row": 1,
+    "col": 1,
+    "len": 4,
+    "height": 1
+   },
+   {
+    "piece": "T",
+    "row": 1,
+    "col": 0,
+    "len": 1,
+    "height": 1
+   },
+   {
+    "piece": "T",
+    "row": 2,
+    "col": 4,
+    "len": 1,
+    "height": 1
+   },
+   {
+    "piece": "G",
+    "row": 1,
+    "col": 5,
+    "len": 3,
+    "height": 1
+   }
+  ],
+  "inventory": {
+   "N": {
+    "bars": [
+     4,
+     4
+    ]
+   },
+   "C": {
+    "bars": [
+     4
+    ]
+   },
+   "G": {
+    "bars": [
+     3
+    ]
+   },
+   "T": {
+    "cells": 2
+   }
+  },
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ]
+ },
+ "E2": {
+  "demand": [
+   3,
+   2,
+   3,
+   4,
+   4,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "C": {
+    "kind": "stair",
+    "len": [
+     2,
+     3,
+     4
+    ]
+   },
+   "T": {
+    "len": [
+     1
+    ]
+   }
+  },
+  "clues": [
+   {
+    "type": "price",
+    "col": 0,
+    "piece": "C"
+   },
+   {
+    "type": "price",
+    "col": 5,
+    "piece": "N"
+   },
+   {
+    "type": "column",
+    "col": 2,
+    "counts": {
+     "N": 1
+    }
+   }
+  ],
+  "layout": [
+   {
+    "piece": "N",
+    "row": 0,
+    "col": 0,
+    "len": 3,
+    "height": 1
+   },
+   {
+    "piece": "N",
+    "row": 0,
+    "col": 3,
+    "len": 3,
+    "height": 1
+   },
+   {
+    "piece": "N",
+    "row": 1,
+    "col": 3,
+    "len": 3,
+    "height": 1
+   },
+   {
+    "piece": "N",
+    "row": 2,
+    "col": 3,
+    "len": 3,
+    "height": 1
+   },
+   {
+    "piece": "N",
+    "row": 3,
+    "col": 3,
+    "len": 3,
+    "height": 1
+   },
+   {
+    "piece": "C",
+    "row": 1,
+    "col": 0,
+    "len": 2,
+    "height": 1
+   },
+   {
+    "piece": "T",
+    "row": 1,
+    "col": 2,
+    "len": 1,
+    "height": 1
+   },
+   {
+    "piece": "T",
+    "row": 2,
+    "col": 2,
+    "len": 1,
+    "height": 1
+   }
+  ],
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ]
+ },
+ "E3": {
+  "demand": [
+   3,
+   3,
+   3,
+   3,
+   3,
+   2,
+   2,
+   2
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "C": {
+    "kind": "stair",
+    "len": [
+     2,
+     3,
+     4
+    ]
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ]
+   }
+  },
+  "clues": [
+   {
+    "type": "price",
+    "col": 0,
+    "piece": "C"
+   }
+  ],
+  "layout": [
+   {
+    "piece": "N",
+    "row": 0,
+    "col": 0,
+    "len": 6,
+    "height": 1
+   },
+   {
+    "piece": "G",
+    "row": 0,
+    "col": 6,
+    "len": 2,
+    "height": 1
+   },
+   {
+    "piece": "C",
+    "row": 1,
+    "col": 0,
+    "len": 3,
+    "height": 1
+   },
+   {
+    "piece": "G",
+    "row": 1,
+    "col": 3,
+    "len": 3,
+    "height": 1
+   },
+   {
+    "piece": "G",
+    "row": 1,
+    "col": 6,
+    "len": 2,
+    "height": 1
+   },
+   {
+    "piece": "G",
+    "row": 2,
+    "col": 2,
+    "len": 3,
+    "height": 1
+   }
+  ],
+  "inventory": {
+   "N": {
+    "bars": [
+     6
+    ]
+   },
+   "C": {
+    "bars": [
+     3
+    ]
+   },
+   "G": {
+    "bars": [
+     2,
+     2,
+     3,
+     3
+    ]
+   }
+  },
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ]
+ },
+ "E4": {
+  "demand": [
+   2,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "C": {
+    "kind": "stair",
+    "len": [
+     2,
+     3,
+     4
+    ]
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ]
+   },
+   "T": {
+    "len": [
+     1
+    ]
+   }
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 2,
+    "counts": {
+     "C": 3
+    }
+   }
+  ],
+  "layout": [
+   {
+    "piece": "C",
+    "row": 0,
+    "col": 0,
+    "len": 3,
+    "height": 1
+   },
+   {
+    "piece": "C",
+    "row": 1,
+    "col": 2,
+    "len": 3,
+    "height": 1
+   },
+   {
+    "piece": "N",
+    "row": 0,
+    "col": 3,
+    "len": 5,
+    "height": 1
+   },
+   {
+    "piece": "G",
+    "row": 1,
+    "col": 5,
+    "len": 3,
+    "height": 1
+   },
+   {
+    "piece": "N",
+    "row": 2,
+    "col": 4,
+    "len": 4,
+    "height": 1
+   },
+   {
+    "piece": "T",
+    "row": 2,
+    "col": 1,
+    "len": 1,
+    "height": 1
+   }
+  ],
+  "inventory": {
+   "N": {
+    "bars": [
+     4,
+     5
+    ]
+   },
+   "C": {
+    "bars": [
+     3,
+     3
+    ]
+   },
+   "G": {
+    "bars": [
+     3
+    ]
+   },
+   "T": {
+    "cells": 1
+   }
+  },
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ]
+ }
+}

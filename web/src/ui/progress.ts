@@ -2,8 +2,8 @@
  * Player progress, kept in localStorage when it is available (pure logic + a guarded store).
  * - Per grid: status (started, done), the saved board and the time spent.
  * - Every storage access is wrapped in try/catch: the game works without storage.
- * - Grid of the day: one rated grid picked from the local date.
  */
+import { currentBulletin, localIsoDate } from '../model/bulletin';
 import type { Grid } from '../model/grid';
 import type { PlacedBar, PlayState } from '../engine';
 
@@ -120,27 +120,22 @@ export const browserStore = () => {
   return store;
 };
 
-/** Days since 1970-01-01 for the local calendar date. */
-export function localDayNumber(d: Date): number {
-  return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86_400_000);
-}
-
-/** Grid of the day: a rated grid chosen by the date (same grid all day, next one tomorrow). */
-export function dailyGrid(grids: readonly Grid[], date: Date): Grid | null {
-  const rated = grids.filter((g) => g.section === 'rated').sort((a, b) => a.id - b.id);
-  if (!rated.length) return null;
-  return rated[localDayNumber(date) % rated.length] ?? null;
-}
-
-/** Play order: tutorials, then rated grids, each by id. */
-export function playOrder(grids: readonly Grid[]): Grid[] {
+/** Play order: tutorials, then rated grids, each by id; bulletins not yet published on `today` are left out. */
+export function playOrder(grids: readonly Grid[], today: string = localIsoDate()): Grid[] {
   const rank = (g: Grid) => (g.section === 'tutorial' ? 0 : 1);
-  return [...grids].sort((a, b) => rank(a) - rank(b) || a.id - b.id);
+  return grids.filter((g) => !g.bulletin || g.bulletin.published <= today).sort((a, b) => rank(a) - rank(b) || a.id - b.id);
 }
 
 /** Next grid after `id` in play order, or null after the last one. */
-export function nextGrid(grids: readonly Grid[], id: number): Grid | null {
-  const order = playOrder(grids);
+export function nextGrid(grids: readonly Grid[], id: number, today: string = localIsoDate(), isDone: (id: number) => boolean = () => false): Grid | null {
+  const order = playOrder(grids, today);
   const i = order.findIndex((g) => g.id === id);
-  return i >= 0 ? order[i + 1] ?? null : null;
+  if (i < 0) return null;
+  const next = order[i + 1] ?? null;
+  // After the last tutorial, go to the sheet of the day (home when it is already done).
+  if (order[i]!.section === 'tutorial' && next && next.section !== 'tutorial') {
+    const daily = currentBulletin(grids, today);
+    return daily && !isDone(daily.id) ? daily : null;
+  }
+  return next;
 }

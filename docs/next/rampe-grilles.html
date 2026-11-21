@@ -1,0 +1,309 @@
+<title>Rampes, mini-grilles</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: a study sheet in the style-reference chrome; two profile sections of paper (style B) puzzle cards, statement beside solution, deduction steps below. Paper always renders light. */
+:root {
+  --bg: #f7f5f8; --fg: #2a2530; --muted: #6f6878; --line: #e5e0ea; --panel: #ffffff; --accent: #a8577f;
+  --paper: #ffffff; --paper-ink: #1f2a27; --paper-soft: #6c7d78; --paper-hair: #c7d5d1; --focus: #c45c7c;
+  --f-title: "Outfit", "Manrope", system-ui, sans-serif; --f-ui: "Manrope", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #19171d; --fg: #eeeaf2; --muted: #a8a1b2; --line: #302b37; --panel: #221f27; --accent: #e9a9c8; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #19171d; --fg: #eeeaf2; --muted: #a8a1b2; --line: #302b37; --panel: #221f27; --accent: #e9a9c8; color-scheme: dark }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--f-ui); line-height: 1.55; font-size: 15px }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 40px 80px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+header.doc { display: grid; gap: 10px; padding-bottom: 24px; border-bottom: 1px solid var(--line) }
+.kicker { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 800 }
+h1 { font-family: var(--f-title); font-weight: 300; font-size: clamp(2rem, 5vw, 3rem); letter-spacing: -.03em; margin: 0; line-height: 1.05; text-wrap: balance }
+.doc p { margin: 0; color: var(--muted); max-width: 72ch }
+.doc dl { display: flex; flex-wrap: wrap; gap: 6px 28px; margin: 6px 0 0; font-size: .82rem }
+.doc dl div { display: flex; gap: 8px } .doc dt { color: var(--muted) } .doc dd { margin: 0; font-weight: 600 }
+nav.toc { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px }
+nav.toc a { font-size: .8rem; color: var(--fg); text-decoration: none; padding: 5px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel) }
+nav.toc a:hover, nav.toc a:focus-visible { border-color: var(--accent); outline: none }
+section.s { margin-top: 56px; display: grid; gap: 18px; scroll-margin-top: 16px }
+.sh { display: grid; gap: 6px }
+.sh h2 { font-family: var(--f-title); font-weight: 400; font-size: 1.8rem; letter-spacing: -.02em; margin: 0; text-wrap: balance }
+.sh p { margin: 0; color: var(--muted); max-width: 78ch }
+.anat { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px }
+.acard { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: grid; gap: 10px; min-width: 0 }
+.acard h3 { margin: 0; font-family: var(--f-title); font-weight: 500; font-size: 1.15rem }
+.acard p { margin: 0; font-size: .86rem; color: var(--muted) }
+.sheet { background: var(--paper); border-radius: 10px; padding: 12px; overflow-x: auto; color-scheme: light }
+.sheet svg { display: block; max-width: none }
+.cards { display: grid; gap: 22px }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: grid; gap: 14px; min-width: 0 }
+.card header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px }
+.card .code { font-family: var(--f-title); font-weight: 600; color: var(--accent); font-size: 1rem }
+.card h3 { margin: 0; font-family: var(--f-title); font-weight: 500; font-size: 1.3rem; letter-spacing: -.01em; text-wrap: balance }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto }
+.tag { font-size: .7rem; font-weight: 700; letter-spacing: .04em; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap }
+.tag.new { border-color: var(--accent); color: var(--accent) }
+.pair { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start }
+.pane { display: grid; gap: 6px; min-width: 0; max-width: 100% }
+.flabel { font-size: .68rem; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); font-weight: 700 }
+.pane .sheet { border: 1px solid var(--line) }
+.legend { font-size: .78rem; color: var(--paper-ink); display: grid; gap: 2px; margin-top: 6px; max-width: 46ch }
+.legend b { font-weight: 700 }
+.legend .soft { color: var(--paper-soft) }
+ol.steps { margin: 0; padding-left: 1.3em; display: grid; gap: 6px; max-width: 80ch; font-size: .9rem }
+ol.steps li::marker { color: var(--accent); font-weight: 700 }
+ol.steps .key { background: color-mix(in srgb, var(--accent) 16%, transparent); border-radius: 4px; padding: 0 3px; font-weight: 600 }
+.note { font-size: .82rem; color: var(--muted); max-width: 80ch; margin: 0 }
+.note b { color: var(--fg) }
+table.cmp { border-collapse: collapse; font-size: .86rem; min-width: 640px }
+table.cmp th, table.cmp td { text-align: left; vertical-align: top; padding: 8px 12px; border-bottom: 1px solid var(--line) }
+table.cmp th { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted) }
+table.cmp td:first-child { font-weight: 700; white-space: nowrap }
+.scroll { overflow-x: auto }
+.reco { border: 1px solid var(--accent); border-radius: 16px; padding: 14px 16px; display: grid; gap: 4px; background: var(--panel) }
+.reco b { font-family: var(--f-title); font-weight: 500; font-size: 1.1rem }
+</style>
+
+<div class="wrap">
+  <header class="doc">
+    <span class="kicker">Dispatch v2 · étude S1.1</span>
+    <h1>Rampes : huit mini-grilles</h1>
+    <p>La rampe est une centrale thermique qui démarre et s'arrête par paliers. Elle se pose d'un bloc. Cette planche montre ses deux profils possibles sur des mini-grilles faites à la main, chacune bâtie autour d'une déduction qui n'existe pas avec des barres rectangulaires. Le texte complet de l'étude est dans <code>docs/next/rampe.md</code>.</p>
+    <dl>
+      <div><dt>Profils</dt><dd>trapèze 1 → 2 → 1, escalier 2 → 1</dd></div>
+      <div><dt>Pièce</dt><dd>charbon (rang 3, CO₂ 3 par case)</dd></div>
+      <div><dt>Vérification</dt><dd>CP-SAT : composition unique, chaque indice utile</dd></div>
+    </dl>
+    <nav class="toc"><a href="#formes">Les deux formes</a><a href="#trapeze">Trapèze T1-T4</a><a href="#escalier">Escalier E1-E4</a><a href="#comparaison">Comparaison</a></nav>
+  </header>
+
+  <section class="s" id="formes">
+    <div class="sh"><h2>Les deux formes</h2>
+      <p>Une rampe est décrite case par case. Sa base tient sur une ligne ; le plateau monte d'une ligne au-dessus. La seule liberté est la longueur, comme une barre. Le cercle rose marque la case qui se retrouve coincée au-dessus d'une épaule : c'est elle qui crée les déductions nouvelles.</p></div>
+    <div class="anat" id="anat"></div>
+  </section>
+
+  <section class="s" id="trapeze">
+    <div class="sh"><h2>Trapèze 1 → 2 → 1</h2>
+      <p>Démarrage et arrêt progressifs : une épaule d'une case de chaque côté, un plateau de deux cases. Largeurs permises : 3 à 5 créneaux (4, 6 ou 8 cases).</p></div>
+    <div class="cards" id="cards-T"></div>
+  </section>
+
+  <section class="s" id="escalier">
+    <div class="sh"><h2>Escalier 2 → 1</h2>
+      <p>Démarrage à pleine puissance, arrêt progressif : deux cases jusqu'à une dernière marche d'une case, toujours à droite. Largeurs permises : 2 à 4 créneaux (3, 5 ou 7 cases).</p></div>
+    <div class="cards" id="cards-E"></div>
+  </section>
+
+  <section class="s" id="comparaison">
+    <div class="sh"><h2>Comparaison</h2>
+      <p>Les deux profils coûtent presque la même chose à coder : le travail vient du passage aux pièces décrites case par case. Ce qui les sépare, c'est le jeu.</p></div>
+    <div class="scroll"><table class="cmp">
+      <thead><tr><th>Critère</th><th>Trapèze 1 → 2 → 1</th><th>Escalier 2 → 1</th></tr></thead>
+      <tbody>
+        <tr><td>Réalisme</td><td>Montée et descente en charge : la courbe d'une centrale thermique.</td><td>Arrêt progressif seul ; démarrage à pleine puissance, moins crédible.</td></tr>
+        <tr><td>Lecture</td><td>Symétrique, aucun sens à apprendre. Se lit comme une bosse.</td><td>Orienté : il faut retenir que la marche est à droite (« pourquoi pas à gauche ? »).</td></tr>
+        <tr><td>Épaules</td><td>Deux par rampe, donc deux cases coincées à servir.</td><td>Une seule ; le départ est un mur de deux cases, comme une pièce haute.</td></tr>
+        <tr><td>Relevé d'une case</td><td>Une épaule, mais de quel côté ? Une vraie déduction (T2).</td><td>La marche, sans ambiguïté : plus direct, plus facile (E1).</td></tr>
+        <tr><td>Silhouettes</td><td>Colle à la bosse de la journée (montée du matin, baisse du soir).</td><td>Colle aux descentes du soir seulement.</td></tr>
+        <tr><td>Encombrement</td><td>3 créneaux au minimum : plus dur à caser sur 6 colonnes.</td><td>2 créneaux au minimum.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="reco"><b>Recommandation : le trapèze d'abord.</b><span class="note">Plus réaliste, symétrique, et plus riche en déductions : deux épaules par pièce, un relevé d'une case qui demande de réfléchir au côté, des relais entre deux rampes. L'escalier reste documenté pour plus tard.</span></div>
+  </section>
+</div>
+
+<script>
+// Paper (style B) renderer for the mini-grids. Rows are numbered from the bottom (ligne 1 = row 0).
+const P = {
+  N: { name: "Nucléaire", short: "Nucl.", b: "#f2e5a2", rank: 1 },
+  B: { name: "Barrage", short: "Barr.", b: "#bcd6ee", rank: 2 },
+  C: { name: "Charbon", short: "Char.", b: "#d4ccc2", rank: 3 },
+  G: { name: "Gaz", short: "Gaz", b: "#f5cdb0", rank: 4 },
+  T: { name: "TAC", short: "TAC", b: "#f0b8c4", rank: 5 },
+};
+const WORDS = { N: ["un réacteur", "de nucléaire"], C: ["une centrale à charbon", "de charbon"], G: ["une turbine à gaz", "de gaz"], T: ["une TAC", "de TAC"] };
+const THE = { N: "le nucléaire", C: "le charbon", G: "le gaz", T: "la TAC" };
+const INK = "#1f2a27", HAIR = "#c7d5d1", SOFT = "#6c7d78", FOCUS = "#c45c7c";
+
+const GRIDS = {"T1":{"columns":["0h","4h","8h","12h","16h","20h"],"demand":[3,3,2,2,2,2],"pieces":{"N":{"len":[3,4,5,6]},"C":{"kind":"trap","len":[3,4,5]},"T":{"len":[1]}},"inventory":{"N":{"bars":[3,6]},"C":{"bars":[3]},"T":{"cells":1}},"clues":[],"layout":[{"piece":"N","row":0,"col":0,"len":6},{"piece":"C","row":1,"col":0,"len":3},{"piece":"T","row":2,"col":0,"len":1},{"piece":"N","row":1,"col":3,"len":3}]},"T2":{"columns":["0h","3h","6h","9h","12h","15h","18h","21h"],"demand":[2,3,3,3,3,3,3,2],"pieces":{"N":{"len":[3,4,5,6]},"C":{"kind":"trap","len":[3,4,5]},"G":{"len":[2,3]},"T":{"len":[1]}},"inventory":{"N":{"bars":[4,4]},"C":{"bars":[4]},"G":{"bars":[3,3]},"T":{"cells":2}},"clues":[{"type":"column","col":3,"counts":{"C":1}},{"type":"price","col":1,"piece":"G"},{"type":"column","col":0,"counts":{"N":1}}],"layout":[{"piece":"N","row":0,"col":0,"len":4},{"piece":"N","row":0,"col":4,"len":4},{"piece":"C","row":1,"col":3,"len":4},{"piece":"G","row":1,"col":0,"len":3},{"piece":"G","row":2,"col":1,"len":3},{"piece":"T","row":1,"col":7,"len":1},{"piece":"T","row":2,"col":6,"len":1}]},"T3":{"columns":["0h","4h","8h","12h","16h","20h"],"demand":[2,3,3,3,2,1],"pieces":{"N":{"len":[3,4,5,6]},"C":{"kind":"trap","len":[3,4,5]},"T":{"len":[1]}},"inventory":null,"clues":[{"type":"bar","piece":"C","col":2,"len":4},{"type":"column","col":1,"counts":{"N":2}}],"layout":[{"piece":"N","row":1,"col":0,"len":3},{"piece":"N","row":2,"col":1,"len":3},{"piece":"C","row":0,"col":2,"len":4},{"piece":"T","row":0,"col":0,"len":1},{"piece":"T","row":0,"col":1,"len":1}]},"T4":{"columns":["0h","3h","6h","9h","12h","15h","18h","21h"],"demand":[3,3,3,3,4,4,3,2],"pieces":{"N":{"len":[3,4,5,6]},"C":{"kind":"trap","len":[3,4,5]},"T":{"len":[1]}},"inventory":{"N":{"bars":[4,4,4]},"C":{"bars":[4,4]},"T":{"cells":1}},"clues":[],"layout":[{"piece":"N","row":0,"col":0,"len":4},{"piece":"N","row":0,"col":4,"len":4},{"piece":"C","row":1,"col":0,"len":4},{"piece":"N","row":1,"col":4,"len":4},{"piece":"T","row":2,"col":0,"len":1},{"piece":"C","row":2,"col":3,"len":4}]},"E1":{"columns":["0h","3h","6h","9h","12h","15h","18h","21h"],"demand":[2,3,3,3,3,2,2,2],"pieces":{"N":{"len":[3,4,5,6]},"C":{"kind":"stair","len":[2,3,4]},"G":{"len":[2,3]},"T":{"len":[1]}},"inventory":{"N":{"bars":[4,4]},"C":{"bars":[4]},"G":{"bars":[3]},"T":{"cells":2}},"clues":[{"type":"column","col":4,"counts":{"C":1}},{"type":"column","col":0,"counts":{"N":1}}],"layout":[{"piece":"N","row":0,"col":0,"len":4},{"piece":"N","row":0,"col":4,"len":4},{"piece":"C","row":1,"col":1,"len":4},{"piece":"T","row":1,"col":0,"len":1},{"piece":"T","row":2,"col":4,"len":1},{"piece":"G","row":1,"col":5,"len":3}]},"E2":{"columns":["0h","4h","8h","12h","16h","20h"],"demand":[3,2,3,4,4,4],"pieces":{"N":{"len":[3,4,5,6]},"C":{"kind":"stair","len":[2,3,4]},"T":{"len":[1]}},"inventory":null,"clues":[{"type":"price","col":0,"piece":"C"},{"type":"price","col":5,"piece":"N"},{"type":"column","col":2,"counts":{"N":1}}],"layout":[{"piece":"N","row":0,"col":0,"len":3},{"piece":"N","row":0,"col":3,"len":3},{"piece":"N","row":1,"col":3,"len":3},{"piece":"N","row":2,"col":3,"len":3},{"piece":"N","row":3,"col":3,"len":3},{"piece":"C","row":1,"col":0,"len":2},{"piece":"T","row":1,"col":2,"len":1},{"piece":"T","row":2,"col":2,"len":1}]},"E3":{"columns":["0h","3h","6h","9h","12h","15h","18h","21h"],"demand":[3,3,3,3,3,2,2,2],"pieces":{"N":{"len":[3,4,5,6]},"C":{"kind":"stair","len":[2,3,4]},"G":{"len":[2,3]}},"inventory":{"N":{"bars":[6]},"C":{"bars":[3]},"G":{"bars":[2,2,3,3]}},"clues":[{"type":"price","col":0,"piece":"C"}],"layout":[{"piece":"N","row":0,"col":0,"len":6},{"piece":"G","row":0,"col":6,"len":2},{"piece":"C","row":1,"col":0,"len":3},{"piece":"G","row":1,"col":3,"len":3},{"piece":"G","row":1,"col":6,"len":2},{"piece":"G","row":2,"col":2,"len":3}]},"E4":{"columns":["0h","3h","6h","9h","12h","15h","18h","21h"],"demand":[2,3,3,3,3,3,3,3],"pieces":{"N":{"len":[3,4,5,6]},"C":{"kind":"stair","len":[2,3,4]},"G":{"len":[2,3]},"T":{"len":[1]}},"inventory":{"N":{"bars":[4,5]},"C":{"bars":[3,3]},"G":{"bars":[3]},"T":{"cells":1}},"clues":[{"type":"column","col":2,"counts":{"C":3}}],"layout":[{"piece":"C","row":0,"col":0,"len":3},{"piece":"C","row":1,"col":2,"len":3},{"piece":"N","row":0,"col":3,"len":5},{"piece":"G","row":1,"col":5,"len":3},{"piece":"N","row":2,"col":4,"len":4},{"piece":"T","row":2,"col":1,"len":1}]}};
+
+// Deduction notes: title, the new technique, focus cells [row, col] and steps (HTML).
+const NOTES = {
+  T1: { title: "L'épaule appelle une case", tech: ["Le plateau barre la ligne du dessus", "L'épaule appelle une case"], focus: [[2, 0]], steps: [
+    "Le ruban de 6 couvre toute la journée : il tient en ligne 1 ou en ligne 2 (la ligne 3 n'existe qu'à 0h et 4h).",
+    "<span class=key>Le plateau barre la ligne du dessus</span> : posée en ligne 1, la rampe occuperait la ligne 2 sous son plateau et couperait le ruban de 6. Le ruban est donc en ligne 1 et la rampe en ligne 2.",
+    "Son plateau a besoin de deux cases au-dessus de sa base : seule la colonne de 4h convient avec une épaule de chaque côté. La rampe tourne de 0h à 12h.",
+    "<span class=key>L'épaule appelle une case</span> : à 0h, ligne 3, la case est prise entre le bord de la journée et le plateau. Aucune barre ne l'atteint : c'est la TAC.",
+    "Le ruban de 3 finit la ligne 2, de 12h à 24h." ] },
+  T2: { title: "Une case seule est une épaule", tech: ["Une case seule est une épaule"], focus: [[1, 3], [2, 3]], steps: [
+    "Une rampe met 1 case dans ses colonnes d'épaule et 2 sous son plateau. <span class=key>Une case seule est une épaule</span> : à 9h, la rampe de 4 démarre (9h → 21h) ou s'arrête (0h → 12h).",
+    "Si elle s'arrête à 9h, son plateau est à 3h et 6h. Le relevé de 0h ne laisse qu'un ruban à 0h, et il passe sous la rampe (au-dessus de l'épaule, il traverserait le plateau). La colonne de 3h est alors pleine, sans place pour le gaz que réclame le prix. Exclu : la rampe tourne de 9h à 21h.",
+    "En ligne 1, la rampe hacherait les lignes 2 et 3 : le second gaz de 3 ne trouverait plus trois cases d'affilée. Elle est en ligne 2, sur les deux rubans de 4.",
+    "<span class=key>L'épaule appelle une case</span> : au-dessus de l'épaule de 9h, la case de ligne 3 est fermée à droite par le plateau. Le gaz de 3h y arrive pile (3h → 12h). Le second gaz fait 0h → 9h en ligne 2 ; les TAC prennent 18h (au-dessus de l'autre épaule) et 21h." ] },
+  T3: { title: "Le mur décalé", tech: ["Le plateau barre la ligne du dessus", "L'épaule appelle une case"], focus: [[0, 2], [1, 2]], steps: [
+    "Le programme fixe la rampe : épaules à 8h et 20h, plateau à 12h et 16h.",
+    "À 20h la colonne n'a qu'une case : l'épaule est en bas, la rampe est posée en ligne 1.",
+    "<span class=key>Le plateau barre la ligne du dessus</span> : la rampe ferme la ligne 1 dès 8h et la ligne 2 dès 12h, un mur en escalier. À gauche, la ligne 1 ne garde que 0h et 4h : trop court pour un ruban, ce sont deux TAC.",
+    "Relevé de 4h : deux cases de nucléaire, en lignes 2 et 3. En ligne 2, le ruban bute sur le plateau : il couvre 0h → 12h, <span class=key>case au-dessus de l'épaule comprise</span>. En ligne 3, un ruban de 3, de 4h à 16h." ] },
+  T4: { title: "Deux épaules se relaient", tech: ["Deux épaules se relaient"], focus: [[1, 3], [2, 3]], steps: [
+    "La ligne 4 n'existe qu'à 12h et 15h : deux cases, trop court pour un ruban de 4, et il n'y a qu'une TAC. C'est un plateau : la rampe B tourne de 9h à 21h, en ligne 3.",
+    "En ligne 3, à gauche de B, restent 0h, 3h et 6h. Ni un ruban de 4 ni la seule TAC ne les couvrent : c'est le plateau de la rampe A (3h, 6h), posée en ligne 2 de 0h à 12h.",
+    "<span class=key>L'épaule appelle une case</span> : à 0h, ligne 3, la case est prise entre le bord du jour et le plateau de A. C'est la TAC.",
+    "<span class=key>Deux épaules se relaient</span> : à 9h, deux cases de charbon sans plateau, l'arrêt de A et le démarrage de B. B monte en charge quand A descend.",
+    "Les trois rubans de 4 remplissent la ligne 1 et la ligne 2 sous B (12h → 24h)." ] },
+  E1: { title: "Une case seule ferme l'escalier", tech: ["La marche ferme l'escalier"], focus: [[1, 4]], steps: [
+    "Un escalier met 2 cases partout sauf sur sa dernière marche. <span class=key>La marche ferme l'escalier</span> : la case seule de 12h est la marche. L'escalier de 4 tourne de 3h à 15h.",
+    "Le relevé de 0h ne laisse qu'un ruban à 0h ; il ne peut pas croiser l'escalier, il passe dessous en ligne 1 (0h → 12h). L'escalier occupe les lignes 2 et 3.",
+    "<span class=key>La marche appelle une case</span> : à 12h, ligne 3, la case est fermée à gauche par l'escalier et la silhouette s'arrête à droite. C'est une TAC.",
+    "À 0h, ligne 2, la case est coincée contre l'escalier : seconde TAC. Le second ruban fait 12h → 24h en ligne 1, le gaz 15h → 24h en ligne 2." ] },
+  E2: { title: "La marche suit la descente", tech: ["La marche suit la descente"], focus: [[1, 1]], steps: [
+    "Prix de 0h : du charbon, aucune TAC. Un escalier qui passe à 0h y démarre, avec ses deux cases ; la troisième case de 0h est du nucléaire.",
+    "Ce ruban ne tient pas en ligne 3 (4h n'a que deux cases) et, en ligne 2, il séparerait les deux cases de l'escalier : il est en ligne 1, l'escalier en lignes 2 et 3.",
+    "<span class=key>La marche suit la descente</span> : à 4h la silhouette tombe à deux cases, plus de place pour la ligne 3. 4h porte la marche : un escalier de 2 créneaux, calé sur la descente.",
+    "Prix de 20h : quatre cases de nucléaire, donc quatre rubans qui couvrent 12h → 24h en entier. Relevé de 8h : le ruban du bas, et deux TAC au-dessus." ] },
+  E3: { title: "La marche appelle une barre", tech: ["La marche appelle une case"], focus: [[2, 2]], steps: [
+    "Prix de 0h : du charbon, pas de gaz. L'escalier démarre à 0h avec deux cases ; la troisième est le ruban de 6 (0h → 18h).",
+    "Le ruban ne passe ni en ligne 2 (il couperait l'escalier) ni en ligne 3 (15h n'a que deux cases) : il est en ligne 1. L'escalier occupe les lignes 2-3 à 0h et 3h, sa marche est à 6h en ligne 2.",
+    "<span class=key>La marche appelle une case</span> : à 6h, ligne 3, la case est fermée à gauche. Une barre doit y commencer, et il n'y a pas de TAC : un gaz de 3, de 6h à 15h.",
+    "Le reste se range : ligne 2 de 9h à 24h (gaz de 3 et de 2), ligne 1 à 18h et 21h (gaz de 2)." ] },
+  E4: { title: "Deux escaliers se relaient", tech: ["Les marches se relaient"], focus: [[0, 2], [1, 2], [2, 2]], steps: [
+    "Un escalier met au plus deux cases dans une colonne. <span class=key>Les marches se relaient</span> : trois cases de charbon à 6h, ce sont deux escaliers, l'un sur sa marche, l'autre sur deux cases.",
+    "Si la marche était en ligne 3, son escalier viendrait de 0h en lignes 3-4 ; 0h n'a que deux cases. La marche est en ligne 1 : l'escalier A tourne de 0h à 9h.",
+    "L'escalier B occupe les lignes 2 et 3 à 6h. A bloque la gauche : B démarre à 6h et tourne jusqu'à 15h, juste quand A finit.",
+    "À 3h, ligne 3, la case est coincée entre la silhouette de 0h et B : la TAC. <span class=key>La marche appelle une case</span> : au-dessus de la marche de B (12h), le ruban de 4 démarre (12h → 24h). Le ruban de 5 et le gaz finissent les lignes 1 et 2." ] },
+};
+
+// Cell offsets of a piece, and its outline as a counter-clockwise polygon (grid units, y up).
+const kindOf = (g, p) => (g.pieces[p.piece] && g.pieces[p.piece].kind) || "bar";
+function outline(kind, r, c, w) {
+  if (kind === "trap") return [[c, r], [c + w, r], [c + w, r + 1], [c + w - 1, r + 1], [c + w - 1, r + 2], [c + 1, r + 2], [c + 1, r + 1], [c, r + 1]];
+  if (kind === "stair") return [[c, r], [c + w, r], [c + w, r + 1], [c + w - 1, r + 1], [c + w - 1, r + 2], [c, r + 2]];
+  return [[c, r], [c + w, r], [c + w, r + 1], [c, r + 1]];
+}
+function cellsOf(kind, r, c, w) {
+  const out = [];
+  for (let i = 0; i < w; i++) out.push([r, c + i]);
+  if (kind === "trap") for (let i = 1; i < w - 1; i++) out.push([r + 1, c + i]);
+  if (kind === "stair") for (let i = 0; i < w - 1; i++) out.push([r + 1, c + i]);
+  return out;
+}
+// Inset an orthogonal CCW polygon by d pixels, after mapping to SVG coordinates.
+function insetPath(poly, X, Y, d) {
+  const n = poly.length, pts = [];
+  for (let i = 0; i < n; i++) {
+    const a = poly[(i + n - 1) % n], b = poly[i], c = poly[(i + 1) % n];
+    const n1 = [-(b[1] - a[1]), b[0] - a[0]], n2 = [-(c[1] - b[1]), c[0] - b[0]];
+    const l1 = Math.hypot(...n1), l2 = Math.hypot(...n2);
+    const nx = n1[0] / l1 + n2[0] / l2, ny = n1[1] / l1 + n2[1] / l2;
+    pts.push([X(b[0]) + nx * d, Y(b[1]) - ny * d]);
+  }
+  return "M" + pts.map(p => p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" L") + " Z";
+}
+const T = (x, y, txt, o = {}) => `<text x="${x}" y="${y}" text-anchor="${o.a || "middle"}" font-family="Manrope, sans-serif" font-size="${o.s || 10}" font-weight="${o.w || 700}" fill="${o.c || INK}">${txt}</text>`;
+
+function sheet(g, solved, focus, cell = 32) {
+  const n = g.demand.length, H = Math.max(...g.demand);
+  const tagsAt = Array(n).fill(0);
+  g.clues.forEach(cl => { if (cl.type === "price" || cl.type === "column") tagsAt[cl.col]++; });
+  const top = Math.max(1, Math.max(...g.demand.map((d, c) => tagsAt[c] * 24 - (H - d) * cell))) + 8;
+  const left = 22, progs = g.clues.filter(c => c.type === "bar");
+  const W = left + n * cell + 8, Hpx = top + H * cell + 22 + progs.length * 26;
+  const X = x => left + x * cell, Y = y => top + (H - y) * cell;
+  let s = "";
+  for (let c = 0; c < n; c++) for (let r = 0; r < g.demand[c]; r++)
+    s += `<rect x="${X(c)}" y="${Y(r + 1)}" width="${cell}" height="${cell}" fill="#fff" stroke="${HAIR}" stroke-width=".8"/>`;
+  for (let r = 0; r < H; r++) s += T(left - 9, Y(r) - cell / 2 + 3.5, r + 1, { s: 9, w: 600, c: SOFT });
+  if (solved) g.layout.forEach(p => {
+    const k = kindOf(g, p);
+    s += `<path d="${insetPath(outline(k, p.row, p.col, p.len), X, Y, 1.6)}" fill="${P[p.piece].b}" stroke="${INK}" stroke-width="1.2" stroke-linejoin="miter"/>`;
+    if (k !== "bar") { const cx = X(p.col + p.len / 2), cy = Y(p.row) - cell / 2 + 3.5; s += T(cx, cy, "rampe", { s: 8.5, w: 800, c: "rgba(31,42,39,.55)" }); }
+  });
+  // silhouette contour
+  let d = `M${X(0)} ${Y(0)}`;
+  g.demand.forEach((h, c) => { d += ` L${X(c)} ${Y(h)} L${X(c + 1)} ${Y(h)}`; });
+  s += `<path d="${d} L${X(n)} ${Y(0)} Z" fill="none" stroke="${INK}" stroke-width="1.6"/>`;
+  if (solved) (focus || []).forEach(([r, c]) => {
+    s += `<rect x="${X(c) + 3}" y="${Y(r + 1) + 3}" width="${cell - 6}" height="${cell - 6}" fill="none" stroke="${FOCUS}" stroke-width="2" stroke-dasharray="4 3"/>`;
+  });
+  // clue tags above columns
+  const used = Array(n).fill(0);
+  g.clues.forEach(cl => {
+    if (cl.type !== "price" && cl.type !== "column") return;
+    const mid = X(cl.col) + cell / 2, y = Y(g.demand[cl.col]) - 22 - used[cl.col]++ * 22;
+    if (cl.type === "price") {
+      const label = "€ " + P[cl.piece].short, w = Math.max(cell - 4, label.length * 5.6 + 10), x = Math.min(Math.max(mid - w / 2, 0), W - w);
+      s += `<rect x="${x}" y="${y}" width="${w}" height="17" rx="8.5" fill="#fff" stroke="${INK}"/>` + T(x + w / 2, y + 12, label, { s: 9 }) + `<path d="M${mid - 4} ${y + 17} l4 4 l4 -4z" fill="${INK}"/>`;
+    } else {
+      const entries = Object.entries(cl.counts), w = 14 + entries.length * 22, x = Math.min(Math.max(mid - w / 2, 0), W - w);
+      s += `<rect x="${x}" y="${y}" width="${w}" height="17" rx="8.5" fill="#fff" stroke="${INK}"/>`;
+      entries.forEach(([p, k], i) => { const bx = x + 8 + i * 22; s += `<rect x="${bx}" y="${y + 4.5}" width="8" height="8" fill="${P[p].b}" stroke="${INK}" stroke-width=".8"/>` + T(bx + 14, y + 12, k, { s: 9.5 }); });
+    }
+  });
+  g.columns.forEach((c, i) => { s += T(X(i) + cell / 2, Y(0) + 14, c, { s: 10, w: 600, c: SOFT }); });
+  progs.forEach((cl, i) => {
+    const y = Y(0) + 28 + i * 26, x1 = X(cl.col) + 3, x2 = X(cl.col + cl.len) - 3, end = cl.col + cl.len < n ? g.columns[cl.col + cl.len] : "24h";
+    s += `<path d="M${x1} ${y - 5} v5 H${x2} v-5" fill="none" stroke="${INK}" stroke-width="1.2"/>` + T((x1 + x2) / 2, y + 13, `${P[cl.piece].name} ${g.columns[cl.col]} → ${end}`, { s: 9.5 });
+  });
+  return `<svg width="${W}" height="${Hpx}" viewBox="0 0 ${W} ${Hpx}" role="img" aria-label="${solved ? "Solution" : "Énoncé"}">${s}</svg>`;
+}
+
+const at = (g, c) => (c < g.columns.length ? g.columns[c] : "24h");
+function clueText(g, cl) {
+  if (cl.type === "price") return `À ${at(g, cl.col)}, c'est ${THE[cl.piece]} qui fixe le prix.`;
+  if (cl.type === "bar") return `${WORDS[cl.piece][0].replace(/^./, m => m.toUpperCase())} tourne de ${at(g, cl.col)} à ${at(g, cl.col + cl.len)}.`;
+  if (cl.type === "column") return `Relevé de ${at(g, cl.col)} : ` + Object.entries(cl.counts).map(([p, k]) => k ? `${k} case${k > 1 ? "s" : ""} ${WORDS[p][1]}` : `aucune case ${WORDS[p][1]}`).join(", ") + ".";
+  return "";
+}
+function bookText(g) {
+  const ramp = k => (k === "trap" ? "rampe" : "escalier");
+  if (g.inventory) return "Carnet : " + Object.entries(g.inventory).map(([p, v]) => {
+    const k = g.pieces[p].kind;
+    if (v.cells) return `${P[p].name} ×${v.cells}`;
+    return `${P[p].name}${k ? " (" + ramp(k) + ")" : ""} ${v.bars.join(", ")}`;
+  }).join(" · ");
+  return "Sans inventaire : " + Object.entries(g.pieces).map(([p, v]) => {
+    const k = v.kind, l = v.len;
+    return `${P[p].name}${k ? " (" + ramp(k) + ")" : ""} ${l.length === 1 ? "1 case" : l[0] + " à " + l[l.length - 1]}`;
+  }).join(" · ");
+}
+
+function card(id) {
+  const g = GRIDS[id], nt = NOTES[id], clues = g.clues.length;
+  const tags = [g.inventory ? "inventaire exact" : "sans inventaire", clues ? `${clues} indice${clues > 1 ? "s" : ""}` : "aucun indice", `${g.columns.length} colonnes`];
+  return `<article class="card" id="${id}">
+    <header><span class="code">${id}</span><h3>${nt.title}</h3><div class="tags">${nt.tech.map(t => `<span class="tag new">${t}</span>`).join("")}${tags.map(t => `<span class="tag">${t}</span>`).join("")}</div></header>
+    <div class="pair">
+      <div class="pane"><span class="flabel">Énoncé</span><div class="sheet">${sheet(g, false)}
+        <div class="legend"><span class="soft">${bookText(g)}</span>${g.clues.map(c => `<span>· ${clueText(g, c)}</span>`).join("") || "<span>· Aucun indice : le carnet suffit.</span>"}</div></div></div>
+      <div class="pane"><span class="flabel">Solution · cases clés en pointillé rose</span><div class="sheet">${sheet(g, true, nt.focus)}</div></div>
+    </div>
+    <ol class="steps">${nt.steps.map(s => `<li>${s}</li>`).join("")}</ol>
+  </article>`;
+}
+document.getElementById("cards-T").innerHTML = ["T1", "T2", "T3", "T4"].map(card).join("");
+document.getElementById("cards-E").innerHTML = ["E1", "E2", "E3", "E4"].map(card).join("");
+
+// Anatomy: each allowed width, with the trapped cells above the shoulders.
+function anatomy(kind, widths) {
+  const cell = 26, gapc = 1;
+  const total = widths.reduce((a, w) => a + w + 2, 0);
+  const H = 3, left = 6, top = 6, W = left * 2 + total * cell, Hpx = top + H * cell + 18;
+  const X = x => left + x * cell, Y = y => top + (H - y) * cell;
+  let s = "", c0 = 1;
+  widths.forEach(w => {
+    for (let c = c0 - 1; c <= c0 + w; c++) for (let r = 0; r < 3; r++) s += `<rect x="${X(c)}" y="${Y(r + 1)}" width="${cell}" height="${cell}" fill="#fff" stroke="${HAIR}" stroke-width=".6"/>`;
+    s += `<path d="${insetPath(outline(kind, 0, c0, w), X, Y, 1.4)}" fill="${P.C.b}" stroke="${INK}" stroke-width="1.2"/>`;
+    const trapped = kind === "trap" ? [c0, c0 + w - 1] : [c0 + w - 1];
+    trapped.forEach(c => { s += `<circle cx="${X(c) + cell / 2}" cy="${Y(1) - cell / 2}" r="${cell * .3}" fill="none" stroke="${FOCUS}" stroke-width="1.8" stroke-dasharray="3 2.5"/>`; });
+    const cells = cellsOf(kind, 0, c0, w).length;
+    s += T(X(c0 + w / 2), Y(0) + 13, `${w} créneaux · ${cells} cases`, { s: 9, w: 600, c: SOFT });
+    c0 += w + gapc + 1;
+  });
+  return `<svg width="${W}" height="${Hpx}" viewBox="0 0 ${W} ${Hpx}" role="img" aria-label="Formes permises">${s}</svg>`;
+}
+document.getElementById("anat").innerHTML = `
+  <div class="acard"><h3>Trapèze 1 → 2 → 1</h3><div class="sheet">${anatomy("trap", [3, 4, 5])}</div>
+    <p>Deux épaules d'une case, un plateau de deux. Symétrique : aucun sens de pose. Cases : 2 × largeur − 2.</p></div>
+  <div class="acard"><h3>Escalier 2 → 1</h3><div class="sheet">${anatomy("stair", [2, 3, 4])}</div>
+    <p>Un départ de deux cases, une marche finale d'une case, toujours à droite. Cases : 2 × largeur − 1.</p></div>`;
+</script>

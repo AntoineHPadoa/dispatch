@@ -1,0 +1,132 @@
+<title>Maquettes Dispatch S3</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: three numbered studies (STEP, paper, phone row), each a short diagnosis then side-by-side mockups. */
+:root {
+  --bg: #fbf7f9; --fg: #3b3340; --soft: #7d7184; --line: #e6dce3; --card: #ffffff;
+  --accent: #c45c7c; --accent-bg: #fbf1f5; --nuc: #f6df9a; --nuc-ink: #a48a2a;
+  --step: #4f7fb8; --step-bg: #e3eefa; --reserve: #f1eff1; --off: #e9e4e8;
+  --font: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #1d1920; --fg: #ece5ee; --soft: #a99dae; --line: #3a313f; --card: #272229;
+  --accent: #e07a9b; --accent-bg: #33232b; --nuc: #6b5a1f; --nuc-ink: #e8cf72;
+  --step: #7fa8dc; --step-bg: #22344a; --reserve: #2c272f; --off: #3a343d; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #1d1920; --fg: #ece5ee; --soft: #a99dae; --line: #3a313f; --card: #272229;
+  --accent: #e07a9b; --accent-bg: #33232b; --nuc: #6b5a1f; --nuc-ink: #e8cf72;
+  --step: #7fa8dc; --step-bg: #22344a; --reserve: #2c272f; --off: #3a343d; color-scheme: dark; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font); }
+.wrap { max-width: 1100px; margin: 0 auto; padding-block: 24px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1 { font-size: 1.6rem; margin: 0 0 4px; text-wrap: balance }
+h2 { font-size: 1.2rem; margin: 40px 0 6px; text-wrap: balance }
+h3 { font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); margin: 0 0 8px }
+p, li { font-size: .95rem; line-height: 1.5; max-width: 68ch }
+.lead { color: var(--soft); margin: 0 }
+.row { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; margin-top: 16px }
+.opt { min-width: 0; flex: 0 1 auto }
+.tag { display: inline-block; font-size: .75rem; font-weight: 700; padding: 2px 10px; border-radius: 99px; background: var(--accent-bg); color: var(--accent); border: 1px solid var(--accent); margin-bottom: 8px }
+.phone { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 12px; }
+.phone svg { display: block; max-width: 100%; height: auto }
+.banner { border-radius: 12px; padding: 10px 12px; font-size: .88rem; line-height: 1.35; margin-bottom: 8px }
+.banner b { display: block }
+.b-step { background: var(--step-bg); color: var(--fg); border: 1px solid var(--step) }
+.steps { display: flex; gap: 6px; margin-bottom: 8px; font-size: .8rem; font-weight: 700 }
+.steps span { flex: 1; text-align: center; padding: 6px 4px; border-radius: 10px; border: 1px solid var(--line); color: var(--soft) }
+.steps .on { background: var(--step-bg); border-color: var(--step); color: var(--fg) }
+.steps .done { background: var(--accent-bg); border-color: var(--accent); color: var(--fg) }
+.btn { display: inline-block; font-size: .82rem; font-weight: 700; border: 1px solid var(--line); border-radius: 99px; padding: 5px 12px; margin-top: 6px; background: var(--card) }
+.rowchips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px }
+.chip { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 12px; padding: 6px 9px; font-size: .78rem; font-weight: 700; background: var(--card); white-space: nowrap }
+.chip i { width: 12px; height: 12px; border-radius: 3px; display: inline-block }
+.chip small { font-weight: 600; color: var(--soft) }
+.chip.sel { border-color: var(--accent); background: var(--accent-bg) }
+.chip.step i { background: var(--step-bg); border: 1px solid var(--step) }
+.wide { width: 100%; overflow-x: auto }
+ul { padding-left: 1.1rem }
+.note { font-size: .82rem; color: var(--soft); margin-top: 6px; max-width: 46ch }
+</style>
+<div class="wrap">
+<h1>Maquettes Dispatch S3</h1>
+<p class="lead">STEP compréhensible, feuille imprimée rectangulaire, rangée de centrales au téléphone. Grille 7 (8 créneaux, 1 paire STEP).</p>
+
+<h2>S3.3 STEP : comprendre sans tutoriel</h2>
+<h3>Diagnostic de l’interface actuelle</h3>
+<ul>
+<li><b>Le même geste pour trois choses.</b> Une pastille d’export sous la grille et le pompage ▲ ajoutent chacun une case à la colonne. La testeuse a donc touché le voisin (Allemagne) pour pomper.</li>
+<li><b>Le STEP vit loin de la grille.</b> Il se choisit dans le carnet, en bas de page au téléphone, comme une centrale. Sa consigne est une phrase grise sous les boutons.</li>
+<li><b>Le pompage en attente est discret.</b> Un contour pointillé d’une case et un message de 2 lignes. Rien n’indique quels créneaux sont valides pour le turbinage.</li>
+<li><b>Bug corrigé</b> (commit sur v2-ui) : Annuler défaisait l’action précédente au lieu d’abandonner le pompage en attente. Il l’abandonne maintenant en premier, avec test.</li>
+</ul>
+
+<div class="row">
+<div class="opt"><span class="tag">A · Partir du STEP</span>
+<div class="phone" style="width:375px;max-width:100%">
+<div class="steps"><span class="done">1 ▲ Pompage · 3h</span><span class="on">2 ▼ Turbinage : choisis</span></div>
+<div id="a1"></div>
+<div class="rowchips" style="margin-top:8px"><span class="chip step sel"><i></i>STEP <small>1 paire · 0 posée</small></span><span class="chip"><i style="background:var(--nuc)"></i>Nucléaire</span><span class="chip"><i style="background:#d9d0f3"></i>Import</span></div>
+</div>
+<p class="note">Toucher STEP dans la rangée (voir S3.2) ouvre un mode à deux étapes, affiché au-dessus de la grille. Seules les colonnes de l’étape en cours réagissent ; les pastilles d’export sont grisées pendant ce temps. Un tap sur « 1 » revient en arrière.</p></div>
+
+<div class="opt"><span class="tag">B · Pompage en attente visible</span>
+<div class="phone" style="width:375px;max-width:100%">
+<div class="banner b-step"><b>Pompage posé à 3h</b>Choisis le créneau du turbinage ▼ (6h ou plus tard).<br><span class="btn">Annuler le pompage</span></div>
+<div id="b1"></div>
+<div class="rowchips" style="margin-top:8px"><span class="chip step sel"><i></i>STEP <small>1 paire</small></span><span class="chip"><i style="background:var(--nuc)"></i>Nucléaire</span><span class="chip"><i style="background:#d9d0f3"></i>Import</span></div>
+</div>
+<p class="note">Le geste reste « toucher une colonne », mais la consigne devient un bandeau bleu avec bouton d’annulation. Les créneaux valides montrent un ▼ fantôme, les autres sont grisés. La colonne pompée garde une case bleue pleine, pas un pointillé.</p></div>
+</div>
+<p><b>Recommandation : A.</b> Elle ôte l’ambiguïté à la source : le STEP se choisit comme un mode, et pendant ce mode les pastilles d’export ne répondent plus. B corrige la consigne mais laisse le geste de départ identique à l’export.</p>
+
+<h2>S3.1 Feuille imprimée rectangulaire</h2>
+<p>Grille de 8 × 5 cases, hauteur maximale. Le trait épais intérieur marque la demande ; les cases au-dessus sont en grisé très pâle (réserve). Le joueur remonte le trait au crayon pour exporter ou pomper, le descend pour turbiner. Aucune case ne se déforme.</p>
+<div class="row"><div class="opt wide"><div class="phone" style="background:#fff;border-color:#ccc;width:640px;max-width:100%;color:#1f2a27"><div id="paper"></div></div></div></div>
+<p class="note">Fait l’objet d’un PDF A4 réel (docs/reviews/S3.1/mockup-g7.pdf) une fois ce choix de principe validé.</p>
+
+<h2>S3.2 Rangée compacte de centrales au téléphone</h2>
+<p>Sous la grille, une rangée défilable. Chaque pastille donne la couleur, le nom court et le reste à poser. Un tap choisit la centrale sans quitter la grille ; la sélection est rose.</p>
+<div class="row">
+<div class="opt"><span class="tag">375 px</span><div class="phone" style="width:375px;max-width:100%">
+<div id="p375"></div>
+<div class="rowchips" style="margin-top:8px"><span class="chip sel"><i style="background:var(--nuc)"></i>Nucléaire <small>2/3</small></span><span class="chip"><i style="background:#d9d0f3"></i>Import <small>1/2</small></span><span class="chip step"><i></i>STEP <small>0/1</small></span><span class="chip">Gomme</span></div></div></div>
+<div class="opt"><span class="tag">320 px</span><div class="phone" style="width:320px;max-width:100%;padding:8px">
+<div id="p320"></div>
+<div class="rowchips" style="margin-top:8px"><span class="chip sel"><i style="background:var(--nuc)"></i>Nuc. <small>2/3</small></span><span class="chip"><i style="background:#d9d0f3"></i>Imp. <small>1/2</small></span><span class="chip step"><i></i>STEP <small>0/1</small></span><span class="chip">Gomme</span></div></div>
+<p class="note">À 320 px la rangée défile sur sa propre ligne (le corps de page ne défile pas) ; les noms sont abrégés. Variante sans défilement : 2 lignes de pastilles.</p></div>
+</div>
+<p><b>Recommandation :</b> rangée à une ligne défilable, avec la gomme dedans pour libérer les boutons d’outils.</p>
+</div>
+
+<script>
+var H = [2,3,2,3,5,4,4,3], LAB = ['0h','3h','6h','9h','12h','15h','18h','21h'];
+function board(o) {
+  o = o || {}; var w = o.w || 340, n = 8, c = Math.floor((w - 8) / n), rows = o.rows || 5, top = 6, W = c * n + 4;
+  var s = '<svg viewBox="0 0 ' + W + ' ' + (rows * c + top + 20) + '" width="100%" role="img" aria-label="Grille">';
+  for (var i = 0; i < n; i++) for (var r = 0; r < rows; r++) {
+    var inside = r < H[i], x = 2 + i * c, y = top + (rows - 1 - r) * c, fill = 'var(--card)', st = 'var(--line)', extra = '';
+    if (o.paper) { fill = inside ? '#fff' : '#f1efef'; st = inside ? '#999' : '#ddd'; }
+    var sel = '';
+    if (!o.paper && o.pump === i && r === H[i]) { fill = 'var(--step-bg)'; st = 'var(--step)'; extra = '<text x="' + (x + c / 2) + '" y="' + (y + c / 2 + 4) + '" text-anchor="middle" font-size="12" font-weight="800" fill="var(--step)">▲</text>'; }
+    else if (!o.paper && o.valid && r === H[i] - 1 && i > o.pump) { st = 'var(--step)'; extra = '<text x="' + (x + c / 2) + '" y="' + (y + c / 2 + 4) + '" text-anchor="middle" font-size="11" font-weight="800" fill="var(--step)" opacity=".7">▼</text>'; }
+    else if (!o.paper && o.valid && i <= o.pump && r < H[i]) { fill = 'var(--off)'; }
+    else if (!o.paper && r >= H[i]) { continue; }
+    s += '<rect x="' + (x + 1) + '" y="' + (y + 1) + '" width="' + (c - 2) + '" height="' + (c - 2) + '" rx="' + (o.paper ? 0 : 5) + '" fill="' + fill + '" stroke="' + st + '" stroke-width="' + (o.paper ? 0.8 : 1.2) + '"/>' + extra;
+  }
+  if (o.paper) {
+    var d = 'M2 ' + (top + (rows - H[0]) * c);
+    for (var j = 0; j < n; j++) { var yy = top + (rows - H[j]) * c; d += ' L' + (2 + j * c) + ' ' + yy + ' L' + (2 + (j + 1) * c) + ' ' + yy; }
+    d += ' L' + (2 + n * c) + ' ' + (top + rows * c);
+    s += '<path d="' + d + '" fill="none" stroke="#1f2a27" stroke-width="3.2" stroke-linejoin="miter"/>';
+    s += '<rect x="2" y="' + top + '" width="' + (n * c) + '" height="' + (rows * c) + '" fill="none" stroke="#1f2a27" stroke-width="1.2"/>';
+  }
+  for (var k = 0; k < n; k++) s += '<text x="' + (2 + k * c + c / 2) + '" y="' + (top + rows * c + 14) + '" text-anchor="middle" font-size="' + (o.paper ? 11 : 9) + '" fill="' + (o.paper ? '#555' : 'var(--soft)') + '">' + LAB[k] + '</text>';
+  return s + '</svg>';
+}
+function put(id, html) { document.getElementById(id).innerHTML = html; }
+put('a1', board({ pump: 1, valid: true }));
+put('b1', board({ pump: 1, valid: true }));
+put('paper', board({ paper: true, w: 620, rows: 6 }) + '<div style="font-size:.78rem;color:#555;margin-top:6px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px"><span>▬ trait épais : la demande (à remonter pour exporter / pomper, à descendre pour turbiner)</span><span>▒ réserve</span></div>');
+put('p375', board({ w: 340 }));
+put('p320', board({ w: 290 }));
+</script>

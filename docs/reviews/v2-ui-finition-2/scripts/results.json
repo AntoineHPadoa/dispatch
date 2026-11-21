@@ -1,0 +1,737 @@
+{
+ "results": [
+  {
+   "name": "[1280] 1 accueil à froid : fiche n° 214",
+   "ok": true,
+   "detail": "n° 214 · sam. — Plateau d’après-midi"
+  },
+  {
+   "name": "[1280] 1 « Prendre le quart » → #/grille/11, numéro et titre du bulletin",
+   "ok": true,
+   "detail": "#/grille/11 — h1 « Plateau d’après-midi » — eyebrow « n° 214 · sam. · sans inventaire » — onglet « Plateau d’après-midi · Dispatch »"
+  },
+  {
+   "name": "[1280] 1 retour « Accueil » → #/",
+   "ok": true,
+   "detail": "lien « Accueil » → « #/ »"
+  },
+  {
+   "name": "[1280] 1 aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[1280] 2 G11 : carnet sans STEP (N + import libre)",
+   "ok": true,
+   "detail": "carnet N,I:DE — rangée N,I:DE"
+  },
+  {
+   "name": "[1280] 2 G11 : poser N 0h→12h",
+   "ok": true,
+   "detail": "Nucléaire de 0h à 15h, ligne 1 : la pose tient."
+  },
+  {
+   "name": "[1280] 2 G11 : Annuler retire la barre",
+   "ok": true,
+   "detail": "Dernière action annulée."
+  },
+  {
+   "name": "[1280] 2 G11 : gomme retire la barre",
+   "ok": true,
+   "detail": "Retiré : Nucléaire de 0h à 15h, ligne 1."
+  },
+  {
+   "name": "[1280] 2 G11 : export DE à 9h par la pastille",
+   "ok": true,
+   "detail": "{\"DE\":[0,0,0,1,0,0,0,0]} — Glisse sur la grille pour poser la centrale choisie (ou touche la case de départ puis celle d’arrivée). Change de centrale dans la liste. Exporte en touchant les pastilles sous la grille."
+  },
+  {
+   "name": "[1280] 2 G11 : Annuler l’export",
+   "ok": true,
+   "detail": "Dernière action annulée."
+  },
+  {
+   "name": "[1280] 2 G11 aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[1280] 2 G7 : STEP choisi, 7 flèches ▲",
+   "ok": true,
+   "detail": "STEP : touche ▲ au-dessus du créneau où l’on pompe. Touche une étiquette ▲ ou ▼ posée pour retirer la paire."
+  },
+  {
+   "name": "[1280] 2 G7 : ▲ à 9h → ▲ choisie + 4 ▼",
+   "ok": true,
+   "detail": "Pompage à 9h. Touche ▼ sur le créneau du turbinage."
+  },
+  {
+   "name": "[1280] 2 G7 : Annuler après ▲ seul → pompage abandonné, barre gardée",
+   "ok": true,
+   "detail": "Pompage en attente annulé."
+  },
+  {
+   "name": "[1280] 2 G7 : gomme après ▲ seul → flèches cachées, barre gommée, pas de STEP fantôme",
+   "ok": true,
+   "detail": "Retiré : Nucléaire de 0h à 9h, ligne 1."
+  },
+  {
+   "name": "[1280] 2 G7 : ▲ 9h puis ▼ 12h → paire posée",
+   "ok": true,
+   "detail": "STEP : pompage à 9h, turbinage à 12h."
+  },
+  {
+   "name": "[1280] 2 G7 : pastille export à 15h → refus motivé (exports publiés), STEP intact",
+   "ok": true,
+   "detail": "Plus d’export vers l’Allemagne dans l’inventaire (2 au total)."
+  },
+  {
+   "name": "[1280] 2 G7 : import DE à 18h posé, STEP intact",
+   "ok": true,
+   "detail": "Import d’Allemagne à 18h, ligne 1 : la pose tient."
+  },
+  {
+   "name": "[1280] 2 G7 aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[1280] 3 G11 jouée jusqu’au verdict",
+   "ok": true,
+   "detail": "Programme bouclé — statut done — Programme boucléToutes les cases sont couvertes et les 3 indices sont vrais. 2 s.AccueilImprimer"
+  },
+  {
+   "name": "[1280] 3 accueil : tampon « Bouclé », silhouette rose pâle",
+   "ok": true,
+   "detail": "bouton fin « Accueil » ; tampon « Bouclé » ; 35 cases .done (rgb(246, 219, 229) rgba(0, 0, 0, 0))"
+  },
+  {
+   "name": "[1280] 3 aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[1280] 4 carte dossier → page dossier, 7 tutoriels",
+   "ok": true,
+   "detail": "#/dossier/premiers-pas, 7 cartes"
+  },
+  {
+   "name": "[1280] 4 tutoriel 7 ouvert",
+   "ok": true,
+   "detail": "#/grille/7"
+  },
+  {
+   "name": "[1280] 4 tutoriel 7 bouclé → « Grille suivante » → fiche du jour",
+   "ok": true,
+   "detail": "Programme bouclé — « Grille suivante » → #/grille/11 « Plateau d’après-midi » n° 214 · sam. · sans inventaire"
+  },
+  {
+   "name": "[1280] 4 aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[1280] 5 aperçu #/imprimer/11",
+   "ok": true,
+   "detail": "Plateau d’après-midin° 214 · sam. · Expert"
+  },
+  {
+   "name": "[1280] 5 aperçu #/imprimer/7",
+   "ok": true,
+   "detail": "Pompage, relevé et programmeTutoriel 7 · Moyen"
+  },
+  {
+   "name": "[1280] 5 #/imprimer/tout au 2026-11-21 : 11 feuilles",
+   "ok": true,
+   "detail": "Poser l’inventaire | Le prix plafonne la colonne | Inventaire juste | Le creux coupe le ruban | Flux publié et compter la colonne | La case la plus chère | Pompage, relevé et programme | Nuit calme | Plateau de midi | Creux de midi | Plateau d’après-midi"
+  },
+  {
+   "name": "[1280] 5 #/imprimer/tout au 2026-11-20 : sans la grille future n° 214",
+   "ok": true,
+   "detail": "10 feuilles"
+  },
+  {
+   "name": "[1280] 6 aucun scroll horizontal (12 écrans)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[375] 1 accueil à froid : fiche n° 214",
+   "ok": true,
+   "detail": "n° 214 · sam. — Plateau d’après-midi"
+  },
+  {
+   "name": "[375] 1 « Prendre le quart » → #/grille/11, numéro et titre du bulletin",
+   "ok": true,
+   "detail": "#/grille/11 — h1 « Plateau d’après-midi » — eyebrow « n° 214 · sam. · sans inventaire » — onglet « Plateau d’après-midi · Dispatch »"
+  },
+  {
+   "name": "[375] 1 retour « Accueil » → #/",
+   "ok": true,
+   "detail": "lien « Accueil » → « #/ »"
+  },
+  {
+   "name": "[375] 1 aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[375] 2 G11 : carnet sans STEP (N + import libre)",
+   "ok": true,
+   "detail": "carnet N,I:DE — rangée N,I:DE"
+  },
+  {
+   "name": "[375] 2 G11 : poser N 0h→12h",
+   "ok": true,
+   "detail": "Nucléaire de 0h à 15h, ligne 1 : la pose tient."
+  },
+  {
+   "name": "[375] 2 G11 : Annuler retire la barre",
+   "ok": true,
+   "detail": "Dernière action annulée."
+  },
+  {
+   "name": "[375] 2 G11 : gomme retire la barre",
+   "ok": true,
+   "detail": "Retiré : Nucléaire de 0h à 15h, ligne 1."
+  },
+  {
+   "name": "[375] 2 G11 : export DE à 9h par la pastille",
+   "ok": true,
+   "detail": "{\"DE\":[0,0,0,1,0,0,0,0]} — Glisse sur la grille pour poser la centrale choisie (ou touche la case de départ puis celle d’arrivée). Change de centrale dans la rangée sous la grille. Exporte en touchant les pastilles sous la grille."
+  },
+  {
+   "name": "[375] 2 G11 : Annuler l’export",
+   "ok": true,
+   "detail": "Dernière action annulée."
+  },
+  {
+   "name": "[375] 2 G11 aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[375] 2 G7 : STEP choisi, 7 flèches ▲",
+   "ok": true,
+   "detail": "STEP : touche ▲ au-dessus du créneau où l’on pompe. Touche une étiquette ▲ ou ▼ posée pour retirer la paire."
+  },
+  {
+   "name": "[375] 2 G7 : ▲ à 9h → ▲ choisie + 4 ▼",
+   "ok": true,
+   "detail": "Pompage à 9h. Touche ▼ sur le créneau du turbinage."
+  },
+  {
+   "name": "[375] 2 G7 : Annuler après ▲ seul → pompage abandonné, barre gardée",
+   "ok": true,
+   "detail": "Pompage en attente annulé."
+  },
+  {
+   "name": "[375] 2 G7 : gomme après ▲ seul → flèches cachées, barre gommée, pas de STEP fantôme",
+   "ok": true,
+   "detail": "Retiré : Nucléaire de 0h à 9h, ligne 1."
+  },
+  {
+   "name": "[375] 2 G7 : ▲ 9h puis ▼ 12h → paire posée",
+   "ok": true,
+   "detail": "STEP : pompage à 9h, turbinage à 12h."
+  },
+  {
+   "name": "[375] 2 G7 : pastille export à 15h → refus motivé (exports publiés), STEP intact",
+   "ok": true,
+   "detail": "Plus d’export vers l’Allemagne dans l’inventaire (2 au total)."
+  },
+  {
+   "name": "[375] 2 G7 : import DE à 18h posé, STEP intact",
+   "ok": true,
+   "detail": "Import d’Allemagne à 18h, ligne 1 : la pose tient."
+  },
+  {
+   "name": "[375] 2 G7 aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[375] 2 rangée : visible, gomme texte cachée",
+   "ok": true,
+   "detail": "N,I:DE,STEP"
+  },
+  {
+   "name": "[375] 2 rangée : choisir chaque puce (sélection, visible, carnet synchronisé)",
+   "ok": true,
+   "detail": "N,I:DE,STEP"
+  },
+  {
+   "name": "[375] 2 rangée : poser N depuis la rangée, compteur",
+   "ok": true,
+   "detail": "compteur 1/7"
+  },
+  {
+   "name": "[375] 2 rangée : gomme en icône active seule, retire la barre",
+   "ok": true,
+   "detail": "puces sélectionnées en mode gomme : 0"
+  },
+  {
+   "name": "[375] 2 rangée : défile",
+   "ok": true,
+   "detail": "54/54 px, fondu oui"
+  },
+  {
+   "name": "[375] 2 rangée aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[375] 3 G11 jouée jusqu’au verdict",
+   "ok": true,
+   "detail": "Programme bouclé — statut done — Programme boucléToutes les cases sont couvertes et les 3 indices sont vrais. 2 s.AccueilImprimer"
+  },
+  {
+   "name": "[375] 3 accueil : tampon « Bouclé », silhouette rose pâle",
+   "ok": true,
+   "detail": "bouton fin « Accueil » ; tampon « Bouclé » ; 35 cases .done (rgb(246, 219, 229) rgba(0, 0, 0, 0))"
+  },
+  {
+   "name": "[375] 3 aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[375] 4 carte dossier → page dossier, 7 tutoriels",
+   "ok": true,
+   "detail": "#/dossier/premiers-pas, 7 cartes"
+  },
+  {
+   "name": "[375] 4 tutoriel 7 ouvert",
+   "ok": true,
+   "detail": "#/grille/7"
+  },
+  {
+   "name": "[375] 4 tutoriel 7 bouclé → « Grille suivante » → fiche du jour",
+   "ok": true,
+   "detail": "Programme bouclé — « Grille suivante » → #/grille/11 « Plateau d’après-midi » n° 214 · sam. · sans inventaire"
+  },
+  {
+   "name": "[375] 4 aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[375] 5 aperçu #/imprimer/11",
+   "ok": true,
+   "detail": "Plateau d’après-midin° 214 · sam. · Expert"
+  },
+  {
+   "name": "[375] 5 aperçu #/imprimer/7",
+   "ok": true,
+   "detail": "Pompage, relevé et programmeTutoriel 7 · Moyen"
+  },
+  {
+   "name": "[375] 5 #/imprimer/tout au 2026-11-21 : 11 feuilles",
+   "ok": true,
+   "detail": "Poser l’inventaire | Le prix plafonne la colonne | Inventaire juste | Le creux coupe le ruban | Flux publié et compter la colonne | La case la plus chère | Pompage, relevé et programme | Nuit calme | Plateau de midi | Creux de midi | Plateau d’après-midi"
+  },
+  {
+   "name": "[375] 5 #/imprimer/tout au 2026-11-20 : sans la grille future n° 214",
+   "ok": true,
+   "detail": "10 feuilles"
+  },
+  {
+   "name": "[375] 6 aucun scroll horizontal (13 écrans)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[320] 1 accueil à froid : fiche n° 214",
+   "ok": true,
+   "detail": "n° 214 · sam. — Plateau d’après-midi"
+  },
+  {
+   "name": "[320] 1 « Prendre le quart » → #/grille/11, numéro et titre du bulletin",
+   "ok": true,
+   "detail": "#/grille/11 — h1 « Plateau d’après-midi » — eyebrow « n° 214 · sam. · sans inventaire » — onglet « Plateau d’après-midi · Dispatch »"
+  },
+  {
+   "name": "[320] 1 retour « Accueil » → #/",
+   "ok": true,
+   "detail": "lien « Accueil » → « #/ »"
+  },
+  {
+   "name": "[320] 1 aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[320] 2 G11 : carnet sans STEP (N + import libre)",
+   "ok": true,
+   "detail": "carnet N,I:DE — rangée N,I:DE"
+  },
+  {
+   "name": "[320] 2 G11 : poser N 0h→12h",
+   "ok": true,
+   "detail": "Nucléaire de 0h à 15h, ligne 1 : la pose tient."
+  },
+  {
+   "name": "[320] 2 G11 : Annuler retire la barre",
+   "ok": true,
+   "detail": "Dernière action annulée."
+  },
+  {
+   "name": "[320] 2 G11 : gomme retire la barre",
+   "ok": true,
+   "detail": "Retiré : Nucléaire de 0h à 15h, ligne 1."
+  },
+  {
+   "name": "[320] 2 G11 : export DE à 9h par la pastille",
+   "ok": true,
+   "detail": "{\"DE\":[0,0,0,1,0,0,0,0]} — Glisse sur la grille pour poser la centrale choisie (ou touche la case de départ puis celle d’arrivée). Change de centrale dans la rangée sous la grille. Exporte en touchant les pastilles sous la grille."
+  },
+  {
+   "name": "[320] 2 G11 : Annuler l’export",
+   "ok": true,
+   "detail": "Dernière action annulée."
+  },
+  {
+   "name": "[320] 2 G11 aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[320] 2 G7 : STEP choisi, 7 flèches ▲",
+   "ok": true,
+   "detail": "STEP : touche ▲ au-dessus du créneau où l’on pompe. Touche une étiquette ▲ ou ▼ posée pour retirer la paire."
+  },
+  {
+   "name": "[320] 2 G7 : ▲ à 9h → ▲ choisie + 4 ▼",
+   "ok": true,
+   "detail": "Pompage à 9h. Touche ▼ sur le créneau du turbinage."
+  },
+  {
+   "name": "[320] 2 G7 : Annuler après ▲ seul → pompage abandonné, barre gardée",
+   "ok": true,
+   "detail": "Pompage en attente annulé."
+  },
+  {
+   "name": "[320] 2 G7 : gomme après ▲ seul → flèches cachées, barre gommée, pas de STEP fantôme",
+   "ok": true,
+   "detail": "Retiré : Nucléaire de 0h à 9h, ligne 1."
+  },
+  {
+   "name": "[320] 2 G7 : ▲ 9h puis ▼ 12h → paire posée",
+   "ok": true,
+   "detail": "STEP : pompage à 9h, turbinage à 12h."
+  },
+  {
+   "name": "[320] 2 G7 : pastille export à 15h → refus motivé (exports publiés), STEP intact",
+   "ok": true,
+   "detail": "Plus d’export vers l’Allemagne dans l’inventaire (2 au total)."
+  },
+  {
+   "name": "[320] 2 G7 : import DE à 18h posé, STEP intact",
+   "ok": true,
+   "detail": "Import d’Allemagne à 18h, ligne 1 : la pose tient."
+  },
+  {
+   "name": "[320] 2 G7 aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[320] 2 rangée : visible, gomme texte cachée",
+   "ok": true,
+   "detail": "N,I:DE,STEP"
+  },
+  {
+   "name": "[320] 2 rangée : choisir chaque puce (sélection, visible, carnet synchronisé)",
+   "ok": true,
+   "detail": "N,I:DE,STEP"
+  },
+  {
+   "name": "[320] 2 rangée : poser N depuis la rangée, compteur",
+   "ok": true,
+   "detail": "compteur 1/7"
+  },
+  {
+   "name": "[320] 2 rangée : gomme en icône active seule, retire la barre",
+   "ok": true,
+   "detail": "puces sélectionnées en mode gomme : 0"
+  },
+  {
+   "name": "[320] 2 rangée : défile",
+   "ok": true,
+   "detail": "109/109 px, fondu oui"
+  },
+  {
+   "name": "[320] 2 rangée aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[320] 3 G11 jouée jusqu’au verdict",
+   "ok": true,
+   "detail": "Programme bouclé — statut done — Programme boucléToutes les cases sont couvertes et les 3 indices sont vrais. 2 s.AccueilImprimer"
+  },
+  {
+   "name": "[320] 3 accueil : tampon « Bouclé », silhouette rose pâle",
+   "ok": true,
+   "detail": "bouton fin « Accueil » ; tampon « Bouclé » ; 35 cases .done (rgb(246, 219, 229) rgba(0, 0, 0, 0))"
+  },
+  {
+   "name": "[320] 3 aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[320] 4 carte dossier → page dossier, 7 tutoriels",
+   "ok": true,
+   "detail": "#/dossier/premiers-pas, 7 cartes"
+  },
+  {
+   "name": "[320] 4 tutoriel 7 ouvert",
+   "ok": true,
+   "detail": "#/grille/7"
+  },
+  {
+   "name": "[320] 4 tutoriel 7 bouclé → « Grille suivante » → fiche du jour",
+   "ok": true,
+   "detail": "Programme bouclé — « Grille suivante » → #/grille/11 « Plateau d’après-midi » n° 214 · sam. · sans inventaire"
+  },
+  {
+   "name": "[320] 4 aucune erreur JS",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[320] 5 aperçu #/imprimer/11",
+   "ok": true,
+   "detail": "Plateau d’après-midin° 214 · sam. · Expert"
+  },
+  {
+   "name": "[320] 5 aperçu #/imprimer/7",
+   "ok": true,
+   "detail": "Pompage, relevé et programmeTutoriel 7 · Moyen"
+  },
+  {
+   "name": "[320] 5 #/imprimer/tout au 2026-11-21 : 11 feuilles",
+   "ok": true,
+   "detail": "Poser l’inventaire | Le prix plafonne la colonne | Inventaire juste | Le creux coupe le ruban | Flux publié et compter la colonne | La case la plus chère | Pompage, relevé et programme | Nuit calme | Plateau de midi | Creux de midi | Plateau d’après-midi"
+  },
+  {
+   "name": "[320] 5 #/imprimer/tout au 2026-11-20 : sans la grille future n° 214",
+   "ok": true,
+   "detail": "10 feuilles"
+  },
+  {
+   "name": "[320] 6 aucun scroll horizontal (13 écrans)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "[A4] PDF #/imprimer/11 : 1 page, numéro et titre du bulletin, n° de pied sur une ligne",
+   "ok": true,
+   "detail": "1 page(s) ; meta « Plateau d’après-midin° 214 · sam. · Expert » ; grille 452×484 ; pied [{\"text\":\"Exports et imports : note-les sous chaque créneau. Remonte le trait épais d’une case par export.\",\"lines\":1,\"inside\":true},{\"text\":\"Dispatch · n° 11\",\"lines\":1,\"inside\":true}]"
+  },
+  {
+   "name": "[A4] PDF #/imprimer/7 : 1 page, numéro et titre du bulletin, n° de pied sur une ligne",
+   "ok": true,
+   "detail": "1 page(s) ; meta « Pompage, relevé et programmeTutoriel 7 · Moyen » ; grille 396×501 ; pied [{\"text\":\"Note exports, imports, pompage ▲ et turbinage ▼ sous la grille. Remonte le trait épais d’une case par export ou pompage, descends-le par turbinage.\",\"lines\":2,\"inside\":true},{\"text\":\"Dispatch · n° 7\",\"lines\":1,\"inside\":true}]"
+  }
+ ],
+ "overflow": {
+  "320": [
+   {
+    "name": "accueil à froid",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "grille du jour",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "G11 en cours",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "G7 en cours",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "rangée défilée",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "G11 bouclée",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "accueil bouclé",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "dossier",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "tutoriel 7 bouclé",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "aperçu impression 11",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "aperçu impression 7",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "aperçu imprimer tout",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "accueil veille",
+    "ok": true,
+    "off": []
+   }
+  ],
+  "375": [
+   {
+    "name": "accueil à froid",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "grille du jour",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "G11 en cours",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "G7 en cours",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "rangée défilée",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "G11 bouclée",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "accueil bouclé",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "dossier",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "tutoriel 7 bouclé",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "aperçu impression 11",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "aperçu impression 7",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "aperçu imprimer tout",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "accueil veille",
+    "ok": true,
+    "off": []
+   }
+  ],
+  "1280": [
+   {
+    "name": "accueil à froid",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "grille du jour",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "G11 en cours",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "G7 en cours",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "G11 bouclée",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "accueil bouclé",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "dossier",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "tutoriel 7 bouclé",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "aperçu impression 11",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "aperçu impression 7",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "aperçu imprimer tout",
+    "ok": true,
+    "off": []
+   },
+   {
+    "name": "accueil veille",
+    "ok": true,
+    "off": []
+   }
+  ]
+ }
+}

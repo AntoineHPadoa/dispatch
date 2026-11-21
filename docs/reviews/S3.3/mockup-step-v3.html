@@ -1,0 +1,145 @@
+<title>Dispatch STEP par flèches</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;800&family=Outfit:wght@300;500&display=swap">
+<style>
+/* Layout: same tokens as the game (style A "Dragée"); two phases (pump chosen / turbine chosen) on desktop and phone. */
+:root {
+  --bg: #fbf7f9; --ink: #3b3340; --soft: #8f8593; --card: #ffffff; --hair: #efe5eb; --wash: #f5ebf1;
+  --ok: #5f9e78; --accent: #a8577f; --step: #4f7fb8; --step-bg: #e3eefa; --step-line: #bfd7f1; --cell: #e8dde4;
+  --nuc: #f3d98a; --imp: #d6c9f1;
+  --f-title: "Outfit", "Manrope", system-ui, sans-serif; --f-ui: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #1f1b22; --ink: #efe8f1; --soft: #aa9eb0; --card: #29242c; --hair: #3b333f; --wash: #342d38;
+  --ok: #7cc196; --accent: #e08fb5; --step: #86afe0; --step-bg: #243649; --step-line: #3d5a7a; --cell: #3f3743; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #1f1b22; --ink: #efe8f1; --soft: #aa9eb0; --card: #29242c; --hair: #3b333f; --wash: #342d38;
+  --ok: #7cc196; --accent: #e08fb5; --step: #86afe0; --step-bg: #243649; --step-line: #3d5a7a; --cell: #3f3743; color-scheme: dark; }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); line-height: 1.5; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 24px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+h1 { font-family: var(--f-title); font-weight: 300; font-size: 1.7rem; margin: 0 0 4px; letter-spacing: -.02em; text-wrap: balance }
+h2 { font-family: var(--f-title); font-weight: 500; font-size: 1.1rem; margin: 36px 0 4px }
+.lead, .cap { color: var(--soft); font-size: .85rem; margin: 0; max-width: 70ch }
+.cap { margin-top: 8px }
+.eyebrow { font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; color: var(--soft); font-weight: 800 }
+.stage { display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start; margin-top: 14px }
+.frame { background: var(--bg); border: 1px solid var(--hair); border-radius: 20px; padding: 16px; min-width: 0 }
+.frame.m375 { width: 375px; max-width: 100% }
+.frame.desk { flex: 1 1 760px }
+.game { display: grid; grid-template-columns: minmax(380px, auto) minmax(260px, 340px); gap: 16px 28px; justify-content: center }
+@media (max-width: 800px) { .game { grid-template-columns: 1fr } }
+.col { display: grid; gap: 10px; min-width: 0; align-content: start }
+.card { background: var(--card); border-radius: 16px; padding: 12px 14px; border: 1px solid var(--hair); min-width: 0 }
+.ct { font-family: var(--f-title); font-size: 1rem; font-weight: 500; margin: 0 0 8px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap }
+.ct small { font-family: var(--f-ui); font-size: .7rem; color: var(--soft); font-weight: 600 }
+
+/* The new guide strip: replaces the message line while STEP is chosen. */
+.guide { display: grid; gap: 8px; background: var(--card); border: 1px solid var(--step-line); border-radius: 16px; padding: 10px 12px }
+.guide .steps { display: flex; align-items: center; gap: 6px; flex-wrap: wrap }
+.gstep { display: inline-flex; align-items: center; gap: 6px; font-size: .76rem; font-weight: 800; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--hair); color: var(--soft); font-variant-numeric: tabular-nums }
+.gstep b { font-size: .7rem; color: var(--step) }
+.gstep.now { border-color: var(--ink); color: var(--ink) }
+.gstep.done { background: var(--step-bg); border-color: var(--step-line); color: var(--ink) }
+.gsep { color: var(--soft); font-size: .8rem }
+.guide .say { font-size: .8rem; color: var(--ink); margin: 0 }
+.guide .say::before { content: ""; display: inline-block; vertical-align: .05em; margin-right: 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--step) }
+.guide .go { margin-left: auto; font-size: .74rem; color: var(--soft); border: 1px solid var(--hair); border-radius: 999px; padding: 3px 10px; font-weight: 600 }
+.msg { font-size: .8rem; text-align: center; color: var(--ok); min-height: 1.5em }
+.msg::before { content: ""; display: inline-block; margin-right: 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--ok) }
+
+.tools { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap }
+.tool { display: inline-flex; align-items: center; font-size: .78rem; color: var(--soft); border: 1px solid var(--hair); border-radius: 999px; padding: 6px 12px; min-height: 32px }
+.tool.on { color: var(--ink); border-color: var(--ink) }
+.tool.dis { opacity: .45 }
+
+.prow { display: grid; grid-template-columns: 96px 1fr; gap: 10px; align-items: center; padding: 6px 8px; border-radius: 12px }
+.prow.sel { background: var(--wash); outline: 1.5px solid #e2c3d3 }
+.pname { display: grid; line-height: 1.2 } .pname b { font-weight: 800; font-size: .84rem } .pname span { font-size: .68rem; color: var(--soft) }
+.bars { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center }
+.mb { display: inline-block; width: 11px; height: 11px; border-radius: 3px }
+.count { font-size: .7rem; color: var(--soft) }
+.step-glyph { font-size: .66rem; font-weight: 800; letter-spacing: .05em; color: var(--step); background: var(--step-bg); border: 1px solid var(--step-line); border-radius: 6px; padding: 1px 6px }
+.book { display: grid; gap: 4px }
+
+/* Phone: compact row under the board (S3.2) */
+.chips { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 }
+.chip { flex: none; display: inline-flex; align-items: center; gap: 6px; font-size: .74rem; font-weight: 800; border: 1px solid var(--hair); border-radius: 999px; padding: 5px 10px; background: var(--card); white-space: nowrap }
+.chip.sel { background: var(--wash); border-color: #e2c3d3 }
+.chip small { font-weight: 600; color: var(--soft) }
+.chip .mb { width: 9px; height: 9px }
+svg { display: block; max-width: 100%; height: auto; font-family: var(--f-ui) }
+.board-note { font-size: .7rem; color: var(--soft); text-align: center }
+</style>
+<div class="wrap">
+<h1>STEP par flèches</h1>
+<p class="lead">Je touche STEP : des flèches ▲ apparaissent au-dessus des colonnes. Je touche une ▲ : des flèches ▼ apparaissent sur les créneaux suivants. Je touche une ▼ : la paire est posée. Aucun contour de case. Grille 7, pompage à 3h.</p>
+
+<h2>1 · STEP touché : choisir le pompage ▲</h2>
+<div class="stage">
+  <div class="frame desk"><div class="eyebrow" style="margin-bottom:8px">Web 1280 px</div><div class="game" id="d1"></div></div>
+  <div class="frame m375"><div class="eyebrow" style="margin-bottom:8px">Téléphone 375 px</div><div id="m1" class="col"></div></div>
+</div>
+
+<h2>2 · ▲ touchée à 3h : choisir le turbinage ▼</h2>
+<div class="stage">
+  <div class="frame desk"><div class="eyebrow" style="margin-bottom:8px">Web 1280 px</div><div class="game" id="d2"></div></div>
+  <div class="frame m375"><div class="eyebrow" style="margin-bottom:8px">Téléphone 375 px</div><div id="m2" class="col"></div></div>
+</div>
+
+<h2>3 · ▼ touchée à 15h : paire posée</h2>
+<div class="stage">
+  <div class="frame desk"><div class="eyebrow" style="margin-bottom:8px">Web 1280 px</div><div class="game" id="d3"></div></div>
+  <div class="frame m375"><div class="eyebrow" style="margin-bottom:8px">Téléphone 375 px</div><div id="m3" class="col"></div></div>
+</div>
+<p class="cap">Les flèches vivent dans la bande d’étiquettes au-dessus de la grille, là où se posent déjà les prix et les relevés. Seule consigne : la ligne de message habituelle. Annuler en cours de route retire la ▲ choisie. Toucher une ▲ ou ▼ posée retire la paire. Les pastilles d’export restent actives (leur geste ne se confond plus : elles sont sous la grille).</p>
+</div>
+
+
+<style>
+.msgline { font-size:.8rem; text-align:center; color:var(--soft); min-height:1.5em }
+.msgline::before { content:""; display:inline-block; margin-right:8px; width:8px; height:8px; border-radius:50%; background:var(--step) }
+</style>
+<script>
+var H = [2,3,2,3,5,4,4,3], LAB = ['0h','3h','6h','9h','12h','15h','18h','21h'], EXP = [1,0,1,0,0,0,0,0];
+function arrow(x,y,r,ch,state){ // state: 'idle' soft, 'chosen' filled
+  var fill = state==='chosen' ? 'var(--step)' : 'var(--step-bg)', col = state==='chosen' ? '#fff' : 'var(--step)';
+  return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+fill+'" stroke="var(--step)" stroke-width="1.2"/><text x="'+x+'" y="'+(y+4.5)+'" text-anchor="middle" font-size="12" font-weight="800" fill="'+col+'">'+ch+'</text>';
+}
+function board(w, phase) {
+  var n=8, c=Math.floor((w-6)/n), rows=6, top=40, bot=52, W=c*n+6, Hh=top+rows*c+bot, pump=phase>=2?1:null, turb=phase===3?5:null;
+  var s='<svg viewBox="0 0 '+W+' '+Hh+'" width="'+W+'" role="img" aria-label="Grille">';
+  for (var i=0;i<n;i++){
+    var x=3+i*c, tall=H[i]+EXP[i]+(i===pump?1:0)-(i===turb?1:0);
+    for (var r=0;r<tall;r++){
+      var y=top+(rows-1-r)*c, st='var(--cell)', dash='', fill='var(--card)';
+      if (EXP[i] && r===H[i]) { st='#9a86c9'; dash=' stroke-dasharray="4 3"'; fill='transparent'; }
+      s+='<rect x="'+(x+1)+'" y="'+(y+1)+'" width="'+(c-2)+'" height="'+(c-2)+'" rx="'+Math.round(c/6)+'" fill="'+fill+'" stroke="'+st+'" stroke-width="1.2"'+dash+'/>';
+    }
+    // arrow band above the highest content of the column
+    var colTop=top+(rows-tall)*c, ay=Math.min(colTop-14, top+rows*c); ay=colTop-13;
+    var ax=x+c/2, rr=Math.min(11,c/2-2);
+    if (phase===1) s+=arrow(ax,ay,rr,'▲','idle');
+    if (phase===2){ if(i===pump) s+=arrow(ax,ay,rr,'▲','chosen'); else if(i>pump) s+=arrow(ax,ay,rr,'▼','idle'); }
+    if (phase===3){ if(i===pump) s+=arrow(ax,ay,rr,'▲','chosen'); if(i===turb) s+=arrow(ax,ay,rr,'▼','chosen'); }
+    s+='<text x="'+(x+c/2)+'" y="'+(top+rows*c+13)+'" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--soft)">'+LAB[i]+'</text>';
+    var locked=EXP[i]?1:0, py=top+rows*c+24;
+    s+='<rect x="'+(x+2)+'" y="'+py+'" width="'+(c-4)+'" height="18" rx="9" fill="'+(locked?'#d6c9f1':'transparent')+'" stroke="'+(locked?'none':'var(--cell)')+'" stroke-dasharray="3 3"/><text x="'+(x+c/2)+'" y="'+(py+12.5)+'" text-anchor="middle" font-size="9" font-weight="800" fill="var(--ink)">'+(locked?'→1':'0')+'</text>';
+  }
+  return s+'</svg>';
+}
+function msg(p){ return '<div class="msgline">'+(p===1?'STEP : touche ▲ au-dessus du créneau où l’on pompe.':p===2?'Pompage à 3h. Touche ▼ sur le créneau du turbinage.':'STEP : pompage à 3h, turbinage à 15h.')+'</div>'; }
+function tools(p){ return '<div class="tools"><span class="tool">Gomme</span><span class="tool'+(p?'':' dis')+'">Annuler</span><span class="tool">Recommencer</span></div>'; }
+function bookRows(p){
+  return '<div class="card"><p class="ct">Carnet d’ordres<small>touche une centrale pour la choisir</small></p><div class="book">'
+   +'<div class="prow"><div class="pname"><b>Nucléaire</b><span>ruban de 3 à 6</span></div><div class="bars"><span class="mb" style="background:var(--nuc)"></span><span class="mb" style="background:var(--nuc)"></span><span class="mb" style="background:var(--nuc)"></span><span class="count">0 / 3</span></div></div>'
+   +'<div class="prow"><div class="pname"><b>Import</b><span>Allemagne, 1 case</span></div><div class="bars"><span class="mb" style="background:var(--imp)"></span><span class="mb" style="background:var(--imp)"></span><span class="count">0 / 2</span></div></div>'
+   +'<div class="prow sel"><div class="pname"><b>STEP</b><span>1 paire</span></div><div class="bars"><span class="step-glyph">▲▼</span><span class="count">'+(p===3?'1 posée':'0 posée')+'</span></div></div></div></div>';
+}
+function chips(){ return '<div class="chips"><span class="chip"><i class="mb" style="background:var(--nuc)"></i>Nucléaire <small>0/3</small></span><span class="chip"><i class="mb" style="background:var(--imp)"></i>Import <small>0/2</small></span><span class="chip sel"><span class="step-glyph">▲▼</span>STEP <small>'+(1)+' paire</small></span></div>'; }
+for (var p=1;p<=3;p++){
+  document.getElementById('d'+p).innerHTML='<div class="col">'+board(460,p)+msg(p)+tools(p===3)+'</div><div class="col">'+bookRows(p)+'</div>';
+  document.getElementById('m'+p).innerHTML=board(340,p)+msg(p)+tools(p===3)+chips();
+}
+</script>

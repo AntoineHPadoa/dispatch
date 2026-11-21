@@ -11,18 +11,18 @@ import {
 } from '../src/ui/gesture';
 import { canUndo, MAX_PAST, push, reset, start, undo } from '../src/ui/history';
 import {
-  ProgressStore, STORAGE_KEY, dailyGrid, emptyProgress, isPlayState, localDayNumber, nextGrid, parseProgress,
+  ProgressStore, STORAGE_KEY, emptyProgress, isPlayState, nextGrid, parseProgress,
   playOrder, recordState, statusOf, type KeyValueStore,
 } from '../src/ui/progress';
 import { boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard } from '../src/ui/board';
 import {
-  applyLockedExports, boardMessage, displayTitle, exportTap, initialState, isInitialState, newlyBroken, nextExportValue,
+  applyLockedExports, boardMessage, bulletinTag, displayTitle, exportTap, initialState, isInitialState, newlyBroken, nextExportValue,
   poseMessage, techniqueLine,
 } from '../src/ui/game';
 import { MSG, durationText } from '../src/i18n/fr';
-import { STEP_KEY, bookEntries, isDayClue, publishedStepPairs, renderBook, renderCo2, richClueText } from '../src/ui/panels';
+import { STEP_KEY, bookEntries, isDayClue, publishedStepPairs, renderBook, renderChips, renderCo2, richClueText } from '../src/ui/panels';
 import { renderSheet, slotLegend } from '../src/ui/print';
-import { stepPairIndexAt, stepTapResult } from '../src/ui/step';
+import { stepArrowAction, stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from '../src/ui/step';
 import { UI } from '../src/i18n/fr';
 
 const grids = gridsJson as unknown as Grid[];
@@ -254,19 +254,6 @@ describe('progress', () => {
     expect(statusOf(new ProgressStore(() => kv).get(), 9)).toBe('new');
   });
 
-  it('grid of the day: a rated grid, stable over the day, changing the next day', () => {
-    const morning = dailyGrid(grids, new Date(2026, 10, 21, 7));
-    const evening = dailyGrid(grids, new Date(2026, 10, 21, 23, 59));
-    const tomorrow = dailyGrid(grids, new Date(2026, 10, 22, 7));
-    expect(morning?.section).toBe('rated');
-    expect(evening?.id).toBe(morning?.id);
-    expect(tomorrow?.id).not.toBe(morning?.id);
-    expect(localDayNumber(new Date(1970, 0, 2))).toBe(1);
-    const rated = grids.filter((g) => g.section === 'rated');
-    const seen = new Set(Array.from({ length: rated.length }, (_, d) => dailyGrid(grids, new Date(2026, 0, 1 + d))?.id));
-    expect(seen.size).toBe(rated.length);
-  });
-
   it('play order: tutorials then rated grids; next grid follows it', () => {
     const order = playOrder(grids).map((g) => g.section);
     expect(order.lastIndexOf('tutorial')).toBeLessThan(order.indexOf('rated'));
@@ -285,7 +272,8 @@ describe('board and game helpers', () => {
     expect(cellAt(geo, 50 * 3 + 10, (geo.rows - 3) * 50 + 10)).toEqual({ row: 2, col: 3 });
     expect(cellAt(geo, -1, 10)).toBeNull();
     expect(cellAt(geo, 50 * g.columns.length + 1, 10)).toBeNull();
-    expect(boardGeometry(g, 'B', 40).rows).toBe(Math.max(...g.demand));
+    // Paper is a full rectangle at the same maximum height as the screen.
+    expect(boardGeometry(g, 'B', 40).rows).toBe(top);
   });
 
   it('export flows are fixed from the start and re-applied on saved boards', () => {
@@ -361,7 +349,25 @@ describe('board and game helpers', () => {
 
   it('display titles: tutorials lose their number, rated grids get one', () => {
     expect(displayTitle(byId(1))).toBe('Poser l’inventaire');
-    expect(displayTitle(byId(8))).toBe('Grille n° 8');
+    expect(displayTitle(byId(8))).toBe(byId(8).bulletin!.title);
+    const noBulletin = { ...byId(8), bulletin: undefined, title: byId(8).difficulty.label } as Grid;
+    expect(displayTitle(noBulletin)).toBe(UI.gridNumber(8));
+  });
+
+  it('a grid with a bulletin shows its number on the game eyebrow tag, the sheet and the tab title', () => {
+    const g = byId(8);
+    const tag = bulletinTag(g)!;
+    expect(tag).toMatch(new RegExp(`^n° ${g.bulletin!.number} · `));
+    expect(bulletinTag(byId(1))).toBeNull();
+    const html = renderSheet(g, null);
+    expect(html).toContain(tag);
+    expect(html).toContain(g.bulletin!.title);
+    expect(html).not.toContain('Grille notée');
+  });
+
+  it('home labels say Accueil', () => {
+    expect(UI.back).toBe('Accueil');
+    expect(UI.home).toBe('Accueil');
   });
 });
 
@@ -423,8 +429,12 @@ describe('STEP in the order book', () => {
     expect(svg).not.toContain('STEP · pompage');
     expect(svg.match(/data-act="step-tag"/g)?.length).toBe(2);
     expect(svg).toContain('class="step-link"');
-    const pending = renderBoard({ grid: g7, state: initialState(g7), ev: null, style: 'A', cell: 50, stepPending: 2 }).svg;
-    expect(pending).toContain('class="step-pending"');
+    const arrows = renderBoard({ grid: g7, state: initialState(g7), ev: null, style: 'A', cell: 50, stepMode: true, interactive: true }).svg;
+    expect(arrows.match(/data-act="step-arrow"/g)?.length).toBe(7); // ▲ on every slot but the last
+    expect(arrows).not.toContain('step-pending');
+    const turbine = renderBoard({ grid: g7, state: initialState(g7), ev: null, style: 'A', cell: 50, stepMode: true, interactive: true, stepPending: 2 }).svg;
+    expect(turbine.match(/data-act="step-arrow"/g)?.length).toBe(1 + 5); // chosen ▲ + ▼ on the 5 later slots
+    expect(renderBoard({ grid: g7, state: initialState(g7), ev: null, style: 'A', cell: 50, interactive: true }).svg).not.toContain('step-arrow');
     expect(boardGeometry(g7, 'A', 50).bottomRows).toBe(1);
   });
 
@@ -496,7 +506,7 @@ describe('review S6.3 round 1', () => {
     expect(legend).toContain('<li>9h : 4 nucléaire</li>');
     expect(legend).toContain('<li>0h : 1 bloc exporté vers l’Allemagne</li>');
     expect(legend).toContain('<li>15h → 24h : un réacteur tourne</li>');
-    expect(renderSheet(g7, 7)).toContain('Exports, imports, pompage ▲ et turbinage ▼');
+    expect(renderSheet(g7, 7)).toContain(UI.printFootBoth);
     expect(slotLegend(byId(1))).toBe('');
   });
 });
@@ -589,5 +599,51 @@ describe('STEP taps (grid 7: 8 slots, one published pair)', () => {
     expect(stepPairIndexAt(s, 5)).toBe(0);
     expect(stepPairIndexAt(s, 3)).toBe(-1);
     expect(stepPairIndexAt(s0, 1)).toBe(-1);
+  });
+});
+
+describe('STEP pump without its turbine (pending pump, not in the undo history)', () => {
+  it('Undo drops the pending pump before undoing a recorded action', () => {
+    expect(stepUndoPlan(1)).toBe('drop-pending');
+    expect(stepUndoPlan(0)).toBe('drop-pending');
+    expect(stepUndoPlan(null)).toBe('undo');
+  });
+
+  it('the chosen ▲ cancels the pump; another arrow goes through the tap logic', () => {
+    expect(stepArrowAction(3, 3)).toBe('cancel');
+    expect(stepArrowAction(3, 5)).toBe('tap');
+    expect(stepArrowAction(null, 3)).toBe('tap');
+  });
+
+  it('the eraser on the pending slot drops the pump; elsewhere it keeps it', () => {
+    expect(stepEraseResult(3, 3)).toEqual({ pending: null, dropped: true });
+    expect(stepEraseResult(3, 4)).toEqual({ pending: 3, dropped: false });
+    expect(stepEraseResult(null, 3)).toEqual({ pending: null, dropped: false });
+  });
+});
+
+describe('renderChips (phone row)', () => {
+  const g = byId(7);
+  const chipSel = (html: string) => [...html.matchAll(/<button[^>]*class="chip sel"[^>]*data-piece="([^"]+)"/g)].map((m) => m[1]);
+  it('marks the chosen plant and shows its counter', () => {
+    const html = renderChips(g, newGame(g), 'N', false);
+    expect(chipSel(html)).toEqual(['N']);
+    expect(html).toContain('0/');
+  });
+  it('shows the STEP pair counter 0/1 on a grid that publishes one pair', () => {
+    const html = renderChips(g, newGame(g), STEP_KEY, false);
+    expect(html).toMatch(/data-piece="STEP"[^>]*>.*?<small>0\/1<\/small>/);
+  });
+  it('highlights no plant while the eraser is on', () => {
+    const html = renderChips(g, newGame(g), null, true);
+    expect(chipSel(html)).toEqual([]);
+    expect(html).toContain('erase-chip sel');
+  });
+});
+
+describe('phone hint', () => {
+  it('points to the row under the board below 860 px', () => {
+    expect(UI.hintChoose(false, false, true)).toContain('la rangée sous la grille');
+    expect(UI.hintChoose(false, false)).toContain('le carnet');
   });
 });

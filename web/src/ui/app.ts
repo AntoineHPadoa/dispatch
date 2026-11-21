@@ -2,13 +2,16 @@
  * Hash router of the static site.
  * - #/                home
  * - #/grille/<id>     game screen
+ * - #/dossier/<id>    training dossier (grids of one theme)
  * - #/imprimer/<id>   print preview of one grid (#/imprimer/tout: every grid)
  * The print root (#print-root) holds the A4 sheets; it is the only thing printed.
  */
 import type { Grid } from '../model/grid';
 import { UI } from '../i18n/fr';
 import { displayTitle, mountGame } from './game';
-import { renderHome } from './home';
+import { isPublished, localIsoDate } from '../model/bulletin';
+import { dossiers } from '../model/dossiers';
+import { renderDossier, renderHome } from './home';
 import { esc, icon } from './palette';
 import { renderSheets } from './print';
 import { browserStore, playOrder } from './progress';
@@ -30,13 +33,20 @@ export function startApp(app: HTMLElement, printRoot: HTMLElement, grids: readon
     printRoot.setAttribute('aria-hidden', 'true');
     const hash = window.location.hash.replace(/^#\/?/, '');
     const [page, arg] = hash.split('/');
-    const grid = grids.find((g) => String(g.id) === arg);
+    const found = grids.find((g) => String(g.id) === arg);
+    // A bulletin not yet published is not reachable by URL.
+    const grid = found && isPublished(found, localIsoDate()) ? found : undefined;
     if (page === 'grille' && grid) {
       document.title = `${displayTitle(grid)} · ${UI.appName}`;
       fillPrint([grid]);
       cleanup = mountGame(app, grid, { grids, store, navigate, print });
+    } else if (page === 'dossier' && dossiers(grids).some((d) => d.id === arg)) {
+      const d = dossiers(grids).find((x) => x.id === arg)!;
+      document.title = `${UI.dossier[d.id]?.title ?? d.id} · ${UI.appName}`;
+      printRoot.innerHTML = '';
+      renderDossier(app, d, store.get());
     } else if (page === 'imprimer' && (grid || arg === 'tout')) {
-      const list = grid ? [grid] : playOrder(grids);
+      const list = grid ? [grid] : playOrder(grids, localIsoDate());
       document.title = `${UI.printTitle} · ${UI.appName}`;
       document.body.classList.add('print-preview');
       printRoot.setAttribute('aria-hidden', 'false');

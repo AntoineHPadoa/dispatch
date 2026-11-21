@@ -9,6 +9,7 @@
  * - Touch: with a piece one row high the board lets vertical swipes scroll the page; a swipe the
  *   browser takes for scrolling cancels the gesture silently. Eraser and STEP taps act on release.
  */
+import { localIsoDate, weekdayIndex } from '../model/bulletin';
 import type { Grid, Placement } from '../model/grid';
 import {
   barIndexAt, checkPlaceOver, evaluate, newGame, placeOver, remove, removeStep, setExport, exportsAt,
@@ -20,10 +21,10 @@ import {
   alongShape, cancel, idle, isFlat, moveTo, press, previewRect, release, tap, type Cell, type GestureState, type Rect, type Shape,
 } from './gesture';
 import { canUndo, push, reset, start, undo, type History } from './history';
-import { STEP_KEY, bookEntries, renderBook, renderClues, renderCo2, type BookEntry } from './panels';
+import { STEP_KEY, bookEntries, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, type BookEntry } from './panels';
 import { esc, icon } from './palette';
-import { stepPairIndexAt, stepTapResult } from './step';
-import { dailyGrid, nextGrid, recordState, type ProgressStore } from './progress';
+import { stepArrowAction, stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from './step';
+import { nextGrid, recordState, statusOf, type ProgressStore } from './progress';
 
 export interface GameContext {
   grids: readonly Grid[];
@@ -69,8 +70,15 @@ export function applyLockedExports(grid: Grid, state: PlayState): PlayState {
   return s;
 }
 
-/** Display title: tutorial titles lose their number, rated grids named after their level get a number. */
+/** Issue tag of a grid that has a bulletin (`n° 214 · sam.`), or null. */
+export function bulletinTag(grid: Grid): string | null {
+  const b = grid.bulletin;
+  return b ? UI.bulletin.sheetTag(b.number, UI.bulletin.weekdayShort[weekdayIndex(b.published)] ?? '') : null;
+}
+
+/** Display title: bulletin headline, tutorial titles without their number, else a numbered rated grid. */
 export function displayTitle(grid: Grid): string {
+  if (grid.bulletin) return grid.bulletin.title;
   if (grid.section === 'tutorial') return grid.title.replace(/^\d+\.\s*/, '');
   return grid.title === grid.difficulty.label ? UI.gridNumber(grid.id) : grid.title;
 }
@@ -154,10 +162,9 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   const elapsed = () => frozenElapsed ?? elapsedBase + (Date.now() - sessionStart);
 
   const tutorials = ctx.grids.filter((g) => g.section === 'tutorial').sort((a, b) => a.id - b.id);
-  const daily = dailyGrid(ctx.grids, new Date());
   const eyebrow = grid.section === 'tutorial'
     ? UI.tutorialOf(tutorials.findIndex((g) => g.id === grid.id) + 1, tutorials.length)
-    : `${daily?.id === grid.id ? UI.daily : UI.ratedEyebrow}${grid.inventory.level === 'none' ? ` · ${UI.noInventory}` : ''}`;
+    : `${bulletinTag(grid) ?? UI.ratedEyebrow}${grid.inventory.level === 'none' ? ` · ${UI.noInventory}` : ''}`;
 
   const tech = techniqueLine(grid);
   const intro = grid.intro
@@ -179,8 +186,9 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       </div>
       <input type="range" class="board-slider" min="0" max="0" value="0" aria-label="${esc(UI.scrollBoard)}" hidden>
       <p id="board-help-${grid.id}" class="sr-only">${esc(UI.boardHelp)}</p>
+      <div class="chips" role="toolbar" aria-label="${esc(UI.chipsLabel)}"></div>
       <div class="tools" role="toolbar" aria-label="${esc(UI.toolsLabel)}">
-        <button type="button" class="tool" data-tool="erase" aria-pressed="false">${icon('erase')}${esc(UI.tools.erase)}</button>
+        <button type="button" class="tool erase-tool" data-tool="erase" aria-pressed="false">${icon('erase')}${esc(UI.tools.erase)}</button>
         <button type="button" class="tool" data-tool="undo">${icon('undo')}${esc(UI.tools.undo)}</button>
         <button type="button" class="tool" data-tool="reset">${icon('reset')}${esc(UI.tools.reset)}</button>
         <button type="button" class="tool print-tool" data-tool="print">${icon('print')}${esc(UI.tools.print)}</button>
@@ -196,6 +204,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   const side = root.querySelector<HTMLElement>('.side')!;
   const msgSlot = root.querySelector<HTMLElement>('.msg-slot')!;
   const tools = root.querySelector<HTMLElement>('.tools')!;
+  const chipsEl = root.querySelector<HTMLElement>('.chips')!;
   // Tool clicks (toolbar and end banner) are caught on this screen's own element, so a grid
   // opened before never reacts to them.
   const gameEl = root.querySelector<HTMLElement>('.game')!;
@@ -220,12 +229,20 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     return { bar, check, rect: r };
   }
 
+  /** Arrows show while STEP is chosen and a pair is still to place (all published pairs laid: none). */
+  function stepModeOn(): boolean {
+    if (selected?.piece !== STEP_KEY || erase || ev.solved) return false;
+    const want = publishedStepPairs(grid);
+    return want === null || history.present.step.length < want || stepPending !== null;
+  }
+
   function drawBoard() {
     const pv = preview();
     const out = renderBoard({
       grid, state: history.present, ev, style: 'A', cell,
       preview: pv ? { rect: pv.rect, piece: pv.bar.piece, valid: pv.check.ok, replacing: pv.check.ok ? pv.check.replaced : [] } : null,
-      anchor: gesture.anchor, cursor: keyboard && document.activeElement === wrap ? cursor : null, stepPending, interactive: true,
+      anchor: gesture.anchor, cursor: keyboard && document.activeElement === wrap ? cursor : null, stepPending,
+      stepMode: stepModeOn(), interactive: true,
     });
     geo = out.geo;
     scroll.innerHTML = out.svg;
@@ -246,7 +263,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
 
   function drawMessage(pv: ReturnType<typeof preview> = preview()) {
     if (ev.solved) {
-      const next = nextGrid(ctx.grids, grid.id);
+      const next = nextGrid(ctx.grids, grid.id, localIsoDate(), (id) => statusOf(ctx.store.get(), id) === 'done');
       const html = `<div class="banner" role="status"><b>${esc(UI.doneTitle)}</b>`
         + `<span>${esc(UI.doneText(grid.clues.length, durationText(elapsed())))}</span></div>`
         + `<div class="tools done-tools">${next ? `<a class="tool on" href="#/grille/${next.id}">${esc(UI.next)}${icon('next')}</a>` : `<a class="tool on" href="#/">${esc(UI.home)}</a>`}`
@@ -264,8 +281,8 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       m = { text: UI.hintSecondTap(labelOf(barOf(selected, { ...gesture.anchor, len: 1, height: 1 }))), tone: 'info' };
     } else {
       m = boardMessage(ev, m) ?? {
-        text: erase ? UI.hintErase : selected?.piece === STEP_KEY ? UI.hintStep
-          : UI.hintChoose(grid.inventory.level !== 'exact', grid.neighbors.length > 0),
+        text: erase ? UI.hintErase : selected?.piece === STEP_KEY ? (stepPending !== null ? UI.stepPending(columnLabel(grid, stepPending)) : UI.hintStep)
+          : UI.hintChoose(grid.inventory.level !== 'exact', grid.neighbors.length > 0, window.matchMedia('(max-width: 860px)').matches),
         tone: 'info',
       };
     }
@@ -276,6 +293,17 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     if (html === msgHtml) return;
     msgHtml = html;
     msgSlot.innerHTML = html;
+  }
+
+  function drawChips() {
+    chipsEl.innerHTML = renderChips(grid, history.present, erase ? null : selected?.key ?? null, erase);
+    // Scroll the row itself, horizontally only: scrollIntoView would also move the page.
+    const row = chipsEl.querySelector<HTMLElement>('.chips-row');
+    const sel = row?.querySelector<HTMLElement>('.sel');
+    if (row && sel) {
+      const left = sel.offsetLeft - row.offsetLeft;
+      if (left < row.scrollLeft || left + sel.offsetWidth > row.scrollLeft + row.clientWidth) row.scrollLeft = Math.max(0, left - 8);
+    }
   }
 
   function drawSide() {
@@ -298,6 +326,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   function drawAll() {
     drawBoard();
     drawSide();
+    drawChips();
     drawTools();
   }
 
@@ -337,6 +366,8 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   }
 
   function removeAt(c: Cell) {
+    const er = stepEraseResult(stepPending, c.col);
+    if (er.dropped) { stepPending = null; say(UI.stepPendingDropped, 'info'); drawBoard(); return; }
     const i = barIndexAt(history.present, c.row, c.col);
     if (i < 0 && isStepCell(c) && removePairAt(c.col)) return;
     const bar = i >= 0 ? history.present.bars[i] : undefined;
@@ -491,8 +522,14 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     const col = Number(el.getAttribute('data-col'));
     if (el.getAttribute('data-act') === 'export') cycleExport(el.getAttribute('data-country') ?? '', col);
     else if (el.getAttribute('data-act') === 'step-tag') removePairAt(col);
+    else if (el.getAttribute('data-act') === 'step-arrow') {
+      if (stepArrowAction(stepPending, col) === 'cancel') { stepPending = null; message = { text: UI.stepPendingDropped, tone: 'info' }; drawBoard(); }
+      else stepTap(col);
+    }
     else if (el.getAttribute('data-act') === 'locked') say(UI.lockedTap(columnLabel(grid, col)), 'info');
-    const again = scroll.querySelector<SVGElement>(`[data-act="${el.getAttribute('data-act')}"][data-col="${col}"]${el.getAttribute('data-country') ? `[data-country="${el.getAttribute('data-country')}"]` : ''}`);
+    let again: HTMLElement | SVGElement | null = scroll.querySelector<SVGElement>(`[data-act="${el.getAttribute('data-act')}"][data-col="${col}"]${el.getAttribute('data-country') ? `[data-country="${el.getAttribute('data-country')}"]` : ''}`);
+    // The arrows vanish once the pair is laid: keep the keyboard focus on the new ▼ tag, else on the board.
+    if (!again && el.getAttribute('data-act') === 'step-arrow') again = scroll.querySelector<SVGElement>(`[data-act="step-tag"][data-col="${col}"]`) ?? wrap;
     if (again && document.activeElement !== again && el === document.activeElement) again.focus();
   }
 
@@ -562,6 +599,12 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       message = null;
       drawAll();
     } else if (tool === 'undo') {
+      if (stepUndoPlan(stepPending) === 'drop-pending') {
+        stepPending = null;
+        message = { text: UI.stepPendingDropped, tone: 'info' };
+        drawAll();
+        return;
+      }
       if (!canUndo(history)) { say(UI.nothingToUndo, 'info'); return; }
       const wasSolved = ev.solved;
       history = undo(history);
@@ -621,6 +664,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   wrap.addEventListener('blur', onWrapBlur);
   gameEl.addEventListener('click', onToolClick);
   side.addEventListener('click', onSideClick);
+  chipsEl.addEventListener('click', onSideClick);
   /** Leaving saves the clock, but never makes a grid nobody played look started. */
   const onLeave = () => { if (history.past.length || ctx.store.get().grids[String(grid.id)]) save(); };
   window.addEventListener('pagehide', onLeave);

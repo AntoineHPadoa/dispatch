@@ -41,3 +41,16 @@ describe('convertGrid', () => {
     expect(g.intro).toBe('Aujourd’hui');
   });
 });
+
+describe('convertGrid bulletins', () => {
+  it.each([8, 9, 10, 11])('gives the hand-written bulletin to the prototype rated grid %i', (id) => {
+    const g = convertGrid(find(id));
+    expect(g.bulletin?.title).toBeTruthy();
+    expect(g.bulletin?.weather).toHaveLength(g.columns.length);
+  });
+
+  it('gives no bulletin to a tutorial or to a generated grid', () => {
+    expect(convertGrid(find(1)).bulletin).toBeUndefined();
+    expect(convertGrid(generated(9)).bulletin).toBeUndefined();
+  });
+});
