@@ -1,0 +1,302 @@
+[
+ {
+  "name": "[1280] S7.2 accueil → grille : logo à la même place",
+  "ok": false,
+  "detail": "accueil 66,25.1 ; grille 66,24 ; #/grille/11"
+ },
+ {
+  "name": "[1280] S7.2 grille : fond pointillé du menu, plus de bouton « Accueil »",
+  "ok": true,
+  "detail": "radial-gradient(rgb(233, 227, 231) 1px,  ; boutons Accueil 0 ; game 50–1230 ; plateau 66–550 ; colonne 580–1214 ; titre y=82"
+ },
+ {
+  "name": "[1280] S7.2 logo → accueil",
+  "ok": true,
+  "detail": "#/"
+ },
+ {
+  "name": "[1280] S7.2 grille 7 : logo à la même place",
+  "ok": false,
+  "detail": "66,24"
+ },
+ {
+  "name": "[1280] S7.2 aucune erreur JS",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[1280] S7.3 accueil → dossier : logo à la même place",
+  "ok": false,
+  "detail": "66,25.1 / 66,24"
+ },
+ {
+  "name": "[1280] S7.3 cartes : boutons, pied et titres alignés par rangée",
+  "ok": true,
+  "detail": "7 cartes, 2 rangée(s), 0 rangée(s) désalignée(s)"
+ },
+ {
+  "name": "[1280] S7.3 cartes : chaque carte dit ce qu’elle enseigne",
+  "ok": true,
+  "detail": "1:puce+texte 2:texte 3:texte 4:texte 5:puce+texte 6:texte 7:puce+texte"
+ },
+ {
+  "name": "[1280] S7.3 dossier → tutoriel 7 → retour (navigateur)",
+  "ok": true,
+  "detail": "#/grille/7 → #/dossier/premiers-pas"
+ },
+ {
+  "name": "[1280] S7.3 aucune erreur JS",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[1280] S7.4 ▲ 9h puis ▼ 15h : paire posée, étiquettes sans numéro (1 paire)",
+  "ok": true,
+  "detail": "7 ▲ ; [{\"t\":\"▲ pompe\",\"fill\":\"#e3eefa\"},{\"t\":\"▼ turbine\",\"fill\":\"#e3eefa\"}]"
+ },
+ {
+  "name": "[1280] S7.4 pas de trait pointillé, ▲ et ▼ en bleu clair",
+  "ok": false,
+  "detail": "traits 10"
+ },
+ {
+  "name": "[1280] S7.4 Annuler retire la paire",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "[1280] S7.4 toucher une étiquette retire la paire",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "[1280] S7.4 gomme sur G7 : barre gommée",
+  "ok": true,
+  "detail": "1 → 0"
+ },
+ {
+  "name": "[1280] S7.4 aucune erreur JS",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[1280] S7.5 grille du jour bouclée → accueil : solution en couleurs",
+  "ok": true,
+  "detail": "Programme bouclé ; 9 pièces (#f7e2a0)"
+ },
+ {
+  "name": "[1280] S7.5 aucune erreur JS",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[1280] aucun scroll horizontal (6 écrans)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[375] S7.2 accueil → grille : logo à la même place",
+  "ok": false,
+  "detail": "accueil 16,17.1 ; grille 16,16 ; #/grille/11"
+ },
+ {
+  "name": "[375] S7.2 grille : fond pointillé du menu, plus de bouton « Accueil »",
+  "ok": true,
+  "detail": "radial-gradient(rgb(233, 227, 231) 1px,  ; boutons Accueil 0 ; game 0–375 ; plateau 16–359 ; colonne 16–359 ; titre y=70"
+ },
+ {
+  "name": "[375] S7.2 logo → accueil",
+  "ok": true,
+  "detail": "#/"
+ },
+ {
+  "name": "[375] S7.2 grille 7 : logo à la même place",
+  "ok": false,
+  "detail": "16,16"
+ },
+ {
+  "name": "[375] S7.2 aucune erreur JS",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[375] S7.3 accueil → dossier : logo à la même place",
+  "ok": false,
+  "detail": "16,17.1 / 16,16"
+ },
+ {
+  "name": "[375] S7.3 cartes : boutons, pied et titres alignés par rangée",
+  "ok": true,
+  "detail": "7 cartes, 7 rangée(s), 0 rangée(s) désalignée(s)"
+ },
+ {
+  "name": "[375] S7.3 cartes : chaque carte dit ce qu’elle enseigne",
+  "ok": true,
+  "detail": "1:puce+texte 2:texte 3:texte 4:texte 5:puce+texte 6:texte 7:puce+texte"
+ },
+ {
+  "name": "[375] S7.3 dossier → tutoriel 7 → retour (navigateur)",
+  "ok": true,
+  "detail": "#/grille/7 → #/dossier/premiers-pas"
+ },
+ {
+  "name": "[375] S7.3 aucune erreur JS",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[375] S7.4 ▲ 9h puis ▼ 15h : paire posée, étiquettes sans numéro (1 paire)",
+  "ok": true,
+  "detail": "7 ▲ ; [{\"t\":\"▲\",\"fill\":\"#e3eefa\"},{\"t\":\"▼\",\"fill\":\"#e3eefa\"}]"
+ },
+ {
+  "name": "[375] S7.4 pas de trait pointillé, ▲ et ▼ en bleu clair",
+  "ok": false,
+  "detail": "traits 10"
+ },
+ {
+  "name": "[375] S7.4 Annuler retire la paire",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "[375] S7.4 toucher une étiquette retire la paire",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "[375] S7.4 gomme sur G7 : barre gommée",
+  "ok": true,
+  "detail": "1 → 0"
+ },
+ {
+  "name": "[375] S7.4 aucune erreur JS",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[375] S7.5 grille du jour bouclée → accueil : solution en couleurs",
+  "ok": true,
+  "detail": "Programme bouclé ; 9 pièces (#f7e2a0)"
+ },
+ {
+  "name": "[375] S7.5 aucune erreur JS",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[375] aucun scroll horizontal (6 écrans)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[320] S7.2 accueil → grille : logo à la même place",
+  "ok": false,
+  "detail": "accueil 16,17.1 ; grille 16,16 ; #/grille/11"
+ },
+ {
+  "name": "[320] S7.2 grille : fond pointillé du menu, plus de bouton « Accueil »",
+  "ok": true,
+  "detail": "radial-gradient(rgb(233, 227, 231) 1px,  ; boutons Accueil 0 ; game 0–320 ; plateau 16–304 ; colonne 16–304 ; titre y=70"
+ },
+ {
+  "name": "[320] S7.2 logo → accueil",
+  "ok": true,
+  "detail": "#/"
+ },
+ {
+  "name": "[320] S7.2 grille 7 : logo à la même place",
+  "ok": false,
+  "detail": "16,16"
+ },
+ {
+  "name": "[320] S7.2 aucune erreur JS",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[320] S7.3 accueil → dossier : logo à la même place",
+  "ok": false,
+  "detail": "16,17.1 / 16,16"
+ },
+ {
+  "name": "[320] S7.3 cartes : boutons, pied et titres alignés par rangée",
+  "ok": true,
+  "detail": "7 cartes, 7 rangée(s), 0 rangée(s) désalignée(s)"
+ },
+ {
+  "name": "[320] S7.3 cartes : chaque carte dit ce qu’elle enseigne",
+  "ok": true,
+  "detail": "1:puce+texte 2:texte 3:texte 4:texte 5:puce+texte 6:texte 7:puce+texte"
+ },
+ {
+  "name": "[320] S7.3 dossier → tutoriel 7 → retour (navigateur)",
+  "ok": true,
+  "detail": "#/grille/7 → #/dossier/premiers-pas"
+ },
+ {
+  "name": "[320] S7.3 aucune erreur JS",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[320] S7.4 ▲ 9h puis ▼ 15h : paire posée, étiquettes sans numéro (1 paire)",
+  "ok": true,
+  "detail": "7 ▲ ; [{\"t\":\"▲\",\"fill\":\"#e3eefa\"},{\"t\":\"▼\",\"fill\":\"#e3eefa\"}]"
+ },
+ {
+  "name": "[320] S7.4 pas de trait pointillé, ▲ et ▼ en bleu clair",
+  "ok": false,
+  "detail": "traits 10"
+ },
+ {
+  "name": "[320] S7.4 Annuler retire la paire",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "[320] S7.4 toucher une étiquette retire la paire",
+  "ok": true,
+  "detail": "0"
+ },
+ {
+  "name": "[320] S7.4 gomme sur G7 : barre gommée",
+  "ok": true,
+  "detail": "1 → 0"
+ },
+ {
+  "name": "[320] S7.4 aucune erreur JS",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[320] S7.5 grille du jour bouclée → accueil : solution en couleurs",
+  "ok": true,
+  "detail": "Programme bouclé ; 9 pièces (#f7e2a0)"
+ },
+ {
+  "name": "[320] S7.5 aucune erreur JS",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[320] aucun scroll horizontal (6 écrans)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[A4] PDF grille 7 : 1 page",
+  "ok": true,
+  "detail": "1 page(s)"
+ },
+ {
+  "name": "[A4] PDF grille 10 : 1 page",
+  "ok": true,
+  "detail": "1 page(s)"
+ },
+ {
+  "name": "[A4] PDF grille 11 : 1 page",
+  "ok": true,
+  "detail": "1 page(s)"
+ }
+]
