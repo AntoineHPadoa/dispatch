@@ -31,6 +31,16 @@ The app is served under `/dispatch/` (`base` in `vite.config.ts`): always use th
 - Optional 4th argument: height (default 900). Chrome path override: `CHROME=/path/to/chrome`.
 - Open the PNG with the Read tool to look at it.
 
+## Full browser check (every grid, three widths)
+
+`scripts/check-ui.mjs` (playwright-core, a dev dependency) plays every published grid in Chrome at 1280 px (mouse), 375 and 320 px (touch): no horizontal scroll, clue pills whole and apart, the reference solution laid until the verdict, no JS error; home and dossier; one A4 page per grid. Reviews call it instead of writing their own script.
+
+```bash
+npm run build && npm run preview -- --port 4173 --strictPort &
+node scripts/check-ui.mjs --out /tmp/check-ui            # captures + results.json; exit 1 on a failed check
+node scripts/check-ui.mjs --ids 7,13 --widths 320         # a subset
+```
+
 ## Print sheets (PDF)
 
 ```bash
