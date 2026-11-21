@@ -117,7 +117,7 @@ export function renderDossier(root: HTMLElement, d: Dossier, progress: Progress)
       <span class="fband">${cellSilhouette(g.demand, 11)}<span class="fnum" aria-hidden="true">${i + 1}</span></span>
       <span class="fbody"><span class="eyebrow">${esc(UI.tutorialShort(i + 1))} · ${esc(g.difficulty.label)}${isNext ? ` · ${esc(UI.dossierNext)}` : ''}</span>
         <b>${esc(displayTitle(g))}</b>
-        ${tech ? `<span class="tchip">${esc(tech.name)}</span><span class="ftxt">${esc(tech.text)}</span>` : ''}</span>
+        ${tech ? `${tech.name.toLocaleLowerCase('fr') === displayTitle(g).toLocaleLowerCase('fr') ? '' : `<span class="tchip">${esc(tech.name)}</span>`}<span class="ftxt">${esc(tech.text)}</span>` : ''}</span>
       <span class="ffoot"><span class="fmeta">${dots(g)}${statusChip(st)}</span><span class="fbtn">${esc(action(st))}</span></span>
     </a></li>`;
   }).join('');
