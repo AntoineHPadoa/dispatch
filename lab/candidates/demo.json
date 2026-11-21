@@ -1,0 +1,925 @@
+[
+ {
+  "id": 1001,
+  "title": "Facile",
+  "section": "rated",
+  "intro": "Sans inventaire : tu connais les centrales disponibles, pas leurs quantités. Seul le stock d’eau du barrage est connu : 2 cases au plus. Les indices du marché suffisent à déduire la seule pose.",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   1,
+   2,
+   1,
+   1,
+   1,
+   3,
+   2,
+   1
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 2,
+    "co2": 0
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "DE",
+    "name": "Allemagne",
+    "cap": 1,
+    "co2": 3
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "B": {
+     "max_cells": 2
+    }
+   }
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 7,
+    "counts": {
+     "N": 1
+    }
+   },
+   {
+    "type": "flow",
+    "col": 2,
+    "country": "DE",
+    "dir": "export",
+    "value": 0
+   },
+   {
+    "type": "exchanges",
+    "exports": {
+     "DE": 2
+    },
+    "imports": {
+     "DE": 0
+    }
+   }
+  ],
+  "solution": {
+   "exports": {
+    "DE": [
+     0,
+     0,
+     0,
+     1,
+     1,
+     0,
+     0,
+     0
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "B",
+     "row": 1,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 4
+    },
+    {
+     "piece": "B",
+     "row": 2,
+     "col": 5,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": [
+    "flow",
+    "room",
+    "exhausted",
+    "record",
+    "single_cover",
+    "silhouette"
+   ]
+  },
+  "lab": {
+   "lot": "demo",
+   "index": 1,
+   "family": "pointe_soir",
+   "mechanics": [
+    "neighbors:1"
+   ],
+   "clue_profile": [
+    "column",
+    "exchanges",
+    "flow"
+   ],
+   "trace_summary": {
+    "steps": 11,
+    "level2_steps": 1,
+    "bottlenecks": 1,
+    "techniques": {
+     "flow": 1,
+     "room": 1,
+     "exhausted": 1,
+     "record": 1,
+     "single_cover": 1,
+     "silhouette": 1
+    }
+   },
+   "bulletin": {
+    "title": "Bulletin de démonstration 1",
+    "text": "Texte de démonstration. À remplacer.",
+    "weather": [
+     "sun",
+     "sun",
+     "sun",
+     "sun",
+     "sun",
+     "sun",
+     "sun",
+     "sun"
+    ]
+   },
+   "generator": "demo (published grids)"
+  }
+ },
+ {
+  "id": 1002,
+  "title": "Moyen",
+  "section": "rated",
+  "intro": "Sans inventaire. Un seul relevé de production : à toi de découper les rubans.",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   4,
+   5,
+   5,
+   5,
+   6,
+   5,
+   4,
+   5
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "DE",
+    "name": "Allemagne",
+    "cap": 1,
+    "co2": 3
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 3,
+    "counts": {
+     "N": 5
+    }
+   },
+   {
+    "type": "exchanges",
+    "exports": {
+     "DE": 0
+    },
+    "imports": {
+     "DE": 6
+    }
+   }
+  ],
+  "solution": {
+   "exports": {
+    "DE": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "I",
+     "country": "DE",
+     "row": 3,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "country": "DE",
+     "row": 3,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "country": "DE",
+     "row": 3,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 1,
+     "len": 4
+    },
+    {
+     "piece": "I",
+     "country": "DE",
+     "row": 4,
+     "col": 5,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "country": "DE",
+     "row": 4,
+     "col": 7,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "country": "DE",
+     "row": 5,
+     "col": 4,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "record",
+    "single_cover",
+    "column_sum",
+    "ribbon",
+    "swap"
+   ]
+  },
+  "lab": {
+   "lot": "demo",
+   "index": 2,
+   "family": "deux_bosses",
+   "mechanics": [
+    "neighbors:1"
+   ],
+   "clue_profile": [
+    "column",
+    "exchanges"
+   ],
+   "trace_summary": {
+    "steps": 12,
+    "level2_steps": 2,
+    "bottlenecks": 1,
+    "techniques": {
+     "record": 1,
+     "single_cover": 1,
+     "column_sum": 1,
+     "ribbon": 1,
+     "swap": 1
+    }
+   },
+   "bulletin": {
+    "title": "Bulletin de démonstration 2",
+    "text": "Texte de démonstration. À remplacer.",
+    "weather": [
+     "sun",
+     "sun",
+     "sun",
+     "sun",
+     "sun",
+     "sun",
+     "sun",
+     "sun"
+    ]
+   },
+   "generator": "demo (published grids)"
+  }
+ },
+ {
+  "id": 1003,
+  "title": "Difficile",
+  "section": "rated",
+  "intro": "Sans inventaire. Il faudra répartir les barres entre les lignes.",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   3,
+   4,
+   4,
+   3,
+   1,
+   3,
+   4,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "DE",
+    "name": "Allemagne",
+    "cap": 1,
+    "co2": 3
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 3,
+    "counts": {
+     "N": 3
+    }
+   },
+   {
+    "type": "column",
+    "col": 5,
+    "counts": {
+     "N": 3
+    }
+   },
+   {
+    "type": "exchanges",
+    "exports": {
+     "DE": 2
+    },
+    "imports": {
+     "DE": 2
+    }
+   }
+  ],
+  "solution": {
+   "exports": {
+    "DE": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "I",
+     "country": "DE",
+     "row": 3,
+     "col": 6,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "country": "DE",
+     "row": 3,
+     "col": 7,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 3,
+   "label": "Difficile",
+   "techniques": [
+    "silhouette",
+    "room",
+    "share_out",
+    "record",
+    "exhausted",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "lot": "demo",
+   "index": 3,
+   "family": "midi_solaire",
+   "mechanics": [
+    "neighbors:1"
+   ],
+   "clue_profile": [
+    "column",
+    "exchanges"
+   ],
+   "trace_summary": {
+    "steps": 13,
+    "level2_steps": 3,
+    "bottlenecks": 1,
+    "techniques": {
+     "silhouette": 1,
+     "room": 1,
+     "share_out": 1,
+     "record": 1,
+     "exhausted": 1,
+     "single_cover": 1
+    }
+   },
+   "bulletin": {
+    "title": "Bulletin de démonstration 3",
+    "text": "Texte de démonstration. À remplacer.",
+    "weather": [
+     "sun",
+     "sun",
+     "sun",
+     "sun",
+     "sun",
+     "sun",
+     "sun",
+     "sun"
+    ]
+   },
+   "generator": "demo (published grids)"
+  }
+ },
+ {
+  "id": 1004,
+  "title": "Expert",
+  "section": "rated",
+  "intro": "Sans inventaire. Une hypothèse se réfute en quelques coups : laquelle ?",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   1,
+   3,
+   3,
+   5,
+   6,
+   6,
+   6,
+   5
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "DE",
+    "name": "Allemagne",
+    "cap": 1,
+    "co2": 3
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 0,
+    "counts": {
+     "N": 1
+    }
+   },
+   {
+    "type": "column",
+    "col": 2,
+    "counts": {
+     "N": 3
+    }
+   },
+   {
+    "type": "exchanges",
+    "exports": {
+     "DE": 2
+    },
+    "imports": {
+     "DE": 0
+    }
+   }
+  ],
+  "solution": {
+   "exports": {
+    "DE": [
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 1,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 1,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 3,
+     "len": 5
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 4,
+   "label": "Expert",
+   "techniques": [
+    "record",
+    "silhouette",
+    "ribbon",
+    "refuted"
+   ]
+  },
+  "lab": {
+   "lot": "demo",
+   "index": 4,
+   "family": "nuit_plate",
+   "mechanics": [
+    "neighbors:1"
+   ],
+   "clue_profile": [
+    "column",
+    "exchanges"
+   ],
+   "trace_summary": {
+    "steps": 14,
+    "level2_steps": 4,
+    "bottlenecks": 1,
+    "techniques": {
+     "record": 1,
+     "silhouette": 1,
+     "ribbon": 1,
+     "refuted": 1
+    }
+   },
+   "bulletin": {
+    "title": "Bulletin de démonstration 4",
+    "text": "Texte de démonstration. À remplacer.",
+    "weather": [
+     "sun",
+     "sun",
+     "sun",
+     "sun",
+     "sun",
+     "sun",
+     "sun",
+     "sun"
+    ]
+   },
+   "generator": "demo (published grids)"
+  }
+ }
+]
