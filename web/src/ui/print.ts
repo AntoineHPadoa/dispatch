@@ -1,11 +1,12 @@
 /*
  * Print sheets (style B): one grid per A4 page, in colour, without the answer.
  * - Empty silhouette except what is imposed (weather, engaged plants, published flows); slot
- *   clues drawn on the grid; order book or available plants; day clues; boxes for exchanges.
+ *   clues drawn on the grid and listed in short text under it; order book or available plants;
+ *   day clues; boxes for exchanges.
  * - No clue status and no pumping or turbining drawn: the paper only shows the puzzle.
  */
 import type { Grid } from '../model/grid';
-import { TECHNIQUES, UI } from '../i18n/fr';
+import { TECHNIQUES, UI, slotClueShort } from '../i18n/fr';
 import { renderBoard } from './board';
 import { displayTitle, initialState } from './game';
 import { clueItem, co2RuleText, isDayClue, renderBook } from './panels';
@@ -34,15 +35,26 @@ export function renderSheet(grid: Grid, tutorialIndex: number | null): string {
   if (co2) day.push(`<li class="clue"><span><span class="kind">${esc(UI.co2Kind)}</span><span class="txt">${esc(co2)}</span></span></li>`);
   const bookTitle = grid.inventory.level === 'exact' ? UI.book : UI.available;
   const dayTitle = grid.clues.some((c) => c.type === 'length' || c.type === 'exchanges') || co2 ? UI.dayClues : UI.engagedTitle;
-  const foot = grid.step ? UI.printFootStep : grid.neighbors.length ? UI.printFootExports : UI.printFoot;
+  const foot = grid.step && grid.neighbors.length ? UI.printFootBoth
+    : grid.step ? UI.printFootStep : grid.neighbors.length ? UI.printFootExports : UI.printFoot;
   return `<article class="a4">
     <div class="meta"><h1>${esc(displayTitle(grid))}</h1><span>${esc(meta)}</span></div>
     ${lead}
     <div class="sheet-grid">${board}</div>
+    ${slotLegend(grid)}
     <div class="cols2"><div><div class="sec">${esc(bookTitle)}</div>${renderBook(grid, state, null, true)}</div>
       ${day.length ? `<div><div class="sec">${esc(dayTitle)}</div><ul class="clues">${day.join('')}</ul></div>` : '<div></div>'}</div>
     <div class="foot"><span>${esc(foot)}</span><span>${esc(UI.printId(grid.id))}</span></div>
   </article>`;
+}
+
+/** The clues drawn on the grid, in short text by slot, so the sheet reads without the screen. */
+export function slotLegend(grid: Grid): string {
+  const slot = grid.clues.filter((c) => !isDayClue(c));
+  if (!slot.length) return '';
+  const col = (c: (typeof slot)[number]) => ('col' in c ? c.col : 0);
+  const items = [...slot].sort((a, b) => col(a) - col(b)).map((c) => `<li>${esc(slotClueShort(grid, c))}</li>`);
+  return `<div class="legend"><div class="sec">${esc(UI.printLegend)}</div><ul>${items.join('')}</ul></div>`;
 }
 
 /** Sheets for several grids, tutorials numbered in order. */

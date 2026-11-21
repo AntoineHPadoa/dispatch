@@ -1,6 +1,7 @@
 /*
  * Whole-board verdict (pure): rule violations, uncovered cells, clue status, inventory left,
  * composition and the solved flag.
+ * - A clue still open once every cell is covered is reported broken (nothing left to lay).
  * - A grid is solved when every rule, inventory item and clue holds and the composition (§8.1:
  *   cells per piece and column, exports, pumping and turbining per column) equals the reference
  *   one. Two drawings with the same composition are both accepted.
@@ -315,7 +316,9 @@ export function evaluate(grid: Grid, state: PlayState): Evaluation {
   const comp = composition(grid, state);
   const bad = new Set(invalidBars);
   const board: Board = { comp, missingByCol, validBars: state.bars.filter((_, i) => !bad.has(i)) };
-  const clues = grid.clues.map((clue) => ({ clue, text: clueText(grid, clue), status: clueStatus(grid, state, board, clue) }));
+  // Once every cell is covered, a clue still open can no longer be met by laying: it is contradicted.
+  const settle = (st: ClueStatus): ClueStatus => (missing === 0 && st === 'open' ? 'broken' : st);
+  const clues = grid.clues.map((clue) => ({ clue, text: clueText(grid, clue), status: settle(clueStatus(grid, state, board, clue)) }));
 
   // Verdict
   const unmet: string[] = [];

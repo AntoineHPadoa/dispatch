@@ -7,7 +7,7 @@
  */
 import type { Grid } from '../model/grid';
 import { UI } from '../i18n/fr';
-import { mountGame } from './game';
+import { displayTitle, mountGame } from './game';
 import { renderHome } from './home';
 import { esc, icon } from './palette';
 import { renderSheets } from './print';
@@ -32,7 +32,7 @@ export function startApp(app: HTMLElement, printRoot: HTMLElement, grids: readon
     const [page, arg] = hash.split('/');
     const grid = grids.find((g) => String(g.id) === arg);
     if (page === 'grille' && grid) {
-      document.title = `${grid.title} · ${UI.appName}`;
+      document.title = `${displayTitle(grid)} · ${UI.appName}`;
       fillPrint([grid]);
       cleanup = mountGame(app, grid, { grids, store, navigate, print });
     } else if (page === 'imprimer' && (grid || arg === 'tout')) {
@@ -41,7 +41,7 @@ export function startApp(app: HTMLElement, printRoot: HTMLElement, grids: readon
       document.body.classList.add('print-preview');
       printRoot.setAttribute('aria-hidden', 'false');
       fillPrint(list);
-      app.innerHTML = `<div class="m print-bar"><a class="backlink" href="${grid ? `#/grille/${grid.id}` : '#/'}">${icon('back')}${esc(grid ? grid.title : UI.back)}</a>`
+      app.innerHTML = `<div class="m print-bar"><a class="backlink" href="${grid ? `#/grille/${grid.id}` : '#/'}">${icon('back')}${esc(grid ? displayTitle(grid) : UI.back)}</a>`
         + `<span>${esc(UI.printPreviewLead)}</span>`
         + `<button type="button" class="tool on" data-print>${icon('print')}${esc(grid ? UI.printThis : UI.printAll)}</button></div>`;
       app.querySelector('[data-print]')?.addEventListener('click', () => window.print());

@@ -192,6 +192,15 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   </defs>`;
 
   // ---- cells: weather, silhouette, exports, pumping, turbined ghosts
+  // Cells under an opaque bar are not drawn: their outline would show at the bar's edges.
+  const hidden = new Set<string>();
+  if (A) {
+    const fading = new Set(input.preview?.replacing ?? []);
+    state.bars.forEach((b, i) => {
+      if (fading.has(i)) return;
+      for (let c = b.col; c < b.col + b.len; c++) for (let r = b.row; r < b.row + barHeight(b); r++) hidden.add(`${r},${c}`);
+    });
+  }
   const box = (c: number, v: number) => ({ bx: x(c) + gap / 2, by: y(v) + gap / 2, w: cell - gap });
   for (let c = 0; c < n; c++) {
     const F = grid.weather.F[c] ?? 0;
@@ -216,6 +225,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       const { bx, by, w } = box(c, weather[c]! + r);
       const kind = r >= k - pumps[c]! ? 'pump' : r >= k - pumps[c]! - e ? 'exp' : 'sil';
       if (kind === 'sil') {
+        if (hidden.has(`${r},${c}`)) continue;
         s += A ? `<rect x="${bx}" y="${by}" width="${w}" height="${w}" rx="${rad}" fill="#fff" stroke="#eadfe6"/>`
           : `<rect x="${bx}" y="${by}" width="${w}" height="${w}" fill="#fff" stroke="#c7d5d1" stroke-width=".8"/>`;
       } else {
@@ -300,14 +310,17 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   // A pill centred on `mid`, kept inside the board; a verified pill grows by 10 to hold its tick.
   // `content(textCentre, left)` draws what is inside.
   const W = n * cell;
+  // On narrow cells the tick sits on the pill's corner instead, so the pill keeps within its column.
   const pill = (mid: number, py: number, w: number, bg: string, stroke: string | null,
     content: (tc: number, left: number) => string, st: ClueStatus | null) => {
-    const tot = w + (st === 'ok' ? 10 : 0);
+    const corner = st === 'ok' && w + 10 > cell - 2;
+    const tot = w + (st === 'ok' && !corner ? 10 : 0);
     const px = Math.min(Math.max(mid - tot / 2, 0), Math.max(0, W - tot));
     let o = `<rect x="${px}" y="${py}" width="${tot}" height="18" rx="9" fill="${bg}"${stroke ? ` stroke="${stroke}"` : ''}/>${content(px + w / 2, px)}`;
     if (st === 'ok') {
-      const kx = px + tot - 7;
-      const ky = py + 9;
+      const kx = corner ? Math.min(px + tot - 2, W - 4) : px + tot - 7;
+      const ky = corner ? py + 1 : py + 9;
+      if (corner) o += `<circle cx="${kx}" cy="${ky}" r="6.2" fill="#fff"/>`;
       o += `<circle cx="${kx}" cy="${ky}" r="5" fill="${OK}"/><path d="M${kx - 2.4} ${ky} l1.7 1.7 l2.9 -3.3" stroke="#fff" stroke-width="1.4" fill="none"/>`;
     }
     if (st === 'broken') o += `<rect x="${px - 1.5}" y="${py - 1.5}" width="${tot + 3}" height="21" rx="10.5" fill="none" stroke="${BAD}" stroke-width="2"/>`;
@@ -326,9 +339,11 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     if (cl.type !== 'column') return;
     const entries = Object.entries(cl.counts);
     const ty = tagY(cl.col);
-    const w = 16 + entries.length * 20;
+    // Tighter side padding on narrow cells, so a one-plant record fits its column.
+    const narrow = cell < 44;
+    const w = (narrow ? 12 : 16) + entries.length * 20;
     const inner = (_tc: number, left: number) => entries.map(([k, v], j) => {
-      const bx = left + 9 + j * 20;
+      const bx = left + (narrow ? 7 : 9) + j * 20;
       const p = k.startsWith('I:') ? 'I' : k;
       return `<rect x="${bx - 4}" y="${ty + 5}" width="8" height="8" rx="${A ? 2.5 : 0}" fill="${fill(p)}"${A ? '' : ` stroke="${ink}" stroke-width=".8"`}/>`
         + T(bx + 9, ty + 12.5, String(v));
@@ -401,9 +416,11 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     const ry = baseY + k * 40;
     const lab = W < 240 ? nb.name : `${UI.neighborLine(nb.name, nb.cap)}${grid.co2_cap !== null ? ` · ${UI.co2PerCell(nb.co2)}` : ''}`;
     s += T(0, ry + 8, lab, { anchor: 'start', w: 700, size: 9, color: soft });
+    // Narrow cells: wider pills (3 px margin), so a padlock and its value both fit.
+    const inset = cell < 44 ? 3 : 6;
     for (let c = 0; c < n; c++) {
-      const px = x(c) + 6;
-      const w = cell - 12;
+      const px = x(c) + inset;
+      const w = cell - 2 * inset;
       const yy = ry + 14;
       const fi = flowClue(nb.id, c);
       const flow = fi >= 0 ? grid.clues[fi] : undefined;
@@ -420,21 +437,22 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       const st = fi >= 0 ? statusOf(fi) : null;
       const text = e && im ? `→${e} ←${im}` : e ? `→ ${e}` : im ? `← ${im}` : flow && flow.type === 'flow' && flow.dir === 'import' && flow.value ? `← ${flow.value}` : '0';
       const aria = isLocked ? UI.exportLocked(nb.name, columnLabel(grid, c)) : UI.exportLabel(nb.name, columnLabel(grid, c), e, im);
-      const act = isLocked || !input.interactive ? '' : ` data-act="export" data-country="${esc(nb.id)}" data-col="${c}"${focus}`;
-      s += `<g class="pill${act ? ' act' : ''}"${act} aria-label="${esc(aria)}">`;
+      const act = !input.interactive ? '' : ` data-act="${isLocked ? 'locked' : 'export'}" data-country="${esc(nb.id)}" data-col="${c}"${focus}`;
+      s += `<g class="pill${act ? ' act' : ''}${isLocked ? ' locked' : ''}"${act} aria-label="${esc(aria)}">`;
       if (!e && !im) {
         const pending = flow && flow.type === 'flow' && flow.dir === 'import' && flow.value > 0;
         s += `<rect x="${px}" y="${yy}" width="${w}" height="18" rx="9" fill="${A ? '#fbf7f9' : '#fff'}" stroke="${pending ? PIECE_COLORS.I.ink : '#dccfd7'}" stroke-dasharray="3 3"/>`
           + T(px + w / 2, yy + 12.5, text, { w: 700, size: 9, color: pending ? ink : '#c3b5be' });
       } else {
         s += `<rect x="${px}" y="${yy}" width="${w}" height="18" rx="9" fill="${PIECE_COLORS.I.a}"${fi >= 0 ? ` stroke="${ink}" stroke-width="1.5"` : ''}/>`
-          + T(px + w / 2 + (fi >= 0 ? 5 : 0), yy + 12.5, w < 36 ? text.replace(' ', '') : text);
+          + T(px + w / 2 + (isLocked ? 5 : 0), yy + 12.5, w < 36 ? text.replace(' ', '') : text);
       }
-      if (fi >= 0) {
-        // A published flow carries a padlock inside its pill.
+      // A published export is fixed: padlock inside its pill. A published import only outlines
+      // the pill (the player still exports there freely).
+      if (isLocked) {
         s += `<g transform="translate(${px + 3} ${yy + 4.5}) scale(.5)" fill="none" stroke="${ink}" stroke-width="2.4" stroke-linecap="round">${ICONS.lock}</g>`;
-        if (st === 'broken') s += `<rect x="${px - 1.5}" y="${yy - 1.5}" width="${w + 3}" height="21" rx="10.5" fill="none" stroke="${BAD}" stroke-width="2"/>`;
       }
+      if (fi >= 0 && st === 'broken') s += `<rect x="${px - 1.5}" y="${yy - 1.5}" width="${w + 3}" height="21" rx="10.5" fill="none" stroke="${BAD}" stroke-width="2"/>`;
       s += '</g>';
     }
   });

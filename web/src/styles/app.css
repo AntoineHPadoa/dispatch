@@ -34,11 +34,12 @@ button { font: inherit; color: inherit; }
 .soft { color: var(--soft); }
 
 /* ---- tools (pills) ---- */
-.tools { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
-.tool { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; color: var(--soft); background: transparent; border: 1px solid var(--hair); border-radius: 999px; padding: 6px 12px; cursor: pointer; text-decoration: none; min-height: 32px; }
+.tools { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
+.tool { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; color: var(--soft); background: transparent; border: 1px solid var(--hair); border-radius: 999px; padding: 6px 10px; cursor: pointer; text-decoration: none; min-height: 32px; }
 .tool:hover { color: var(--ink); border-color: #d9cbd3; }
 .tool.on { color: var(--ink); border-color: var(--ink); }
 .tool:disabled { opacity: .45; cursor: default; }
+.tool[hidden] { display: none; }
 .tool svg, .ico svg, .backlink svg, .go svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 .backlink { display: inline-flex; align-items: center; gap: 4px; font-size: .78rem; color: var(--soft); text-decoration: none; margin-bottom: 8px; }
 .backlink:hover { color: var(--ink); }
@@ -65,13 +66,15 @@ button { font: inherit; color: inherit; }
 .board-slider[hidden] { display: none; }
 .board-wrap.erasing .board-scroll > svg { cursor: cell; }
 .board-svg .pill.act { cursor: pointer; }
-.board-svg .pill.act:hover rect:first-child { stroke: var(--ink); }
+.board-svg .pill.act:not(.locked):hover rect:first-child { stroke: var(--ink); }
+.board-svg .pill.locked { cursor: default; }
 .board-svg .pill:focus { outline: none; }
 .board-svg .pill:focus-visible rect:first-child { stroke: var(--accent); stroke-width: 2.5; stroke-dasharray: none; }
 
 .msg-slot, .play > .tools { width: 0; min-width: 100%; }
-.msg { font-size: .8rem; display: flex; gap: 8px; align-items: center; justify-content: center; text-align: center; color: #3f7656; min-height: 1.5em; }
-.msg::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); flex: none; }
+.msg { font-size: .8rem; text-align: center; color: #3f7656; min-height: 1.5em; text-wrap: balance; }
+/* The dot sits in the text flow, so it stays next to the first word when the message wraps. */
+.msg::before { content: ""; display: inline-block; vertical-align: .05em; margin-right: 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
 .msg.bad { color: #a83d52; }
 .msg.bad::before { background: var(--bad); }
 .msg.info { color: var(--soft); }
@@ -188,3 +191,6 @@ body.print-preview #print-root .a4 { box-shadow: 0 2px 18px rgba(59, 51, 64, .12
 }
 @media screen and (max-width: 840px) { body.print-preview #print-root .a4 { zoom: .62; } }
 @media screen and (max-width: 520px) { body.print-preview #print-root .a4 { zoom: .43; } }
+/* 210 mm at .36 is 286 px: the sheet keeps a 16 px margin on a 320 px screen. */
+@media screen and (max-width: 380px) { body.print-preview #print-root .a4 { zoom: .36; } }
+@media (max-width: 360px) { .tool { padding: 6px 8px; gap: 4px; font-size: .74rem; } }

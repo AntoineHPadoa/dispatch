@@ -150,7 +150,7 @@ describe('placement rules (one invalid case per rule)', () => {
     expect(refused(place(g, s, { piece: 'I', country: 'DE', row: 0, col: 1, len: 1 })).code).toBe('inventory');
     expect(refused(place(g, s0, { piece: 'I', country: 'UK', row: 0, col: 1, len: 1 })).code).toBe('inventory');
     s = ok(setExport(g, s0, 'DE', 2, 1));
-    expect(refused(setExport(g, s, 'DE', 3, 1)).message).toBe('Plus d’export vers l\'Allemagne dans l’inventaire (1 au total).');
+    expect(refused(setExport(g, s, 'DE', 3, 1)).message).toBe('Plus d’export vers l’Allemagne dans l’inventaire (1 au total).');
   });
 
   it('stock (level none)', () => {
@@ -174,7 +174,7 @@ describe('placement rules (one invalid case per rule)', () => {
 
   it('saturated line, for an import and for an export', () => {
     let s = ok(setExport(g, s0, 'DE', 0, 1));
-    expect(refused(place(g, s, { piece: 'I', country: 'DE', row: 0, col: 0, len: 1 }))).toEqual({ code: 'line', message: 'Ligne vers l\'Allemagne saturée à 0h.' });
+    expect(refused(place(g, s, { piece: 'I', country: 'DE', row: 0, col: 0, len: 1 }))).toEqual({ code: 'line', message: 'Ligne vers l’Allemagne saturée à 0h.' });
     s = ok(place(g, s0, { piece: 'I', country: 'DE', row: 0, col: 1, len: 1 }));
     expect(refused(setExport(g, s, 'DE', 1, 1)).code).toBe('line');
     expect(refused(setExport(g, s0, 'DE', 0, 2)).code).toBe('line');
@@ -302,7 +302,9 @@ describe('clues (one broken case per type)', () => {
     const s = solutionState(g);
     expect(status(g, s, { type: 'exchanges', exports: { DE: 2 }, imports: { DE: 0 } })).toBe('ok');
     expect(status(g, s, { type: 'exchanges', exports: { DE: 1 } })).toBe('broken');
-    expect(status(g, s, { type: 'exchanges', imports: { '*': 1 } })).toBe('open');
+    // Under the target: open while cells are left to cover, contradicted on a full board.
+    expect(status(g, newGame(g), { type: 'exchanges', imports: { '*': 1 } })).toBe('open');
+    expect(status(g, s, { type: 'exchanges', imports: { '*': 1 } })).toBe('broken');
     const g7 = byId(7);
     expect(status(g7, solutionState(g7), { type: 'exchanges', step: 0 })).toBe('broken');
   });
@@ -324,13 +326,13 @@ describe('clues (one broken case per type)', () => {
 
   it('texts read as market documents', () => {
     const g = makeGrid();
-    expect(clueText(g, { type: 'price', col: 2, piece: 'G' })).toBe("À 8h, c'est le gaz qui fixe le prix.");
+    expect(clueText(g, { type: 'price', col: 2, piece: 'G' })).toBe("À 8h, c’est le gaz qui fixe le prix.");
     expect(clueText(g, { type: 'bar', piece: 'N', col: 1, len: 5 })).toBe('Un réacteur tourne de 4h à 24h.');
-    expect(clueText(g, { type: 'length', piece: 'N', len: 6 })).toBe("Un réacteur tourne 6 créneaux d'affilée.");
+    expect(clueText(g, { type: 'length', piece: 'N', len: 6 })).toBe("Un réacteur tourne 6 créneaux d’affilée.");
     expect(clueText(g, { type: 'column', col: 4, counts: { G: 2, T: 0 } })).toBe('Relevé de 16h : 2 cases de gaz, aucune case de TAC.');
-    expect(clueText(g, { type: 'flow', col: 5, country: 'DE', dir: 'export', value: 1 })).toBe("À 20h, 1 bloc part vers l'Allemagne.");
-    expect(clueText(g, { type: 'flow', col: 5, country: 'UK', dir: 'import', value: 0 })).toBe("À 20h, aucun bloc n'arrive du Royaume-Uni.");
-    expect(clueText(g, { type: 'exchanges', exports: { DE: 2 }, step: 1 })).toBe("Aujourd'hui : 2 blocs exportés vers l'Allemagne, 1 pompage.");
+    expect(clueText(g, { type: 'flow', col: 5, country: 'DE', dir: 'export', value: 1 })).toBe("À 20h, 1 bloc part vers l’Allemagne.");
+    expect(clueText(g, { type: 'flow', col: 5, country: 'UK', dir: 'import', value: 0 })).toBe("À 20h, aucun bloc n’arrive du Royaume-Uni.");
+    expect(clueText(g, { type: 'exchanges', exports: { DE: 2 }, step: 1 })).toBe("Aujourd’hui : 2 blocs exportés vers l’Allemagne, 1 pompage.");
     expect(clueText(g, { type: 'engaged', piece: 'T', row: 4, col: 4, len: 1 })).toBe('Déjà engagé : une TAC de 16h à 20h, ligne 5.');
   });
 });
@@ -338,7 +340,7 @@ describe('clues (one broken case per type)', () => {
 describe('composition (§8.1)', () => {
   it('two drawings of one composition are both accepted', () => {
     const g = byId(8);
-    // Reference row 0: N 0h-15h + N 15h-24h; here N 0h-9h + N 9h-24h (the solver's drawing)
+    // Reference row 0: N 0h-15h + N 15h-24h; here N 0h-9h + N 9h-24h (the solver’s drawing)
     const other: PlayState = {
       ...solutionState(g),
       bars: [N(0, 0, 3), N(0, 3, 5), { piece: 'B', row: 1, col: 1, len: 1 }, N(1, 3, 4), { piece: 'B', row: 2, col: 5, len: 1 }],

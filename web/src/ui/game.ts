@@ -10,7 +10,7 @@ import {
   barIndexAt, checkPlaceOver, evaluate, newGame, placeOver, remove, removeStep, addStep, setExport, exportsAt,
   importsAt, type Evaluation, type PlayState,
 } from '../engine';
-import { MSG, TECHNIQUES, UI, columnLabel, durationText, placementLabel } from '../i18n/fr';
+import { MSG, TECHNIQUES, UI, columnLabel, countryTo, durationText, placementLabel } from '../i18n/fr';
 import { lockedExports, renderBoard, cellAt, type BoardGeometry } from './board';
 import {
   cancel, idle, moveTo, press, previewRect, release, tap, type Cell, type GestureState, type Rect, type Shape,
@@ -27,7 +27,7 @@ export interface GameContext {
   print: (grid: Grid) => void;
 }
 
-type Tone = 'ok' | 'bad' | 'info';
+export type Tone = 'ok' | 'bad' | 'info';
 
 const LONG_PRESS_MS = 550;
 const MIN_CELL = 32;
@@ -58,9 +58,39 @@ export function displayTitle(grid: Grid): string {
 
 export const DIFF_CLASS: Record<number, string> = { 1: 'd1', 2: 'd2', 3: 'd3', 4: 'd4' };
 
+/**
+ * Message under the board when nothing is being laid: the last action's message, else the reason
+ * a fully covered board is not solved, else rule errors, else the idle hint (null).
+ */
+export function boardMessage(ev: Evaluation, last: { text: string; tone: Tone } | null): { text: string; tone: Tone } | null {
+  const full = !ev.solved && ev.missing === 0 && ev.unmet.length > 0;
+  if (full && (!last || last.tone !== 'bad')) return { text: ev.unmet[0]!, tone: 'bad' };
+  if (last) return last;
+  if (ev.invalidBars.length) return { text: `${UI.invalidBars(ev.invalidBars.length)} ${ev.errors[0]?.message ?? ''}`, tone: 'bad' };
+  if (ev.errors.length) return { text: ev.errors[0]!.message, tone: 'bad' };
+  return null;
+}
+
 /** Next export value when the player taps a neighbor pill: +1, back to 0 past the capacity. */
 export function nextExportValue(current: number, imports: number, cap: number): number {
   return current + 1 + imports > cap ? 0 : current + 1;
+}
+
+/**
+ * A tap on a neighbor pill: the next export value, or the reason it is refused (line already
+ * full with imports, inventory spent). `state` is null when nothing changes.
+ */
+export function exportTap(grid: Grid, state: PlayState, country: string, col: number): { state: PlayState | null; refused?: string } {
+  const nb = grid.neighbors.find((x) => x.id === country);
+  if (!nb) return { state: null };
+  const cur = exportsAt(state, country, col);
+  const imp = importsAt(state, country, col);
+  if (cur === 0 && imp + 1 > nb.cap) return { state: null, refused: MSG.line(countryTo(grid, country), columnLabel(grid, col)) };
+  let value = nextExportValue(cur, imp, nb.cap);
+  let res = setExport(grid, state, country, col, value);
+  if (!res.ok && value > 0 && cur > 0) { value = 0; res = setExport(grid, state, country, col, 0); }
+  if (!res.ok) return { state: null, refused: res.error.message };
+  return { state: exportsAt(res.state, country, col) !== cur ? res.state : null };
 }
 
 export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () => void {
@@ -131,6 +161,9 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   const side = root.querySelector<HTMLElement>('.side')!;
   const msgSlot = root.querySelector<HTMLElement>('.msg-slot')!;
   const tools = root.querySelector<HTMLElement>('.tools')!;
+  // Tool clicks (toolbar and end banner) are caught on this screen's own element, so a grid
+  // opened before never reacts to them.
+  const gameEl = root.querySelector<HTMLElement>('.game')!;
 
   const shapeOf = (e: BookEntry): Shape => ({ lens: e.lens, heights: e.heights });
 
@@ -192,10 +225,12 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       else m = { text: over.length ? UI.poseOver(label, UI.replaces(grid, over)) : UI.poseOk(label), tone: 'ok' };
     } else if (gesture.anchor && selected) {
       m = { text: UI.hintSecondTap(labelOf(barOf(selected, { ...gesture.anchor, len: 1, height: 1 }))), tone: 'info' };
-    } else if (!m) {
-      if (ev.invalidBars.length) m = { text: `${UI.invalidBars(ev.invalidBars.length)} ${ev.errors[0]?.message ?? ''}`, tone: 'bad' };
-      else if (ev.errors.length) m = { text: ev.errors[0]!.message, tone: 'bad' };
-      else m = { text: erase ? UI.hintErase : selected?.piece === STEP_KEY ? UI.hintStep : UI.hintChoose, tone: 'info' };
+    } else {
+      m = boardMessage(ev, m) ?? {
+        text: erase ? UI.hintErase : selected?.piece === STEP_KEY ? UI.hintStep
+          : UI.hintChoose(grid.inventory.level !== 'exact', grid.neighbors.length > 0),
+        tone: 'info',
+      };
     }
     msgSlot.innerHTML = `<div class="msg ${m.tone}">${esc(m.text)}</div>`;
   }
@@ -213,6 +248,8 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     er.classList.toggle('on', erase);
     er.setAttribute('aria-pressed', String(erase));
     tools.querySelector<HTMLButtonElement>('[data-tool="undo"]')!.disabled = !canUndo(history);
+    // A solved grid shows Print in its banner: one Print button only.
+    tools.querySelector<HTMLButtonElement>('[data-tool="print"]')!.hidden = ev.solved;
   }
 
   function drawAll() {
@@ -273,15 +310,9 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   }
 
   function cycleExport(country: string, col: number) {
-    const nb = grid.neighbors.find((x) => x.id === country);
-    if (!nb) return;
-    const cur = exportsAt(history.present, country, col);
-    const imp = importsAt(history.present, country, col);
-    let value = nextExportValue(cur, imp, nb.cap);
-    let res = setExport(grid, history.present, country, col, value);
-    if (!res.ok && value > 0 && cur > 0) { value = 0; res = setExport(grid, history.present, country, col, 0); }
-    if (!res.ok) say(res.error.message, 'bad');
-    else if (exportsAt(res.state, country, col) !== cur) commit(res.state, null);
+    const r = exportTap(grid, history.present, country, col);
+    if (r.refused) say(r.refused, 'bad');
+    else if (r.state) commit(r.state, null);
   }
 
   /** STEP chosen: the first tap pumps, a tap on a later slot turbines. */
@@ -410,6 +441,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     const col = Number(el.getAttribute('data-col'));
     if (el.getAttribute('data-act') === 'export') cycleExport(el.getAttribute('data-country') ?? '', col);
     else if (el.getAttribute('data-act') === 'step-tag') removePairAt(col);
+    else if (el.getAttribute('data-act') === 'locked') say(UI.lockedTap(columnLabel(grid, col)), 'info');
     const again = scroll.querySelector<SVGElement>(`[data-act="${el.getAttribute('data-act')}"][data-col="${col}"]${el.getAttribute('data-country') ? `[data-country="${el.getAttribute('data-country')}"]` : ''}`);
     if (again && document.activeElement !== again && el === document.activeElement) again.focus();
   }
@@ -509,15 +541,14 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   // ---- size
   function fit() {
     // Desktop: the board column is as wide as the board, so measure what the side column leaves.
-    const game = root.querySelector<HTMLElement>('.game')!;
     const oneColumn = window.matchMedia('(max-width: 860px)').matches;
-    const avail = (oneColumn ? wrap.clientWidth : game.clientWidth - 340 - 30 - 48) - 6;
+    const avail = (oneColumn ? wrap.clientWidth : gameEl.clientWidth - 340 - 30 - 48) - 6;
     const n = grid.columns.length;
     const next = Math.max(MIN_CELL, Math.min(MAX_CELL, Math.floor(avail / n)));
     if (next !== cell || !geo) { cell = next; drawBoard(); } else syncSlider();
   }
   const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(fit) : null;
-  ro?.observe(root.querySelector<HTMLElement>('.game')!);
+  ro?.observe(gameEl);
 
   slider.addEventListener('input', () => { scroll.scrollLeft = Number(slider.value); });
   scroll.addEventListener('scroll', () => { slider.value = String(Math.round(scroll.scrollLeft)); });
@@ -529,7 +560,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   wrap.addEventListener('keydown', onKeyDown);
   wrap.addEventListener('focus', onWrapFocus);
   wrap.addEventListener('blur', onWrapBlur);
-  root.addEventListener('click', onToolClick);
+  gameEl.addEventListener('click', onToolClick);
   side.addEventListener('click', onSideClick);
   const onLeave = () => save();
   window.addEventListener('pagehide', onLeave);
@@ -542,5 +573,6 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     ro?.disconnect();
     clearLongPress();
     window.removeEventListener('pagehide', onLeave);
+    gameEl.removeEventListener('click', onToolClick);
   };
 }

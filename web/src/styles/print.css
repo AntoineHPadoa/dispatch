@@ -25,6 +25,10 @@
 .a4 .kind { font-size: 6.5pt; color: #6c7d78; }
 .a4 .pc::before { border-radius: 0; outline: .8px solid #1f2a27; }
 .a4 .slot { border-color: #6c7d78; }
+.a4 .legend .sec { margin-bottom: 1mm; }
+.a4 .legend ul { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 8mm; font-size: 9pt; }
+.a4 .legend li { break-inside: avoid; padding-left: 3mm; text-indent: -3mm; }
+.a4 .legend li::before { content: "· "; color: #6c7d78; }
 .a4 .foot { margin-top: auto; display: flex; justify-content: space-between; gap: 12px; color: #6c7d78; font-size: 7.5pt; border-top: 1px solid #c7d5d1; padding-top: 2mm; }
 
 @media print {

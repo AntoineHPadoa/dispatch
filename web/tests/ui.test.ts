@@ -15,9 +15,9 @@ import {
   playOrder, recordState, statusOf, type KeyValueStore,
 } from '../src/ui/progress';
 import { boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard } from '../src/ui/board';
-import { applyLockedExports, displayTitle, initialState, nextExportValue } from '../src/ui/game';
+import { applyLockedExports, boardMessage, displayTitle, exportTap, initialState, nextExportValue } from '../src/ui/game';
 import { STEP_KEY, bookEntries, isDayClue, publishedStepPairs, renderBook, renderCo2, richClueText } from '../src/ui/panels';
-import { renderSheet } from '../src/ui/print';
+import { renderSheet, slotLegend } from '../src/ui/print';
 
 const grids = gridsJson as unknown as Grid[];
 const byId = (id: number) => structuredClone(grids.find((g) => g.id === id)!);
@@ -288,7 +288,7 @@ describe('board and game helpers', () => {
   });
 
   it('display titles: tutorials lose their number, rated grids get one', () => {
-    expect(displayTitle(byId(1))).toBe('Poser l’inventaire'.replace('’', "'"));
+    expect(displayTitle(byId(1))).toBe('Poser l’inventaire');
     expect(displayTitle(byId(8))).toBe('Grille n° 8');
   });
 });
@@ -362,5 +362,69 @@ describe('STEP in the order book', () => {
     expect(sheet).not.toContain('step-tag');
     expect(sheet).not.toContain('data-piece="STEP"');
     expect(boardGeometry(g7, 'B', 40).bottomRows).toBe(2);
+  });
+});
+
+describe('review S6.3 round 1', () => {
+  const ok = <T>(r: { ok: true; state: T } | { ok: false }): T => { if (!r.ok) throw new Error('refused'); return r.state; };
+  it('a tap on an export pill of a line full of imports is refused with its reason', () => {
+    const g = byId(10);
+    const s = ok(place(g, newGame(g), { piece: 'I', country: 'DE', row: 0, col: 7, len: 1 }));
+    expect(exportTap(g, s, 'DE', 7)).toEqual({ state: null, refused: 'Ligne vers l’Allemagne saturée à 21h.' });
+    const free = exportTap(g, s, 'DE', 6);
+    expect(free.refused).toBeUndefined();
+    expect(free.state?.exports.DE?.[6]).toBe(1);
+  });
+
+  it('a full but wrong board says why, and its unmet clue is contradicted', () => {
+    const g = byId(8);
+    g.clues.push({ type: 'exchanges', imports: { '*': 1 } });
+    const ev = evaluate(g, solutionState(g));
+    expect(ev.missing).toBe(0);
+    expect(ev.solved).toBe(false);
+    expect(ev.clues[ev.clues.length - 1]!.status).toBe('broken');
+    const m = boardMessage(ev, { text: 'Nucléaire à 0h, ligne 1 : la pose tient.', tone: 'ok' });
+    expect(m?.tone).toBe('bad');
+    expect(m?.text).toMatch(/^Indice non respecté : Aujourd’hui/);
+    // A refusal from the last action stays on screen.
+    expect(boardMessage(ev, { text: 'refus', tone: 'bad' })).toEqual({ text: 'refus', tone: 'bad' });
+    // Cells left to cover: no verdict yet, the idle hint shows.
+    expect(boardMessage(evaluate(g, newGame(g)), null)).toBeNull();
+  });
+
+  it('only a published export carries a padlock; a published import pill still exports', () => {
+    const g5 = byId(5);
+    const imp = g5.clues.find((c) => c.type === 'flow' && c.dir === 'import');
+    expect(imp).toBeDefined();
+    const svg5 = renderBoard({ grid: g5, state: initialState(g5), ev: evaluate(g5, initialState(g5)), style: 'A', cell: 40, interactive: true }).svg;
+    expect(svg5).not.toContain('pill act locked');
+    const g7 = byId(7);
+    const svg7 = renderBoard({ grid: g7, state: initialState(g7), ev: null, style: 'A', cell: 40, interactive: true }).svg;
+    expect(svg7).toContain('class="pill act locked" data-act="locked"');
+  });
+
+  it('a verified record tag stays within its column on narrow cells', () => {
+    const g = byId(10);
+    const s = solutionState(g);
+    const cell = 35;
+    const svg = renderBoard({ grid: g, state: s, ev: evaluate(g, s), style: 'A', cell }).svg;
+    const tags = [...svg.matchAll(/<g class="tag"><rect x="([\d.]+)" y="[^"]+" width="([\d.]+)"/g)];
+    expect(tags.length).toBeGreaterThan(0);
+    for (const [, x, w] of tags) {
+      const col = Math.floor((Number(x) + Number(w) / 2) / cell);
+      expect(Number(x)).toBeGreaterThanOrEqual(col * cell);
+      expect(Number(x) + Number(w)).toBeLessThanOrEqual((col + 1) * cell);
+    }
+  });
+
+  it('the print sheet lists the slot clues in text and its footer covers exchanges and STEP', () => {
+    const g7 = byId(7);
+    const legend = slotLegend(g7);
+    expect(legend).toContain('<li>3h : le nucléaire fixe le prix</li>');
+    expect(legend).toContain('<li>9h : 4 nucléaire</li>');
+    expect(legend).toContain('<li>0h : 1 bloc exporté vers l’Allemagne</li>');
+    expect(legend).toContain('<li>15h → 24h : un réacteur tourne</li>');
+    expect(renderSheet(g7, 7)).toContain('Exports, imports, pompage ▲ et turbinage ▼');
+    expect(slotLegend(byId(1))).toBe('');
   });
 });

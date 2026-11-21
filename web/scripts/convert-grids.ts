@@ -41,13 +41,23 @@ const TEACHES: Record<number, string[]> = {
 };
 /** Intros rewritten: price clues name a plant (not a value), and grid 8 shows its dam stock. */
 const INTRO_OVERRIDE: Record<number, string> = {
-  2: 'Nouveau : un prix publié par la bourse. Sous un prix publié, aucune case n\'est plus chère que cette centrale.',
-  8: 'Sans inventaire : tu connais les technos disponibles, pas leurs quantités. '
-    + "Seul le stock d'eau du barrage est connu : 2 cases au plus. "
+  1: 'Pose toutes les centrales de l’inventaire, ni plus ni moins, en remplissant exactement la silhouette. '
+    + 'Quand tu sais combien de cases de chaque centrale vont dans une colonne, l’ordre ne compte pas.',
+  2: 'Nouveau : un prix publié par la bourse. Sous un prix publié, aucune case n’est plus chère que cette centrale.',
+  3: 'Nouveau : la ligne vers l’Allemagne. Touche une pastille sous un créneau pour exporter un bloc ; '
+    + 'pose « Import » comme une centrale d’une case. '
+    + 'S’il reste exactement autant de cases possibles que de cases à poser pour une centrale, toutes ces cases sont à elle.',
+  5: 'Nouveau : un flux publié, qui fixe l’échange d’un créneau avec l’Allemagne. '
+    + 'Une colonne a autant de cases que sa hauteur : connaissant les autres, on déduit celle qui reste.',
+  8: 'Sans inventaire : tu connais les centrales disponibles, pas leurs quantités. '
+    + 'Seul le stock d’eau du barrage est connu : 2 cases au plus. '
     + 'Les indices du marché suffisent à déduire la seule pose.',
   6: 'Un prix publié exige au moins une case de cette centrale dans la colonne : '
-    + "s'il n'y a qu'une place possible, c'est elle.",
+    + 's’il n’y a qu’une place possible, c’est elle.',
 };
+
+/** Player text uses the typographic apostrophe only. */
+const typo = (s: string) => s.replace(/'/g, '’');
 
 // ---- prototype shapes (only what the converter reads) ----------------------
 
@@ -229,11 +239,11 @@ function convertGrid(g: ProtoGrid): Grid {
       : { piece: b.piece as PieceId, row: b.row, col: b.col, len: b.len });
 
   const tutorial = g.section === 'Tutoriel';
-  const intro = INTRO_OVERRIDE[g.id] ?? g.intro;
-  if (INTRO_OVERRIDE[g.id]) note(g, 'intro rewritten (price clue names a plant; grid 8 states its dam stock)');
+  const intro = INTRO_OVERRIDE[g.id] ?? (g.intro ? typo(g.intro) : undefined);
+  if (INTRO_OVERRIDE[g.id]) note(g, 'intro rewritten (tutorial wording, price clue names a plant, grid 8 states its dam stock)');
   const grid: Grid = {
     id: g.id,
-    title: g.title,
+    title: typo(g.title),
     section: tutorial ? 'tutorial' : 'rated',
     ...(intro ? { intro } : {}),
     ...(tutorial && TEACHES[g.id] ? { teaches: TEACHES[g.id] } : {}),

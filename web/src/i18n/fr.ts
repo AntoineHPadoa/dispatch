@@ -32,11 +32,11 @@ interface CountryWords { to: string; from: string }
 
 /** Prepositions per country id; unknown ids fall back to the neighbor name. */
 const COUNTRY_WORDS: Record<string, CountryWords> = {
-  DE: { to: "vers l'Allemagne", from: "d'Allemagne" },
+  DE: { to: "vers l’Allemagne", from: "d’Allemagne" },
   UK: { to: 'vers le Royaume-Uni', from: 'du Royaume-Uni' },
   GB: { to: 'vers le Royaume-Uni', from: 'du Royaume-Uni' },
-  ES: { to: "vers l'Espagne", from: "d'Espagne" },
-  IT: { to: "vers l'Italie", from: "d'Italie" },
+  ES: { to: "vers l’Espagne", from: "d’Espagne" },
+  IT: { to: "vers l’Italie", from: "d’Italie" },
   BE: { to: 'vers la Belgique', from: 'de Belgique' },
   CH: { to: 'vers la Suisse', from: 'de Suisse' },
 };
@@ -60,7 +60,7 @@ export function columnLabel(grid: Grid, col: number): string {
   return `${Math.round((col * 24) / grid.columns.length)}h`;
 }
 
-/** "case de gaz", "case importée d'Allemagne" (key = piece id or I:<country>). */
+/** "case de gaz", "case importée d’Allemagne" (key = piece id or I:<country>). */
 function cellsOf(grid: Grid, key: string, k: number): string {
   if (key.startsWith('I:')) {
     return k ? `${plural(k, 'case importée', 'cases importées')} ${countryFrom(grid, key.slice(2))}`
@@ -75,11 +75,11 @@ export function clueText(grid: Grid, clue: Clue): string {
   const at = (c: number) => columnLabel(grid, c);
   switch (clue.type) {
     case 'price':
-      return `À ${at(clue.col)}, c'est ${PIECE_WORDS[clue.piece].the} qui fixe le prix.`;
+      return `À ${at(clue.col)}, c’est ${PIECE_WORDS[clue.piece].the} qui fixe le prix.`;
     case 'bar':
       return `${capitalize(PIECE_WORDS[clue.piece].a)} tourne de ${at(clue.col)} à ${at(clue.col + clue.len)}.`;
     case 'length':
-      return `${capitalize(PIECE_WORDS[clue.piece].a)} tourne ${plural(clue.len, 'créneau', 'créneaux')} d'affilée.`;
+      return `${capitalize(PIECE_WORDS[clue.piece].a)} tourne ${plural(clue.len, 'créneau', 'créneaux')} d’affilée.`;
     case 'column':
       return `Relevé de ${at(clue.col)} : ${Object.entries(clue.counts).map(([k, v]) => cellsOf(grid, k, v)).join(', ')}.`;
     case 'flow': {
@@ -91,7 +91,7 @@ export function clueText(grid: Grid, clue: Clue): string {
       }
       const from = countryFrom(grid, clue.country);
       return k ? `À ${at(clue.col)}, ${plural(k, 'bloc arrive', 'blocs arrivent')} ${from}.`
-        : `À ${at(clue.col)}, aucun bloc n'arrive ${from}.`;
+        : `À ${at(clue.col)}, aucun bloc n’arrive ${from}.`;
     }
     case 'exchanges': {
       const multi = grid.neighbors.length > 1;
@@ -105,11 +105,33 @@ export function clueText(grid: Grid, clue: Clue): string {
         parts.push(k ? `${plural(k, 'bloc importé', 'blocs importés')}${where}` : `aucun bloc importé${where}`);
       }
       if (clue.step !== undefined) parts.push(clue.step ? plural(clue.step, 'pompage') : 'aucun pompage');
-      return `Aujourd'hui : ${parts.join(', ')}.`;
+      return `Aujourd’hui : ${parts.join(', ')}.`;
     }
     case 'engaged':
       return `Déjà engagé : ${PIECE_WORDS[clue.piece].a} de ${at(clue.col)} à ${at(clue.col + clue.len)}, `
         + `ligne ${clue.row + 1}.`;
+  }
+}
+
+/** Short text of a clue drawn on the grid, for the paper legend: "8h : la TAC fixe le prix", "16h : 1 gaz, 3 TAC". */
+export function slotClueShort(grid: Grid, clue: Clue): string {
+  const at = (c: number) => columnLabel(grid, c);
+  const named = (key: string, k: number) => (key.startsWith('I:')
+    ? `${plural(k, 'import')} ${countryFrom(grid, key.slice(2))}`
+    : `${k} ${PIECE_WORDS[key as PieceId]?.name.toLowerCase() ?? key}`);
+  switch (clue.type) {
+    case 'price':
+      return `${at(clue.col)} : ${PIECE_WORDS[clue.piece].the} fixe le prix`;
+    case 'column':
+      return `${at(clue.col)} : ${Object.entries(clue.counts).map(([k, v]) => named(k, v)).join(', ')}`;
+    case 'bar':
+      return `${at(clue.col)} → ${at(clue.col + clue.len)} : ${PIECE_WORDS[clue.piece].a} tourne`;
+    case 'flow':
+      return clue.dir === 'export'
+        ? `${at(clue.col)} : ${clue.value ? plural(clue.value, 'bloc exporté', 'blocs exportés') : 'aucun export'} ${countryTo(grid, clue.country)}`
+        : `${at(clue.col)} : ${clue.value ? plural(clue.value, 'bloc importé', 'blocs importés') : 'aucun import'} ${countryFrom(grid, clue.country)}`;
+    default:
+      return clueText(grid, clue);
   }
 }
 
@@ -171,7 +193,7 @@ export const TODO = {
   otherSolution: () => 'Pose valide, mais ce n’est pas la solution attendue.',
 };
 
-/** "de nucléaire", "d'import d'Allemagne": complement used by inventory messages. */
+/** "de nucléaire", "d’import d’Allemagne": complement used by inventory messages. */
 export function ofPiece(grid: Grid, piece: string, country?: string): string {
   if (piece === 'I') return country ? `d’import ${countryFrom(grid, country)}` : 'd’import';
   return PIECE_WORDS[piece as PieceId]?.of ?? `de ${piece}`;
@@ -299,7 +321,7 @@ export const UI = {
   available: 'Centrales disponibles',
   availableHint: 'formes autorisées, quantités à déduire',
   importName: 'Import',
-  importHint: (country: string) => `${country}, 1 case`,
+  importHint: (country: string) => `${country}, 1\u00a0case`,
   exchangesTitle: 'Échanges',
   exportPill: (id: string, got: number, want: number) => `→ ${id} ${got} / ${want}`,
   importPill: (id: string, got: number, want: number) => `← ${id} ${got} / ${want}`,
@@ -334,8 +356,11 @@ export const UI = {
   exportLabel: (name: string, col: string, value: number, imports: number) =>
     `${name}, ${col} : ${value} exporté${value > 1 ? 's' : ''}${imports ? `, ${imports} importé${imports > 1 ? 's' : ''}` : ''}. Touche pour changer l’export.`,
   exportLocked: (name: string, col: string) => `${name}, ${col} : flux publié, verrouillé.`,
+  lockedTap: (col: string) => `Flux publié à ${col} : verrouillé.`,
   stepCellLabel: (col: string) => `STEP à ${col}`,
-  hintChoose: 'Choisis une centrale dans le carnet, puis glisse sur la grille (ou touche la case de départ puis celle d’arrivée).',
+  /** Idle hint: `list` when the grid has no order book, `exports` when it has a neighbor line. */
+  hintChoose: (list: boolean, exports: boolean) => `Choisis une centrale dans ${list ? 'la liste' : 'le carnet'}, puis glisse sur la grille`
+    + ` (ou touche la case de départ puis celle d’arrivée).${exports ? ' Exporte en touchant les pastilles sous la grille.' : ''}`,
   hintSecondTap: (label: string) => `${label} : touche maintenant la case d’arrivée.`,
   hintErase: 'Gomme : touche une centrale pour la retirer.',
   poseOk: (label: string) => `${label} : la pose tient.`,
@@ -382,6 +407,8 @@ export const UI = {
   printFoot: 'Couvre toute la silhouette. Une seule solution.',
   printFootStep: 'Pompage ▲ et turbinage ▼ : note-les dans les cases sous la grille.',
   printFootExports: 'Exports et imports : note-les dans les cases sous chaque créneau.',
+  printFootBoth: 'Exports, imports, pompage ▲ et turbinage ▼ : note-les dans les cases sous la grille.',
+  printLegend: 'Indices sur la grille',
   printId: (id: number) => `Dispatch · n° ${id}`,
   printTitle: 'Impression',
   printAll: 'Imprimer toutes les grilles',
