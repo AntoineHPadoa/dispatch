@@ -16,7 +16,7 @@ import {
 } from '../src/ui/progress';
 import { boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard } from '../src/ui/board';
 import {
-  applyLockedExports, boardMessage, displayTitle, exportTap, initialState, isInitialState, newlyBroken, nextExportValue,
+  applyLockedExports, boardMessage, bulletinTag, displayTitle, exportTap, initialState, isInitialState, newlyBroken, nextExportValue,
   poseMessage, techniqueLine,
 } from '../src/ui/game';
 import { MSG, durationText } from '../src/i18n/fr';
@@ -348,7 +348,25 @@ describe('board and game helpers', () => {
 
   it('display titles: tutorials lose their number, rated grids get one', () => {
     expect(displayTitle(byId(1))).toBe('Poser l’inventaire');
-    expect(displayTitle(byId(8))).toBe('Grille n° 8');
+    expect(displayTitle(byId(8))).toBe(byId(8).bulletin!.title);
+    const noBulletin = { ...byId(8), bulletin: undefined, title: byId(8).difficulty.label } as Grid;
+    expect(displayTitle(noBulletin)).toBe(UI.gridNumber(8));
+  });
+
+  it('a grid with a bulletin shows its number on the game eyebrow tag, the sheet and the tab title', () => {
+    const g = byId(8);
+    const tag = bulletinTag(g)!;
+    expect(tag).toMatch(new RegExp(`^n° ${g.bulletin!.number} · `));
+    expect(bulletinTag(byId(1))).toBeNull();
+    const html = renderSheet(g, null);
+    expect(html).toContain(tag);
+    expect(html).toContain(g.bulletin!.title);
+    expect(html).not.toContain('Grille notée');
+  });
+
+  it('home labels say Accueil', () => {
+    expect(UI.back).toBe('Accueil');
+    expect(UI.home).toBe('Accueil');
   });
 });
 

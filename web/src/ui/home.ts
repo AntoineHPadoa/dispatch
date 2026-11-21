@@ -6,17 +6,16 @@
  * - Accent: one pink (stamp, price cell, progress, finished items); plant colours stay in the game.
  */
 import { UI, PIECE_WORDS } from '../i18n/fr';
-import { currentBulletin, localIsoDate, previousBulletins, weekdayIndex, type BulletinGrid } from '../model/bulletin';
+import { currentBulletin, localIsoDate, previousBulletins, type BulletinGrid } from '../model/bulletin';
 import { dossierNext, dossierProgress, dossiers, type Dossier } from '../model/dossiers';
 import type { Grid, PieceId } from '../model/grid';
-import { displayTitle, techniqueLine } from './game';
+import { bulletinTag, displayTitle, techniqueLine } from './game';
 import { logoSvg, miniSilhouette, sheetSilhouette } from './home-art';
 import { esc, icon } from './palette';
 import { statusOf, type GridStatus, type Progress } from './progress';
 
 const stamp = (text: string) => `<span class="stamp">${esc(text)}</span>`;
-const dayTag = (g: BulletinGrid) =>
-  UI.bulletin.sheetTag(g.bulletin.number, UI.bulletin.weekdayShort[weekdayIndex(g.bulletin.published)] ?? '');
+const dayTag = (g: BulletinGrid) => bulletinTag(g) ?? '';
 
 /** Rating dots (4 levels), with the level as accessible text. */
 const dots = (g: Grid) =>
@@ -42,7 +41,7 @@ function sheetCard(g: BulletinGrid, st: GridStatus): string {
     <div class="band"><div><span class="eyebrow">${esc(dayTag(g))}</span><h2>${esc(b.title)}</h2></div>${stamp(st === 'done' ? UI.bulletin.stampDone : UI.bulletin.stampTodo)}</div>
     <div class="sbody">
       <p>${esc(b.text)}</p>
-      <div class="sil-wrap">${sheetSilhouette(g, b.weather, (k) => UI.bulletin.weather[k], UI.bulletin.silhouetteLabel(Math.min(...g.demand), Math.max(...g.demand), g.demand.length))}</div>
+      <div class="sil-wrap">${sheetSilhouette(g, b.weather, (k) => UI.bulletin.weather[k], UI.bulletin.silhouetteLabel(Math.min(...g.demand), Math.max(...g.demand), g.demand.length), st === 'done')}</div>
       <ul class="chips">${plantChips(g)}</ul>
       <div class="sact">${dots(g)}<a class="btn" href="#/grille/${g.id}">${icon('next')}${esc(goLabel(st))}</a></div>
     </div></article>`;

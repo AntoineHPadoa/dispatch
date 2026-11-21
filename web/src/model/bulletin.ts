@@ -1,6 +1,7 @@
 /*
  * Daily sheet selection (pure, no DOM).
  * - publishedBulletins(): grids with a bulletin published on or before a day, oldest first.
+ * - isPublished(): false for a bulletin dated after a day (direct URLs fall back to home).
  * - currentBulletin(): the grid of the day = latest publication date <= today; when the stock runs
  *   out, the last published one stays; before the first publication there is none.
  * - previousBulletins(): the other published sheets, newest first.
@@ -21,6 +22,11 @@ export function publishedBulletins(grids: readonly Grid[], today: string): Bulle
   return grids
     .filter((g): g is BulletinGrid => g.bulletin !== undefined && g.bulletin.published <= today)
     .sort((a, b) => a.bulletin.published.localeCompare(b.bulletin.published) || a.bulletin.number - b.bulletin.number);
+}
+
+/** A grid can be opened by URL unless its bulletin is not published yet on `today`. */
+export function isPublished(grid: Grid, today: string): boolean {
+  return !grid.bulletin || grid.bulletin.published <= today;
 }
 
 /** The sheet of the day, or null when nothing is published yet. */

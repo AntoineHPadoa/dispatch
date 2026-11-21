@@ -34,7 +34,7 @@ function priceCell(grid: Grid): [number, number] | null {
 }
 
 /** Demand silhouette, cell by cell, one sky icon per slot above, slot labels below. */
-export function sheetSilhouette(grid: Grid, weather: readonly WeatherKind[], labelFor: (k: WeatherKind) => string, label: string): string {
+export function sheetSilhouette(grid: Grid, weather: readonly WeatherKind[], labelFor: (k: WeatherKind) => string, label: string, done = false): string {
   const cell = 40, top = 30, rows = Math.max(...grid.demand), n = grid.demand.length;
   const w = n * cell, hBars = rows * cell, h = top + hBars + 18;
   const hi = priceCell(grid);
@@ -46,7 +46,7 @@ export function sheetSilhouette(grid: Grid, weather: readonly WeatherKind[], lab
     for (let r = 0; r < d; r++) {
       const on = hi !== null && hi[0] === c && hi[1] === r;
       s += `<rect x="${c * cell + 1.5}" y="${top + (rows - 1 - r) * cell + 1.5}" width="${cell - 3}" height="${cell - 3}" rx="5" `
-        + `class="sil-cell${on ? ' price' : ''}"/>`;
+        + `class="sil-cell${on ? ' price' : ''}${done && !on ? ' done' : ''}"/>`;
     }
   });
   grid.columns.forEach((t, i) => {

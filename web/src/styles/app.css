@@ -180,6 +180,7 @@ body:has(.home) { background-color: #faf8f9; background-image: radial-gradient(#
 .mini-sil path { fill: #ece7ea; }
 .mini-sil path.done { fill: var(--rose-soft); }
 .sil-cell { fill: #fff; stroke: #eadfe6; }
+.sil-cell.done { fill: var(--rose-soft); }
 .sil-cell.price { fill: var(--rose); fill-opacity: .8; stroke: none; }
 .first-note { margin: 0; color: var(--soft); font-size: .9rem; font-weight: 700; }
 .ptxt { display: grid; line-height: 1.25; min-width: 0; }

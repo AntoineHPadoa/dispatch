@@ -8,7 +8,7 @@
 import type { Grid } from '../model/grid';
 import { TECHNIQUES, UI, slotClueShort } from '../i18n/fr';
 import { renderBoard } from './board';
-import { displayTitle, initialState } from './game';
+import { bulletinTag, displayTitle, initialState } from './game';
 import { clueItem, co2RuleText, isDayClue, renderBook } from './panels';
 import { esc } from './palette';
 
@@ -29,7 +29,7 @@ export function renderSheet(grid: Grid, tutorialIndex: number | null): string {
   const lead = grid.intro
     ? `<p class="lead">${techniques.length ? `<b>${esc(techniques.map((t) => t!.name).join(' · '))}.</b> ` : ''}${esc(grid.intro)}</p>` : '';
   const meta = tutorialIndex !== null ? `${UI.tutorialShort(tutorialIndex)} · ${grid.difficulty.label}`
-    : `${UI.ratedEyebrow} · ${grid.difficulty.label}`;
+    : `${bulletinTag(grid) ?? UI.ratedEyebrow} · ${grid.difficulty.label}`;
   const day = grid.clues.filter(isDayClue).map((c) => clueItem(grid, c, null, true));
   const co2 = co2RuleText(grid);
   if (co2) day.push(`<li class="clue"><span><span class="kind">${esc(UI.co2Kind)}</span><span class="txt">${esc(co2)}</span></span></li>`);

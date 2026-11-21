@@ -79,3 +79,30 @@ Chaque nom se termine par la largeur (`-1280`, `-375`, `-320`), pleine page.
 - **4** : `4-dossier-*`, `4-tuto1-solved-*`, `4-tuto7-solved-*`, `4-dossier-done-*` (7 « Terminée »), `4-home-dossier-done-*` (7 / 7).
 - **5** : `5-home-avant-*` / `5-print-avant-*` (2026-11-17), `5-home-veille-*` / `5-grid10-solved-veille-*` / `5-print-veille-*` (2026-11-20), PDF `5-print-avant.pdf` (7 pages) et `5-print-veille.pdf` (10 pages), `5-direct-url-grid11-veille-1280.png` (m2).
 - **7** : `7-home-progress-1280.png` (n° 213 et 2 tutoriels bouclés), `7-maquette-tour5-L1a.png` (maquette Tour 5, accueil V1 avec L1a, pour comparaison).
+
+## Corrections
+
+Branche `v2-menu`, tour 1 de corrections.
+
+- **À corriger 1** : une grille avec `bulletin` porte son titre et son numéro partout (`displayTitle`, `bulletinTag` dans `web/src/ui/game.ts`).
+  - Page de grille : titre = titre du bulletin, eyebrow « n° 214 · sam. · sans inventaire ».
+  - Feuille imprimée : « n° 214 · sam. · Expert » ; titre d'onglet = titre du bulletin.
+  - Tutoriels inchangés ; `UI.daily` supprimé (plus utilisé).
+- **À corriger 2** : `UI.back` et `UI.home` valent « Accueil ». Usages vérifiés : page de grille, page dossier, barre d'aperçu d'impression (`#/imprimer/tout`), fin de la dernière grille.
+- **m1** : `nextGrid(grids, id, today, isDone)` : après le dernier tutoriel, la suite est la fiche du jour, ou l'accueil si elle est bouclée.
+- **m2** : `isPublished()` (`model/bulletin.ts`) ; `#/grille/<id>` et `#/imprimer/<id>` d'une grille non publiée affichent l'accueil (le hash reste dans l'URL).
+- **m3** : la silhouette de la fiche du jour bouclée passe en rose pâle (`.sil-cell.done`) ; la case du prix garde le rose franc.
+
+### Tests
+
+- `npm test` : 192 tests verts (+4 : titre et numéro, feuille imprimée, libellés « Accueil », `isPublished`, suite après le dernier tutoriel) ; `npm run typecheck` et `npm run build` OK ; `check_unique.py` : OK, 11 grilles uniques.
+
+### Vérification dans Chrome
+
+- Chrome stable, headless, `puppeteer-core`, build de production servi par `vite preview`, 1280 / 375 / 320 px, date simulée au 2026-11-21 et au 2026-11-20 ; script `after/shots.mjs`. Aucune erreur JS, 0 débordement horizontal.
+- Écart de méthode : la grille bouclée est injectée dans `localStorage` (solution complète, statut `done`), sans cliquer le dernier export.
+- **Interaction 2** : « Prendre le quart » → `#/grille/11`, titre « Plateau d'après-midi », eyebrow « n° 214 · sam. · sans inventaire », lien « Accueil » → `#/`.
+- **Interaction 3** : bandeau « Programme bouclé », bouton « Accueil » ; accueil : tampon « Bouclé », 35 cases de la silhouette en rose pâle.
+- **Interaction 4** : tutoriel 7 bouclé → « Grille suivante » → `#/grille/11` (fiche du jour) ; avec la fiche déjà bouclée → « Accueil » ; page dossier : lien « Accueil ».
+- **Interaction 5** : au 2026-11-20, `#/grille/11` et `#/imprimer/11` affichent l'accueil (0 feuille) ; grille 10 titrée « Creux de midi », eyebrow « n° 213 · ven. » ; `#/imprimer/tout` = 10 feuilles. Feuille 11 au 2026-11-21 : « Plateau d'après-midi · n° 214 · sam. · Expert ».
+- Captures : `docs/reviews/S2-finition-1/after/` (`2-grid`, `2-home-back`, `3-grid-solved`, `3-home-stamp`, `4-tuto7-solved`, `4-after-tuto7`, `4-dossier`, `print-11`, `5-direct-url-veille`, `5-grid10-veille`, aux 3 largeurs).

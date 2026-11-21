@@ -6,7 +6,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import gridsJson from '../src/data/grids.json';
-import { currentBulletin, localIsoDate, previousBulletins, publishedBulletins, weekdayIndex } from '../src/model/bulletin';
+import { currentBulletin, isPublished, localIsoDate, previousBulletins, publishedBulletins, weekdayIndex } from '../src/model/bulletin';
 import { dossierNext, dossierProgress, dossiers } from '../src/model/dossiers';
 import { renderDossier, renderHome } from '../src/ui/home';
 import { emptyProgress, nextGrid, playOrder } from '../src/ui/progress';
@@ -156,6 +156,19 @@ describe('publication gate', () => {
     expect(playOrder(tomorrow, today).some((g) => g.id === last.id)).toBe(false);
     expect(nextGrid(tomorrow, prev.id, today)).toBeNull();
     expect(playOrder(tomorrow, '2026-11-21').some((g) => g.id === last.id)).toBe(true);
+  });
+
+  it('a grid published tomorrow is not openable by URL', () => {
+    expect(isPublished(last, today)).toBe(false);
+    expect(isPublished(last, '2026-11-21')).toBe(true);
+    expect(isPublished(grids.find((g) => g.section === 'tutorial')!, '2000-01-01')).toBe(true);
+  });
+
+  it('after the last tutorial, next is the sheet of the day, or home once it is done', () => {
+    const lastTuto = playOrder(grids, today).filter((g) => g.section === 'tutorial').at(-1)!;
+    const daily = currentBulletin(tomorrow, today)!;
+    expect(nextGrid(tomorrow, lastTuto.id, today)?.id).toBe(daily.id);
+    expect(nextGrid(tomorrow, lastTuto.id, today, (id) => id === daily.id)).toBeNull();
   });
 });
 

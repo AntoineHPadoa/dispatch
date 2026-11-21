@@ -9,7 +9,7 @@
 import type { Grid } from '../model/grid';
 import { UI } from '../i18n/fr';
 import { displayTitle, mountGame } from './game';
-import { localIsoDate } from '../model/bulletin';
+import { isPublished, localIsoDate } from '../model/bulletin';
 import { dossiers } from '../model/dossiers';
 import { renderDossier, renderHome } from './home';
 import { esc, icon } from './palette';
@@ -33,7 +33,9 @@ export function startApp(app: HTMLElement, printRoot: HTMLElement, grids: readon
     printRoot.setAttribute('aria-hidden', 'true');
     const hash = window.location.hash.replace(/^#\/?/, '');
     const [page, arg] = hash.split('/');
-    const grid = grids.find((g) => String(g.id) === arg);
+    const found = grids.find((g) => String(g.id) === arg);
+    // A bulletin not yet published is not reachable by URL.
+    const grid = found && isPublished(found, localIsoDate()) ? found : undefined;
     if (page === 'grille' && grid) {
       document.title = `${displayTitle(grid)} · ${UI.appName}`;
       fillPrint([grid]);

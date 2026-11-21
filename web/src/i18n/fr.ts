@@ -299,7 +299,6 @@ export const UI = {
     'Une centrale est un rectangle : sa largeur est sa durée de marche, sa hauteur sa puissance.',
     'Respecte le carnet d’ordres et les indices du marché. Une seule solution.',
   ],
-  daily: 'Grille du jour',
   bulletin: {
     howTo: 'Comment jouer',
     sheetTag: (n: number, day: string) => `n° ${n} · ${day}`,
@@ -327,7 +326,7 @@ export const UI = {
   play: 'Jouer',
   resume: 'Reprendre',
   review: 'Revoir',
-  back: 'Toutes les grilles',
+  back: 'Accueil',
   tutorialOf: (k: number, n: number) => `Tutoriel ${k} sur ${n}`,
   tutorialShort: (k: number) => `Tutoriel ${k}`,
   ratedEyebrow: 'Grille notée',
@@ -416,7 +415,7 @@ export const UI = {
     ? `Toutes les cases sont couvertes et ${k > 1 ? `les ${k} indices sont vrais` : 'l’indice est vrai'}. ${time}.`
     : `Toutes les cases sont couvertes. ${time}.`),
   next: 'Grille suivante',
-  home: 'Retour aux grilles',
+  home: 'Accueil',
   gridAria: (title: string) => `Grille ${title}`,
   scrollBoard: 'Faire défiler la grille',
   cells: (k: number) => `${k} ${k > 1 ? 'cases' : 'case'}`,

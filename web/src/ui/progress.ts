@@ -3,7 +3,7 @@
  * - Per grid: status (started, done), the saved board and the time spent.
  * - Every storage access is wrapped in try/catch: the game works without storage.
  */
-import { localIsoDate } from '../model/bulletin';
+import { currentBulletin, localIsoDate } from '../model/bulletin';
 import type { Grid } from '../model/grid';
 import type { PlacedBar, PlayState } from '../engine';
 
@@ -127,8 +127,15 @@ export function playOrder(grids: readonly Grid[], today: string = localIsoDate()
 }
 
 /** Next grid after `id` in play order, or null after the last one. */
-export function nextGrid(grids: readonly Grid[], id: number, today: string = localIsoDate()): Grid | null {
+export function nextGrid(grids: readonly Grid[], id: number, today: string = localIsoDate(), isDone: (id: number) => boolean = () => false): Grid | null {
   const order = playOrder(grids, today);
   const i = order.findIndex((g) => g.id === id);
-  return i >= 0 ? order[i + 1] ?? null : null;
+  if (i < 0) return null;
+  const next = order[i + 1] ?? null;
+  // After the last tutorial, go to the sheet of the day (home when it is already done).
+  if (order[i]!.section === 'tutorial' && next && next.section !== 'tutorial') {
+    const daily = currentBulletin(grids, today);
+    return daily && !isDone(daily.id) ? daily : null;
+  }
+  return next;
 }
