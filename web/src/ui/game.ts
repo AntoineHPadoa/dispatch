@@ -13,11 +13,11 @@ import { localIsoDate, weekdayIndex } from '../model/bulletin';
 import type { Grid, Placement } from '../model/grid';
 import {
   barIndexAt, checkPlaceOver, evaluate, newGame, placeOver, remove, removeStep, setExport, exportsAt,
-  importsAt, residual, type ClueReport, type Evaluation, type PlayState,
+  importsAt, type ClueReport, type Evaluation, type PlayState,
 } from '../engine';
 import { MSG, TECHNIQUES, UI, columnLabel, countryTo, durationText, placementLabel, slotClueShort } from '../i18n/fr';
 import { siteHead } from './home-art';
-import { lockedExports, renderBoard, cellAt, type BoardGeometry } from './board';
+import { boardLead, lockedExports, renderBoard, cellAt, type BoardGeometry } from './board';
 import {
   alongShape, cancel, idle, isFlat, moveTo, press, previewRect, release, tap, type Cell, type GestureState, type Rect, type Shape,
 } from './gesture';
@@ -37,7 +37,7 @@ export interface GameContext {
 export type Tone = 'ok' | 'bad' | 'info';
 
 const LONG_PRESS_MS = 550;
-const MIN_CELL = 32;
+const MIN_CELL = 30;
 const MAX_CELL = 60;
 
 /** Initial board: engaged plants and the exports fixed by published flows. */
@@ -182,10 +182,12 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     </header>
     ${intro}
     <div class="play">
-      <div class="board-wrap" tabindex="0" role="group" aria-label="${esc(UI.gridAria(displayTitle(grid)))}" aria-describedby="board-help-${grid.id}">
-        <div class="board-scroll"></div>
+      <div class="card board-card">
+        <div class="board-wrap" tabindex="0" role="group" aria-label="${esc(UI.gridAria(displayTitle(grid)))}" aria-describedby="board-help-${grid.id}">
+          <div class="board-scroll"></div>
+        </div>
+        <input type="range" class="board-slider" min="0" max="0" value="0" aria-label="${esc(UI.scrollBoard)}" hidden>
       </div>
-      <input type="range" class="board-slider" min="0" max="0" value="0" aria-label="${esc(UI.scrollBoard)}" hidden>
       <p id="board-help-${grid.id}" class="sr-only">${esc(UI.boardHelp)}</p>
       <div class="chips" role="toolbar" aria-label="${esc(UI.chipsLabel)}"></div>
       <div class="tools" role="toolbar" aria-label="${esc(UI.toolsLabel)}">
@@ -246,10 +248,6 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       stepMode: stepModeOn(), interactive: true,
     });
     geo = out.geo;
-    // Desktop: the board rises so its highest cell lines up with the eyebrow of the title column.
-    const resid = residual(grid);
-    const topCells = Math.max(...geo.weather.map((w, c) => w + Math.max(0, resid[c] ?? 0)));
-    gameEl.style.setProperty('--lift', `${Math.max(0, Math.round(geo.topPad + (geo.rows - topCells) * cell))}px`);
     scroll.innerHTML = out.svg;
     wrap.classList.toggle('placing', !!selected && !erase);
     wrap.classList.toggle('pan', !!selected && !erase && isFlat(shapeOf(selected)));
@@ -316,7 +314,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     const bookHint = grid.inventory.level === 'exact' ? UI.bookHint : UI.availableHint;
     side.innerHTML = `<section class="card" aria-label="${esc(bookTitle)}"><h2 class="ct">${esc(bookTitle)} <small>${esc(bookHint)}</small></h2>`
       + `${renderBook(grid, history.present, erase ? null : selected?.key ?? null)}</section>`
-      + renderClues(grid, ev.clues) + renderCo2(grid, history.present);
+      + renderClues(grid, ev.clues, history.present) + renderCo2(grid, history.present);
   }
 
   function drawTools() {
@@ -587,8 +585,8 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
 
   function scrollCursorIntoView() {
     if (!cursor || !geo) return;
-    const x = cursor.col * geo.cell;
-    if (x < scroll.scrollLeft) scroll.scrollLeft = x;
+    const x = geo.lead + cursor.col * geo.cell;
+    if (x < scroll.scrollLeft) scroll.scrollLeft = Math.max(0, x - geo.lead);
     else if (x + geo.cell > scroll.scrollLeft + scroll.clientWidth) scroll.scrollLeft = x + geo.cell - scroll.clientWidth + 8;
   }
 
@@ -649,7 +647,8 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   function fit() {
     // Desktop: the board column is as wide as the board, so measure what the side column leaves.
     const oneColumn = window.matchMedia('(max-width: 860px)').matches;
-    const avail = (oneColumn ? wrap.clientWidth : gameEl.clientWidth - 340 - 30 - 48) - 6;
+    // The board sits in a card (30 px of border and padding on desktop); its left gutter holds the neighbor ids.
+    const avail = (oneColumn ? wrap.clientWidth : gameEl.clientWidth - 340 - 30 - 48 - 30) - 6 - boardLead(grid);
     const n = grid.columns.length;
     const next = Math.max(MIN_CELL, Math.min(MAX_CELL, Math.floor(avail / n)));
     if (next !== cell || !geo) { cell = next; drawBoard(); } else syncSlider();

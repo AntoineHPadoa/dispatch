@@ -4,12 +4,13 @@
  *   it (outside the cells) and listed in short text under it; weather, engaged plants and published flows inside; order book or available plants;
  *   day clues; boxes for exchanges.
  * - No clue status and no pumping or turbining drawn: the paper only shows the puzzle.
+ * - Exchanges imposed by an exact inventory are listed with the day clues (market publications).
  */
 import type { Grid } from '../model/grid';
 import { TECHNIQUES, UI, slotClueShort } from '../i18n/fr';
 import { boardGeometry, renderBoard } from './board';
 import { bulletinTag, displayTitle, initialState } from './game';
-import { clueItem, co2RuleText, isDayClue, renderBook } from './panels';
+import { clueItem, co2RuleText, inventoryExchanges, isDayClue, renderBook } from './panels';
 import { esc } from './palette';
 
 /** Cell size that keeps the grid inside the printable width and height of an A4 page. */
@@ -17,7 +18,7 @@ export function printCell(grid: Grid): number {
   // Printable width is about 680 CSS px; keep the board within about 620 px of height.
   const n = grid.columns.length;
   const rows = boardGeometry(grid, 'B', 1).rows;
-  const below = 3 + grid.neighbors.length + (grid.step ? 1 : 0) + grid.clues.filter((c) => c.type === 'bar').length * 0.6;
+  const below = 3 + grid.neighbors.length + (grid.step ? 1 : 0) + (grid.clues.some((c) => c.type === 'price') ? 0.5 : 0) + grid.clues.filter((c) => c.type === 'bar').length * 0.6;
   return Math.max(26, Math.min(64, Math.floor(660 / n), Math.floor(620 / (rows + below))));
 }
 
@@ -31,10 +32,12 @@ export function renderSheet(grid: Grid, tutorialIndex: number | null): string {
   const meta = tutorialIndex !== null ? `${UI.tutorialShort(tutorialIndex)} · ${grid.difficulty.label}`
     : `${bulletinTag(grid) ?? UI.ratedEyebrow} · ${grid.difficulty.label}`;
   const day = grid.clues.filter(isDayClue).map((c) => clueItem(grid, c, null, true));
+  const exchanges = inventoryExchanges(grid);
+  if (exchanges) day.unshift(clueItem(grid, exchanges, null, true));
   const co2 = co2RuleText(grid);
   if (co2) day.push(`<li class="clue"><span><span class="kind">${esc(UI.co2Kind)}</span><span class="txt">${esc(co2)}</span></span></li>`);
   const bookTitle = grid.inventory.level === 'exact' ? UI.book : UI.available;
-  const dayTitle = grid.clues.some((c) => c.type === 'length' || c.type === 'exchanges') || co2 ? UI.dayClues : UI.engagedTitle;
+  const dayTitle = grid.clues.some((c) => c.type === 'length' || c.type === 'exchanges') || exchanges || co2 ? UI.dayClues : UI.engagedTitle;
   const foot = grid.step && grid.neighbors.length ? UI.printFootBoth
     : grid.step ? UI.printFootStep : grid.neighbors.length ? UI.printFootExports : UI.printFoot;
   return `<article class="a4">
