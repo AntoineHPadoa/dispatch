@@ -492,16 +492,16 @@ describe('review S6.3 round 1', () => {
     expect(free.state?.exports.DE?.[6]).toBe(1);
   });
 
-  it('a full but wrong board says why, and its unmet clue is contradicted', () => {
+  it('a full but wrong board says why, and its unmet cell clue is contradicted', () => {
     const g = byId(8);
-    g.clues.push({ type: 'exchanges', imports: { '*': 1 } });
+    g.clues.push({ type: 'column', col: 0, counts: { N: 0 } });
     const ev = evaluate(g, solutionState(g));
     expect(ev.missing).toBe(0);
     expect(ev.solved).toBe(false);
     expect(ev.clues[ev.clues.length - 1]!.status).toBe('broken');
     const m = boardMessage(ev, { text: 'Nucléaire à 0h, ligne 1 : la pose tient.', tone: 'ok' });
     expect(m?.tone).toBe('bad');
-    expect(m?.text).toMatch(/^Indice non respecté : Aujourd’hui/);
+    expect(m?.text).toMatch(/^Indice non respecté : Relevé/);
     // A refusal from the last action stays on screen.
     expect(boardMessage(ev, { text: 'refus', tone: 'bad' })).toEqual({ text: 'refus', tone: 'bad' });
     // Cells left to cover: no verdict yet, the idle hint shows.

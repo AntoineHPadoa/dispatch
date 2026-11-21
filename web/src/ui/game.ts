@@ -555,8 +555,10 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     const act = (e.target as Element).closest?.('[data-act]');
     if (act && (e.key === 'Enter' || e.key === ' ')) {
       e.preventDefault();
-      const key = `[data-act="${act.getAttribute('data-act')}"][data-col="${act.getAttribute('data-col')}"]`;
+      const country = act.getAttribute('data-country');
+      const key = `[data-act="${act.getAttribute('data-act')}"][data-col="${act.getAttribute('data-col')}"]${country ? `[data-country="${country}"]` : ''}`;
       activate(act);
+      // The board is redrawn: focus the same control again (same neighbor for an export pill).
       scroll.querySelector<SVGElement>(key)?.focus();
       return;
     }

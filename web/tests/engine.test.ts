@@ -302,11 +302,21 @@ describe('clues (one broken case per type)', () => {
     const s = solutionState(g);
     expect(status(g, s, { type: 'exchanges', exports: { DE: 2 }, imports: { DE: 0 } })).toBe('ok');
     expect(status(g, s, { type: 'exchanges', exports: { DE: 1 } })).toBe('broken');
-    // Under the target: open while cells are left to cover, contradicted on a full board.
+    // Under the target: open, even on a full board (an export, an import or a STEP pair can still meet it).
     expect(status(g, newGame(g), { type: 'exchanges', imports: { '*': 1 } })).toBe('open');
-    expect(status(g, s, { type: 'exchanges', imports: { '*': 1 } })).toBe('broken');
+    expect(status(g, s, { type: 'exchanges', imports: { '*': 1 } })).toBe('open');
     const g7 = byId(7);
     expect(status(g7, solutionState(g7), { type: 'exchanges', step: 0 })).toBe('broken');
+  });
+
+  it('review S8 B C16: on a full board an exchanges clue short of exports stays open, a cell clue is broken', () => {
+    const g = byId(8);
+    const sol = solutionState(g);
+    expect(evaluate(g, sol).missingByCol.every((m) => m === 0)).toBe(true);
+    const exported = Object.values(sol.exports).flat().reduce((a, b) => a + b, 0);
+    expect(status(g, sol, { type: 'exchanges', exports: { DE: exported + 1 } })).toBe('open');
+    expect(status(g, sol, { type: 'flow', col: 0, country: 'DE', dir: 'export', value: 1 })).not.toBe('broken');
+    expect(status(g, sol, { type: 'column', col: 0, counts: { N: 0 } })).toBe('broken');
   });
 
   it('engaged (pre-placed bar)', () => {

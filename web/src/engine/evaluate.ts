@@ -315,9 +315,12 @@ export function evaluate(grid: Grid, state: PlayState): Evaluation {
   const comp = composition(grid, state);
   const bad = new Set(invalidBars);
   const board: Board = { comp, missingByCol, validBars: state.bars.filter((_, i) => !bad.has(i)) };
-  // Once every cell is covered, a clue still open can no longer be met by laying: it is contradicted.
-  const settle = (st: ClueStatus): ClueStatus => (missing === 0 && st === 'open' ? 'broken' : st);
-  const clues = grid.clues.map((clue) => ({ clue, text: clueText(grid, clue), status: settle(clueStatus(grid, state, board, clue)) }));
+  // Once every cell is covered, a cell clue (price, record, program, running length) still open can no
+  // longer be met by laying: it is contradicted. An exchanges or flow clue stays open: an export or a
+  // STEP pair raises the silhouette and may still meet it.
+  const CELL_CLUES: ReadonlySet<Clue['type']> = new Set(['price', 'column', 'bar', 'length']);
+  const settle = (clue: Clue, st: ClueStatus): ClueStatus => (missing === 0 && st === 'open' && CELL_CLUES.has(clue.type) ? 'broken' : st);
+  const clues = grid.clues.map((clue) => ({ clue, text: clueText(grid, clue), status: settle(clue, clueStatus(grid, state, board, clue)) }));
 
   // Verdict
   const unmet: string[] = [];
