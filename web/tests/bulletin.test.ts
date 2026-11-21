@@ -9,6 +9,7 @@ import gridsJson from '../src/data/grids.json';
 import { currentBulletin, isPublished, localIsoDate, previousBulletins, publishedBulletins, weekdayIndex } from '../src/model/bulletin';
 import { dossierNext, dossierProgress, dossiers } from '../src/model/dossiers';
 import { renderDossier, renderHome } from '../src/ui/home';
+import { sheetSilhouette } from '../src/ui/home-art';
 import { emptyProgress, nextGrid, playOrder } from '../src/ui/progress';
 import { isIsoDate, validateGrid, type Grid } from '../src/model/grid';
 
@@ -192,6 +193,22 @@ describe('home rendering', () => {
     const p = { grids: { [done.id]: { status: 'done' } } } as unknown as ReturnType<typeof emptyProgress>;
     renderHome(root, grids, p, '2026-11-21');
     expect(root.innerHTML).toContain('Bouclé');
+    // The finished sheet shows its solution: one rectangle per placement, in plant colours.
+    expect(root.innerHTML.match(/class="sil-piece"/g)).toHaveLength(done.solution.placements.length);
+  });
+
+  it('a finished STEP sheet: one silhouette cell per cell of the laid pieces', () => {
+    const g7 = grids.find((g) => g.id === 7)!;
+    expect(g7.solution!.step.length).toBeGreaterThan(0);
+    const svg = sheetSilhouette(g7, g7.demand.map(() => 'sun' as const), () => '', '', true);
+    const covered = g7.solution!.placements.reduce((a, p) => a + p.len * (p.height ?? 1), 0);
+    expect(svg.match(/class="sil-cell/g)).toHaveLength(covered);
+  });
+
+  it('an open sheet shows no solution', () => {
+    const root = stub();
+    renderHome(root, grids, emptyProgress(), '2026-11-21');
+    expect(root.innerHTML).not.toContain('sil-piece');
   });
 
   it('before the first publication: no sheet, a line with the first date', () => {
@@ -204,6 +221,6 @@ describe('home rendering', () => {
   it('dossier page lists the 7 tutorial grids', () => {
     const root = stub();
     renderDossier(root, dossiers(grids)[0]!, emptyProgress());
-    expect(root.innerHTML.match(/class="gcard/g)).toHaveLength(7);
+    expect(root.innerHTML.match(/class="fiche /g)).toHaveLength(7);
   });
 });

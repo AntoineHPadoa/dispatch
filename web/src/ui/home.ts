@@ -3,14 +3,15 @@
  * - Home: logo and rules toggle, the sheet of the day (bulletin published most recently, see
  *   model/bulletin.ts), the previous sheets, and the training dossiers with their progress.
  * - Dossier page: the grids of one dossier with their status.
- * - Accent: one pink (stamp, price cell, progress, finished items); plant colours stay in the game.
+ * - Accent: one pink (stamp, price cell, progress, finished items); the finished sheet of the day
+ *   shows its solution in the plant colours.
  */
-import { UI, PIECE_WORDS } from '../i18n/fr';
+import { UI, PIECE_WORDS, TECHNIQUES } from '../i18n/fr';
 import { currentBulletin, localIsoDate, previousBulletins, type BulletinGrid } from '../model/bulletin';
 import { dossierNext, dossierProgress, dossiers, type Dossier } from '../model/dossiers';
 import type { Grid, PieceId } from '../model/grid';
-import { bulletinTag, displayTitle, techniqueLine } from './game';
-import { logoSvg, miniSilhouette, sheetSilhouette } from './home-art';
+import { bulletinTag, displayTitle } from './game';
+import { cellSilhouette, miniSilhouette, sheetSilhouette, siteHead } from './home-art';
 import { esc, icon } from './palette';
 import { statusOf, type GridStatus, type Progress } from './progress';
 
@@ -43,7 +44,7 @@ function sheetCard(g: BulletinGrid, st: GridStatus): string {
       <p>${esc(b.text)}</p>
       <div class="sil-wrap">${sheetSilhouette(g, b.weather, (k) => UI.bulletin.weather[k], UI.bulletin.silhouetteLabel(Math.min(...g.demand), Math.max(...g.demand), g.demand.length), st === 'done')}</div>
       <ul class="chips">${plantChips(g)}</ul>
-      <div class="sact">${dots(g)}<a class="btn" href="#/grille/${g.id}">${icon('next')}${esc(goLabel(st))}</a></div>
+      <div class="sact">${dots(g)}<a class="btn${st === 'done' ? ' secondary' : ''}" href="#/grille/${g.id}">${icon('next')}${esc(goLabel(st))}</a></div>
     </div></article>`;
 }
 
@@ -82,10 +83,8 @@ export function renderHome(root: HTMLElement, grids: readonly Grid[], progress: 
   const prev = previousBulletins(grids, today);
   const list = dossiers(grids);
   root.innerHTML = `<div class="m home">
-    <header class="htop">
-      <h1 class="brand">${logoSvg(36)}<span class="wm">${esc(UI.appName)}</span></h1>
-      <button type="button" class="ghost" aria-expanded="false" aria-controls="rules" data-rules>${esc(UI.bulletin.howTo)}</button>
-    </header>
+    ${siteHead(`<button type="button" class="ghost" aria-expanded="false" aria-controls="rules" data-rules>${esc(UI.bulletin.howTo)}</button>`)}
+    <h1 class="sr-only">${esc(UI.appName)}</h1>
     <section class="card rules" id="rules" hidden><h2 class="ct">${esc(UI.rulesTitle)}</h2><p class="rtag">${esc(UI.tagline)}</p><ol>${UI.rules.map((r) => `<li>${esc(r)}</li>`).join('')}</ol></section>
     <div class="hgrid">
       ${sheet ? sheetCard(sheet, statusOf(progress, sheet.id)) : firstBulletinNote(grids)}
@@ -106,22 +105,27 @@ export function renderHome(root: HTMLElement, grids: readonly Grid[], progress: 
 const statusChip = (st: GridStatus) => `<span class="status ${st}">${esc(UI.status[st])}</span>`;
 const action = (st: GridStatus) => (st === 'done' ? UI.review : st === 'started' ? UI.resume : UI.play);
 
-/** Dossier page: its grids in order, each with its status. */
+/** Dossier page: one card per grid (silhouette, technique taught, difficulty, status, button), in order. */
 export function renderDossier(root: HTMLElement, d: Dossier, progress: Progress): void {
   const words = UI.dossier[d.id] ?? { title: d.id, lead: '' };
   const next = dossierNext(d, (id) => statusOf(progress, id) === 'done');
+  const { done, total } = dossierProgress(d, (id) => statusOf(progress, id) === 'done');
   const cards = d.grids.map((g, i) => {
     const st = statusOf(progress, g.id);
-    const tech = techniqueLine(g);
-    return `<li><a class="gcard ${st}${g.id === next?.id && st !== 'done' ? ' next' : ''}" href="#/grille/${g.id}">
-      <span class="gtop"><span class="eyebrow">${esc(UI.tutorialShort(i + 1))}</span></span>
-      <b>${esc(displayTitle(g))}</b>
-      ${tech ? `<span class="tech">${esc(tech)}</span>` : ''}
-      <span class="gfoot">${statusChip(st)}<span class="go">${esc(action(st))}${icon('next')}</span></span>
+    const tech = (g.teaches ?? []).map((t) => TECHNIQUES[t]).find(Boolean);
+    const isNext = g.id === next?.id && st !== 'done';
+    return `<li class="fiche ${st}${isNext ? ' next' : ''}"><a href="#/grille/${g.id}">
+      <span class="fband">${cellSilhouette(g.demand, 11)}<span class="fnum" aria-hidden="true">${i + 1}</span></span>
+      <span class="fbody"><span class="eyebrow">${esc(UI.tutorialShort(i + 1))} · ${esc(g.difficulty.label)}${isNext ? ` · ${esc(UI.dossierNext)}` : ''}</span>
+        <b>${esc(displayTitle(g))}</b>
+        ${tech ? `<span class="ftxt">${esc(tech.text)}</span>` : ''}</span>
+      <span class="ffoot"><span class="fmeta">${dots(g)}${statusChip(st)}</span><span class="fbtn">${esc(action(st))}</span></span>
     </a></li>`;
   }).join('');
   root.innerHTML = `<div class="m home">
-    <a class="backlink" href="#/">${icon('back')}${esc(UI.back)}</a>
-    <section class="glist"><div class="sh"><h1>${esc(words.title)}</h1><p>${esc(words.lead)}</p></div><ol class="cards">${cards}</ol></section>
+    ${siteHead()}
+    <section class="glist"><div class="sh"><h1>${esc(words.title)}</h1><p>${esc(words.lead)}</p></div>
+      <div class="prog"><span>${esc(UI.dossierDone(done, total))}</span><span class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${total ? (done / total) * 100 : 0}%"></i></span></div>
+      <ol class="fiches">${cards}</ol></section>
   </div>`;
 }
