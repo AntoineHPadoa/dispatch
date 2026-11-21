@@ -1,7 +1,8 @@
 /*
  * Lab logic (pure): candidate filter and sort, play recorder, aggregates, bulletin helpers.
  * - filterCandidates / sortCandidates drive the lot table.
- * - PlayRecorder counts errors, undos, erasures and active time (hidden tab excluded) of one game and builds the record sent.
+ * - PlayRecorder counts moves, errors, undos, erasures and active time (hidden tab excluded) of one game and builds the record sent.
+ * - playStats keeps first plays only (attempt 1, no stray open): a replay has a biased time; replays are counted apart.
  * - "error" = a pose refused by the engine or one that contradicts a clue (not an export or STEP pair against a clue).
  * - playStats / feltAverage summarise the plays and the felt ratings of a candidate.
  */
@@ -50,6 +51,9 @@ export interface Play {
   resets: number;
   felt?: number | null;
   attempt?: number;
+  /** Abandoned without any move or within the first seconds (a stray open): not counted as an attempt. */
+  phantom?: boolean;
+  moves?: number;
   ts: number;
 }
 
@@ -125,11 +129,14 @@ export interface PlayRecord {
   undos: number;
   erasers: number;
   resets: number;
+  /** Poses, exports and STEP pairs laid. */
+  moves: number;
   reason?: 'unload';
 }
 
 /** Counts the events of one game and its active time (clock injected for tests). */
 export class PlayRecorder {
+  private moves = 0;
   private errors = 0;
   private undos = 0;
   private erasers = 0;
@@ -146,7 +153,8 @@ export class PlayRecorder {
 
   event(e: GameEvent): void {
     if (this.endedAt !== null) return;
-    if (e === 'error') this.errors++;
+    if (e === 'move') this.moves++;
+    else if (e === 'error') this.errors++;
     else if (e === 'undo') this.undos++;
     else if (e === 'erase') this.erasers++;
     else if (e === 'reset') this.resets++;
@@ -181,7 +189,7 @@ export class PlayRecorder {
     return {
       player, lot, index, outcome: this.solved && !abandoned ? 'solved' : 'abandoned',
       ms, wall_ms: wall, started: Math.round(this.startedAt / 1000),
-      errors: this.errors, undos: this.undos, erasers: this.erasers, resets: this.resets,
+      errors: this.errors, undos: this.undos, erasers: this.erasers, resets: this.resets, moves: this.moves,
       ...(reason ? { reason } : {}),
     };
   }
@@ -195,8 +203,11 @@ export function formatDuration(ms: number): string {
 export interface PlayStats {
   /** True when some plays are masked (another player's, on a grid not yet rated): only the count is known. */
   masked: boolean;
+  /** First plays: attempt 1 (or unknown), stray opens left out. */
   games: number;
   solved: number;
+  /** Plays of a grid the player had already played: left out of the measures. */
+  replays: number;
   /** Median time of solved games, in ms (null when none). */
   medianMs: number | null;
   meanErrors: number | null;
@@ -204,12 +215,14 @@ export interface PlayStats {
 
 export function playStats(plays: readonly Play[]): PlayStats {
   const masked = plays.some((p) => p.masked);
-  const solved = plays.filter((p) => !p.masked && p.outcome === 'solved');
+  const real = plays.filter((p) => !p.phantom);
+  const first = real.filter((p) => (p.attempt ?? 1) === 1);
+  const solved = first.filter((p) => !p.masked && p.outcome === 'solved');
   const times = solved.map((p) => p.ms).sort((a, b) => a - b);
   const mid = Math.floor(times.length / 2);
   const medianMs = times.length ? (times.length % 2 ? times[mid]! : (times[mid - 1]! + times[mid]!) / 2) : null;
   const meanErrors = solved.length ? solved.reduce((a, p) => a + p.errors, 0) / solved.length : null;
-  return { masked, games: plays.length, solved: solved.length, medianMs, meanErrors };
+  return { masked, games: first.length, solved: solved.length, replays: real.length - first.length, medianMs, meanErrors };
 }
 
 /** Next weather in the sun, moon, cloud, wind cycle. */

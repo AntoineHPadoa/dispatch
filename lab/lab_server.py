@@ -35,8 +35,9 @@ OUTCOMES = ("solved", "abandoned")
 SAFE_NAME = re.compile(r"^[A-Za-z0-9_.-]+$")
 VITE_PORT = 5173
 PLAY_SCHEMA = 1
+PHANTOM_MS = 10_000  # an abandon shorter than this, or without any move, is a stray open, not an attempt
 # Solver measures hidden from a player who has not rated the candidate yet.
-HIDDEN_PLAY_KEYS = ("outcome", "ms", "wall_ms", "errors", "undos", "erasers", "resets", "felt")
+HIDDEN_PLAY_KEYS = ("outcome", "ms", "wall_ms", "errors", "undos", "erasers", "resets", "moves", "felt")
 
 
 class LabError(Exception):
@@ -248,7 +249,7 @@ class Lab:
             "schema": PLAY_SCHEMA, "id": uuid.uuid4().hex, "player": player, "lot": lot, "index": index,
             "grid_hash": self.grid_hash(grid), "outcome": body["outcome"], "ts": now,
         }
-        for key in ("ms", "errors", "undos", "erasers", "resets"):
+        for key in ("ms", "errors", "undos", "erasers", "resets", "moves"):
             value = body.get(key, 0)
             if not isinstance(value, int) or isinstance(value, bool) or value < 0:
                 raise LabError(f"{key} must be a non-negative integer")
@@ -262,9 +263,12 @@ class Lab:
             raise LabError("started must be a positive integer (epoch seconds)")
         play["started"] = started
         play["reason"] = body.get("reason") if body.get("reason") in ("unload",) else None
+        # A stray open (abandoned with no move, or within the first seconds) is not an attempt.
+        no_move = "moves" in body and play["moves"] == 0
+        play["phantom"] = play["outcome"] == "abandoned" and (no_move or play["ms"] < PHANTOM_MS)
         with self.lock:
             earlier = [p for p in self.plays(lot) if p["index"] == index and p["player"] == player
-                       and p.get("grid_hash", play["grid_hash"]) == play["grid_hash"]]
+                       and p.get("grid_hash", play["grid_hash"]) == play["grid_hash"] and not p.get("phantom")]
             play["attempt"] = len(earlier) + 1
             play["felt"] = None
             with open(self.dir / "plays.jsonl", "a") as f:

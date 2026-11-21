@@ -38,7 +38,8 @@ export interface GameContext {
 }
 
 /** What the player did: a refused or clue-breaking pose, an undo, an erasure, a reset, the solve. */
-export type GameEvent = 'error' | 'undo' | 'erase' | 'reset' | 'solved';
+/** 'move': the board changed by a pose, an export or a STEP pair (the lab tells a real game from a stray open). */
+export type GameEvent = 'move' | 'error' | 'undo' | 'erase' | 'reset' | 'solved';
 
 export type Tone = 'ok' | 'bad' | 'info';
 
@@ -371,6 +372,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     const res = placeOver(grid, history.present, bar);
     // A pose that contradicts a clue is allowed (the player may try things), but the message says so.
     if (res.ok) {
+      ctx.onEvent?.('move');
       commit(res.state, (before) => {
         const m = poseMessage(grid, labelOf(bar), res.replaced, newlyBroken(before.clues, ev.clues));
         if (m.tone === 'bad') ctx.onEvent?.('error');
@@ -402,14 +404,14 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   function cycleExport(country: string, col: number) {
     const r = exportTap(grid, history.present, country, col);
     if (r.refused) say(r.refused, 'bad');
-    else if (r.state) commit(r.state, null);
+    else if (r.state) { ctx.onEvent?.('move'); commit(r.state, null); }
   }
 
   /** STEP chosen: the first tap pumps, a tap on a later slot turbines. */
   function stepTap(col: number) {
     const r = stepTapResult(grid, history.present, stepPending, col);
     stepPending = r.pending;
-    if (r.state) commit(r.state, r.message.text);
+    if (r.state) { ctx.onEvent?.('move'); commit(r.state, r.message.text); }
     else if (r.message.tone === 'info') { message = r.message; drawBoard(); }
     else say(r.message.text, r.message.tone);
   }

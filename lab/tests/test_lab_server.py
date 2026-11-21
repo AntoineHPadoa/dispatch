@@ -166,6 +166,18 @@ def test_play_lines_carry_hash_attempt_start_and_schema(api, lab):
     assert lab_server.Lab.grid_hash(g) != first["grid_hash"]
 
 
+def test_a_stray_open_is_not_an_attempt(api):
+    """Review S8 B C10: an abandon without any move, or within 10 s, leaves the real first game at attempt 1."""
+    stray = api("POST", "/api/plays", {**PLAY, "outcome": "abandoned", "ms": 3000, "moves": 0, "reason": "unload"})[1]
+    idle = api("POST", "/api/plays", {**PLAY, "outcome": "abandoned", "ms": 90000, "moves": 0})[1]
+    real = api("POST", "/api/plays", {**PLAY, "moves": 12})[1]
+    replay = api("POST", "/api/plays", {**PLAY, "moves": 9})[1]
+    assert stray["phantom"] and idle["phantom"] and not real["phantom"]
+    assert (real["attempt"], replay["attempt"]) == (1, 2)
+    quick = api("POST", "/api/plays", {**PLAY, "player": "Joueur 2", "outcome": "abandoned", "ms": 4000})[1]
+    assert quick["phantom"]  # a legacy record without moves: only the time decides
+
+
 def test_wall_time_cannot_be_below_active_time(api):
     assert api("POST", "/api/plays", {**PLAY, "ms": 5000, "wall_ms": 100})[0] == 400
 

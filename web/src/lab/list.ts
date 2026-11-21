@@ -66,8 +66,8 @@ export async function renderList(root: HTMLElement, ctx: LabCtx): Promise<() => 
     const mine = plays.filter((p) => p.index === c.index);
     const byPlayer = ctx.players.map((p) => {
       const s = playStats(mine.filter((x) => x.player === p));
-      const games = `${s.games} partie${s.games > 1 ? 's' : ''}`;
-      return `<dt>${esc(p)}</dt><dd>${!s.games ? 'aucune' : s.masked ? `${games} (détails après ta note)` : `${games}, ${s.solved} résolue${s.solved > 1 ? 's' : ''}${s.medianMs !== null ? `, ${formatDuration(s.medianMs)}` : ''}${c.felt[p] ? `, perçue ${c.felt[p]}` : ''}`}</dd>`;
+      const games = `${s.games} partie${s.games > 1 ? 's' : ''}${s.replays ? ` (+ ${s.replays} rejeu${s.replays > 1 ? 'x' : ''})` : ''}`;
+      return `<dt>${esc(p)}</dt><dd>${!s.games && !s.replays ? 'aucune' : s.masked ? `${games} (détails après ta note)` : `${games}, ${s.solved} résolue${s.solved > 1 ? 's' : ''}${s.medianMs !== null ? `, ${formatDuration(s.medianMs)}` : ''}${c.felt[p] ? `, perçue ${c.felt[p]}` : ''}`}</dd>`;
     }).join('');
     return `<h3>Candidate ${displayNumber(c.index)}</h3><div class="lab-big">${silhouetteSvg(c.silhouette, 10, 10)}</div>`
       + `<dl class="lab-kv"><dt>Famille</dt><dd>${esc(c.family ?? '')}</dd><dt>Créneaux</dt><dd>${c.cols}</dd><dt>Note solveur</dt><dd>${c.revealed ? (c.rating ?? '?') : '🔒 après ta note'}</dd>`

@@ -16,13 +16,15 @@ Local tool to generate, play, rate and promote candidate grids. Launch: `lab/run
 | `id` | unique id of the play (hex) |
 | `player`, `lot`, `index` | who played which candidate (`index` from 0, shown as `index + 1`) |
 | `grid_hash` | sha1 of the grid without its `lab` block: the exact grid played |
-| `attempt` | 1 for the first play of this grid by this player, then 2, 3… A replay of a known grid has a biased time and error count: filter on `attempt == 1` to calibrate |
+| `attempt` | 1 for the first play of this grid by this player, then 2, 3… A replay of a known grid has a biased time and error count: filter on `attempt == 1` to calibrate (the lab's aggregates do) |
+| `phantom` | `true` for a stray open: abandoned without any move, or within 10 s. It does not count as an attempt, so the real first game keeps `attempt: 1` |
 | `started`, `ts` | start and end of the game, epoch seconds |
 | `outcome` | `solved` (saved at the solve) or `abandoned` |
 | `ms` | active time: the time the tab was hidden is not counted |
 | `wall_ms` | wall-clock time, hidden time included (`wall_ms >= ms`) |
 | `errors` | a pose refused by the engine, or a pose that contradicts a clue. An export or a STEP pair that contradicts a clue is **not** counted |
 | `undos`, `erasers`, `resets` | undo presses, erasures with the eraser, resets |
+| `moves` | poses, exports and STEP pairs laid (missing in plays recorded before it existed) |
 | `felt` | perceived difficulty 1 to 4, set once from the end screen (`null` until then, and for abandoned games left by closing the tab) |
 | `reason` | `unload` when the game was recorded by closing or reloading the tab, else `null` |
 
