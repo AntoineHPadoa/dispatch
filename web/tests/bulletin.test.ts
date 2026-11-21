@@ -6,7 +6,8 @@
  */
 import { describe, expect, it } from 'vitest';
 import gridsJson from '../src/data/grids.json';
-import { currentBulletin, localIsoDate, publishedBulletins } from '../src/model/bulletin';
+import { currentBulletin, localIsoDate, previousBulletins, publishedBulletins, weekdayIndex } from '../src/model/bulletin';
+import { dossierNext, dossierProgress, dossiers } from '../src/model/dossiers';
 import { isIsoDate, validateGrid, type Grid } from '../src/model/grid';
 
 const grids = gridsJson as unknown as Grid[];
@@ -107,5 +108,37 @@ describe('sheet of the day', () => {
   it('localIsoDate formats the local day with zero padding', () => {
     expect(localIsoDate(new Date(2026, 0, 5))).toBe('2026-01-05');
     expect(localIsoDate(new Date(2026, 10, 21, 23, 59))).toBe('2026-11-21');
+  });
+});
+
+describe('home lists', () => {
+  const today = '2026-11-21';
+
+  it('previous sheets: published ones except the sheet of the day, newest first', () => {
+    const ids = previousBulletins(grids, today).map((g) => g.bulletin.number);
+    expect(ids).toEqual([213, 212, 211]);
+    expect(previousBulletins(grids, '2026-11-18')).toEqual([]);
+    expect(previousBulletins(grids, '2026-11-19').map((g) => g.bulletin.number)).toEqual([211]);
+  });
+
+  it('weekdayIndex gives the day of the week of an ISO day', () => {
+    expect(weekdayIndex('2026-11-18')).toBe(3);
+    expect(weekdayIndex('2026-11-21')).toBe(6);
+    expect(weekdayIndex('2026-11-22')).toBe(0);
+  });
+
+  it('the training dossier "Premiers pas" holds the 7 tutorial grids in order', () => {
+    const [d] = dossiers(grids);
+    expect(d?.id).toBe('premiers-pas');
+    expect(d?.grids.map((g) => g.id)).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    expect(dossiers(rated)).toEqual([]);
+  });
+
+  it('dossier progress counts finished grids; the card opens the first unfinished one', () => {
+    const d = dossiers(grids)[0]!;
+    const done = new Set([1, 2, 4]);
+    expect(dossierProgress(d, (id) => done.has(id))).toEqual({ done: 3, total: 7 });
+    expect(dossierNext(d, (id) => done.has(id))?.id).toBe(3);
+    expect(dossierNext(d, () => true)?.id).toBe(1);
   });
 });

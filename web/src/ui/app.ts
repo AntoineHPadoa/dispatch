@@ -2,13 +2,15 @@
  * Hash router of the static site.
  * - #/                home
  * - #/grille/<id>     game screen
+ * - #/dossier/<id>    training dossier (grids of one theme)
  * - #/imprimer/<id>   print preview of one grid (#/imprimer/tout: every grid)
  * The print root (#print-root) holds the A4 sheets; it is the only thing printed.
  */
 import type { Grid } from '../model/grid';
 import { UI } from '../i18n/fr';
 import { displayTitle, mountGame } from './game';
-import { renderHome } from './home';
+import { dossiers } from '../model/dossiers';
+import { renderDossier, renderHome } from './home';
 import { esc, icon } from './palette';
 import { renderSheets } from './print';
 import { browserStore, playOrder } from './progress';
@@ -35,6 +37,11 @@ export function startApp(app: HTMLElement, printRoot: HTMLElement, grids: readon
       document.title = `${displayTitle(grid)} · ${UI.appName}`;
       fillPrint([grid]);
       cleanup = mountGame(app, grid, { grids, store, navigate, print });
+    } else if (page === 'dossier' && dossiers(grids).some((d) => d.id === arg)) {
+      const d = dossiers(grids).find((x) => x.id === arg)!;
+      document.title = `${UI.dossier[d.id]?.title ?? d.id} · ${UI.appName}`;
+      printRoot.innerHTML = '';
+      renderDossier(app, d, store.get());
     } else if (page === 'imprimer' && (grid || arg === 'tout')) {
       const list = grid ? [grid] : playOrder(grids);
       document.title = `${UI.printTitle} · ${UI.appName}`;

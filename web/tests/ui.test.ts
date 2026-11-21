@@ -11,7 +11,7 @@ import {
 } from '../src/ui/gesture';
 import { canUndo, MAX_PAST, push, reset, start, undo } from '../src/ui/history';
 import {
-  ProgressStore, STORAGE_KEY, dailyGrid, emptyProgress, isPlayState, localDayNumber, nextGrid, parseProgress,
+  ProgressStore, STORAGE_KEY, emptyProgress, isPlayState, nextGrid, parseProgress,
   playOrder, recordState, statusOf, type KeyValueStore,
 } from '../src/ui/progress';
 import { boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard } from '../src/ui/board';
@@ -252,19 +252,6 @@ describe('progress', () => {
     a.set(recordState(a.get(), 2, s1, 5, false));
     expect(statusOf(new ProgressStore(() => kv).get(), 2)).toBe('started');
     expect(statusOf(new ProgressStore(() => kv).get(), 9)).toBe('new');
-  });
-
-  it('grid of the day: a rated grid, stable over the day, changing the next day', () => {
-    const morning = dailyGrid(grids, new Date(2026, 10, 21, 7));
-    const evening = dailyGrid(grids, new Date(2026, 10, 21, 23, 59));
-    const tomorrow = dailyGrid(grids, new Date(2026, 10, 22, 7));
-    expect(morning?.section).toBe('rated');
-    expect(evening?.id).toBe(morning?.id);
-    expect(tomorrow?.id).not.toBe(morning?.id);
-    expect(localDayNumber(new Date(1970, 0, 2))).toBe(1);
-    const rated = grids.filter((g) => g.section === 'rated');
-    const seen = new Set(Array.from({ length: rated.length }, (_, d) => dailyGrid(grids, new Date(2026, 0, 1 + d))?.id));
-    expect(seen.size).toBe(rated.length);
   });
 
   it('play order: tutorials then rated grids; next grid follows it', () => {

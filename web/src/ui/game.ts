@@ -9,6 +9,7 @@
  * - Touch: with a piece one row high the board lets vertical swipes scroll the page; a swipe the
  *   browser takes for scrolling cancels the gesture silently. Eraser and STEP taps act on release.
  */
+import { currentBulletin, localIsoDate } from '../model/bulletin';
 import type { Grid, Placement } from '../model/grid';
 import {
   barIndexAt, checkPlaceOver, evaluate, newGame, placeOver, remove, removeStep, setExport, exportsAt,
@@ -23,7 +24,7 @@ import { canUndo, push, reset, start, undo, type History } from './history';
 import { STEP_KEY, bookEntries, renderBook, renderClues, renderCo2, type BookEntry } from './panels';
 import { esc, icon } from './palette';
 import { stepPairIndexAt, stepTapResult } from './step';
-import { dailyGrid, nextGrid, recordState, type ProgressStore } from './progress';
+import { nextGrid, recordState, type ProgressStore } from './progress';
 
 export interface GameContext {
   grids: readonly Grid[];
@@ -154,7 +155,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   const elapsed = () => frozenElapsed ?? elapsedBase + (Date.now() - sessionStart);
 
   const tutorials = ctx.grids.filter((g) => g.section === 'tutorial').sort((a, b) => a.id - b.id);
-  const daily = dailyGrid(ctx.grids, new Date());
+  const daily = currentBulletin(ctx.grids, localIsoDate());
   const eyebrow = grid.section === 'tutorial'
     ? UI.tutorialOf(tutorials.findIndex((g) => g.id === grid.id) + 1, tutorials.length)
     : `${daily?.id === grid.id ? UI.daily : UI.ratedEyebrow}${grid.inventory.level === 'none' ? ` · ${UI.noInventory}` : ''}`;

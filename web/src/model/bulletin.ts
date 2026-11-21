@@ -3,7 +3,8 @@
  * - publishedBulletins(): grids with a bulletin published on or before a day, oldest first.
  * - currentBulletin(): the grid of the day = latest publication date <= today; when the stock runs
  *   out, the last published one stays; before the first publication there is none.
- * - localIsoDate(): the browser's local day as `YYYY-MM-DD`.
+ * - previousBulletins(): the other published sheets, newest first.
+ * - localIsoDate(), weekdayIndex(): the local day as `YYYY-MM-DD`; day of the week of such a day.
  */
 import type { Grid } from './grid';
 
@@ -26,4 +27,16 @@ export function publishedBulletins(grids: readonly Grid[], today: string): Bulle
 export function currentBulletin(grids: readonly Grid[], today: string): BulletinGrid | null {
   const list = publishedBulletins(grids, today);
   return list[list.length - 1] ?? null;
+}
+
+/** Published bulletins other than the sheet of the day, newest first. */
+export function previousBulletins(grids: readonly Grid[], today: string): BulletinGrid[] {
+  const list = publishedBulletins(grids, today);
+  return list.slice(0, -1).reverse();
+}
+
+/** Day of the week (0 = Sunday) of an ISO day, from the calendar date (no time zone involved). */
+export function weekdayIndex(iso: string): number {
+  const [y, m, d] = iso.split('-').map(Number) as [number, number, number];
+  return new Date(Date.UTC(y, m - 1, d)).getUTCDay();
 }

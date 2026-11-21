@@ -1,0 +1,55 @@
+<title>Logo Dispatch variantes</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: one row per variant, the same mark at 16, 32 and 96 px on a light and a dark tile. */
+:root{--bg:#fbf7f9;--fg:#3b3340;--muted:#7d7380;--card:#fff;--line:#eadfe6;--tile:#fbf1f5;--accent:#c45c7c;
+--display:'Fraunces',Georgia,serif;--body:'Figtree',system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1920;--fg:#f3ecf0;--muted:#a79ca9;--card:#26212a;--line:#3a3340;--tile:#2f2933;--accent:#e58aa6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1d1920;--fg:#f3ecf0;--muted:#a79ca9;--card:#26212a;--line:#3a3340;--tile:#2f2933;--accent:#e58aa6;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);padding-block:28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:860px;margin:0 auto;display:grid;gap:20px}
+h1{font-family:var(--display);font-weight:400;font-size:2rem;margin:0;text-wrap:balance}
+p{margin:0;color:var(--muted);line-height:1.5;max-width:65ch}
+.row{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:14px}
+.row h2{margin:0;font-size:1.05rem}.row h2 span{color:var(--accent);margin-right:8px}
+.sizes{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end}
+.tile{border-radius:12px;padding:14px;display:flex;gap:18px;align-items:flex-end;background:var(--tile)}
+.tile.dk{background:#2b2430}
+.lab{font-size:.72rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.wm{display:flex;align-items:center;gap:8px;font-family:var(--display);font-size:1.5rem}
+.note{font-size:.85rem;color:var(--muted)}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&family=Fraunces:wght@400&display=swap">
+<main>
+<h1>Le D de Dispatch, lisible en petit</h1>
+<p>Trois variantes du logo L1a, avec les couleurs d’origine (jaune, pêche, rose). Chacune est montrée à 16, 32 et 96 px, sur clair et sur sombre. La première ligne rappelle le logo actuel.</p>
+<div id="out" style="display:grid;gap:20px"></div>
+</main>
+<script>
+const C={N:"#f7e2a0",G:"#f8c8a9",T:"#f4b5c4"},INK="#3b3340";
+let uid=0;
+const svg=(s,body)=>`<svg width="${s}" height="${s}" viewBox="0 0 60 60" aria-hidden="true">${body}</svg>`;
+const V={
+ L1a:s=>{const w=[3,4,5,5,4,3],c=["N","N","G","G","T","T"];let o="";
+  w.forEach((l,i)=>{o+=`<rect x="1" y="${50-i*10+.8}" width="${l*9.5}" height="8.4" rx="2.8" fill="${C[c[i]]}"/>`});return svg(s,o)},
+ A:s=>{const id="m"+uid++,c=["T","T","G","G","N","N"];
+  let b="";c.forEach((k,i)=>{b+=`<rect x="0" y="${4+i*8.67}" width="60" height="8.67" fill="${C[k]}"/>`});
+  return svg(s,`<defs><mask id="${id}"><rect width="60" height="60" fill="#fff"/><path d="M20 17h7a10 10 0 0 1 0 26h-7z" fill="#000"/></mask><clipPath id="${id}c"><path d="M3 4h27a26 26 0 0 1 0 52H3z"/></clipPath></defs><g mask="url(#${id})"><g clip-path="url(#${id}c)">${b}</g></g>`)},
+ B:s=>{const w=[22,30,34,34,30,22],c=["T","T","G","G","N","N"];
+  let o=`<rect x="2" y="4" width="9" height="52" rx="2.5" fill="${INK}"/>`;
+  w.forEach((l,i)=>{o+=`<rect x="13.5" y="${4+i*8.67+.6}" width="${l}" height="7.5" rx="3.2" fill="${C[c[i]]}"/>`});return svg(s,o)},
+ C:s=>{const w=[34,50,50,34],c=["T","G","G","N"];let o="";
+  w.forEach((l,i)=>{o+=`<rect x="4" y="${3+i*14.5}" width="${l}" height="12.5" rx="6.25" fill="${C[c[i]]}"/>`});return svg(s,o)}
+};
+const info=[
+ ["L1a","Logo actuel","Six barres fines séparées par des vides : à 16 px, on lit une pile de barres."],
+ ["A","D plein et contre-forme","Les six bandes de couleur forment un D d’un seul bloc, avec le creux du D ouvert. Aucun vide entre les bandes, donc la lettre garde sa silhouette en petit."],
+ ["B","Fût et barres","Un fût vertical encre pose la hampe du D, et les barres s’y accrochent. La lettre se lit tout de suite, mais le fût ajoute l’encre au logo (seule entorse aux couleurs d’origine)."],
+ ["C","Quatre barres épaisses","Quatre barres arrondies, plus grosses, aux extrémités entièrement rondes. On garde l’esprit des centrales empilées, avec moins de détails à 16 px. Le D est plus suggéré que dessiné."]
+];
+document.getElementById("out").innerHTML=info.map(([k,t,d])=>{
+ const sz=[16,32,96];
+ const tile=dk=>`<div class="tile ${dk?"dk":""}">${sz.map(s=>`<div style="display:grid;gap:6px;justify-items:start">${V[k](s)}<span class="lab" style="color:${dk?"#a79ca9":""}">${s} px</span></div>`).join("")}</div>`;
+ return `<section class="row"><h2><span>${k==="L1a"?"Actuel":"Variante "+k}</span>${t}</h2><p class="note">${d}</p>
+ <div class="sizes">${tile(false)}${tile(true)}<div class="wm">${V[k](28)}Dispatch</div></div></section>`}).join("");
+</script>

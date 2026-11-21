@@ -2,7 +2,6 @@
  * Player progress, kept in localStorage when it is available (pure logic + a guarded store).
  * - Per grid: status (started, done), the saved board and the time spent.
  * - Every storage access is wrapped in try/catch: the game works without storage.
- * - Grid of the day: one rated grid picked from the local date.
  */
 import type { Grid } from '../model/grid';
 import type { PlacedBar, PlayState } from '../engine';
@@ -119,18 +118,6 @@ export const browserStore = () => {
   }
   return store;
 };
-
-/** Days since 1970-01-01 for the local calendar date. */
-export function localDayNumber(d: Date): number {
-  return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86_400_000);
-}
-
-/** Grid of the day: a rated grid chosen by the date (same grid all day, next one tomorrow). */
-export function dailyGrid(grids: readonly Grid[], date: Date): Grid | null {
-  const rated = grids.filter((g) => g.section === 'rated').sort((a, b) => a.id - b.id);
-  if (!rated.length) return null;
-  return rated[localDayNumber(date) % rated.length] ?? null;
-}
 
 /** Play order: tutorials, then rated grids, each by id. */
 export function playOrder(grids: readonly Grid[]): Grid[] {
