@@ -14,13 +14,13 @@ import {
   ProgressStore, STORAGE_KEY, emptyProgress, isPlayState, nextGrid, parseProgress,
   playOrder, recordState, statusOf, type KeyValueStore,
 } from '../src/ui/progress';
-import { boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard, stepTagLabels } from '../src/ui/board';
+import { boardLead, boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard, stepTagLabels } from '../src/ui/board';
 import {
   applyLockedExports, boardMessage, bulletinTag, displayTitle, exportTap, initialState, isInitialState, newlyBroken, nextExportValue,
   poseMessage, techniqueLine,
 } from '../src/ui/game';
 import { MSG, durationText } from '../src/i18n/fr';
-import { STEP_KEY, bookEntries, isDayClue, orderClues, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, richClueText } from '../src/ui/panels';
+import { STEP_KEY, bookEntries, inventoryExchanges, isDayClue, orderClues, withInventoryExchanges, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, richClueText } from '../src/ui/panels';
 import { renderSheet, slotLegend } from '../src/ui/print';
 import { stepArrowAction, stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from '../src/ui/step';
 import { UI } from '../src/i18n/fr';
@@ -268,10 +268,12 @@ describe('board and game helpers', () => {
     const geo = boardGeometry(g, 'A', 50);
     const top = Math.max(...g.demand) + g.neighbors.reduce((a, nb) => a + nb.cap, 0);
     expect(geo.rows).toBe(top);
-    expect(cellAt(geo, 0, (geo.rows - 1) * 50 + 1)).toEqual({ row: 0, col: 0 });
-    expect(cellAt(geo, 50 * 3 + 10, (geo.rows - 3) * 50 + 10)).toEqual({ row: 2, col: 3 });
-    expect(cellAt(geo, -1, 10)).toBeNull();
-    expect(cellAt(geo, 50 * g.columns.length + 1, 10)).toBeNull();
+    // The left gutter holds the neighbor id: hit-testing starts after it.
+    expect(geo.lead).toBeGreaterThan(0);
+    expect(cellAt(geo, geo.lead, (geo.rows - 1) * 50 + 1)).toEqual({ row: 0, col: 0 });
+    expect(cellAt(geo, geo.lead + 50 * 3 + 10, (geo.rows - 3) * 50 + 10)).toEqual({ row: 2, col: 3 });
+    expect(cellAt(geo, geo.lead - 1, 10)).toBeNull();
+    expect(cellAt(geo, geo.lead + 50 * g.columns.length + 1, 10)).toBeNull();
     // Paper is a full rectangle: the screen's maximum height plus one blank row above every column.
     expect(boardGeometry(g, 'B', 40).rows).toBe(top + 1);
   });
@@ -519,10 +521,11 @@ describe('review S6.3 round 1', () => {
     const svg = renderBoard({ grid: g, state: s, ev: evaluate(g, s), style: 'A', cell }).svg;
     const tags = [...svg.matchAll(/<g class="tag"><rect x="([\d.]+)" y="[^"]+" width="([\d.]+)"/g)];
     expect(tags.length).toBeGreaterThan(0);
+    const lead = boardGeometry(g, 'A', cell).lead;
     for (const [, x, w] of tags) {
-      const col = Math.floor((Number(x) + Number(w) / 2) / cell);
-      expect(Number(x)).toBeGreaterThanOrEqual(col * cell);
-      expect(Number(x) + Number(w)).toBeLessThanOrEqual((col + 1) * cell);
+      const col = Math.floor((Number(x) + Number(w) / 2 - lead) / cell);
+      expect(Number(x)).toBeGreaterThanOrEqual(lead + col * cell);
+      expect(Number(x) + Number(w)).toBeLessThanOrEqual(lead + (col + 1) * cell);
     }
   });
 
@@ -693,9 +696,129 @@ describe('clue card (every clue in text, time order)', () => {
     for (const grid of grids) {
       if (!grid.clues.length) continue;
       const ev = evaluate(grid, newGame(grid));
-      const html = renderClues(grid, ev.clues);
-      expect(html.match(/<li class="clue"/g)?.length ?? 0).toBe(grid.clues.length);
+      const html = renderClues(grid, ev.clues, newGame(grid));
+      expect(html.match(/<li class="clue"/g)?.length ?? 0).toBe(grid.clues.length + (inventoryExchanges(grid) ? 1 : 0));
       expect(html).not.toContain('<details');
     }
+  });
+});
+
+describe('board card: fixed layout, price row, export rows', () => {
+  const draw = (g: Grid, state = initialState(g), cell = 50) => renderBoard({ grid: g, state, ev: evaluate(g, state), style: 'A', cell, interactive: true });
+  const viewBox = (svg: string) => svg.match(/viewBox="([^"]+)"/)![1];
+
+  it('exporting or pumping moves nothing: same viewBox and same geometry before and after', () => {
+    for (const id of [6, 7, 10, 11]) {
+      const g = byId(id);
+      const before = draw(g);
+      let state = initialState(g);
+      const nb = g.neighbors[0]!;
+      const r = exportTap(g, state, nb.id, g.columns.length - 2);
+      if (r.state) state = r.state;
+      const after = draw(g, state);
+      expect(viewBox(after.svg)).toBe(viewBox(before.svg));
+      expect(after.geo.topPad).toBe(before.geo.topPad);
+      expect(after.geo.rows).toBe(before.geo.rows);
+    }
+  });
+
+  it('a reserve is drawn only when the grid has a neighbor or a STEP', () => {
+    expect(draw(byId(1)).svg).not.toContain('class="reserve"');
+    expect(draw(byId(2)).svg).not.toContain('class="reserve"');
+    for (const id of [6, 7, 10, 11]) expect(draw(byId(id)).svg).toContain('class="reserve"');
+  });
+
+  it('an export fills a reserve cell: the reserve stays drawn above, nothing else changes', () => {
+    const g = byId(11);
+    const before = draw(g).svg.match(/class="reserve"/g)?.length ?? 0;
+    const r = exportTap(g, initialState(g), 'DE', 2);
+    expect(r.state).not.toBeNull();
+    const after = draw(g, r.state!).svg.match(/class="reserve"/g)?.length ?? 0;
+    expect(after).toBe(before - 1);
+  });
+
+  it('price tags sit under the hours, below the grid, not above the columns', () => {
+    const g = byId(7);
+    const { svg, geo } = draw(g);
+    const hoursY = geo.rows * 50;
+    const prices = [...svg.matchAll(/<g class="tag"><rect x="[\d.]+" y="([\d.-]+)"/g)].map((m) => Number(m[1]));
+    expect(g.clues.filter((c) => c.type === 'price').length).toBeGreaterThan(0);
+    // Every price pill is below the hour labels (record tags above the columns have a negative or small y).
+    const below = prices.filter((y) => y > hoursY);
+    expect(below.length).toBe(g.clues.filter((c) => c.type === 'price').length);
+    expect(geo.priceRows).toBe(1);
+    expect(boardGeometry(byId(10), 'A', 50).priceRows).toBe(0); // no price clue: no row
+  });
+
+  it('one row of export cells per neighbor, headed by its id, aligned on the columns', () => {
+    for (const id of [7, 10, 11]) {
+      const g = byId(id);
+      const { svg, geo } = draw(g);
+      const cells = svg.match(/data-act="(export|locked)" data-country="DE"/g) ?? [];
+      expect(cells.length).toBe(g.neighbors.length * g.columns.length);
+      expect(geo.lead).toBe(boardLead(g));
+      expect(svg).toContain('>DE</text>');
+      expect(svg).toContain('DE · 1 bloc par créneau'.replace('DE', g.neighbors[0]!.name));
+    }
+    expect(boardLead(byId(1))).toBe(0);
+  });
+
+  it('a tap on an export cell exports a block: the cell fills', () => {
+    const g = byId(11);
+    const r = exportTap(g, initialState(g), 'DE', 3);
+    expect(r.state).not.toBeNull();
+    const svg = draw(g, r.state!).svg;
+    expect(svg).toContain('aria-label="Allemagne');
+    expect(svg).toContain('>→1</text>');
+  });
+});
+
+describe('order book without exchanges line; exchanges in the clue card', () => {
+  it('the order book has no "Échanges" row, on screen or on paper', () => {
+    for (const id of [3, 4, 5, 6, 7]) {
+      const g = byId(id);
+      for (const paper of [false, true]) {
+        const html = renderBook(g, initialState(g), null, paper);
+        expect(html).not.toContain('Échanges');
+        expect(html).not.toContain('xpill');
+        expect(html).not.toContain('xrow');
+      }
+    }
+  });
+
+  it('an exact inventory with exports gives an exchanges line in the clue card, first, with its status', () => {
+    for (const id of [3, 4, 5, 6, 7]) {
+      const g = byId(id);
+      const clue = inventoryExchanges(g);
+      expect(clue?.type).toBe('exchanges');
+      expect(isDayClue(clue!)).toBe(true);
+      const start = withInventoryExchanges(g, newGame(g), evaluate(g, newGame(g)).clues);
+      const ordered = orderClues(start);
+      expect(ordered[0]!.clue.type).toBe('exchanges');
+      expect(ordered[0]!.status).toBe('open');
+      const solved = withInventoryExchanges(g, solutionState(g), evaluate(g, solutionState(g)).clues);
+      expect(solved.find((r) => r.clue.type === 'exchanges')!.status).toBe('ok');
+    }
+    const g6 = byId(6);
+    const html = renderClues(g6, evaluate(g6, newGame(g6)).clues, newGame(g6));
+    expect(html).toContain('Aujourd’hui');
+    expect(html).toContain('exporté');
+    expect(html.indexOf('Aujourd’hui')).toBeLessThan(html.indexOf('class="clue"', html.indexOf('Aujourd’hui') + 20));
+  });
+
+  it('G7 exchanges line also tells the STEP pair; grids without inventory or exports have none', () => {
+    expect(inventoryExchanges(byId(7))?.step).toBe(1);
+    expect(inventoryExchanges(byId(1))).toBeNull();
+    expect(inventoryExchanges(byId(2))).toBeNull();
+    for (const id of [8, 9, 10, 11]) expect(inventoryExchanges(byId(id))).toBeNull();
+  });
+
+  it('the paper day list carries the exchanges line, and the card has one name', () => {
+    const sheet = renderSheet(byId(6), 6);
+    expect(sheet).toContain('Aujourd’hui');
+    expect(sheet).toContain(UI.dayClues);
+    expect(UI.dayClues).toBe('Publications du marché');
+    expect(UI.gridClues).toBe(UI.dayClues);
+    expect(renderClues(byId(10), evaluate(byId(10), newGame(byId(10))).clues, newGame(byId(10)))).toContain('Publications du marché');
   });
 });
