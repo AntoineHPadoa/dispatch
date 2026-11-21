@@ -358,13 +358,6 @@ class Quotas:
         lab = g["lab"]
         if _signatures(g) & self.seen:
             return "duplicate"
-        if self.family.get(lab["family"], 0) >= self.q["max_same_family"]:
-            return "quota:family"
-        if self.mech.get(tuple(lab["mechanics"]), 0) >= self.q["max_same_mechanics"]:
-            return "quota:mechanics"
-        if self.profile.get(tuple(lab["clue_profile"]), 0) >= self.q["max_same_clue_profile"]:
-            return "quota:clue_profile"
-        # Reserve the slots still needed for the minimum per rating and per mix entry.
         r = g["difficulty"]["rating"]
         m = lab.get("mix", -1)
         need_r = self.q["min_per_rating"]
@@ -372,6 +365,16 @@ class Quotas:
         missing_r = sum(max(0, need_r - self.rating.get(x, 0)) for x in (1, 2, 3, 4) if x != r)
         missing_m = sum(max(0, need_m - self.mix.get(x, 0)) for x in range(self.mixes) if x != m)
         left = self.size - self.kept - 1
+        # A mix entry still under its minimum when only reserved slots remain wins over the diversity quotas.
+        last_call = 0 <= m < self.mixes and self.mix.get(m, 0) < need_m and left <= max(missing_r, missing_m)
+        if not last_call:
+            if self.family.get(lab["family"], 0) >= self.q["max_same_family"]:
+                return "quota:family"
+            if self.mech.get(tuple(lab["mechanics"]), 0) >= self.q["max_same_mechanics"]:
+                return "quota:mechanics"
+            if self.profile.get(tuple(lab["clue_profile"]), 0) >= self.q["max_same_clue_profile"]:
+                return "quota:clue_profile"
+        # Reserve the slots still needed for the minimum per rating and per mix entry.
         if left < missing_r and self.rating.get(r, 0) >= need_r:
             return "quota:rating"
         if left < missing_r + missing_m and self.rating.get(r, 0) >= need_r and self.mix.get(m, 0) >= need_m:

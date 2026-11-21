@@ -6,7 +6,8 @@
 - select_clues(): mandatory clues first (a STEP grid publishes its pairs), then greedy: add the clue that
   leaves the fewest undecided cells after the level 1-2 techniques (ties: the least used clue type), until
   the deduction up to `max_level` solves the grid (levels 3-4 are only tried near the end); then prune
-  every clue the grid can do without. `max_level` is the generator's lever on the rating.
+  every clue the grid can do without, at that level then with every technique (§8.3), until stable.
+  `max_level` is the generator's lever on the rating; the last prune may raise the rating above it.
 - Monotone: removing any remaining clue makes the deduction fail (tested).
 
 Example: clues = select_clues(grid, pool)  # None when even the whole pool does not suffice
@@ -160,10 +161,16 @@ def select_clues(
         und = best[0][0]
     if und == 0 and judge.run(chosen, cheap).composition != judge.ref:
         return None
-    # Prune: drop what the grid can do without (engaged bars first, prices last).
-    for t in PRUNE_ORDER:
-        for clue in [c for c in chosen if c["type"] == t and c not in base]:
-            trial = [c for c in chosen if c is not clue]
-            if judge.solves(trial, max_level):
-                chosen = trial
+    # Prune: drop what the grid can do without (engaged bars first, prices last), first at the aimed
+    # level, then with every technique (§8.3 is judged on the full deduction), until nothing moves.
+    for level in sorted({max_level, 4}):
+        changed = True
+        while changed:
+            changed = False
+            for t in PRUNE_ORDER:
+                for clue in [c for c in chosen if c["type"] == t and c not in base]:
+                    trial = [c for c in chosen if c is not clue]
+                    if judge.solves(trial, level):
+                        chosen = trial
+                        changed = True
     return chosen

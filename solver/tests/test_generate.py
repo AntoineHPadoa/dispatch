@@ -58,14 +58,17 @@ def test_candidate_is_publishable():
 
 
 def test_aim_one_gives_easy_grids():
-    """rv8 C4: the aimed level is a lever: aim 1 selects clues for the level 1 techniques only."""
-    kept = 0
-    for seed in range(8):
+    """rv8 C4: the aimed level is a lever: aim 1 selects clues for the level 1 techniques only.
+
+    The last prune (§8.3, full deduction) may still raise a grid above its aim.
+    """
+    ratings = []
+    for seed in range(10):
         g, _why, _ = make_candidate({"cols": 8, "neighbors": 1}, seed, 1)
         if g is not None:
-            kept += 1
-            assert g["difficulty"]["rating"] == 1 and g["lab"]["aim"] == 1
-    assert kept
+            assert g["lab"]["aim"] == 1
+            ratings.append(g["difficulty"]["rating"])
+    assert ratings and ratings.count(1) * 2 > len(ratings)
 
 
 def test_ramp_candidate_uses_the_ramp():
@@ -213,6 +216,23 @@ def test_quotas():
     assert q.check(_qgrid("bbb", 1)) == "quota:rating"  # 3 slots left, 3 ratings still missing
     assert q.check(_qgrid("bbb", 2)) is None
     assert q.missing_ratings() == [2, 3, 4]
+
+
+def test_mix_minimum_wins_at_the_end():
+    """The last slots go to a mix entry still missing, even past a diversity quota."""
+    q = Quotas(2, {"max_same_family": 1, "min_per_rating": 0, "min_per_mix": 1}, mixes=2)
+    a = _qgrid("aa", 1)
+    a["lab"]["mix"] = 0
+    q.add(a)
+    b = _qgrid("aa", 2)
+    b["lab"]["mix"] = 1
+    assert q.check(b) is None  # family quota reached, but entry 1 has no grid and one slot is left
+    b["lab"]["mix"] = 0
+    assert q.check(b) == "quota:family"
+    early = Quotas(10, {"max_same_family": 1, "min_per_rating": 0, "min_per_mix": 1}, mixes=3)
+    early.add(a)
+    b["lab"]["mix"] = 1
+    assert early.check(b) == "quota:family"  # 9 slots left for 2 missing entries: the quota holds
 
 
 def test_duplicates_up_to_a_shift():

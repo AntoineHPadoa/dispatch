@@ -63,6 +63,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--max-level", type=int, default=4)
     p = sub.add_parser("check-published", help="every published grid is unique, deducible and matches its reference")
     p.add_argument("file", nargs="?", default=str(PUBLISHED))
+    p.add_argument("--ramp", action="store_true", help="accept ramp-shaped pieces")
     p = sub.add_parser("generate", help="fill a lot of candidate grids (lab/candidates/<lot>.json and .stats.json)")
     p.add_argument("lot", help="lot file (JSON): lot, size, seed, mix, quotas")
     p.add_argument("--out", default=str(LAB / "candidates"))
@@ -96,7 +97,7 @@ def main(argv: list[str] | None = None) -> int:
         family = g.get("lab", {}).get("family") or "pointe_soir"
         print(json.dumps(make_bulletin(g, family, random.Random(a.seed)), ensure_ascii=False, indent=1))
         return 0
-    ok, lines = check_published(load_grids(a.file))
+    ok, lines = check_published(load_grids(a.file), allow_ramp=a.ramp)
     print("\n".join(lines))
     return 0 if ok else 1
 

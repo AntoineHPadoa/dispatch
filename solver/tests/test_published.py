@@ -1,7 +1,9 @@
 """The 11 published grids: one composition, the reference one, deducible, with their stored rating."""
 
+import json
+
 import pytest
-from conftest import published
+from conftest import FIXTURES, published
 
 from dispatch_solver import exact
 from dispatch_solver.api import check_published
@@ -23,3 +25,11 @@ def test_published_grid(g):
 def test_check_published_reports_ok():
     ok, lines = check_published(published())
     assert ok and lines[-1].startswith("OK")
+
+
+def test_check_published_accepts_ramps_on_request():
+    g = json.loads((FIXTURES / "valid-technique-ramp-plateau.json").read_text())["grid"]
+    ok, lines = check_published([g])
+    assert not ok and "ramps are not enabled" in lines[0]
+    ok, lines = check_published([g], allow_ramp=True)
+    assert ok, lines
