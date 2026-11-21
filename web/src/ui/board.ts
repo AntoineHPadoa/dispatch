@@ -132,7 +132,8 @@ export function boardGeometry(grid: Grid, style: BoardStyle, cell: number, state
     return Math.min(exports, exportTotal) + maxStepPairs(grid);
   };
   const colMax = res.map((r, c) => weather[c]! + Math.max(0, r + extraAt(c)));
-  const rows = Math.max(1, ...colMax);
+  // Paper: one blank row above the highest point any column can reach.
+  const rows = Math.max(1, ...colMax) + (style === 'B' ? 1 : 0);
   const st = state ?? { bars: [], exports: {}, step: [] };
   const tags = tagsPerColumn(grid, style);
   // Paper: every tag sits above the rectangle, outside the grid.
