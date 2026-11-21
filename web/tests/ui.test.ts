@@ -22,7 +22,7 @@ import {
 import { MSG, durationText } from '../src/i18n/fr';
 import { STEP_KEY, bookEntries, isDayClue, publishedStepPairs, renderBook, renderCo2, richClueText } from '../src/ui/panels';
 import { renderSheet, slotLegend } from '../src/ui/print';
-import { stepPairIndexAt, stepTapResult } from '../src/ui/step';
+import { stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from '../src/ui/step';
 import { UI } from '../src/i18n/fr';
 
 const grids = gridsJson as unknown as Grid[];
@@ -589,5 +589,19 @@ describe('STEP taps (grid 7: 8 slots, one published pair)', () => {
     expect(stepPairIndexAt(s, 5)).toBe(0);
     expect(stepPairIndexAt(s, 3)).toBe(-1);
     expect(stepPairIndexAt(s0, 1)).toBe(-1);
+  });
+});
+
+describe('STEP pump without its turbine (pending pump, not in the undo history)', () => {
+  it('Undo drops the pending pump before undoing a recorded action', () => {
+    expect(stepUndoPlan(1)).toBe('drop-pending');
+    expect(stepUndoPlan(0)).toBe('drop-pending');
+    expect(stepUndoPlan(null)).toBe('undo');
+  });
+
+  it('the eraser on the pending slot drops the pump; elsewhere it keeps it', () => {
+    expect(stepEraseResult(3, 3)).toEqual({ pending: null, dropped: true });
+    expect(stepEraseResult(3, 4)).toEqual({ pending: 3, dropped: false });
+    expect(stepEraseResult(null, 3)).toEqual({ pending: null, dropped: false });
   });
 });

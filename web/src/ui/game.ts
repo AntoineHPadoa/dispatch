@@ -22,7 +22,7 @@ import {
 import { canUndo, push, reset, start, undo, type History } from './history';
 import { STEP_KEY, bookEntries, renderBook, renderClues, renderCo2, type BookEntry } from './panels';
 import { esc, icon } from './palette';
-import { stepPairIndexAt, stepTapResult } from './step';
+import { stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from './step';
 import { dailyGrid, nextGrid, recordState, type ProgressStore } from './progress';
 
 export interface GameContext {
@@ -337,6 +337,8 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   }
 
   function removeAt(c: Cell) {
+    const er = stepEraseResult(stepPending, c.col);
+    if (er.dropped) { stepPending = null; say(UI.stepPendingDropped, 'info'); drawBoard(); return; }
     const i = barIndexAt(history.present, c.row, c.col);
     if (i < 0 && isStepCell(c) && removePairAt(c.col)) return;
     const bar = i >= 0 ? history.present.bars[i] : undefined;
@@ -562,6 +564,12 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       message = null;
       drawAll();
     } else if (tool === 'undo') {
+      if (stepUndoPlan(stepPending) === 'drop-pending') {
+        stepPending = null;
+        message = { text: UI.stepPendingDropped, tone: 'info' };
+        drawAll();
+        return;
+      }
       if (!canUndo(history)) { say(UI.nothingToUndo, 'info'); return; }
       const wasSolved = ev.solved;
       history = undo(history);

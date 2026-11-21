@@ -391,6 +391,7 @@ export const UI = {
   stepPending: (col: string) => `Pompage à ${col} : touche un créneau plus tard pour le turbinage.`,
   stepAdded: (pump: string, turbine: string) => `STEP : pompage à ${pump}, turbinage à ${turbine}.`,
   stepRemoved: 'Paire STEP retirée.',
+  stepPendingDropped: 'Pompage en attente annulé.',
   stepEarlier: 'Le turbinage doit venir après le pompage.',
   invalidBars: (k: number) => `${k} ${k > 1 ? 'centrales ne tiennent plus' : 'centrale ne tient plus'} : hachurée${k > 1 ? 's' : ''} en rouge.`,
   doneTitle: 'Programme bouclé',
