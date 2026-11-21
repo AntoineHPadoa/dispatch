@@ -33,6 +33,8 @@ body.lab .diff { display: none; }
 @media (max-width: 860px) { .lab-cols, .lab-cols2 { grid-template-columns: minmax(0, 1fr); } }
 .lab-tbl { overflow-x: auto; border: 1px solid var(--hair); border-radius: 12px; background: var(--card); }
 .lab-tbl table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: .8rem; }
+.lab-tbl.compact table { min-width: 0; }
+.lab-tbl td.lab-wrap { white-space: normal; min-width: 130px; }
 .lab-tbl th, .lab-tbl td { padding: 5px 8px; text-align: left; border-bottom: 1px solid var(--hair); white-space: nowrap; vertical-align: middle; }
 .lab-tbl th { font-size: .66rem; text-transform: uppercase; letter-spacing: .06em; color: var(--soft); user-select: none; }
 .lab-tbl th[data-k] { cursor: pointer; }

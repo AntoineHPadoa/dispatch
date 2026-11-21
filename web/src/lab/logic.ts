@@ -1,7 +1,8 @@
 /*
  * Lab logic (pure): candidate filter and sort, play recorder, aggregates, bulletin helpers.
  * - filterCandidates / sortCandidates drive the lot table.
- * - PlayRecorder counts errors, undos, erasures and time of one game and builds the record sent to the server.
+ * - PlayRecorder counts errors, undos, erasures and active time (hidden tab excluded) of one game and builds the record sent.
+ * - "error" = a pose refused by the engine or one that contradicts a clue (not an export or STEP pair against a clue).
  * - playStats / feltAverage summarise the plays and the felt ratings of a candidate.
  */
 import type { GameEvent } from '../ui/game';
@@ -22,6 +23,8 @@ export interface Candidate {
   clue_profile: string[];
   trace_summary: { steps?: number; level2_steps?: number; single_effect_steps?: number; techniques?: Record<string, number> };
   silhouette: number[];
+  /** False until the current player has rated the grid (or creation mode): rating, techniques, steps and felt are then empty. */
+  revealed: boolean;
   /** False for ramp grids, which the web game cannot play yet. */
   playable: boolean;
   plays: number;
@@ -31,17 +34,33 @@ export interface Candidate {
 }
 
 export interface Play {
+  id?: string;
   player: string;
   lot: string;
   index: number;
+  /** Set by the server on another player's play of a grid the current player has not rated: no measure. */
+  masked?: boolean;
   outcome: 'solved' | 'abandoned';
   ms: number;
+  wall_ms?: number;
   errors: number;
   undos: number;
   erasers: number;
   resets: number;
+  felt?: number | null;
+  attempt?: number;
   ts: number;
 }
+
+/** Candidates are numbered from 0 by the generator and shown from 1. */
+export const displayNumber = (index: number): string => String(index + 1);
+
+/** French names of the solver techniques; an unknown id is shown with spaces. */
+export const TECHNIQUE_LABELS: Record<string, string> = {
+  flow: 'Flux', room: 'Place', exhausted: 'Épuisement', record: 'Record', single_cover: 'Couverture unique',
+  silhouette: 'Silhouette', ribbon: 'Ruban', bottleneck: 'Goulot', neighbors: 'Voisins', step: 'STEP',
+};
+export const techniqueLabel = (t: string): string => TECHNIQUE_LABELS[t] ?? t.replace(/_/g, ' ');
 
 export interface Filters {
   rating: string;
@@ -98,14 +117,20 @@ export interface PlayRecord {
   lot: string;
   index: number;
   outcome: 'solved' | 'abandoned';
+  /** Active time: the time the tab was hidden is not counted. */
   ms: number;
+  /** Time on the wall clock, hidden time included. */
+  wall_ms: number;
+  /** Start of the game, epoch seconds. */
+  started: number;
   errors: number;
   undos: number;
   erasers: number;
   resets: number;
+  reason?: 'unload';
 }
 
-/** Counts the events of one game and the time since it started (clock injected for tests). */
+/** Counts the events of one game and its active time (clock injected for tests). */
 export class PlayRecorder {
   private errors = 0;
   private undos = 0;
@@ -113,6 +138,8 @@ export class PlayRecorder {
   private resets = 0;
   private startedAt: number;
   private endedAt: number | null = null;
+  private hiddenMs = 0;
+  private hiddenSince: number | null = null;
   solved = false;
 
   constructor(private readonly clock: () => number = Date.now) {
@@ -125,20 +152,39 @@ export class PlayRecorder {
     else if (e === 'undo') this.undos++;
     else if (e === 'erase') this.erasers++;
     else if (e === 'reset') this.resets++;
-    else if (e === 'solved') { this.solved = true; this.endedAt = this.clock(); }
+    else if (e === 'solved') { this.solved = true; this.end(); }
   }
 
+  /** The tab was hidden or shown again: hidden time is left out of the active time. */
+  setHidden(hidden: boolean): void {
+    if (this.endedAt !== null) return;
+    if (hidden && this.hiddenSince === null) this.hiddenSince = this.clock();
+    else if (!hidden && this.hiddenSince !== null) { this.hiddenMs += this.clock() - this.hiddenSince; this.hiddenSince = null; }
+  }
+
+  private end(): void {
+    if (this.endedAt !== null) return;
+    this.endedAt = this.clock();
+    if (this.hiddenSince !== null) { this.hiddenMs += this.endedAt - this.hiddenSince; this.hiddenSince = null; }
+  }
+
+  /** Active time so far (frozen at the end of the game). */
   elapsed(): number {
-    return (this.endedAt ?? this.clock()) - this.startedAt;
+    const now = this.endedAt ?? this.clock();
+    const hidden = this.hiddenMs + (this.hiddenSince !== null && this.endedAt === null ? now - this.hiddenSince : 0);
+    return Math.max(0, now - this.startedAt - hidden);
   }
 
-  /** The record to send; an abandoned game ends now, a solved one at the solve. */
-  finish(player: string, lot: string, index: number, abandoned = false): PlayRecord {
-    if (this.endedAt === null) this.endedAt = this.clock();
+  /** The record to send; a solved game ends at the solve, an abandoned one now. A solved game stays solved whatever follows. */
+  finish(player: string, lot: string, index: number, abandoned = false, reason?: 'unload'): PlayRecord {
+    this.end();
+    const wall = Math.max(0, Math.round(this.endedAt! - this.startedAt));
+    const ms = Math.min(wall, Math.round(this.elapsed()));
     return {
-      player, lot, index, outcome: abandoned || !this.solved ? 'abandoned' : 'solved',
-      ms: Math.max(0, Math.round(this.endedAt - this.startedAt)),
+      player, lot, index, outcome: this.solved && !abandoned ? 'solved' : 'abandoned',
+      ms, wall_ms: wall, started: Math.round(this.startedAt / 1000),
       errors: this.errors, undos: this.undos, erasers: this.erasers, resets: this.resets,
+      ...(reason ? { reason } : {}),
     };
   }
 }
@@ -149,6 +195,8 @@ export function formatDuration(ms: number): string {
 }
 
 export interface PlayStats {
+  /** True when some plays are masked (another player's, on a grid not yet rated): only the count is known. */
+  masked: boolean;
   games: number;
   solved: number;
   /** Median time of solved games, in ms (null when none). */
@@ -157,12 +205,13 @@ export interface PlayStats {
 }
 
 export function playStats(plays: readonly Play[]): PlayStats {
-  const solved = plays.filter((p) => p.outcome === 'solved');
+  const masked = plays.some((p) => p.masked);
+  const solved = plays.filter((p) => !p.masked && p.outcome === 'solved');
   const times = solved.map((p) => p.ms).sort((a, b) => a - b);
   const mid = Math.floor(times.length / 2);
   const medianMs = times.length ? (times.length % 2 ? times[mid]! : (times[mid - 1]! + times[mid]!) / 2) : null;
   const meanErrors = solved.length ? solved.reduce((a, p) => a + p.errors, 0) / solved.length : null;
-  return { games: plays.length, solved: solved.length, medianMs, meanErrors };
+  return { masked, games: plays.length, solved: solved.length, medianMs, meanErrors };
 }
 
 /** Next weather in the sun, moon, cloud, wind cycle. */

@@ -176,7 +176,7 @@
   },
   "lab": {
    "lot": "demo",
-   "index": 1,
+   "index": 0,
    "family": "pointe_soir",
    "mechanics": [
     "neighbors:1"
@@ -432,7 +432,7 @@
   },
   "lab": {
    "lot": "demo",
-   "index": 2,
+   "index": 1,
    "family": "deux_bosses",
    "mechanics": [
     "neighbors:1"
@@ -660,7 +660,7 @@
   },
   "lab": {
    "lot": "demo",
-   "index": 3,
+   "index": 2,
    "family": "midi_solaire",
    "mechanics": [
     "neighbors:1"
@@ -885,7 +885,7 @@
   },
   "lab": {
    "lot": "demo",
-   "index": 4,
+   "index": 3,
    "family": "nuit_plate",
    "mechanics": [
     "neighbors:1"

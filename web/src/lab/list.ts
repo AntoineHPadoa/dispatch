@@ -1,12 +1,13 @@
 /*
  * Lot screen: choose a lot, launch a new one, filter and sort its candidates, play or keep one.
- * - The table shows the solver measures (the player has not played the grid yet).
+ * - Blind by player: rating, steps, techniques and perceived ratings show "?" until the current player has rated the grid
+ *   (the server withholds them); creation mode shows them all.
  * - The side panel shows the selected candidate with its plays by player.
  */
 import { api, type LotInfo } from './api';
 import type { LabCtx } from './ctx';
 import {
-  feltAverage, filterCandidates, formatDuration, lotTemplate, nextLotName, noFilters, playStats, sortCandidates,
+  displayNumber, feltAverage, filterCandidates, formatDuration, lotTemplate, techniqueLabel, nextLotName, noFilters, playStats, sortCandidates,
   type Candidate, type Filters, type Play, type SortKey,
 } from './logic';
 import { esc } from '../ui/palette';
@@ -23,6 +24,8 @@ export function silhouetteSvg(d: readonly number[], w = 5, h = 5): string {
 }
 
 const chip = (t: string, cls = '') => `<span class="lab-chip ${cls}">${esc(t)}</span>`;
+const techChip = (t: string) => `<span class="lab-chip" title="${esc(t)}">${esc(techniqueLabel(t))}</span>`;
+const HIDDEN = '<span class="lab-note" title="Visible après ta note">?</span>';
 
 export async function renderList(root: HTMLElement, ctx: LabCtx): Promise<() => void> {
   const lots: LotInfo[] = await api.lots();
@@ -30,6 +33,7 @@ export async function renderList(root: HTMLElement, ctx: LabCtx): Promise<() => 
   let cands: Candidate[] = ctx.lot ? await api.candidates(ctx.lot) : [];
   let plays: Play[] = ctx.lot ? await api.plays(ctx.lot) : [];
   let filters: Filters = noFilters();
+  if (!ctx.creation) filters = { ...filters, rating: '' };
   let key: SortKey = 'index';
   let dir: 1 | -1 = 1;
   let sel: number | null = cands[0]?.index ?? null;
@@ -47,12 +51,12 @@ export async function renderList(root: HTMLElement, ctx: LabCtx): Promise<() => 
 
   function row(c: Candidate): string {
     const felt = feltAverage(c.felt);
-    return `<tr class="lab-row${c.index === sel ? ' sel' : ''}" data-i="${c.index}"><td>${c.index}</td><td class="lab-sil">${silhouetteSvg(c.silhouette)}</td>`
-      + `<td>${esc(c.family ?? '')}</td><td class="num">${c.cols}</td><td class="num"><b>${c.rating ?? '?'}</b></td><td class="num">${c.clues}</td>`
-      + `<td class="num">${c.trace_summary.steps ?? ''}</td><td>${c.mechanics.map((m) => chip(m)).join(' ')}</td>`
-      + `<td>${c.techniques.map((t) => chip(t)).join(' ')}</td>`
+    return `<tr class="lab-row${c.index === sel ? ' sel' : ''}" data-i="${c.index}"><td>${displayNumber(c.index)}</td><td class="lab-sil">${silhouetteSvg(c.silhouette)}</td>`
+      + `<td>${esc(c.family ?? '')}</td><td class="num">${c.cols}</td><td class="num">${c.revealed ? `<b>${c.rating ?? '?'}</b>` : HIDDEN}</td><td class="num">${c.clues}</td>`
+      + `<td class="num">${c.revealed ? (c.trace_summary.steps ?? '') : HIDDEN}</td><td>${c.mechanics.map((m) => chip(m)).join(' ')}</td>`
+      + `<td class="lab-wrap">${c.revealed ? c.techniques.map(techChip).join(' ') : HIDDEN}</td>`
       + `<td>${c.plays ? chip(`${c.plays}`, 'ok') : '<span class="lab-note">non jouée</span>'}</td>`
-      + `<td class="num">${felt === null ? '' : felt.toFixed(1)}</td>`
+      + `<td class="num">${c.revealed ? (felt === null ? '' : felt.toFixed(1)) : HIDDEN}</td>`
       + `<td><button type="button" class="lab-star${c.kept ? ' on' : ''}" data-star="${c.index}" aria-label="${c.kept ? 'Retirer des gardées' : 'Garder'}">${c.kept ? '★' : '☆'}</button></td></tr>`;
   }
 
@@ -62,10 +66,11 @@ export async function renderList(root: HTMLElement, ctx: LabCtx): Promise<() => 
     const mine = plays.filter((p) => p.index === c.index);
     const byPlayer = ctx.players.map((p) => {
       const s = playStats(mine.filter((x) => x.player === p));
-      return `<dt>${esc(p)}</dt><dd>${s.games ? `${s.games} partie${s.games > 1 ? 's' : ''}, ${s.solved} résolue${s.solved > 1 ? 's' : ''}${s.medianMs !== null ? `, ${formatDuration(s.medianMs)}` : ''}${c.felt[p] ? `, perçue ${c.felt[p]}` : ''}` : 'aucune'}</dd>`;
+      const games = `${s.games} partie${s.games > 1 ? 's' : ''}`;
+      return `<dt>${esc(p)}</dt><dd>${!s.games ? 'aucune' : s.masked ? `${games} (détails après ta note)` : `${games}, ${s.solved} résolue${s.solved > 1 ? 's' : ''}${s.medianMs !== null ? `, ${formatDuration(s.medianMs)}` : ''}${c.felt[p] ? `, perçue ${c.felt[p]}` : ''}`}</dd>`;
     }).join('');
-    return `<h3>Candidate ${c.index}</h3><div class="lab-big">${silhouetteSvg(c.silhouette, 10, 10)}</div>`
-      + `<dl class="lab-kv"><dt>Famille</dt><dd>${esc(c.family ?? '')}</dd><dt>Créneaux</dt><dd>${c.cols}</dd><dt>Note solveur</dt><dd>${c.rating ?? '?'}</dd>`
+    return `<h3>Candidate ${displayNumber(c.index)}</h3><div class="lab-big">${silhouetteSvg(c.silhouette, 10, 10)}</div>`
+      + `<dl class="lab-kv"><dt>Famille</dt><dd>${esc(c.family ?? '')}</dd><dt>Créneaux</dt><dd>${c.cols}</dd><dt>Note solveur</dt><dd>${c.revealed ? (c.rating ?? '?') : '🔒 après ta note'}</dd>`
       + `<dt>Indices</dt><dd>${c.clues} (${esc(c.clue_profile.join(', '))})</dd>${byPlayer}</dl>`
       + `<div class="lab-actions">${c.playable ? `<button type="button" class="lab-btn pri" data-play="${c.index}">Jouer à l'aveugle</button>` : '<span class="lab-note">Rampe : pas encore jouable dans le jeu.</span>'}`
       + `<button type="button" class="lab-btn" data-star="${c.index}">${c.kept ? '★ Gardée' : '☆ Garder'}</button></div>`
@@ -78,7 +83,7 @@ export async function renderList(root: HTMLElement, ctx: LabCtx): Promise<() => 
       + `<select id="lab-lot" aria-label="Lot">${lots.map((l) => `<option value="${esc(l.lot)}"${l.lot === ctx.lot ? ' selected' : ''}>${esc(l.lot)} · ${l.count}</option>`).join('')}</select>`
       + `<button type="button" class="lab-btn pri" id="lab-new">Lancer un lot…</button></div>`
       + `<div id="lab-gen"></div>${stats()}`
-      + `<div class="lab-filters"><label>Note <select data-f="rating">${opts(['1', '2', '3', '4'], filters.rating, 'toutes')}</select></label>`
+      + `<div class="lab-filters"><label>Note <select data-f="rating"${ctx.creation ? '' : ' disabled title="Mode création requis : la note est cachée"'}>${opts(['1', '2', '3', '4'], filters.rating, 'toutes')}</select></label>`
       + `<label>Mécanique <select data-f="mechanic">${opts(MECHANICS, filters.mechanic, 'toutes')}</select></label>`
       + `<label>Silhouette <select data-f="family">${opts(FAMILIES, filters.family, 'toutes')}</select></label>`
       + `<label>Statut <select data-f="status">${['', 'new', 'played', 'kept'].map((v) => `<option value="${v}"${v === filters.status ? ' selected' : ''}>${{ '': 'tous', new: 'non jouée', played: 'jouée', kept: 'gardée' }[v]}</option>`).join('')}</select></label>`
@@ -116,8 +121,10 @@ export async function renderList(root: HTMLElement, ctx: LabCtx): Promise<() => 
         log.scrollTop = log.scrollHeight;
         if (job.status !== 'running') {
           window.clearInterval(poll);
-          ctx.toast(job.status === 'done' ? 'Lot généré.' : 'La génération a échoué (voir le journal).');
-          if (job.status === 'done') { lots.splice(0, lots.length, ...(await api.lots())); ctx.lot = job.lot; await refresh(); }
+          ctx.toast(job.status === 'done' ? 'Lot généré.'
+            : job.status === 'partial' ? `Lot partiel (${job.kept ?? '?'}/${job.size ?? '?'}) : les candidates trouvées sont dans la liste.`
+              : 'La génération a échoué (voir le journal).');
+          if (job.status !== 'failed') { lots.splice(0, lots.length, ...(await api.lots())); ctx.lot = job.lot; await refresh(); }
         }
       }, 1000);
     } catch (e) { ctx.toast((e as Error).message); }

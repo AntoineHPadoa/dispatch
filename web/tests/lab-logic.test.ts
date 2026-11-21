@@ -1,13 +1,13 @@
 // Lab logic: filters, sort, play recorder, aggregates, bulletin helpers.
 import { describe, expect, it } from 'vitest';
 import {
-  PlayRecorder, feltAverage, filterCandidates, formatDuration, lotTemplate, nextLotName, nextWeather, noFilters,
-  playStats, sortCandidates, type Candidate, type Play,
+  PlayRecorder, displayNumber, feltAverage, filterCandidates, formatDuration, lotTemplate, nextLotName, nextWeather, noFilters,
+  playStats, sortCandidates, techniqueLabel, type Candidate, type Play,
 } from '../src/lab/logic';
 
 const cand = (index: number, over: Partial<Candidate> = {}): Candidate => ({
   lot: 't', index, title: 'x', cols: 8, clues: 6, rating: 2, techniques: ['record'], family: 'pointe_soir',
-  mechanics: ['neighbors:1'], clue_profile: [], trace_summary: { steps: 10 }, silhouette: [1], playable: true, plays: 0, kept: false,
+  mechanics: ['neighbors:1'], clue_profile: [], trace_summary: { steps: 10 }, silhouette: [1], revealed: true, playable: true, plays: 0, kept: false,
   felt: {}, promoted: null, ...over,
 });
 
@@ -62,7 +62,7 @@ describe('PlayRecorder', () => {
     tick(30_000);
     r.event('error'); // after the solve: ignored
     expect(r.finish('Joueur 1', 't', 4)).toEqual({
-      player: 'Joueur 1', lot: 't', index: 4, outcome: 'solved', ms: 65_000, errors: 2, undos: 1, erasers: 1, resets: 1,
+      player: 'Joueur 1', lot: 't', index: 4, outcome: 'solved', ms: 65_000, wall_ms: 65_000, started: 1, errors: 2, undos: 1, erasers: 1, resets: 1,
     });
     expect(r.elapsed()).toBe(65_000);
   });
@@ -78,12 +78,70 @@ describe('PlayRecorder', () => {
   });
 });
 
+describe('PlayRecorder: hidden tab, solve, unload', () => {
+  const make = () => {
+    let now = 1000;
+    const r = new PlayRecorder(() => now);
+    return { r, tick: (ms: number) => { now += ms; } };
+  };
+  it('leaves the hidden time out of the active time', () => {
+    const { r, tick } = make();
+    tick(10_000);
+    r.setHidden(true);
+    tick(3_000);
+    expect(r.elapsed()).toBe(10_000); // frozen while hidden
+    r.setHidden(false);
+    tick(5_000);
+    r.event('solved');
+    expect(r.finish('p', 't', 0)).toMatchObject({ outcome: 'solved', ms: 15_000, wall_ms: 18_000 });
+  });
+  it('counts a tab still hidden at the end as hidden', () => {
+    const { r, tick } = make();
+    tick(4_000);
+    r.setHidden(true);
+    tick(60_000);
+    expect(r.finish('p', 't', 0, true)).toMatchObject({ outcome: 'abandoned', ms: 4_000, wall_ms: 64_000 });
+  });
+  it('a game solved then left by any exit is recorded solved (B2)', () => {
+    const { r, tick } = make();
+    tick(20_000);
+    r.event('solved');
+    tick(9_000);
+    // cleanup on the home link: not an abandon since the grid is solved
+    expect(r.finish('p', 't', 0, !r.solved).outcome).toBe('solved');
+  });
+  it('an undo after the solve changes nothing in the record (M5)', () => {
+    const { r, tick } = make();
+    tick(8_000);
+    r.event('solved');
+    r.event('undo'); r.event('error');
+    expect(r.finish('p', 't', 0)).toMatchObject({ outcome: 'solved', ms: 8_000, undos: 0, errors: 0 });
+  });
+  it('tags a game recorded on page unload', () => {
+    const { r, tick } = make();
+    tick(3_000);
+    expect(r.finish('p', 't', 0, true, 'unload')).toMatchObject({ outcome: 'abandoned', reason: 'unload', ms: 3_000 });
+  });
+});
+
+describe('blind lists and labels', () => {
+  it('counts masked plays without any measure', () => {
+    const masked = { player: 'b', lot: 't', index: 1, masked: true } as unknown as Play;
+    expect(playStats([masked, masked])).toEqual({ masked: true, games: 2, solved: 0, medianMs: null, meanErrors: null });
+  });
+  it('numbers candidates from 1', () => expect(displayNumber(0)).toBe('1'));
+  it('translates techniques and falls back on the id', () => {
+    expect(techniqueLabel('single_cover')).toBe('Couverture unique');
+    expect(techniqueLabel('new_tech')).toBe('new tech');
+  });
+});
+
 describe('aggregates', () => {
   const play = (o: Partial<Play>): Play => ({ player: 'a', lot: 't', index: 1, outcome: 'solved', ms: 1000, errors: 0, undos: 0, erasers: 0, resets: 0, ts: 0, ...o });
   it('summarises plays', () => {
     const s = playStats([play({ ms: 60_000, errors: 2 }), play({ ms: 120_000, errors: 4 }), play({ outcome: 'abandoned', ms: 5 })]);
-    expect(s).toEqual({ games: 3, solved: 2, medianMs: 90_000, meanErrors: 3 });
-    expect(playStats([])).toEqual({ games: 0, solved: 0, medianMs: null, meanErrors: null });
+    expect(s).toEqual({ masked: false, games: 3, solved: 2, medianMs: 90_000, meanErrors: 3 });
+    expect(playStats([])).toEqual({ masked: false, games: 0, solved: 0, medianMs: null, meanErrors: null });
     expect(playStats([play({ outcome: 'abandoned' })]).medianMs).toBeNull();
   });
   it('averages felt ratings', () => {
