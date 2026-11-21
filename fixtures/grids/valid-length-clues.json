@@ -1,0 +1,257 @@
+{
+ "name": "length-clues",
+ "grid": {
+  "id": 106,
+  "title": "length-clues",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "2.66667h",
+   "5.33333h",
+   "8h",
+   "10.6667h",
+   "13.3333h",
+   "16h",
+   "18.6667h",
+   "21.3333h"
+  ],
+  "demand": [
+   3,
+   4,
+   4,
+   5,
+   5,
+   6,
+   6,
+   4,
+   3
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "G": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 1,
+    "counts": {
+     "N": 4
+    }
+   },
+   {
+    "type": "column",
+    "col": 7,
+    "counts": {
+     "N": 4
+    }
+   },
+   {
+    "type": "column",
+    "col": 4,
+    "counts": {
+     "N": 5
+    }
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 1,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 3,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 5,
+     "len": 4
+    },
+    {
+     "piece": "G",
+     "row": 5,
+     "col": 5,
+     "len": 2
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 6,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 6,
+     "len": 3
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "record",
+    "ribbon",
+    "single_cover"
+   ]
+  }
+ },
+ "expect": {
+  "valid": true,
+  "errors": [],
+  "compositions": 1,
+  "deduction": "solved",
+  "rating": 2,
+  "techniques": [
+   "record",
+   "ribbon",
+   "single_cover"
+  ],
+  "composition": {
+   "cells": [
+    {
+     "N": 3
+    },
+    {
+     "N": 4
+    },
+    {
+     "N": 4
+    },
+    {
+     "N": 5
+    },
+    {
+     "N": 5
+    },
+    {
+     "G": 1,
+     "N": 5
+    },
+    {
+     "G": 1,
+     "N": 5
+    },
+    {
+     "N": 4
+    },
+    {
+     "N": 3
+    }
+   ],
+   "exports": {},
+   "pumps": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "turbines": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "requires": []
+ }
+}

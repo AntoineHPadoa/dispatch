@@ -45,7 +45,8 @@ class Puzzle:
         # Silhouette options
         pairs = [(p, t) for p in range(n) for t in range(p + 1, n)]
         self.step_options: list[StepOption] = (
-            list(itertools.combinations_with_replacement(pairs, self.rules.step)) if self.rules.step else [()])
+            list(itertools.combinations_with_replacement(pairs, self.rules.step)) if self.rules.step else [()]
+        )
         fixed: dict[tuple[int, int], int] = {}
         for k, c, v, _ in self.rules.export_flows:
             i = self.countries.index(k)
@@ -56,15 +57,18 @@ class Puzzle:
         for c in range(n):
             ranges = [list(range(cap + 1)) for cap in self.caps]
             self.export_options.append([tuple(x) for x in itertools.product(*ranges)])
+        self.deltas: list[list[int]] = [self.step_delta(s) for s in self.step_options]
         self.maxh = [0] * n
-        for s in self.step_options:
-            d = self.step_delta(s)
+        for d in self.deltas:
             for c in range(n):
                 self.maxh[c] = max(self.maxh[c], self.residual[c] + d[c] + max(sum(e) for e in self.export_options[c]))
 
-        # Placements
+        # Placements (cell r, c is bit r * n + c of a mask)
         self.placements: list[Placement] = []
-        self.index: dict[tuple[str, int, int, int, int, int], int] = {}
+        self.masks: list[int] = []
+        self.pw: list[tuple[str, int]] = []  # (key, width) per placement
+        self.spans: list[dict[int, tuple[int, int]]] = []  # per placement: row -> columns [a, b)
+        self.index: dict[tuple[str, int, int, int, int], int] = {}
         for k in self.keys:
             if k.startswith("I:"):
                 self._add_shapes(k, IMPORT_PIECE, k[2:], [rect(1, 1)])
@@ -79,8 +83,16 @@ class Puzzle:
                 room = min(self.maxh[c0 + dc] - sh.top(dc) for dc in range(sh.width))
                 for r in range(room + 1):
                     pl = Placement(key, piece, country, sh, r, c0, sh.cells(r, c0))
-                    self.index[key, r, c0, sh.width, sh.height, sh.low] = len(self.placements)
+                    self.index[key, r, c0, sh.width, 1 if sh.kind.startswith("ramp") else sh.height] = len(
+                        self.placements
+                    )
                     self.placements.append(pl)
+                    self.masks.append(sum(1 << (rr * self.n + cc) for rr, cc in pl.cells))
+                    self.pw.append((key, sh.width))
+                    self.spans.append({rr: pl.row_span(rr) for rr in {x for x, _ in pl.cells}})
+
+    def bit(self, r: int, c: int) -> int:
+        return 1 << (r * self.n + c)
 
     def step_delta(self, s: StepOption) -> list[int]:
         d = [0] * self.n
@@ -90,15 +102,16 @@ class Puzzle:
         return d
 
     def find(self, key: str, row: int, col: int, width: int, height: int = 1) -> int | None:
-        """Index of a rectangle-or-ramp placement matching §14 fields (first low-step variant)."""
-        for (k, r, c, w, h, _low), i in self.index.items():
-            if (k, r, c, w, h) == (key, row, col, width, height):
-                return i
-        return None
+        """Index of the placement matching §14 fields (a ramp has no height: 1)."""
+        return self.index.get((key, row, col, width, height))
 
 
-def composition_of(g: dict[str, Any], placements: list[dict[str, Any]], exports: dict[str, list[int]],
-                   step: list[dict[str, int]] | list[tuple[int, int]]) -> dict[str, Any]:
+def composition_of(
+    g: dict[str, Any],
+    placements: list[dict[str, Any]],
+    exports: dict[str, list[int]],
+    step: list[dict[str, int]] | list[tuple[int, int]],
+) -> dict[str, Any]:
     """Canonical §8.1 composition (same shape as composition() in web/src/engine/evaluate.ts)."""
     n = len(g["columns"])
     cells: list[dict[str, int]] = [{} for _ in range(n)]
@@ -115,20 +128,22 @@ def composition_of(g: dict[str, Any], placements: list[dict[str, Any]], exports:
         p, t = (s["pump"], s["turbine"]) if isinstance(s, dict) else s
         pumps[p] += 1
         turbines[t] += 1
-    return {"cells": [dict(sorted(x.items())) for x in cells], "exports": out_exports,
-            "pumps": pumps, "turbines": turbines}
+    return {
+        "cells": [dict(sorted(x.items())) for x in cells],
+        "exports": out_exports,
+        "pumps": pumps,
+        "turbines": turbines,
+    }
 
 
 def _shape_columns(g: dict[str, Any], p: dict[str, Any]) -> list[int]:
-    """Cells per column of a §14 placement (ramps: first shape of that width and height)."""
-    h = p.get("height", 1)
+    """Cells per column of a §14 placement."""
     if p["piece"] != IMPORT_PIECE:
         d = g["pieces"].get(p["piece"], {})
-        if d.get("ramp"):
-            for sh in shapes_of(d):
-                if sh.width == p["len"] and sh.height == h and sh.low == p.get("low", sh.low):
-                    return [ch for _b, ch in sh.columns]
-    return [h] * p["len"]
+        if d.get("shape", "rect") != "rect":
+            sh = next(x for x in shapes_of(d) if x.width == p["len"])
+            return [h for _b, h in sh.columns]
+    return [p.get("height", 1)] * p["len"]
 
 
 def reference_composition(g: dict[str, Any]) -> dict[str, Any]:

@@ -57,19 +57,21 @@ Règle : `exact.py` et `deduce/` ne dépendent que de `grid`, `shapes`, `board`,
 - **Pièce haute** : `height: [2]` ou `[1, 2]` ; déjà prévue par §14 et `validateGrid`, jamais générée jusqu'ici. Rien de neuf dans le solveur : c'est une forme de plus.
 - **Import** : forme 1 × 1, pièce `I`, pays en attribut.
 
-### 4.2 Rampe (drapeau `ramp`)
+### 4.2 Rampe (drapeau)
 
-La rampe est étudiée en parallèle par s1 (`docs/next/rampe.md`, branche `v2-rampe`). Le solveur prévoit les deux profils, paramétrés, sans préjuger du choix :
+Format repris de l'étude (`docs/next/rampe.md` §1, trapèze choisi en premier, escalier gardé possible) :
 
-| Profil | Hauteurs par colonne | Paramètres | Largeur |
-|---|---|---|---|
-| Trapèze 1 → 2 → 1 | `[1, 2, …, 2, 1]` | plateau `p` (≥ 1) | `p + 2` |
-| Escalier 2 → 1 | `[2, …, 2, 1, …, 1]` | marche haute `a`, marche basse `b` | `a + b` |
+- **La rampe est une forme du charbon** : `"C": {"shape": "trap", "len": [3, 4, 5], "rank": 3, "co2": 3}`. `shape` vaut `"rect"` (défaut), `"trap"` ou `"stair"` ; une seule forme de charbon par grille.
+- **Pas de `height`** sur la pièce ni sur ses poses : le profil est fixe. `len` = largeur totale ; `row` = ligne de la base.
 
-- Toutes les colonnes partent de la même ligne (forme « en escalier posé au sol ») ; une épaule est la case unique d'une colonne de bord.
-- **Format proposé** (provisoire, à aligner sur `rampe.md`) : `"G": {"len": [3, 4], "height": [2], "ramp": {"profile": "trapezoid"}, ...}` ; `len` = largeur totale, `height` = hauteur du plateau ; une pose garde `{piece, row, col, len, height}` et sa forme se déduit de la pièce. Pour l'escalier, `"ramp": {"profile": "stair", "low": [1, 2]}` donne les longueurs permises de la marche basse.
-- **Drapeau** : le validateur Python n'accepte `ramp` qu'avec `allow_ramp=True` (CLI `--ramp`). Le validateur TS ne connaît pas `ramp` avant S6 : aucune grille à rampe n'entre dans `grids.json` d'ici là.
-- **Indices** : `bar` = la pose couvre exactement ces créneaux ; `length` = largeur totale ; `column` compte les cases (2 au plateau, 1 à l'épaule) ; `price` inchangé (rang de la pièce).
+| Profil | Cases par colonne | Largeur |
+|---|---|---|
+| `trap` (1 → 2 → 1) | `1, 2 × (W − 2), 1` | W ≥ 3 |
+| `stair` (2 → 1, marche à droite) | `2 × (W − 1), 1` | W ≥ 2 |
+
+- **Drapeau** : le validateur Python n'accepte `shape` ≠ `rect` qu'avec `allow_ramp=True` (CLI `--ramp`), et seulement sur C. Le validateur TS ne connaît pas `shape` avant S6 : aucune grille à rampe n'entre dans `grids.json` d'ici là.
+- **Indices** : `bar` = la pose couvre exactement ces créneaux ; `length` = largeur totale ; `column` compte les cases (2 au plateau, 1 à l'épaule) ; `price` inchangé (rang 3).
+- Les 8 mini-grilles de l'étude sont dans le jeu de référence (`valid-ramp-study-*`) : uniques et résolues par le solveur de déduction.
 
 ### 4.3 Ce qui reste « rectangle » ailleurs
 
@@ -289,9 +291,19 @@ Fonctions de bibliothèque correspondantes (`generate_lot`, `check_grid`, `deduc
 | C3 | Totaux d'échanges : technique nommée à part ou fondue dans « Le relevé compte les cases » | **Tranché : fondue dans `record`** (la trace note `scope: "day"` pour distinguer) |
 | C4 | Quotas de diversité par défaut d'un lot de 20 | **Tranché : ≤ 3 par famille de silhouette, ≤ 4 par ensemble de mécaniques, ≤ 4 par profil d'indices, ≥ 2 par note** |
 | C5 | Bloc `lab` dans la grille promue | **Tranché (orchestrateur) : retiré à la promotion par le labo** |
-| C6 | Format `ramp` et `bulletin` | **`bulletin` : aligné sur s2 (`f45381d`)** ; `ramp` provisoire, aligné sur s1 dès `rampe.md` |
+| C6 | Format `ramp` et `bulletin` | **Tranché** : `bulletin` aligné sur s2 (`f45381d`) ; rampe alignée sur `rampe.md` (`pieces.C.shape`, §4.2) |
 
 ## 13. Découpage des tâches suivantes
 
 - **S4.2** : `grid`, `shapes`, `board`, `clues`, `exact`, `deduce` ; fixtures `fixtures/grids/` et `reference.test.ts` ; `check_unique.py` et CI rebranchés ; archive de l'ancien solveur. Critère : les 11 grilles uniques, déduites, même note qu'aujourd'hui ou écart expliqué.
 - **S4.3** : `generate/` et CLI ; lot de démonstration ≥ 20 candidates dans `lab/` (dont rampes trapèze et escalier) ; `CLAUDE.md` (section `solver/`), `GAME-DESIGN.md` §10 et §15.
+
+## 14. Écarts constatés à l'implémentation (S4.2)
+
+- **Modules** : `rate.py` est fondu dans `deduce/trace.py` (`Result.summary()`) ; `api.py` regroupe les points d'entrée (CLI, `check_unique.py`, labo).
+- **Mesure « goulots »** remplacée par `single_effect_steps` (étapes qui ne changent qu'une chose) : compter les tours où une seule technique s'applique imposait de tester toutes les techniques à chaque tour.
+- **Silhouette** : les options sont factorisées (option STEP × exports par colonne) au lieu d'énumérer des silhouettes complètes. Les totaux de l'inventaire exact sont réappliqués en silence (comme l'ancien solveur) ; un total publié par un indice `exchanges` est une étape `record` (C3).
+- **Inventaire exact** : les largeurs qu'il ne cite pas et les imports à total nul ne sont pas proposés (ce n'est pas une déduction), comme dans l'ancien solveur.
+- **Jeu de référence** : les 11 grilles publiées sont lues directement dans `grids.json` (pas de copie) ; `fixtures/grids/` contient 11 grilles faites pour l'occasion, les 8 mini-grilles de la rampe, 18 grilles invalides et 3 non publiables. `solver/scripts/build_fixtures.py` les reconstruit.
+- **Résultat sur les 11 grilles** : même note qu'avant pour les 11 ; techniques identiques à 2 près (grille 9 : `room` en plus ; grille 10 : le total d'imports publié passe de `exhausted` à `record`, choix C3).
+- **Coût** : 1 à 15 ms par déduction sur les grilles publiées ; le pire cas mesuré (12 créneaux, 2 voisins, grille bloquée) prend 23 s, presque tout en « Hypothèse réfutée ».

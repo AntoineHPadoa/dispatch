@@ -1,0 +1,452 @@
+{
+ "name": "three-neighbors",
+ "grid": {
+  "id": 102,
+  "title": "three-neighbors",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "2.4h",
+   "4.8h",
+   "7.2h",
+   "9.6h",
+   "12h",
+   "14.4h",
+   "16.8h",
+   "19.2h",
+   "21.6h"
+  ],
+  "demand": [
+   4,
+   3,
+   4,
+   6,
+   7,
+   6,
+   8,
+   9,
+   7,
+   5
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 2,
+    "co2": 0
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "DE",
+    "name": "Allemagne",
+    "cap": 1,
+    "co2": 2
+   },
+   {
+    "id": "ES",
+    "name": "Espagne",
+    "cap": 1,
+    "co2": 0
+   },
+   {
+    "id": "UK",
+    "name": "Royaume-Uni",
+    "cap": 1,
+    "co2": 1
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "B": {
+     "max_cells": 2
+    }
+   }
+  },
+  "clues": [
+   {
+    "type": "price",
+    "col": 9,
+    "piece": "N"
+   },
+   {
+    "type": "price",
+    "col": 0,
+    "piece": "N"
+   },
+   {
+    "type": "exchanges",
+    "exports": {
+     "ES": 0
+    }
+   },
+   {
+    "type": "price",
+    "col": 4,
+    "piece": "N"
+   },
+   {
+    "type": "price",
+    "col": 6,
+    "piece": "N"
+   },
+   {
+    "type": "price",
+    "col": 3,
+    "piece": "N"
+   },
+   {
+    "type": "price",
+    "col": 5,
+    "piece": "N"
+   },
+   {
+    "type": "column",
+    "col": 5,
+    "counts": {
+     "N": 7
+    }
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 4,
+    "len": 5
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 3,
+    "len": 6
+   },
+   {
+    "type": "flow",
+    "col": 1,
+    "country": "UK",
+    "dir": "export",
+    "value": 0
+   },
+   {
+    "type": "flow",
+    "col": 8,
+    "country": "UK",
+    "dir": "export",
+    "value": 0
+   },
+   {
+    "type": "exchanges",
+    "exports": {
+     "DE": 2
+    }
+   },
+   {
+    "type": "exchanges",
+    "exports": {
+     "UK": 1
+    }
+   },
+   {
+    "type": "price",
+    "col": 7,
+    "piece": "B"
+   }
+  ],
+  "solution": {
+   "exports": {
+    "DE": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0
+    ],
+    "UK": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     0
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 3,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 6,
+     "col": 4,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 5,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 6,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 6,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 6,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 6,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 7,
+     "col": 6,
+     "len": 3
+    },
+    {
+     "piece": "B",
+     "row": 8,
+     "col": 7,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "flow",
+    "price_cap",
+    "program",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ]
+  }
+ },
+ "expect": {
+  "valid": true,
+  "errors": [],
+  "compositions": 1,
+  "deduction": "solved",
+  "rating": 2,
+  "techniques": [
+   "flow",
+   "price_cap",
+   "program",
+   "record",
+   "ribbon",
+   "room",
+   "silhouette",
+   "single_cover"
+  ],
+  "composition": {
+   "cells": [
+    {
+     "N": 4
+    },
+    {
+     "N": 4
+    },
+    {
+     "N": 4
+    },
+    {
+     "N": 6
+    },
+    {
+     "N": 7
+    },
+    {
+     "N": 7
+    },
+    {
+     "N": 8
+    },
+    {
+     "B": 1,
+     "N": 8
+    },
+    {
+     "N": 8
+    },
+    {
+     "N": 5
+    }
+   ],
+   "exports": {
+    "DE": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0
+    ],
+    "ES": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "UK": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     0
+    ]
+   },
+   "pumps": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "turbines": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "requires": []
+ }
+}

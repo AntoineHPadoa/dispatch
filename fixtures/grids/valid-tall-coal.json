@@ -1,0 +1,267 @@
+{
+ "name": "tall-coal",
+ "grid": {
+  "id": 103,
+  "title": "tall-coal",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   3,
+   5,
+   5,
+   5,
+   6,
+   7,
+   6,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "T": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "price",
+    "col": 6,
+    "piece": "N"
+   },
+   {
+    "type": "column",
+    "col": 1,
+    "counts": {
+     "N": 5
+    }
+   },
+   {
+    "type": "price",
+    "col": 4,
+    "piece": "N"
+   },
+   {
+    "type": "price",
+    "col": 7,
+    "piece": "N"
+   },
+   {
+    "type": "price",
+    "col": 0,
+    "piece": "N"
+   },
+   {
+    "type": "price",
+    "col": 3,
+    "piece": "N"
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 1,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 1,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 4,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 6,
+     "col": 5,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "price_cap",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover"
+   ]
+  }
+ },
+ "expect": {
+  "valid": true,
+  "errors": [],
+  "compositions": 1,
+  "deduction": "solved",
+  "rating": 2,
+  "techniques": [
+   "price_cap",
+   "record",
+   "ribbon",
+   "room",
+   "single_cover"
+  ],
+  "composition": {
+   "cells": [
+    {
+     "N": 3
+    },
+    {
+     "N": 5
+    },
+    {
+     "N": 5
+    },
+    {
+     "N": 5
+    },
+    {
+     "N": 6
+    },
+    {
+     "N": 6,
+     "T": 1
+    },
+    {
+     "N": 6
+    },
+    {
+     "N": 4
+    }
+   ],
+   "exports": {},
+   "pumps": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "turbines": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "requires": []
+ }
+}

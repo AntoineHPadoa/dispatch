@@ -11,6 +11,7 @@ Example: res = Solver(Puzzle(grid)).run(); res.status, res.rating, res.technique
 
 from __future__ import annotations
 
+from collections import Counter
 from collections.abc import Callable
 from typing import Any
 
@@ -20,8 +21,8 @@ from .trace import RULES, Result, Step
 
 MAX_TILINGS = 4000  # per row, for share_out
 MAX_SHARE_WORK = 300000
-BIG = 10 ** 6
-SilPred = Callable[[int, int, Exports], bool]  # (step option, column, exports) -> keep
+BIG = 10**6
+SilPred = Callable[[int, int, Exports], bool]  # (column, height to fill, exports) -> keep
 
 
 class Solver:
@@ -31,26 +32,43 @@ class Solver:
         self.record = record
         self.steps: list[Step] = []
         r = pz.rules
-        self.inv_totals = {pz.countries.index(k): v for k, v in r.export_totals.items()
-                           if r.export_total_clue.get(k) is None}
-        self.clue_totals = {pz.countries.index(k): (v, r.export_total_clue[k]) for k, v in r.export_totals.items()
-                            if r.export_total_clue.get(k) is not None}
+        self.inv_totals = {
+            pz.countries.index(k): v for k, v in r.export_totals.items() if r.export_total_clue.get(k) is None
+        }
+        self.clue_totals = {
+            pz.countries.index(k): (v, r.export_total_clue[k])
+            for k, v in r.export_totals.items()
+            if r.export_total_clue.get(k) is not None
+        }
         if st is None:
             sil = apply_totals(pz, initial_sil(pz), self.inv_totals)
             st = State(set(range(len(pz.placements))), set(), sil)
         self.st = st
         self._cur: Step | None = None
         self.rules: list[tuple[int, Callable[[View], bool]]] = [
-            (1, self.r_room), (1, self.r_exhausted), (1, self.r_price_cap), (1, self.r_record), (1, self.r_flow),
-            (1, self.r_single_cover), (1, self.r_single_spot), (1, self.r_program), (1, self.r_length),
-            (1, self.r_silhouette), (2, self.r_top_price), (2, self.r_ribbon), (2, self.r_just_enough),
-            (2, self.r_column_sum), (2, self.r_carbon), (3, self.r_share_out), (4, self.r_refuted),
+            (1, self.r_room),
+            (1, self.r_exhausted),
+            (1, self.r_price_cap),
+            (1, self.r_record),
+            (1, self.r_flow),
+            (1, self.r_single_cover),
+            (1, self.r_single_spot),
+            (1, self.r_program),
+            (1, self.r_length),
+            (1, self.r_silhouette),
+            (2, self.r_top_price),
+            (2, self.r_ribbon),
+            (2, self.r_just_enough),
+            (2, self.r_column_sum),
+            (2, self.r_carbon),
+            (3, self.r_share_out),
+            (4, self.r_refuted),
         ]
 
     # ----- state changes, recorded in the current step -----
 
     def _begin(self, rule: str, clues: list[int] | None = None) -> Step:
-        self._cur = Step(rule, [], clues=sorted(set(c for c in (clues or []) if c is not None)))
+        self._cur = Step(rule, [], clues=sorted({c for c in (clues or []) if c is not None}))
         return self._cur
 
     def _end(self) -> bool:
@@ -58,7 +76,7 @@ class Solver:
         if step is None or not step.effects:
             return False
         if self.record:
-            step.shapes = sorted({k for k in step.shapes})
+            step.shapes = sorted(set(step.shapes))
             self.steps.append(step)
         return True
 
@@ -90,30 +108,43 @@ class Solver:
                 self.st.placed.add(i)
                 self._touch(i, "placed")
 
-    def keep_sil(self, keep: SilPred) -> None:
+    def keep_sil(self, keep: SilPred, steps: Callable[[int], bool] | None = None) -> None:
+        """Keep the silhouette options passing `keep(column, height, exports)` (and `steps(option)`)."""
         pz = self.pz
         before = self.st.sil
         after: Sil = {}
+        memo: dict[tuple[int, frozenset[Exports], int], frozenset[Exports]] = {}
         for si, cols in before.items():
-            new = [frozenset(e for e in es if keep(si, c, e)) for c, es in enumerate(cols)]
-            if all(new):
+            if steps is not None and not steps(si):
+                continue
+            d = pz.deltas[si]
+            new = []
+            for c, es in enumerate(cols):
+                key = (c, es, d[c])
+                got = memo.get(key)
+                if got is None:
+                    base = pz.residual[c] + d[c]
+                    got = memo[key] = frozenset(e for e in es if keep(c, base + sum(e), e))
+                if not got:
+                    break
+                new.append(got)
+            else:
                 after[si] = new
-        after = apply_totals(pz, after, self.inv_totals)
         if after == before:
             return
+        after = apply_totals(pz, after, self.inv_totals)
         if not after:
             raise Contradiction("no silhouette left")
         self.st.sil = after
         if self._cur is not None:
-            self._cur.effects += self._describe_sil(before, after)
+            self._cur.effects += self._describe_sil(before, after) if self.record else ["silhouette"]
 
     def _describe_sil(self, before: Sil, after: Sil) -> list[str]:
         pz = self.pz
         out = []
 
         def hs(sil: Sil, c: int) -> set[int]:
-            d = {si: pz.step_delta(pz.step_options[si]) for si in sil}
-            return {pz.residual[c] + d[si][c] + sum(e) for si, cols in sil.items() for e in cols[c]}
+            return {pz.residual[c] + pz.deltas[si][c] + sum(e) for si, cols in sil.items() for e in cols[c]}
 
         for c in range(pz.n):
             hb, ha = hs(before, c), hs(after, c)
@@ -129,7 +160,11 @@ class Solver:
                 va = {e[k] for cols in after.values() for e in cols[c]}
                 if len(vb) > 1 and len(va) == 1:
                     out.append(f"export {nid} {next(iter(va))} à {pz.columns[c]}")
-        return out or [f"silhouettes : {sum(len(x) for x in before)} -> {sum(len(x) for x in after)} options"]
+
+        def size(sil: Sil) -> int:
+            return sum(len(es) for cols in sil.values() for es in cols)
+
+        return out or [f"silhouettes : {size(before)} -> {size(after)} options"]
 
     # ----- main loop -----
 
@@ -148,7 +183,7 @@ class Solver:
         if flows:
             self._begin("flow", [f[3] for f in flows])
             want = {(pz.countries.index(k), c): v for k, c, v, _ in flows}
-            self.keep_sil(lambda si, c, e: all(e[k] == v for (k, cc), v in want.items() if cc == c))
+            self.keep_sil(lambda c, h, e: all(e[k] == v for (k, cc), v in want.items() if cc == c))
             self._end()
 
     def run(self) -> Result:
@@ -235,8 +270,12 @@ class Solver:
             pumps[p] += 1
             turbs[t] += 1
         cells = [{k: lo[k, c] for k in sorted(pz.keys) if lo[k, c]} for c in range(pz.n)]
-        return {"cells": cells, "exports": {nid: [e[j] for e in exps] for j, nid in enumerate(pz.countries)},
-                "pumps": pumps, "turbines": turbs}
+        return {
+            "cells": cells,
+            "exports": {nid: [e[j] for e in exps] for j, nid in enumerate(pz.countries)},
+            "pumps": pumps,
+            "turbines": turbs,
+        }
 
     def check(self, v: View) -> None:
         """Cheap global consistency tests (also used to refute hypotheses)."""
@@ -250,9 +289,10 @@ class Solver:
                 raise Contradiction("count exceeded")
             if sum(1 for x in scope if v.dom[x] & g.keys) < g.lo:
                 raise Contradiction("count out of reach")
+        placed_n = Counter(self._pw(i) for i in self.st.placed) if pz.rules.bars else Counter()
+        avail_n = Counter(self._pw(i) for i in self.st.cands) if pz.rules.bars else Counter()
         for (p, w), k in pz.rules.bars.items():
-            placed = sum(1 for i in self.st.placed if self._pw(i) == (p, w))
-            avail = sum(1 for i in self.st.cands if self._pw(i) == (p, w))
+            placed, avail = placed_n[p, w], avail_n[p, w]
             if placed > k or avail < k:
                 raise Contradiction("inventory out of reach")
         for c, p in pz.rules.prices.items():
@@ -270,8 +310,7 @@ class Solver:
         return self.st.cands - self.st.placed
 
     def _pw(self, i: int) -> tuple[str, int]:
-        pl = self.pz.placements[i]
-        return pl.key, pl.width
+        return self.pz.pw[i]
 
     def _over(self, key: str, want: int | None) -> bool:
         r = self.pz.rank[key]
@@ -281,8 +320,9 @@ class Solver:
 
     def r_room(self, v: View) -> bool:
         self._begin("room")
-        rm = [i for i in self.free() if any(x in v.occupied or x[0] >= v.maxh[x[1]] for x in self.pz.placements[i].cells)]
-        self.remove(rm)
+        bad = v.occ | ((1 << (self.pz.n * (max(v.maxh) + 4))) - 1) & ~v.under
+        masks = self.pz.masks
+        self.remove([i for i in self.free() if masks[i] & bad])
         return self._end()
 
     def _count_hi(self, v: View, kinds: tuple[str, ...]) -> None:
@@ -331,15 +371,13 @@ class Solver:
                 self._cur.cells += possible
                 return
 
-    def _at_least(self, need: dict[int, int]) -> SilPred:
-        pz = self.pz
-        deltas = {si: pz.step_delta(s) for si, s in enumerate(pz.step_options)}
-        return lambda si, c, e: c not in need or pz.residual[c] + deltas[si][c] + sum(e) >= need[c]
+    @staticmethod
+    def _at_least(need: dict[int, int]) -> SilPred:
+        return lambda c, h, e: h >= need.get(c, 0)
 
-    def _at_most(self, cap: dict[int, int]) -> SilPred:
-        pz = self.pz
-        deltas = {si: pz.step_delta(s) for si, s in enumerate(pz.step_options)}
-        return lambda si, c, e: c not in cap or pz.residual[c] + deltas[si][c] + sum(e) <= cap[c]
+    @staticmethod
+    def _at_most(cap: dict[int, int]) -> SilPred:
+        return lambda c, h, e: h <= cap.get(c, BIG)
 
     def _day_totals(self, v: View) -> None:
         """Published day totals of exports (exchanges clue): counting over the columns."""
@@ -351,7 +389,7 @@ class Solver:
             if not after:
                 raise Contradiction("export total out of reach")
             self.st.sil = apply_totals(self.pz, after, self.inv_totals)
-            self._cur.effects += self._describe_sil(before, self.st.sil)
+            self._cur.effects += self._describe_sil(before, self.st.sil) if self.record else ["totals"]
             self._cur.clues += [ci for _, ci in self.clue_totals.values()]
 
     def r_exhausted(self, v: View) -> bool:
@@ -391,15 +429,12 @@ class Solver:
 
     def r_single_cover(self, v: View) -> bool:
         self._begin("single_cover")
-        add = set()
-        for x in v.cells:
-            if v.sure(x) and x not in v.occupied:
-                cov = v.cover.get(x, [])
-                if not cov:
-                    raise Contradiction(f"cell {x} cannot be covered")
-                if len(cov) == 1:
-                    add.add(cov[0])
-        self.place(add)
+        todo = v.sure_mask & ~v.occ
+        if todo & ~v.u1:
+            raise Contradiction("a cell cannot be covered")
+        one = todo & ~v.u2
+        masks = self.pz.masks
+        self.place([i for i in self.st.cands if masks[i] & one])
         return self._end()
 
     def r_single_spot(self, v: View) -> bool:
@@ -432,15 +467,30 @@ class Solver:
 
     def r_program(self, v: View) -> bool:
         pz = self.pz
-        return self._one_of("program", [
-            ((lambda i, p=p, c=c, w=w: pz.placements[i].key == p and pz.placements[i].col == c
-              and pz.placements[i].width == w), ci) for p, c, w, ci in pz.rules.programs])
+        return self._one_of(
+            "program",
+            [
+                (
+                    (
+                        lambda i, p=p, c=c, w=w: (
+                            pz.placements[i].key == p and pz.placements[i].col == c and pz.placements[i].width == w
+                        )
+                    ),
+                    ci,
+                )
+                for p, c, w, ci in pz.rules.programs
+            ],
+        )
 
     def r_length(self, v: View) -> bool:
         pz = self.pz
-        return self._one_of("length", [
-            ((lambda i, p=p, w=w: pz.placements[i].key == p and pz.placements[i].width == w), ci)
-            for p, w, ci in pz.rules.lengths])
+        return self._one_of(
+            "length",
+            [
+                ((lambda i, p=p, w=w: pz.placements[i].key == p and pz.placements[i].width == w), ci)
+                for p, w, ci in pz.rules.lengths
+            ],
+        )
 
     def r_silhouette(self, v: View) -> bool:
         pz = self.pz
@@ -461,10 +511,8 @@ class Solver:
                 rows = [r for r in range(v.maxh[c]) if v.dom[(r, c)] == frozenset([key])]
                 if rows:
                     lines.append((j, c, rows))
-        deltas = {si: pz.step_delta(s) for si, s in enumerate(pz.step_options)}
 
-        def keep(si: int, c: int, e: Exports) -> bool:
-            h = pz.residual[c] + deltas[si][c] + sum(e)
+        def keep(c: int, h: int, e: Exports) -> bool:
             if h < need.get(c, 0) or h > cap.get(c, BIG):
                 return False
             return all(e[j] + sum(1 for r in rows if r < h) <= pz.caps[j] for j, cc, rows in lines if cc == c)
@@ -499,14 +547,16 @@ class Solver:
     def _row_segments(self, r: int) -> dict[int, list[tuple[int, int]]]:
         """Candidates covering row r, by first column: (placement, end column)."""
         out: dict[int, list[tuple[int, int]]] = {}
+        spans = self.pz.spans
         for i in self.st.cands:
-            span = self.pz.placements[i].row_span(r)
+            span = spans[i].get(r)
             if span:
                 out.setdefault(span[0], []).append((i, span[1]))
         return out
 
-    def _row_apply(self, rule: str, r: int, status: list[str], ways: int, through: dict[int, int],
-                   skipped: dict[int, int]) -> bool:
+    def _row_apply(
+        self, rule: str, r: int, status: list[str], ways: int, through: dict[int, int], skipped: dict[int, int]
+    ) -> bool:
         self._begin(rule)
         self.remove({i for i, k in through.items() if k == 0})
         self.place({i for i, k in through.items() if k == ways} - self.st.placed)
@@ -520,7 +570,7 @@ class Solver:
                 cap[c] = r
         if need or cap:
             a, b = self._at_least(need), self._at_most(cap)
-            self.keep_sil(lambda si, c, e: a(si, c, e) and b(si, c, e))
+            self.keep_sil(lambda c, h, e: a(c, h, e) and b(c, h, e))
         self._cur.cells += [(r, c) for c in range(self.pz.n) if status[c] != "absent"]
         return self._end()
 
@@ -583,8 +633,12 @@ class Solver:
         self._begin("carbon")
         low = {x: (min(pz.co2[k] for k in v.dom[x]) if v.sure(x) and v.dom[x] else 0) for x in v.cells}
         base = sum(low.values())
-        rm = [i for i in self.free()
-              if base + sum(pz.co2[pz.placements[i].key] - low.get(x, 0) for x in pz.placements[i].cells) > pz.rules.co2_cap]
+        rm = [
+            i
+            for i in self.free()
+            if base + sum(pz.co2[pz.placements[i].key] - low.get(x, 0) for x in pz.placements[i].cells)
+            > pz.rules.co2_cap
+        ]
         self.remove(rm)
         return self._end()
 
@@ -592,8 +646,11 @@ class Solver:
 
     def _flat(self, key: str) -> bool:
         """Every candidate of this key lies in a single row."""
-        return all(len({r for r, _ in self.pz.placements[i].cells}) == 1
-                   for i in self.st.cands if self.pz.placements[i].key == key)
+        return all(
+            len({r for r, _ in self.pz.placements[i].cells}) == 1
+            for i in self.st.cands
+            if self.pz.placements[i].key == key
+        )
 
     def _dims(self) -> tuple[list[Any], tuple[int, ...]]:
         pz = self.pz
@@ -747,8 +804,18 @@ class Solver:
             values = {e for cols in self.st.sil.values() for e in cols[c]}
             if len(values) > 1:
                 for e0 in sorted(values):
-                    hyps.append(("export", c, e0, {si: [frozenset([e0]) if cc == c else es for cc, es in enumerate(cols)]
-                                                   for si, cols in self.st.sil.items() if e0 in cols[c]}))
+                    hyps.append(
+                        (
+                            "export",
+                            c,
+                            e0,
+                            {
+                                si: [frozenset([e0]) if cc == c else es for cc, es in enumerate(cols)]
+                                for si, cols in self.st.sil.items()
+                                if e0 in cols[c]
+                            },
+                        )
+                    )
         for kind, a, e0, sil in hyps:
             st = self.st.copy()
             st.sil = apply_totals(pz, sil, self.inv_totals)
@@ -757,11 +824,11 @@ class Solver:
             if kind == "step":
                 p_t = ", ".join(f"{pz.columns[p]} -> {pz.columns[t]}" for p, t in pz.step_options[a])
                 self._cur.effects.append(f"le pompage {p_t} mène à une impasse")
-                self.keep_sil(lambda si, c, e, a=a: si != a)
+                self.keep_sil(lambda c, h, e: True, steps=lambda si, a=a: si != a)
             else:
                 self._cur.effects.append(f"les exports {e0} à {pz.columns[a]} mènent à une impasse")
                 self._cur.cells.append((0, a))
-                self.keep_sil(lambda si, c, e, a=a, e0=e0: c != a or e != e0)
+                self.keep_sil(lambda c, h, e, a=a, e0=e0: c != a or e != e0)
             return self._end()
         return self._end()
 

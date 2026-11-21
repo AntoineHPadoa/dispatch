@@ -1,0 +1,315 @@
+{
+ "name": "unique-but-stuck",
+ "grid": {
+  "id": 203,
+  "title": "unique-but-stuck",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "2h",
+   "4h",
+   "6h",
+   "8h",
+   "10h",
+   "12h",
+   "14h",
+   "16h",
+   "18h",
+   "20h",
+   "22h"
+  ],
+  "demand": [
+   5,
+   6,
+   2,
+   3,
+   4,
+   4,
+   5,
+   6,
+   6,
+   3,
+   6,
+   6
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 2,
+    "co2": 0
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "DE",
+    "name": "Allemagne",
+    "cap": 1,
+    "co2": 1
+   },
+   {
+    "id": "ES",
+    "name": "Espagne",
+    "cap": 1,
+    "co2": 0
+   }
+  ],
+  "step": true,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      6,
+      6,
+      6,
+      6,
+      5,
+      4,
+      4,
+      4,
+      4,
+      3,
+      3,
+      3
+     ]
+    },
+    "B": {
+     "cells": 5
+    }
+   },
+   "exports": {
+    "DE": 1,
+    "ES": 2
+   },
+   "imports": {
+    "DE": 0,
+    "ES": 0
+   },
+   "step": 1
+  },
+  "clues": [
+   {
+    "type": "flow",
+    "col": 10,
+    "country": "ES",
+    "dir": "export",
+    "value": 0
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 6,
+    "len": 6
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 0,
+    "len": 6
+   }
+  ],
+  "solution": {
+   "exports": {
+    "DE": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0
+    ],
+    "ES": [
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0
+    ]
+   },
+   "step": [
+    {
+     "pump": 9,
+     "turbine": 11
+    }
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "B",
+     "row": 3,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "B",
+     "row": 4,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "B",
+     "row": 3,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "B",
+     "row": 4,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "B",
+     "row": 5,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 6,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 6,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 6,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 7,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 8,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 8,
+     "len": 4
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": []
+  }
+ },
+ "expect": {
+  "valid": true,
+  "errors": [],
+  "compositions": 1,
+  "deduction": "stuck",
+  "requires": []
+ }
+}

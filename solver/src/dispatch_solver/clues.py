@@ -16,11 +16,13 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from .grid import ANY_COUNTRY
+from .shapes import shapes_of
 
 
 @dataclass(frozen=True)
 class Count:
     """lo <= cells of `keys` (in `cols`, or over the day when None) <= hi (None = no bound)."""
+
     keys: frozenset[str]
     cols: frozenset[int] | None
     lo: int
@@ -56,12 +58,14 @@ def read_rules(g: dict[str, Any]) -> Rules:
 
     for p in pieces:
         spec = inv["pieces"][p]
-        heights = g["pieces"][p]["height"]
         if "bars" in spec:
             for w in g["pieces"][p]["len"]:
                 r.bars[p, w] = spec["bars"].count(w)
-            if len(heights) == 1 and not g["pieces"][p].get("ramp"):
-                total = sum(spec["bars"]) * heights[0]
+            size: dict[int, set[int]] = {}
+            for sh in shapes_of(g["pieces"][p]):
+                size.setdefault(sh.width, set()).add(sum(h for _b, h in sh.columns))
+            if all(len(size.get(w, ())) == 1 for w in spec["bars"]):
+                total = sum(next(iter(size[w])) for w in spec["bars"])
                 r.counts.append(Count(frozenset([p]), None, total, total, "inventory"))
         if "cells" in spec:
             k = spec["cells"]
@@ -114,8 +118,11 @@ def read_rules(g: dict[str, Any]) -> Rules:
             if cl["dir"] == "export":
                 r.export_flows.append((cl["country"], cl["col"], cl["value"], i))
             else:
-                r.counts.append(Count(frozenset([f"I:{cl['country']}"]), frozenset([cl["col"]]),
-                                      cl["value"], cl["value"], "flow", i))
+                r.counts.append(
+                    Count(
+                        frozenset([f"I:{cl['country']}"]), frozenset([cl["col"]]), cl["value"], cl["value"], "flow", i
+                    )
+                )
         elif t == "exchanges":
             for k, v in cl.get("exports", {}).items():
                 merge(r.export_totals, r.export_total_clue, k, v, i, "exports")
@@ -138,8 +145,9 @@ def read_rules(g: dict[str, Any]) -> Rules:
         if v == 0:
             continue
         keys = frozenset(f"I:{c}" for c in countries) if k == ANY_COUNTRY else frozenset([f"I:{k}"])
-        r.counts.append(Count(keys, None, v, v, "record" if imports_src.get(k) is not None else "inventory",
-                              imports_src.get(k)))
+        r.counts.append(
+            Count(keys, None, v, v, "record" if imports_src.get(k) is not None else "inventory", imports_src.get(k))
+        )
     kept = []
     for c in r.counts:
         keys = frozenset(k for k in c.keys if k in r.keys)

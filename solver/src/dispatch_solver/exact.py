@@ -11,6 +11,7 @@ Example: res = count(grid); res.count == 1 and res.composition == reference_comp
 
 from __future__ import annotations
 
+import itertools
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -72,7 +73,7 @@ class Model:
             m.Add(h == pz.residual[c] + sum(self.e[k][c] for k in range(len(pz.caps))) + self.pump[c] - self.turb[c])
             self.h.append(h)
             under = [m.NewBoolVar(f"u{r_}_{c}") for r_ in range(pz.maxh[c])]
-            for a, b in zip(under, under[1:]):
+            for a, b in itertools.pairwise(under):
                 m.AddImplication(b, a)
             m.Add(sum(under) == h)
             for r_ in range(pz.maxh[c]):
@@ -82,8 +83,9 @@ class Model:
         self.cells: dict[tuple[str, int], Any] = {}
         for k in pz.keys:
             for c in range(n):
-                terms = [pl.cells_in(c) * self.x[i] for i, pl in enumerate(pz.placements)
-                         if pl.key == k and pl.cells_in(c)]
+                terms = [
+                    pl.cells_in(c) * self.x[i] for i, pl in enumerate(pz.placements) if pl.key == k and pl.cells_in(c)
+                ]
                 self.cells[k, c] = sum(terms) if terms else 0
 
         # Lines, inventory, CO2
@@ -104,19 +106,21 @@ class Model:
         for c, p in r.prices.items():
             want = pz.rank[p]
             for k in pz.keys:
-                if pz.rank[k] is None or pz.rank[k] > want:
-                    if not isinstance(self.cells[k, c], int):
-                        m.Add(self.cells[k, c] == 0)
+                if (pz.rank[k] is None or pz.rank[k] > want) and not isinstance(self.cells[k, c], int):
+                    m.Add(self.cells[k, c] == 0)
             if p in pz.keys:
                 m.Add(self.cells[p, c] >= 1)
             else:
                 m.AddBoolOr([])  # price of an unavailable plant: infeasible
         for p, c, w, _ in r.programs:
-            m.AddBoolOr([self.x[i] for i, pl in enumerate(pz.placements)
-                         if pl.key == p and pl.col == c and pl.width == w] or [m.NewConstant(0)])
+            m.AddBoolOr(
+                [self.x[i] for i, pl in enumerate(pz.placements) if pl.key == p and pl.col == c and pl.width == w]
+                or [m.NewConstant(0)]
+            )
         for p, w, _ in r.lengths:
-            m.AddBoolOr([self.x[i] for i, pl in enumerate(pz.placements)
-                         if pl.key == p and pl.width == w] or [m.NewConstant(0)])
+            m.AddBoolOr(
+                [self.x[i] for i, pl in enumerate(pz.placements) if pl.key == p and pl.width == w] or [m.NewConstant(0)]
+            )
         for e in r.engaged:
             i = pz.find(e["piece"], e["row"], e["col"], e["len"], e.get("height", 1))
             if i is None:
@@ -139,10 +143,6 @@ class Model:
         pz = self.pz
         n = pz.n
         placements = [pl.to_dict() for i, pl in enumerate(pz.placements) if solver.Value(self.x[i])]
-        for i, pl in enumerate(pz.placements):
-            if solver.Value(self.x[i]) and pl.shape.kind == "ramp_stair":
-                d = next(d for d in placements if d["row"] == pl.row and d["col"] == pl.col and d["piece"] == pl.piece)
-                d["low"] = pl.shape.low
         exports = {k: [solver.Value(self.e[j][c]) for c in range(n)] for j, k in enumerate(pz.countries)}
         pumps = [solver.Value(v) for v in self.pump]
         turbs = [solver.Value(v) for v in self.turb]
@@ -152,12 +152,25 @@ class Model:
             for _ in range(turbs[c]):
                 pairs.append({"pump": waiting.pop(0), "turbine": c})
             waiting += [c] * pumps[c]
-        cells = [{k: int(solver.Value(self.cells[k, c])) for k in pz.keys
-                  if not isinstance(self.cells[k, c], int) and solver.Value(self.cells[k, c])} for c in range(n)]
-        comp = {"cells": [dict(sorted(x.items())) for x in cells], "exports": exports, "pumps": pumps,
-                "turbines": turbs}
-        sol = {"exports": {k: v for k, v in exports.items() if any(v)}, "step": pairs,
-               "placements": sorted(placements, key=lambda d: (d["col"], d["row"], d["piece"]))}
+        cells = [
+            {
+                k: int(solver.Value(self.cells[k, c]))
+                for k in pz.keys
+                if not isinstance(self.cells[k, c], int) and solver.Value(self.cells[k, c])
+            }
+            for c in range(n)
+        ]
+        comp = {
+            "cells": [dict(sorted(x.items())) for x in cells],
+            "exports": exports,
+            "pumps": pumps,
+            "turbines": turbs,
+        }
+        sol = {
+            "exports": {k: v for k, v in exports.items() if any(v)},
+            "step": pairs,
+            "placements": sorted(placements, key=lambda d: (d["col"], d["row"], d["piece"])),
+        }
         return sol, comp
 
 

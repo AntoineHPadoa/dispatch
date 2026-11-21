@@ -1,0 +1,260 @@
+{
+ "name": "ramp-study-E4",
+ "grid": {
+  "id": 308,
+  "title": "Rampe E4",
+  "section": "tutorial",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   2,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     2,
+     3,
+     4
+    ],
+    "shape": "stair",
+    "rank": 3,
+    "co2": 3
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      4,
+      5
+     ]
+    },
+    "C": {
+     "bars": [
+      3,
+      3
+     ]
+    },
+    "G": {
+     "bars": [
+      3
+     ]
+    },
+    "T": {
+     "cells": 1
+    }
+   }
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 2,
+    "counts": {
+     "C": 3
+    }
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "C",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "C",
+     "row": 1,
+     "col": 2,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "G",
+     "row": 1,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "T",
+     "row": 2,
+     "col": 1,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 3,
+   "label": "Difficile",
+   "techniques": [
+    "exhausted",
+    "record",
+    "room",
+    "share_out",
+    "single_cover",
+    "swap"
+   ]
+  }
+ },
+ "expect": {
+  "valid": true,
+  "errors": [],
+  "compositions": 1,
+  "deduction": "solved",
+  "requires": [
+   "ramp"
+  ],
+  "rating": 3,
+  "techniques": [
+   "exhausted",
+   "record",
+   "room",
+   "share_out",
+   "single_cover",
+   "swap"
+  ],
+  "composition": {
+   "cells": [
+    {
+     "C": 2
+    },
+    {
+     "C": 2,
+     "T": 1
+    },
+    {
+     "C": 3
+    },
+    {
+     "C": 2,
+     "N": 1
+    },
+    {
+     "C": 1,
+     "N": 2
+    },
+    {
+     "G": 1,
+     "N": 2
+    },
+    {
+     "G": 1,
+     "N": 2
+    },
+    {
+     "G": 1,
+     "N": 2
+    }
+   ],
+   "exports": {},
+   "pumps": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "turbines": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  }
+ }
+}

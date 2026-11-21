@@ -1,0 +1,286 @@
+{
+ "name": "surplus-export",
+ "grid": {
+  "id": 105,
+  "title": "surplus-export",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   3,
+   4,
+   7,
+   4,
+   5,
+   6,
+   6,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    1,
+    3,
+    5,
+    3,
+    1,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "DE",
+    "name": "Allemagne",
+    "cap": 1,
+    "co2": 1
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "T": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 7,
+    "counts": {
+     "N": 5
+    }
+   },
+   {
+    "type": "price",
+    "col": 0,
+    "piece": "N"
+   },
+   {
+    "type": "exchanges",
+    "exports": {
+     "DE": 2
+    }
+   },
+   {
+    "type": "price",
+    "col": 4,
+    "piece": "N"
+   },
+   {
+    "type": "exchanges",
+    "imports": {
+     "DE": 0
+    }
+   }
+  ],
+  "solution": {
+   "exports": {
+    "DE": [
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 3,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 5,
+     "col": 6,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "price_cap",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover"
+   ]
+  }
+ },
+ "expect": {
+  "valid": true,
+  "errors": [],
+  "compositions": 1,
+  "deduction": "solved",
+  "rating": 2,
+  "techniques": [
+   "price_cap",
+   "record",
+   "ribbon",
+   "room",
+   "single_cover"
+  ],
+  "composition": {
+   "cells": [
+    {
+     "N": 3
+    },
+    {
+     "N": 3
+    },
+    {
+     "N": 3,
+     "T": 1
+    },
+    {},
+    {
+     "N": 2
+    },
+    {
+     "N": 5
+    },
+    {
+     "N": 5,
+     "T": 1
+    },
+    {
+     "N": 5
+    }
+   ],
+   "exports": {
+    "DE": [
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     1
+    ]
+   },
+   "pumps": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "turbines": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "requires": []
+ }
+}

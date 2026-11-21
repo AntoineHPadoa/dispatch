@@ -1,13 +1,14 @@
 """Piece shapes, cell by cell.
 
 - A shape is a list of columns (bottom offset, height) from its lower-left corner. Rectangles come from
-  `len` x `height`; ramps (behind the `ramp` flag) from a profile:
-  - trapezoid 1 -> H -> 1: shoulders of one cell, plateau of height H, width `len` (>= 3);
-  - stair H -> 1: a high step of height H, then a low step of one cell whose width is in `ramp.low`.
-- Every shape covers one contiguous run of columns in each row it touches (the ribbon rule relies on it).
-- A placement is a shape laid at (row, col); its key matches §14 `{piece, row, col, len, height}`.
+  `len` x `height`; coal ramps (`shape`, behind the ramp flag, docs/next/rampe.md) from their profile:
+  - trap: 1 -> 2 -> 1, shoulders of one cell, plateau of two, total width `len` (>= 3);
+  - stair: 2 -> 1, two cells on `len` - 1 slots then a one-cell step on the right (`len` >= 2).
+- A ramp's `row` is its base row. Every shape covers one contiguous run of columns in each row it touches
+  (the ribbon rule relies on it).
+- A placement is a shape laid at (row, col); its §14 form is `{piece, row, col, len[, height]}`.
 
-Example: shapes_of({"len": [3], "height": [2], "ramp": {"profile": "trapezoid"}}) -> [Shape(3, 2, ...)]
+Example: shapes_of({"shape": "trap", "len": [3]}) -> [Shape(3, 2, ((0, 1), (0, 2), (0, 1)), "ramp_trap")]
 """
 
 from __future__ import annotations
@@ -23,8 +24,7 @@ class Shape:
     width: int
     height: int  # plateau / rectangle height, as written in §14 `height`
     columns: tuple[tuple[int, int], ...]  # per column: (bottom offset, height)
-    kind: str  # rect | tall | ramp_trapezoid | ramp_stair
-    low: int = 0  # stair only: width of the low step
+    kind: str  # rect | tall | ramp_trap | ramp_stair
 
     def cells(self, row: int, col: int) -> frozenset[Cell]:
         return frozenset((row + b + k, col + dc) for dc, (b, h) in enumerate(self.columns) for k in range(h))
@@ -41,26 +41,18 @@ def rect(width: int, height: int) -> Shape:
 
 def shapes_of(d: dict[str, Any]) -> list[Shape]:
     """Allowed shapes of a §14 piece definition."""
-    ramp = d.get("ramp")
-    out: list[Shape] = []
-    for h in d["height"]:
-        for w in d["len"]:
-            if not ramp:
-                out.append(rect(w, h))
-            elif ramp["profile"] == "trapezoid":
-                cols = ((0, 1),) + tuple((0, h) for _ in range(w - 2)) + ((0, 1),)
-                out.append(Shape(w, h, cols, "ramp_trapezoid"))
-            else:
-                for low in ramp["low"]:
-                    if low < w:
-                        cols = tuple((0, h) for _ in range(w - low)) + tuple((0, 1) for _ in range(low))
-                        out.append(Shape(w, h, cols, "ramp_stair", low))
-    return out
+    kind = d.get("shape", "rect")
+    if kind == "trap":
+        return [Shape(w, 2, ((0, 1),) + ((0, 2),) * (w - 2) + ((0, 1),), "ramp_trap") for w in d["len"]]
+    if kind == "stair":
+        return [Shape(w, 2, ((0, 2),) * (w - 1) + ((0, 1),), "ramp_stair") for w in d["len"]]
+    return [rect(w, h) for h in d["height"] for w in d["len"]]
 
 
 @dataclass(frozen=True)
 class Placement:
     """One shape of one piece laid at (row, col). `key` is the composition key (piece id or I:<country>)."""
+
     key: str
     piece: str  # piece id, or "I" for an import
     country: str | None
@@ -89,7 +81,7 @@ class Placement:
 
     def to_dict(self) -> dict[str, Any]:
         out: dict[str, Any] = {"piece": self.piece, "row": self.row, "col": self.col, "len": self.width}
-        if self.height != 1:
+        if self.height != 1 and not self.shape.kind.startswith("ramp"):
             out["height"] = self.height
         if self.country is not None:
             out["country"] = self.country

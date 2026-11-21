@@ -1,0 +1,172 @@
+{
+ "name": "bad-co2",
+ "grid": {
+  "id": 5,
+  "title": "5. Flux publié et compter la colonne",
+  "section": "tutorial",
+  "intro": "Nouveau : un flux publié, qui fixe l’échange d’un créneau avec l’Allemagne. Une colonne a autant de cases que sa hauteur : connaissant les autres, on déduit celle qui reste.",
+  "teaches": [
+   "flow",
+   "column_sum"
+  ],
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "demand": [
+   1,
+   1,
+   3,
+   2,
+   1,
+   1
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 1
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "DE",
+    "name": "Allemagne",
+    "cap": 1,
+    "co2": 3
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      3,
+      3
+     ]
+    }
+   },
+   "exports": {
+    "DE": 1
+   },
+   "imports": {
+    "DE": 4
+   }
+  },
+  "clues": [
+   {
+    "type": "flow",
+    "col": 0,
+    "country": "DE",
+    "dir": "import",
+    "value": 0
+   }
+  ],
+  "solution": {
+   "exports": {
+    "DE": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     0
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "I",
+     "country": "DE",
+     "row": 0,
+     "col": 3,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "country": "DE",
+     "row": 0,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "country": "DE",
+     "row": 0,
+     "col": 5,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 1,
+     "len": 3
+    },
+    {
+     "piece": "I",
+     "country": "DE",
+     "row": 2,
+     "col": 2,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "flow",
+    "single_cover",
+    "room",
+    "silhouette",
+    "column_sum",
+    "exhausted"
+   ]
+  }
+ },
+ "expect": {
+  "valid": false,
+  "errors": [
+   "pieces.N.co2: 0 expected (§3)"
+  ],
+  "requires": []
+ }
+}

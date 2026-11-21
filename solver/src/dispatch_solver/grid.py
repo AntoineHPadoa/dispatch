@@ -2,8 +2,8 @@
 
 - validate() is a port of web/src/model/grid.ts validateGrid(): same checks, same English messages, so
   the shared reference grids (fixtures/grids/) compare both implementations error by error.
-- Extra, behind a flag: `pieces.<id>.ramp` (ramp-shaped plants, see shapes.py), refused unless
-  allow_ramp=True because the web engine does not know ramps yet.
+- Extra, behind a flag: `pieces.C.shape` = "trap" or "stair" (coal ramps, docs/next/rampe.md; no `height`,
+  `len` = total width), refused unless allow_ramp=True because the web engine does not know ramps yet.
 - load_grids() reads one grid, a list of grids, or a fixture ({"grid": ..., "expect": ...}).
 
 Example: errors = validate(json.load(open("grid.json")))
@@ -31,7 +31,9 @@ MIN_COLUMNS = 6
 MAX_COLUMNS = 12
 CLUE_TYPES = ("price", "bar", "length", "column", "flow", "exchanges", "engaged")
 WEATHER_KINDS = ("sun", "moon", "cloud", "wind")
-RAMP_PROFILES = ("trapezoid", "stair")
+SHAPES = ("rect", "trap", "stair")
+RAMP_PIECE = "C"
+RAMP_MIN_WIDTH = {"trap": 3, "stair": 2}
 LABELS = {1: "Facile", 2: "Moyen", 3: "Difficile", 4: "Expert"}
 
 
@@ -58,8 +60,12 @@ def _is_piece_id(v: Any) -> bool:
 
 
 def _is_size_list(v: Any) -> bool:
-    return (isinstance(v, list) and len(v) > 0 and all(_is_pos(x) for x in v)
-            and all(i == 0 or v[i] > v[i - 1] for i in range(len(v))))
+    return (
+        isinstance(v, list)
+        and len(v) > 0
+        and all(_is_pos(x) for x in v)
+        and all(i == 0 or v[i] > v[i - 1] for i in range(len(v)))
+    )
 
 
 def _is_int_array(v: Any, n: int) -> bool:
@@ -104,8 +110,12 @@ def validate(g: Any, allow_ramp: bool = False) -> list[str]:
     cols_raw = g.get("columns")
     cols = cols_raw if isinstance(cols_raw, list) else []
     n = len(cols)
-    if (not isinstance(cols_raw, list) or n < MIN_COLUMNS or n > MAX_COLUMNS
-            or not all(isinstance(c, str) for c in cols)):
+    if (
+        not isinstance(cols_raw, list)
+        or n < MIN_COLUMNS
+        or n > MAX_COLUMNS
+        or not all(isinstance(c, str) for c in cols)
+    ):
         err(f"columns: {MIN_COLUMNS} to {MAX_COLUMNS} labels expected")
     if not _is_int_array(g.get("demand"), n):
         err(f"demand: {n} integers expected")
@@ -131,7 +141,10 @@ def validate(g: Any, allow_ramp: bool = False) -> list[str]:
                 continue
             if not _is_size_list(d.get("len")):
                 err(f"pieces.{pid}.len: ascending positive integers expected")
-            if not _is_size_list(d.get("height")):
+            ramp = d.get("shape", "rect") != "rect"
+            if "shape" in d:
+                _check_shape(pid, d, allow_ramp, err)
+            if not ramp and not _is_size_list(d.get("height")):
                 err(f"pieces.{pid}.height: ascending positive integers expected")
             if not _is_pos(d.get("rank")):
                 err(f"pieces.{pid}.rank: positive integer expected")
@@ -141,8 +154,6 @@ def validate(g: Any, allow_ramp: bool = False) -> list[str]:
                 err(f"pieces.{pid}.co2: integer >= 0 expected")
             elif d["co2"] != PIECE_SPEC[pid]["co2"]:
                 err(f"pieces.{pid}.co2: {PIECE_SPEC[pid]['co2']} expected (§3)")
-            if "ramp" in d:
-                _check_ramp(pid, d, allow_ramp, err)
 
     def piece_def(pid: str) -> dict[str, Any] | None:
         p = pieces.get(pid) if _is_obj(pieces) else None
@@ -154,6 +165,8 @@ def validate(g: Any, allow_ramp: bool = False) -> list[str]:
 
     def allows_height(pid: str, height: Any) -> bool:
         d = piece_def(pid)
+        if d is not None and d.get("shape", "rect") != "rect":
+            return height == 1  # a ramp has a fixed profile: no height on its placements
         return d is not None and _js_includes(d.get("height"), height)
 
     def check_bar_geometry(at: str, pid: str, p: dict[str, Any]) -> None:
@@ -178,8 +191,12 @@ def validate(g: Any, allow_ramp: bool = False) -> list[str]:
         err("neighbors: list expected")
     else:
         for i, nb in enumerate(neighbors):
-            if (not _is_obj(nb) or not isinstance(nb.get("id"), str) or not nb.get("id")
-                    or not isinstance(nb.get("name"), str)):
+            if (
+                not _is_obj(nb)
+                or not isinstance(nb.get("id"), str)
+                or not nb.get("id")
+                or not isinstance(nb.get("name"), str)
+            ):
                 err(f"neighbors[{i}]: {{id, name, cap, co2}} expected")
                 continue
             if nb["id"] == ANY_COUNTRY or nb["id"] in countries:
@@ -260,9 +277,9 @@ def validate(g: Any, allow_ramp: bool = False) -> list[str]:
 
     clues = g.get("clues")
     if g.get("step") is True and _is_obj(inv):
-        published = ((inv.get("level") == "exact" and "step" in inv)
-                     or (isinstance(clues, list)
-                         and any(_is_obj(c) and c.get("type") == "exchanges" and "step" in c for c in clues)))
+        published = (inv.get("level") == "exact" and "step" in inv) or (
+            isinstance(clues, list) and any(_is_obj(c) and c.get("type") == "exchanges" and "step" in c for c in clues)
+        )
         if not published:
             err("step: a STEP grid must publish its number of pairs (inventory.step or an exchanges clue step)")
 
@@ -275,8 +292,19 @@ def validate(g: Any, allow_ramp: bool = False) -> list[str]:
             if not _is_obj(cl) or cl.get("type") not in CLUE_TYPES:
                 err(f"{at}: unknown clue type")
                 continue
-            _check_clue(at, cl, piece_ids, countries, is_col, allows_len, neighbor_cap, check_country_totals,
-                        check_bar_geometry, n, err)
+            _check_clue(
+                at,
+                cl,
+                piece_ids,
+                countries,
+                is_col,
+                allows_len,
+                neighbor_cap,
+                check_country_totals,
+                check_bar_geometry,
+                n,
+                err,
+            )
 
     # Solution
     sol = g.get("solution")
@@ -310,13 +338,20 @@ def validate(g: Any, allow_ramp: bool = False) -> list[str]:
             err("solution.placements: list expected")
         else:
             for i, p in enumerate(pl):
-                _check_placement(f"solution.placements[{i}]", p, piece_ids, countries, is_col, check_bar_geometry,
-                                 n, err)
+                _check_placement(
+                    f"solution.placements[{i}]", p, piece_ids, countries, is_col, check_bar_geometry, n, err
+                )
 
     d = g.get("difficulty")
-    if (not _is_obj(d) or not _is_int(d.get("rating")) or d["rating"] < 1 or d["rating"] > 4
-            or not isinstance(d.get("label"), str) or not isinstance(d.get("techniques"), list)
-            or not all(isinstance(t, str) for t in d["techniques"])):
+    if (
+        not _is_obj(d)
+        or not _is_int(d.get("rating"))
+        or d["rating"] < 1
+        or d["rating"] > 4
+        or not isinstance(d.get("label"), str)
+        or not isinstance(d.get("techniques"), list)
+        or not all(isinstance(t, str) for t in d["techniques"])
+    ):
         err("difficulty: {rating 1-4, label, techniques[]} expected")
 
     if "bulletin" in g:
@@ -324,31 +359,37 @@ def validate(g: Any, allow_ramp: bool = False) -> list[str]:
     return errors
 
 
-def _check_ramp(pid: str, d: dict[str, Any], allow_ramp: bool, err: Any) -> None:
-    r = d["ramp"]
+def _check_shape(pid: str, d: dict[str, Any], allow_ramp: bool, err: Any) -> None:
+    shape = d["shape"]
+    if shape not in SHAPES:
+        err(f"pieces.{pid}.shape: one of {', '.join(SHAPES)} expected")
+        return
+    if shape == "rect":
+        return
     if not allow_ramp:
-        err(f"pieces.{pid}.ramp: ramps are not enabled")
+        err(f"pieces.{pid}.shape: ramps are not enabled")
         return
-    if not _is_obj(r) or r.get("profile") not in RAMP_PROFILES:
-        err(f"pieces.{pid}.ramp: profile among {', '.join(RAMP_PROFILES)} expected")
-        return
-    heights = d.get("height") if _is_size_list(d.get("height")) else []
-    lens = d.get("len") if _is_size_list(d.get("len")) else []
-    if any(h < 2 for h in heights):
-        err(f"pieces.{pid}.ramp: plateau height >= 2 expected")
-    if r["profile"] == "trapezoid" and any(x < 3 for x in lens):
-        err(f"pieces.{pid}.ramp: trapezoid width >= 3 expected")
-    if r["profile"] == "stair":
-        low = r.get("low")
-        if not _is_size_list(low):
-            err(f"pieces.{pid}.ramp.low: ascending positive integers expected")
-        elif any(x <= min(low) for x in lens):
-            err(f"pieces.{pid}.ramp: every width must leave a high step")
+    if pid != RAMP_PIECE:
+        err(f"pieces.{pid}.shape: only coal ({RAMP_PIECE}) can be a ramp")
+    if "height" in d:
+        err(f"pieces.{pid}.height: a ramp has no height")
+    if _is_size_list(d.get("len")) and min(d["len"]) < RAMP_MIN_WIDTH[shape]:
+        err(f"pieces.{pid}.len: a {shape} ramp is at least {RAMP_MIN_WIDTH[shape]} wide")
 
 
-def _check_clue(at: str, cl: dict[str, Any], piece_ids: list[str], countries: list[str], is_col: Any,
-                allows_len: Any, neighbor_cap: Any, check_country_totals: Any, check_bar_geometry: Any, n: int,
-                err: Any) -> None:
+def _check_clue(
+    at: str,
+    cl: dict[str, Any],
+    piece_ids: list[str],
+    countries: list[str],
+    is_col: Any,
+    allows_len: Any,
+    neighbor_cap: Any,
+    check_country_totals: Any,
+    check_bar_geometry: Any,
+    n: int,
+    err: Any,
+) -> None:
     def need_piece() -> None:
         if not _is_piece_id(cl.get("piece")) or cl.get("piece") not in piece_ids:
             err(f"{at}.piece: not a grid piece")
@@ -410,8 +451,9 @@ def _check_clue(at: str, cl: dict[str, Any], piece_ids: list[str], countries: li
             check_bar_geometry(at, cl["piece"], cl)
 
 
-def _check_placement(at: str, p: Any, piece_ids: list[str], countries: list[str], is_col: Any,
-                     check_bar_geometry: Any, n: int, err: Any) -> None:
+def _check_placement(
+    at: str, p: Any, piece_ids: list[str], countries: list[str], is_col: Any, check_bar_geometry: Any, n: int, err: Any
+) -> None:
     if not _is_obj(p):
         err(f"{at}: object expected")
         return

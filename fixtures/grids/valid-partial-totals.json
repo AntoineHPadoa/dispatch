@@ -1,0 +1,267 @@
+{
+ "name": "partial-totals",
+ "grid": {
+  "id": 107,
+  "title": "partial-totals",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   4,
+   4,
+   5,
+   6,
+   6,
+   7,
+   6,
+   5
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "DE",
+    "name": "Allemagne",
+    "cap": 1,
+    "co2": 2
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "exchanges",
+    "imports": {
+     "DE": 0
+    }
+   },
+   {
+    "type": "column",
+    "col": 3,
+    "counts": {
+     "N": 6
+    }
+   },
+   {
+    "type": "exchanges",
+    "exports": {
+     "DE": 2
+    }
+   }
+  ],
+  "solution": {
+   "exports": {
+    "DE": [
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     1,
+     0
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 2,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 3,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 6,
+     "col": 4,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 5,
+     "len": 3
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": [
+    "record",
+    "silhouette",
+    "single_cover"
+   ]
+  }
+ },
+ "expect": {
+  "valid": true,
+  "errors": [],
+  "compositions": 1,
+  "deduction": "solved",
+  "rating": 1,
+  "techniques": [
+   "record",
+   "silhouette",
+   "single_cover"
+  ],
+  "composition": {
+   "cells": [
+    {
+     "N": 4
+    },
+    {
+     "N": 4
+    },
+    {
+     "N": 5
+    },
+    {
+     "N": 6
+    },
+    {
+     "N": 7
+    },
+    {
+     "N": 7
+    },
+    {
+     "N": 7
+    },
+    {
+     "N": 5
+    }
+   ],
+   "exports": {
+    "DE": [
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     1,
+     0
+    ]
+   },
+   "pumps": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "turbines": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "requires": []
+ }
+}

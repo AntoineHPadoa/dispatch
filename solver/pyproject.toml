@@ -26,3 +26,7 @@ testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 120
+
+[tool.ruff.lint.per-file-ignores]
+"src/dispatch_solver/deduce/state.py" = ["PLR1730"]  # explicit comparisons in the hot loop
+"scripts/*.py" = ["C408"]  # dict(...) keeps the fixture table readable

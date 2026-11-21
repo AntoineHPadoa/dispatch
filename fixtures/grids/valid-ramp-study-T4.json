@@ -1,0 +1,235 @@
+{
+ "name": "ramp-study-T4",
+ "grid": {
+  "id": 304,
+  "title": "Rampe T4",
+  "section": "tutorial",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   3,
+   3,
+   3,
+   3,
+   4,
+   4,
+   3,
+   2
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5
+    ],
+    "shape": "trap",
+    "rank": 3,
+    "co2": 3
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      4,
+      4,
+      4
+     ]
+    },
+    "C": {
+     "bars": [
+      4,
+      4
+     ]
+    },
+    "T": {
+     "cells": 1
+    }
+   }
+  },
+  "clues": [],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "C",
+     "row": 1,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "T",
+     "row": 2,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "C",
+     "row": 2,
+     "col": 3,
+     "len": 4
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 3,
+   "label": "Difficile",
+   "techniques": [
+    "room",
+    "share_out",
+    "single_cover",
+    "swap"
+   ]
+  }
+ },
+ "expect": {
+  "valid": true,
+  "errors": [],
+  "compositions": 1,
+  "deduction": "solved",
+  "requires": [
+   "ramp"
+  ],
+  "rating": 3,
+  "techniques": [
+   "room",
+   "share_out",
+   "single_cover",
+   "swap"
+  ],
+  "composition": {
+   "cells": [
+    {
+     "C": 1,
+     "N": 1,
+     "T": 1
+    },
+    {
+     "C": 2,
+     "N": 1
+    },
+    {
+     "C": 2,
+     "N": 1
+    },
+    {
+     "C": 2,
+     "N": 1
+    },
+    {
+     "C": 2,
+     "N": 2
+    },
+    {
+     "C": 2,
+     "N": 2
+    },
+    {
+     "C": 1,
+     "N": 2
+    },
+    {
+     "N": 2
+    }
+   ],
+   "exports": {},
+   "pumps": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "turbines": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  }
+ }
+}
