@@ -3,7 +3,8 @@
 - check_grid(): validity, number of compositions, reference match, deduction result and rating.
 - deduce_grid(): full deduction trace.
 - check_published(): every grid of a file must be valid, unique, equal to its reference, deducible
-  (allow_ramp=True accepts coal ramps).
+  (coal ramps accepted, as the web game plays them; allow_ramp=False refuses them).
+- A CP-SAT timeout is reported (`error`), never counted as a unique grid.
 
 Example: check_grid(grid)["compositions"] == 1
 """
@@ -24,7 +25,11 @@ def check_grid(g: dict[str, Any], allow_ramp: bool = False, cap: int = 2) -> dic
     if errors:
         return out
     pz = Puzzle(g)
-    ex = exact.count(pz, cap=cap)
+    try:
+        ex = exact.count(pz, cap=cap)
+    except TimeoutError as exc:
+        out.update({"compositions": None, "error": str(exc)})
+        return out
     ref = reference_composition(g)
     d = deduce(pz, record=True)
     out.update(
@@ -49,10 +54,10 @@ def deduce_grid(g: dict[str, Any], max_level: int = 4) -> dict[str, Any]:
     return deduce(g, max_level=max_level).to_dict(steps=True)
 
 
-def check_published(grids: list[dict[str, Any]], allow_ramp: bool = False) -> tuple[bool, list[str]]:
+def check_published(grids: list[dict[str, Any]], allow_ramp: bool = True) -> tuple[bool, list[str]]:
     """(ok, report lines) for the published grids: valid, one composition, the reference one, deducible.
 
-    allow_ramp: accept coal ramps (`pieces.C.shape`), refused by default like in validate().
+    allow_ramp: accept coal ramps (`pieces.C.shape`); the web game plays them, so on by default.
     """
     ok = True
     lines = []
@@ -62,6 +67,10 @@ def check_published(grids: list[dict[str, Any]], allow_ramp: bool = False) -> tu
         gid = g.get("id")
         if not r["valid"]:
             lines.append(f"grid {gid}: invalid: {'; '.join(r['errors'])}")
+            ok = False
+            continue
+        if r.get("error"):
+            lines.append(f"grid {gid}: {r['error']}")
             ok = False
             continue
         good = r["compositions"] == 1 and r["matches_reference"] and r["deduction"] == "solved"

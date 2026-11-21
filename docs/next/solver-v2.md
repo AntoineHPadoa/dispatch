@@ -69,7 +69,7 @@ Format repris de l'étude (`docs/next/rampe.md` §1, trapèze choisi en premier,
 | `trap` (1 → 2 → 1) | `1, 2 × (W − 2), 1` | W ≥ 3 |
 | `stair` (2 → 1, marche à droite) | `2 × (W − 1), 1` | W ≥ 2 |
 
-- **Drapeau** : le validateur Python n'accepte `shape` ≠ `rect` qu'avec `allow_ramp=True` (CLI `--ramp`), et seulement sur C. Le validateur TS ne connaît pas `shape` avant S6 : aucune grille à rampe n'entre dans `grids.json` d'ici là.
+- **Drapeau** : le validateur Python n'accepte `shape` ≠ `rect` qu'avec `allow_ramp=True`, et seulement sur C. La CLI (`check`, `check-published`) et `check_unique.py` le passent par défaut, puisque le jeu web joue le trapèze depuis S6 ; `--no-ramp` refuse les rampes.
 - **Indices** : `bar` = la pose couvre exactement ces créneaux ; `length` = largeur totale ; `column` compte les cases (2 au plateau, 1 à l'épaule) ; `price` inchangé (rang 3).
 - Les 8 mini-grilles de l'étude sont dans le jeu de référence (`valid-ramp-study-*`) : uniques et résolues par le solveur de déduction.
 

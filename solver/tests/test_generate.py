@@ -196,6 +196,36 @@ def test_cli_check_index_and_exit_code(tmp_path, capsys):
     assert cli.main(["check", str(path), "--index", "0"]) == 1
 
 
+def test_cli_errors_and_strict(tmp_path, capsys):
+    """Review B M2: clean errors, --strict exit code, deduce validates, check-published takes ramps."""
+    with pytest.raises(SystemExit) as exc:
+        cli.main(["check", str(tmp_path / "missing.json")])
+    assert "cannot read" in str(exc.value.code)
+    bad = tmp_path / "bad.json"
+    bad.write_text("{")
+    with pytest.raises(SystemExit) as exc:
+        cli.main(["deduce", str(bad), "--id", "1"])
+    assert "not valid JSON" in str(exc.value.code)
+    g = _fixture("valid-ramp-trap.json")
+    path = tmp_path / "grids.json"
+    path.write_text(json.dumps([g, {**g, "id": 9}]))
+    with pytest.raises(SystemExit) as exc:
+        cli.main(["deduce", str(path)])
+    assert "--index" in str(exc.value.code)
+    two = _fixture("unpublishable-two-compositions.json")
+    path.write_text(json.dumps([two]))
+    assert cli.main(["check", str(path)]) == 0
+    assert cli.main(["check", str(path), "--strict"]) == 1
+    path.write_text(json.dumps([_fixture("valid-technique-ramp-plateau.json")]))
+    assert cli.main(["check-published", str(path)]) == 0
+    assert cli.main(["check-published", str(path), "--no-ramp"]) == 1
+    path.write_text(json.dumps([{**g, "columns": []}]))
+    with pytest.raises(SystemExit) as exc:
+        cli.main(["deduce", str(path), "--index", "0"])
+    assert "invalid grid" in str(exc.value.code)
+    capsys.readouterr()
+
+
 def _qgrid(fam: str, r: int, demand: list[int] | None = None) -> dict:
     return {
         "lab": {"family": fam, "mechanics": ["x"], "clue_profile": ["price"]},
