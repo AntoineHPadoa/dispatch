@@ -4,10 +4,12 @@
  *   return a new state.
  * - Board measures: residual demand, effective silhouette (exports, pumping, turbining, several
  *   neighbors), cell counts per column, exchange totals, CO2.
+ * - A piece's cells come from its shape (model/shapes.ts): rectangle or coal ramp.
  */
 import {
   ANY_COUNTRY, IMPORT_PIECE, type EngagedClue, type Grid, type PieceId, type Placement, type StepPair,
 } from '../model/grid';
+import { cellCount, cellsOf } from '../model/shapes';
 
 export interface PlacedBar extends Placement {
   /** Pre-placed by an `engaged` clue: cannot be removed. */
@@ -58,8 +60,9 @@ export function solutionState(grid: Grid): PlayState {
 
 export const barHeight = (b: Placement) => b.height ?? 1;
 
-export const covers = (b: Placement, row: number, col: number) =>
-  col >= b.col && col < b.col + b.len && row >= b.row && row < b.row + barHeight(b);
+/** The piece covers the cell (row, col). */
+export const covers = (grid: Grid, b: Placement, row: number, col: number) =>
+  col >= b.col && col < b.col + b.len && cellsOf(grid, b).some(([r, c]) => r === row && c === col);
 
 /** Composition key of a bar: piece id, or `I:<country>` for imports. */
 export const pieceKey = (b: Placement) => (b.piece === IMPORT_PIECE ? `I:${b.country ?? ''}` : b.piece);
@@ -85,13 +88,11 @@ export function silhouette(grid: Grid, state: PlayState): number[] {
   return rawSilhouette(grid, state).map((v) => Math.max(0, v));
 }
 
-/** Cells of one bar in one column. */
-export const cellsInColumn = (b: Placement, col: number) => (col >= b.col && col < b.col + b.len ? barHeight(b) : 0);
-
 export function importsAt(state: PlayState, country: string, col: number, skip = -1): number {
   let k = 0;
   state.bars.forEach((b, i) => {
-    if (i !== skip && b.piece === IMPORT_PIECE && b.country === country) k += cellsInColumn(b, col);
+    // Imports are one-cell rectangles.
+    if (i !== skip && b.piece === IMPORT_PIECE && b.country === country && col >= b.col && col < b.col + b.len) k += barHeight(b);
   });
   return k;
 }
@@ -114,9 +115,9 @@ export function totalImports(state: PlayState, country: string, skip = -1): numb
 }
 
 /** Cells of one plant over the day. */
-export function pieceCells(state: PlayState, piece: PieceId, skip = -1): number {
+export function pieceCells(grid: Grid, state: PlayState, piece: PieceId, skip = -1): number {
   let k = 0;
-  state.bars.forEach((b, i) => { if (i !== skip && b.piece === piece) k += b.len * barHeight(b); });
+  state.bars.forEach((b, i) => { if (i !== skip && b.piece === piece) k += cellCount(grid, b); });
   return k;
 }
 
@@ -128,11 +129,11 @@ export function co2PerCell(grid: Grid, b: Placement): number {
 
 export function co2Total(grid: Grid, state: PlayState, skip = -1): number {
   let t = 0;
-  state.bars.forEach((b, i) => { if (i !== skip) t += co2PerCell(grid, b) * b.len * barHeight(b); });
+  state.bars.forEach((b, i) => { if (i !== skip) t += co2PerCell(grid, b) * cellCount(grid, b); });
   return t;
 }
 
 /** Index of the bar covering a cell, or -1. */
-export function barIndexAt(state: PlayState, row: number, col: number): number {
-  return state.bars.findIndex((b) => covers(b, row, col));
+export function barIndexAt(grid: Grid, state: PlayState, row: number, col: number): number {
+  return state.bars.findIndex((b) => covers(grid, b, row, col));
 }

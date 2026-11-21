@@ -102,6 +102,7 @@ button.prow:hover { background: #faf4f7; }
 .mb { display: inline-grid; gap: 2px; position: relative; }
 .mb i { width: 11px; height: 11px; border-radius: 3px; display: block; }
 .mb i.d { background: transparent !important; border: 1.5px dashed var(--c); }
+.mb i.e { background: transparent; }
 .mb.used i { opacity: .28; }
 .mb.used::after { content: ""; position: absolute; left: -2px; right: -2px; top: 50%; border-top: 1.5px solid var(--soft); }
 .count { font-size: .7rem; color: var(--soft); font-variant-numeric: tabular-nums; margin-left: 2px; }

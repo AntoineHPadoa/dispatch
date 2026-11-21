@@ -1,0 +1,185 @@
+{
+ "name": "trap-co2-country",
+ "grid": {
+  "id": 1,
+  "title": "trap",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "demand": [
+   1,
+   1,
+   1,
+   2,
+   1,
+   1
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "DE",
+    "name": "Allemagne",
+    "cap": 1,
+    "co2": 3
+   },
+   {
+    "id": "ES",
+    "name": "Espagne",
+    "cap": 1,
+    "co2": 0
+   }
+  ],
+  "step": false,
+  "co2_cap": 0,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "exchanges",
+    "exports": {
+     "DE": 0,
+     "ES": 0
+    },
+    "imports": {
+     "*": 1
+    }
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "I",
+     "row": 1,
+     "col": 3,
+     "len": 1,
+     "country": "ES"
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": []
+  }
+ },
+ "expect": {
+  "valid": true,
+  "errors": [],
+  "compositions": 1,
+  "deduction": "solved",
+  "requires": [],
+  "note": "carbon: the CO2 cap picks the importing country",
+  "rating": 2,
+  "techniques": [
+   "carbon",
+   "record",
+   "ribbon",
+   "room"
+  ],
+  "composition": {
+   "cells": [
+    {
+     "N": 1
+    },
+    {
+     "N": 1
+    },
+    {
+     "N": 1
+    },
+    {
+     "I:ES": 1,
+     "N": 1
+    },
+    {
+     "N": 1
+    },
+    {
+     "N": 1
+    }
+   ],
+   "exports": {
+    "DE": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "ES": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ]
+   },
+   "pumps": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "turbines": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  }
+ }
+}

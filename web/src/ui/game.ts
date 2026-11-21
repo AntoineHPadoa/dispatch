@@ -11,6 +11,7 @@
  */
 import { localIsoDate, weekdayIndex } from '../model/bulletin';
 import type { Grid, Placement } from '../model/grid';
+import { kindOf } from '../model/shapes';
 import {
   barIndexAt, checkPlaceOver, evaluate, newGame, placeOver, remove, removeStep, setExport, exportsAt,
   importsAt, type ClueReport, type Evaluation, type PlayState,
@@ -212,7 +213,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   // opened before never reacts to them.
   const gameEl = root.querySelector<HTMLElement>('.game')!;
 
-  const shapeOf = (e: BookEntry): Shape => ({ lens: e.lens, heights: e.heights });
+  const shapeOf = (e: BookEntry): Shape => ({ lens: e.lens, heights: e.heights, kind: e.shape });
 
   const barOf = (e: BookEntry, r: Rect): Placement => {
     const bar: Placement = { piece: e.piece as Placement['piece'], row: r.row, col: r.col, len: r.len };
@@ -220,7 +221,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     if (e.country) bar.country = e.country;
     return bar;
   };
-  const labelOf = (b: Placement) => placementLabel(grid, b.piece, b.country, b.row, b.col, b.len, b.height ?? 1);
+  const labelOf = (b: Placement) => placementLabel(grid, b.piece, b.country, b.row, b.col, b.len, b.height ?? 1, kindOf(grid, b));
 
   // ---- rendering
   function preview() {
@@ -371,10 +372,10 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   function removeAt(c: Cell) {
     const er = stepEraseResult(stepPending, c.col);
     if (er.dropped) { stepPending = null; say(UI.stepPendingDropped, 'info'); drawBoard(); return; }
-    const i = barIndexAt(history.present, c.row, c.col);
+    const i = barIndexAt(grid, history.present, c.row, c.col);
     if (i < 0 && isStepCell(c) && removePairAt(c.col)) return;
     const bar = i >= 0 ? history.present.bars[i] : undefined;
-    const res = remove(history.present, c.row, c.col);
+    const res = remove(grid, history.present, c.row, c.col);
     if (res.ok && bar) commit(res.state, UI.removed(labelOf(bar)), 'info');
     else if (!res.ok) say(res.error.message, 'bad');
   }
@@ -450,7 +451,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       else pendingTap = c;
       return;
     }
-    const occupied = barIndexAt(history.present, c.row, c.col) >= 0;
+    const occupied = barIndexAt(grid, history.present, c.row, c.col) >= 0;
     longPressFired = false;
     if (occupied && e.pointerType !== 'mouse') {
       longPress = window.setTimeout(() => {

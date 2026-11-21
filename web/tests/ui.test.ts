@@ -257,7 +257,8 @@ describe('progress', () => {
   it('play order: tutorials then rated grids; next grid follows it', () => {
     const order = playOrder(grids).map((g) => g.section);
     expect(order.lastIndexOf('tutorial')).toBeLessThan(order.indexOf('rated'));
-    expect(nextGrid(grids, 7)?.section).toBe('rated');
+    expect(nextGrid(grids, 7)?.id).toBe(12);
+    expect(nextGrid(grids, 13)?.section).toBe('rated');
     expect(nextGrid(grids, playOrder(grids).slice(-1)[0]!.id)).toBeNull();
   });
 });

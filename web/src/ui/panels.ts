@@ -9,6 +9,7 @@ import {
 } from '../engine';
 import { CLUE_KIND, PIECE_WORDS, UI, countryFrom, pieceHint } from '../i18n/fr';
 import { CLUE_ICON, PIECE_COLORS, colorKey, esc, icon } from './palette';
+import { cellCount, isRamp, profile, shapeKind, type ShapeKind } from '../model/shapes';
 
 /** A selectable entry of the book: a plant id, or `I:<country>` for imports. */
 export type PieceKey = string;
@@ -19,6 +20,8 @@ export interface BookEntry {
   country?: string;
   lens: number[];
   heights: number[];
+  /** Rectangle, or a coal ramp laid by its base row. */
+  shape: ShapeKind;
 }
 
 /** Book entry of the STEP (pumped storage): chosen like a plant, laid as pump then turbine. */
@@ -38,7 +41,7 @@ export function bookEntries(grid: Grid): BookEntry[] {
   for (const id of PIECE_IDS) {
     const def = grid.pieces[id];
     if (!def || grid.inventory.pieces[id] === undefined) continue;
-    out.push({ key: id, piece: id, lens: def.len, heights: def.height });
+    out.push({ key: id, piece: id, lens: def.len, heights: def.height ?? [1], shape: shapeKind(def) });
   }
   const inv = grid.inventory;
   for (const nb of grid.neighbors) {
@@ -47,17 +50,26 @@ export function bookEntries(grid: Grid): BookEntry[] {
       const any = inv.imports?.[ANY_COUNTRY];
       if (!(own && own > 0) && !(own === undefined && any && any > 0)) continue;
     }
-    out.push({ key: `I:${nb.id}`, piece: IMPORT_PIECE, country: nb.id, lens: [1], heights: [1] });
+    out.push({ key: `I:${nb.id}`, piece: IMPORT_PIECE, country: nb.id, lens: [1], heights: [1], shape: 'rect' });
   }
-  if (grid.step) out.push({ key: STEP_KEY, piece: STEP_KEY, lens: [1], heights: [1] });
+  if (grid.step) out.push({ key: STEP_KEY, piece: STEP_KEY, lens: [1], heights: [1], shape: 'rect' });
   return out;
 }
 
-/** Mini bar at scale: `w` x `h` cells, dashed from column `dashFrom`. */
-function mb(p: string, w: number, h: number, o: { used?: boolean; dashFrom?: number; paper?: boolean; label?: string } = {}): string {
+/**
+ * Mini piece at scale: `w` x `h` cells, dashed from column `dashFrom`; a ramp (`shape`) draws its
+ * profile on two rows, the cells outside it left blank.
+ */
+function mb(p: string, w: number, h: number, o: { used?: boolean; dashFrom?: number; paper?: boolean; label?: string; shape?: ShapeKind } = {}): string {
   const c = PIECE_COLORS[colorKey(p)];
-  const cells = Array.from({ length: w * h }, (_, i) => {
-    const dashed = o.dashFrom !== undefined && i % w >= o.dashFrom;
+  const prof = profile(o.shape ?? 'rect', w, h);
+  const rows = Math.max(...prof.map(([b, k]) => b + k));
+  const cells = Array.from({ length: w * rows }, (_, i) => {
+    const col = i % w;
+    const row = rows - 1 - Math.floor(i / w);
+    const [b, k] = prof[col] ?? [0, 0];
+    if (row < b || row >= b + k) return '<i class="e"></i>';
+    const dashed = o.dashFrom !== undefined && col >= o.dashFrom;
     return `<i class="${dashed ? 'd' : ''}" style="background:${o.paper ? c.b : c.a};--c:${c.ink}"></i>`;
   }).join('');
   return `<span class="mb${o.used ? ' used' : ''}" style="grid-template-columns:repeat(${w},auto)"${o.label ? ` title="${esc(o.label)}"` : ''}>${cells}</span>`;
@@ -103,17 +115,18 @@ export function renderBook(grid: Grid, state: PlayState, selected: PieceKey | nu
     } else {
       const id = e.piece as PieceId;
       const spec = inv.pieces[id] ?? {};
-      hint = pieceHint(id, e.lens, e.heights, spec.max_cells);
+      hint = pieceHint(id, e.lens, e.heights, spec.max_cells, e.shape);
       if (grid.co2_cap !== null && (grid.pieces[id]?.co2 ?? 0) > 0) hint += ` · ${UI.co2PerCell(grid.pieces[id]?.co2 ?? 0)}`;
       const minH = e.heights[0] ?? 1;
-      const used = pieceCells(state, id);
+      const used = pieceCells(grid, state, id);
+      const shape = e.shape;
       if (spec.bars) {
         const placed = new Map<number, number>();
         for (const b of state.bars) if (b.piece === id) placed.set(b.len, (placed.get(b.len) ?? 0) + 1);
         glyphs = [...spec.bars].sort((a, b) => b - a).map((len) => {
           const k = placed.get(len) ?? 0;
           if (k > 0) placed.set(len, k - 1);
-          return mb(id, len, minH, { used: !paper && k > 0, paper });
+          return mb(id, len, minH, { used: !paper && k > 0, paper, shape });
         }).join('');
       } else if (spec.cells !== undefined || spec.max_cells !== undefined) {
         const total = spec.cells ?? spec.max_cells ?? 0;
@@ -123,7 +136,8 @@ export function renderBook(grid: Grid, state: PlayState, selected: PieceKey | nu
       } else {
         const minL = e.lens[0] ?? 1;
         const maxL = e.lens[e.lens.length - 1] ?? minL;
-        glyphs = mb(id, maxL, minH, { dashFrom: minL, paper });
+        // A ramp shows its shortest shape: a dashed tail would cut its last shoulder.
+        glyphs = isRamp(shape) ? mb(id, minL, 1, { paper, shape }) : mb(id, maxL, minH, { dashFrom: minL, paper });
         for (const h of e.heights.slice(1)) glyphs += mb(id, minL, h, { paper });
         if (!paper) count = UI.placed(used);
       }
@@ -237,7 +251,7 @@ export function renderCo2(grid: Grid, state: PlayState): string {
   const parts = new Map<string, number>();
   for (const b of state.bars) {
     const k = b.piece === IMPORT_PIECE ? 'I' : b.piece;
-    parts.set(k, (parts.get(k) ?? 0) + co2PerCell(grid, b) * b.len * (b.height ?? 1));
+    parts.set(k, (parts.get(k) ?? 0) + co2PerCell(grid, b) * cellCount(grid, b));
   }
   const total = [...parts.values()].reduce((a, b) => a + b, 0);
   const scale = Math.max(cap, total) || 1;
@@ -277,7 +291,7 @@ function entryCount(grid: Grid, state: PlayState, e: BookEntry): string {
   const spec = inv.pieces[e.piece as PieceId] ?? {};
   if (spec.bars) return `${state.bars.filter((b) => b.piece === e.piece).length}/${spec.bars.length}`;
   const total = spec.cells ?? spec.max_cells;
-  return total === undefined ? '' : `${pieceCells(state, e.piece as PieceId)}/${total}`;
+  return total === undefined ? '' : `${pieceCells(grid, state, e.piece as PieceId)}/${total}`;
 }
 
 /** Compact row of plants (phone, under the board): a tap chooses the plant; the eraser is an icon. */

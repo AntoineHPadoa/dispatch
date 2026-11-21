@@ -1,0 +1,83 @@
+{
+ "lot": "demo-01",
+ "kept": 20,
+ "size": 20,
+ "attempts": 239,
+ "rejects": {
+  "too_many_clues": 30,
+  "one_plant": 55,
+  "trivial": 67,
+  "quota:family": 7,
+  "quota:clue_profile": 34,
+  "quota:mix": 12,
+  "duplicate": 2,
+  "quota:mechanics": 1
+ },
+ "ratings": {
+  "Facile": 5,
+  "Moyen": 10,
+  "Difficile": 2,
+  "Expert": 3
+ },
+ "families": {
+  "pointe_soir": 3,
+  "surplus_midi": 4,
+  "deux_bosses": 3,
+  "midi_solaire": 3,
+  "vent_nocturne": 2,
+  "nuit_plate": 3,
+  "plateau_hiver": 2
+ },
+ "per_mix": {
+  "0": 3,
+  "1": 1,
+  "2": 2,
+  "3": 4,
+  "4": 3,
+  "5": 1,
+  "6": 1,
+  "7": 2,
+  "8": 1,
+  "9": 1,
+  "10": 1
+ },
+ "mechanics": {
+  "stock inventory:none": 2,
+  "ramp:trap inventory:exact": 1,
+  "neighbors:1 surplus ramp:trap inventory:exact": 2,
+  "ramp:trap inventory:none": 2,
+  "inventory:none": 1,
+  "neighbors:1 step surplus inventory:exact": 1,
+  "neighbors:1 ramp:trap inventory:exact": 3,
+  "neighbors:1 step inventory:exact": 1,
+  "neighbors:1 inventory:exact": 4,
+  "neighbors:2 co2 inventory:exact": 1,
+  "neighbors:3 inventory:exact": 1,
+  "neighbors:1 surplus tall inventory:none": 1
+ },
+ "clue_profiles": {
+  "bar length price": 1,
+  "": 5,
+  "bar column price": 3,
+  "column price": 1,
+  "column": 5,
+  "flow": 2,
+  "column flow": 1,
+  "bar": 1,
+  "bar column exchanges flow length price": 1
+ },
+ "ramp_grids": 8,
+ "ramp_grids_with_technique": 6,
+ "ramp_techniques": {
+  "ramp_lone": 1,
+  "ramp_plateau": 13,
+  "ramp_relay": 0,
+  "ramp_shoulder": 8
+ },
+ "seconds": 139.3,
+ "seconds_per_kept_grid": 7.0,
+ "workers": 6,
+ "generator": "dispatch-solver 2.0.0",
+ "blocked_ramp": 0,
+ "errors": []
+}

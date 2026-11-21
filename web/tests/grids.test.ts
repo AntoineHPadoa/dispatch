@@ -6,6 +6,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import gridsJson from '../src/data/grids.json';
+import { cellCount, cellsOf } from '../src/model/shapes';
 import {
   ANY_COUNTRY, IMPORT_PIECE, PIECE_SPEC, validateGrid, type Clue, type Grid, type PieceId, type Placement,
 } from '../src/model/grid';
@@ -40,15 +41,13 @@ function solutionErrors(g: Grid): string[] {
       const def = g.pieces[p.piece];
       if (!def) { errs.push(`unknown piece ${p.piece}`); continue; }
       if (!def.len.includes(p.len)) errs.push(`bad width ${p.piece} ${p.len}`);
-      if (!def.height.includes(ph)) errs.push(`bad height ${p.piece} ${ph}`);
+      if (!(def.height ?? [1]).includes(ph)) errs.push(`bad height ${p.piece} ${ph}`);
     }
-    for (let c = p.col; c < p.col + p.len; c++) {
-      for (let r = p.row; r < p.row + ph; r++) {
-        if (c >= n || r >= h[c]!) errs.push(`outside silhouette at ${r},${c}`);
-        const k = `${r},${c}`;
-        if (cell.has(k)) errs.push(`overlap at ${k}`);
-        cell.set(k, p);
-      }
+    for (const [r, c] of cellsOf(g, p)) {
+      if (c >= n || r >= h[c]!) errs.push(`outside silhouette at ${r},${c}`);
+      const k = `${r},${c}`;
+      if (cell.has(k)) errs.push(`overlap at ${k}`);
+      cell.set(k, p);
     }
   }
   for (let c = 0; c < n; c++) for (let r = 0; r < h[c]!; r++) if (!cell.has(`${r},${c}`)) errs.push(`hole at ${r},${c}`);
@@ -58,7 +57,7 @@ function solutionErrors(g: Grid): string[] {
     .filter((p) => p.piece === IMPORT_PIECE && p.country === id && (c === undefined || c === p.col)).length;
   const exportsOf = (id: string) => (sol.exports[id] ?? []).reduce((a, b) => a + b, 0);
   const pieceCells = (id: PieceId) => sol.placements.filter((p) => p.piece === id)
-    .reduce((a, p) => a + p.len * (p.height ?? 1), 0);
+    .reduce((a, p) => a + cellCount(g, p), 0);
 
   // Lines
   for (const nb of g.neighbors) {
@@ -134,10 +133,11 @@ function solutionErrors(g: Grid): string[] {
 }
 
 describe('converted grids', () => {
-  it('has the 11 pose grids: 7 tutorial then 4 rated', () => {
-    expect(grids.map((g) => g.id)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
-    expect(grids.filter((g) => g.section === 'tutorial')).toHaveLength(7);
-    expect(grids.slice(7).every((g) => g.section === 'rated')).toBe(true);
+  it('has the 11 pose grids (7 tutorial then 4 rated) and the 2 coal ramp tutorials', () => {
+    expect(grids.map((g) => g.id)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]);
+    expect(grids.filter((g) => g.section === 'tutorial')).toHaveLength(9);
+    expect(grids.slice(7, 11).every((g) => g.section === 'rated')).toBe(true);
+    expect(grids.slice(11).every((g) => g.section === 'tutorial' && g.pieces.C?.shape === 'trap')).toBe(true);
   });
 
   it.each(grids.map((g) => [g.id, g] as const))('grid %i passes structural validation', (_id, g) => {

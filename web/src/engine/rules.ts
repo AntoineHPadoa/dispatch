@@ -1,6 +1,6 @@
 /*
  * Placement rules and player actions (pure; each action returns a new state or a French reason).
- * - checkPlacement: shape (piece, width, height, bounds), silhouette, overlap, inventory, stock,
+ * - checkPlacement: shape (piece, width, height or ramp profile, bounds), silhouette, overlap, inventory, stock,
  *   line capacity and CO2 cap, for a live preview or before laying a bar.
  * - Actions: place, remove, setExport, addStep, removeStep.
  *
@@ -10,9 +10,10 @@
 import { ANY_COUNTRY, IMPORT_PIECE, type Grid, type Placement, type StepPair } from '../model/grid';
 import { MSG, columnLabel, countryFrom, countryTo, ofPiece } from '../i18n/fr';
 import {
-  barHeight, barIndexAt, co2PerCell, co2Total, covers, exportsAt, importsAt, pieceCells, silhouette, totalExports,
+  barHeight, barIndexAt, co2PerCell, co2Total, exportsAt, importsAt, pieceCells, silhouette, totalExports,
   totalImports, type EngineError, type ErrorCode, type PlacedBar, type PlayState,
 } from './state';
+import { cellCount, cellsOf, isRamp, shapeKind, topIn } from '../model/shapes';
 
 export type Check = { ok: true } | { ok: false; error: EngineError };
 export type ActionResult = { ok: true; state: PlayState } | { ok: false; state: PlayState; error: EngineError };
@@ -35,37 +36,41 @@ export function checkShape(grid: Grid, bar: Placement): Check {
       return fail('unavailable', MSG.unavailable(ofPiece(grid, bar.piece)));
     }
     lens = def.len;
-    heights = def.height;
+    // A ramp has a fixed profile: its placements carry no height (or 1).
+    heights = isRamp(shapeKind(def)) ? [1] : def.height ?? [1];
+    if (isRamp(shapeKind(def)) && !lens.includes(bar.len)) return fail('length', MSG.rampLength(lens));
   }
   const name = ofPiece(grid, bar.piece, bar.country);
   if (!lens.includes(bar.len)) return fail('length', MSG.length(name, lens));
   if (!heights.includes(barHeight(bar))) return fail('height', MSG.height(name, heights));
-  if (bar.row < 0 || bar.col < 0 || bar.col + bar.len > n) return fail('bounds', MSG.bounds());
+  if (bar.row < 0 || bar.col < 0 || bar.col + bar.len > n) return fail('bounds', MSG.bounds(bar.piece !== IMPORT_PIECE && isRamp(shapeKind(grid.pieces[bar.piece]))));
   return OK;
 }
 
 /** Every cell of the bar lies under the silhouette `sil`. */
 export function checkSilhouette(grid: Grid, sil: readonly number[], bar: Placement): Check {
   for (let c = bar.col; c < bar.col + bar.len; c++) {
-    if (bar.row + barHeight(bar) > (sil[c] ?? 0)) return fail('silhouette', MSG.silhouette(columnLabel(grid, c)));
+    if (topIn(grid, bar, c) > (sil[c] ?? 0)) return fail('silhouette', MSG.silhouette(columnLabel(grid, c)));
   }
   return OK;
 }
 
-function overlaps(state: PlayState, bar: Placement, skip: number): boolean {
-  return state.bars.some((o, i) => {
-    if (i === skip) return false;
-    for (let c = bar.col; c < bar.col + bar.len; c++) {
-      for (let r = bar.row; r < bar.row + barHeight(bar); r++) if (covers(o, r, c)) return true;
-    }
-    return false;
+const cellKeys = (grid: Grid, b: Placement) => new Set(cellsOf(grid, b).map(([r, c]) => `${r},${c}`));
+
+/** Indexes of the bars (other than `skip`) sharing a cell with `bar`. */
+function sharing(grid: Grid, state: PlayState, bar: Placement, skip = -1): number[] {
+  const mine = cellKeys(grid, bar);
+  const out: number[] = [];
+  state.bars.forEach((o, i) => {
+    if (i !== skip && cellsOf(grid, o).some(([r, c]) => mine.has(`${r},${c}`))) out.push(i);
   });
+  return out;
 }
 
 /** Inventory, stock, line capacity and CO2 cap, as if `bar` were added (bar `skip` ignored). */
 export function checkBudget(grid: Grid, state: PlayState, bar: Placement, skip = -1): Check {
   const inv = grid.inventory;
-  const cells = bar.len * barHeight(bar);
+  const cells = cellCount(grid, bar);
   if (bar.piece === IMPORT_PIECE) {
     const country = bar.country ?? '';
     for (let c = bar.col; c < bar.col + bar.len; c++) {
@@ -90,12 +95,12 @@ export function checkBudget(grid: Grid, state: PlayState, bar: Placement, skip =
     const name = ofPiece(grid, bar.piece);
     if (spec.bars) {
       const placed = state.bars.filter((b, i) => i !== skip && b.piece === bar.piece && b.len === bar.len).length;
-      if (placed >= spec.bars.filter((l) => l === bar.len).length) return fail('inventory', MSG.inventoryBar(name, bar.len));
+      if (placed >= spec.bars.filter((l) => l === bar.len).length) return fail('inventory', MSG.inventoryBar(name, bar.len, isRamp(shapeKind(grid.pieces[bar.piece]))));
     }
-    if (spec.cells !== undefined && pieceCells(state, bar.piece, skip) + cells > spec.cells) {
+    if (spec.cells !== undefined && pieceCells(grid, state, bar.piece, skip) + cells > spec.cells) {
       return fail('inventory', MSG.inventoryCells(name, spec.cells));
     }
-    if (spec.max_cells !== undefined && pieceCells(state, bar.piece, skip) + cells > spec.max_cells) {
+    if (spec.max_cells !== undefined && pieceCells(grid, state, bar.piece, skip) + cells > spec.max_cells) {
       return fail('stock', MSG.stock(bar.piece, name, spec.max_cells));
     }
   }
@@ -112,7 +117,7 @@ export function checkPlacement(grid: Grid, state: PlayState, bar: Placement): Ch
   if (!shape.ok) return shape;
   const sil = checkSilhouette(grid, silhouette(grid, state), bar);
   if (!sil.ok) return sil;
-  if (overlaps(state, bar, -1)) return fail('overlap', MSG.overlap());
+  if (sharing(grid, state, bar).length) return fail('overlap', MSG.overlap());
   return checkBudget(grid, state, bar);
 }
 
@@ -132,16 +137,8 @@ export function place(grid: Grid, state: PlayState, bar: Placement): ActionResul
 export type OverCheck = { ok: true; replaced: number[] } | { ok: false; error: EngineError; replaced: number[] };
 
 /** Indexes of the bars a placement would cover. */
-export function coveredBars(state: PlayState, bar: Placement): number[] {
-  const out: number[] = [];
-  state.bars.forEach((o, i) => {
-    for (let c = bar.col; c < bar.col + bar.len; c++) {
-      for (let r = bar.row; r < bar.row + barHeight(bar); r++) {
-        if (covers(o, r, c)) { if (!out.includes(i)) out.push(i); return; }
-      }
-    }
-  });
-  return out;
+export function coveredBars(grid: Grid, state: PlayState, bar: Placement): number[] {
+  return sharing(grid, state, bar);
 }
 
 /**
@@ -151,7 +148,7 @@ export function coveredBars(state: PlayState, bar: Placement): number[] {
 export function checkPlaceOver(grid: Grid, state: PlayState, bar: Placement): OverCheck {
   const shape = checkShape(grid, bar);
   if (!shape.ok) return { ...shape, replaced: [] };
-  const replaced = coveredBars(state, bar);
+  const replaced = coveredBars(grid, state, bar);
   if (replaced.some((i) => state.bars[i]?.locked)) return { ...fail('locked', MSG.lockedOver()), replaced };
   const rest: PlayState = { ...state, bars: state.bars.filter((_, i) => !replaced.includes(i)) };
   const sil = checkSilhouette(grid, silhouette(grid, rest), bar);
@@ -172,8 +169,8 @@ export function placeOver(grid: Grid, state: PlayState, bar: Placement): ActionR
 }
 
 /** Remove the bar covering a cell (engaged bars stay). */
-export function remove(state: PlayState, row: number, col: number): ActionResult {
-  const i = barIndexAt(state, row, col);
+export function remove(grid: Grid, state: PlayState, row: number, col: number): ActionResult {
+  const i = barIndexAt(grid, state, row, col);
   if (i < 0) return refuse(state, fail('empty', MSG.nothingHere()));
   if (state.bars[i]?.locked) return refuse(state, fail('locked', MSG.locked()));
   return { ok: true, state: { ...state, bars: state.bars.filter((_, k) => k !== i) } };

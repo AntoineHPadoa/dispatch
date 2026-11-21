@@ -32,7 +32,7 @@ Le prototype n'utilise encore que des barres d'une case de haut ; les pièces ve
 |---|---|---|---|---|
 | N | Nucléaire | barre de 3 à 6 créneaux (ou plus sur les grandes grilles), 1 GW | 1 (le moins cher) | 0 |
 | B | Barrage | 1 case ; le stock d'eau est limité par l'inventaire | 2 | 0 |
-| C | Charbon | barre de 3 à 5 | 3 | 3 |
+| C | Charbon | barre de 3 à 5, ou rampe 1 → 2 → 1 de 3 à 5 (voir ci-dessous) | 3 | 3 |
 | G | Gaz (cycle combiné) | barre de 2 à 3 | 4 | 1 |
 | T | TAC (turbine de pointe) | 1 case | 5 (le plus cher) | 2 |
 | I | Import | 1 case, depuis un pays voisin | sans rang | selon le pays |
@@ -46,6 +46,11 @@ Le prototype n'utilise encore que des barres d'une case de haut ; les pièces ve
 
 Aujourd'hui, R et F ne font que réduire la demande à couvrir. Elles restent des pièces à part entière pour ouvrir des mécaniques : prévision météo incertaine, écrêtement d'un surplus, indice « production solaire de midi », renouvelables qui varient d'un créneau à l'autre.
 
+**La rampe du charbon** : une grille peut déclarer son charbon en rampe (trapèze 1 → 2 → 1), jamais rectangle et rampe à la fois.
+- Une rampe de largeur W occupe W cases sur sa **ligne de base** et W − 2 cases (le **plateau**) sur la ligne juste au-dessus ; les deux cases du bout de la base sont les **épaules**. Elle compte 2W − 2 cases.
+- Elle se pose comme une barre : la largeur totale est sa durée de marche, la hauteur est fixe. Elle se pose à n'importe quelle ligne.
+- Un escalier 2 → 1 est prévu par le format (`shape: "stair"`) mais n'est pas encore dans le jeu.
+
 Le **rang de prix** suit l'ordre d'appel réel (merit order). Il ne sert qu'aux indices de prix : « à 8h, c'est le gaz qui fixe le prix » veut dire que la case pilotable la plus chère de la colonne est du gaz. L'import n'a pas de rang : un indice de prix ne porte jamais sur un créneau qui contient un import.
 
 Toutes les pièces ne sont pas présentes dans chaque grille : la grille déclare les centrales disponibles.
@@ -53,7 +58,7 @@ Toutes les pièces ne sont pas présentes dans chaque grille : la grille déclar
 ## 4. Règles de pose
 
 1. Chaque pièce est posée entièrement dans la silhouette, sans chevaucher une autre pièce.
-2. Sa largeur et sa hauteur font partie de celles autorisées pour sa pièce.
+2. Sa forme fait partie de celles autorisées pour sa pièce : largeur et hauteur pour un rectangle, largeur pour une rampe.
 3. Toutes les cases de la silhouette sont couvertes.
 4. L'inventaire est respecté (§6) et tous les indices sont vrais (§7).
 5. Les contraintes optionnelles de la grille sont respectées (§5).
@@ -68,7 +73,7 @@ Chacune s'active par grille. Elles créent du choix, et c'est ce choix qui fait 
   - À chaque créneau : imports + exports avec ce pays ≤ capacité de la ligne.
   - Plusieurs voisins possibles (ex. Allemagne, Royaume-Uni, Espagne), chacun avec sa ligne.
   - Les voisins n'ont **pas de prix** : seuls la capacité et les indices comptent.
-- **Surplus** : une colonne de demande résiduelle négative doit être absorbée par des exports (pas d'écrêtement). Un surplus casse les rubans de nucléaire, un export permet de les prolonger.
+- **Surplus** : une colonne de demande résiduelle négative doit être absorbée par des exports ou par un pompage de STEP (pas d'écrêtement). Un surplus casse les rubans de nucléaire, un export permet de les prolonger.
 - **STEP (stockage par pompage)** : une paire pompage ▲ / turbinage ▼. Le pompage ajoute une case à remplir dans un créneau, le turbinage en retire une dans un créneau **plus tard**. Le nombre de paires est fixé par la grille. Usage typique : remplir un creux pour prolonger un ruban, raboter une pointe.
 - **Plafond CO₂** : la somme du CO₂ des cases posées ne dépasse pas le plafond. Avec plusieurs voisins, chaque pays a son **CO₂ par case importée** : sous plafond, le choix du pays devient une vraie décision. Le contrôle se fait en comptant des cases.
 
@@ -116,20 +121,27 @@ Note = la technique la plus avancée nécessaire, à la Sudoku. Chaque technique
 | 1 | Pas de place | Une barre ne peut ni dépasser de la silhouette ni chevaucher une barre déjà posée. |
 | 1 | Inventaire épuisé | Quand toutes les cases d'une pièce sont trouvées, elle ne va nulle part ailleurs ; une barre plus longue que ce qu'il reste ne passe plus. |
 | 1 | Le prix plafonne la colonne | Sous un prix publié, aucune case n'est plus chère que ce prix. |
-| 1 | Le relevé compte les cases | Un relevé atteint interdit d'autres cases de cette pièce ; s'il reste juste assez de cases possibles, elles y passent toutes. |
+| 1 | Le relevé compte les cases | Un relevé atteint interdit d'autres cases de cette pièce ; s'il reste juste assez de cases possibles, elles y passent toutes. Vaut aussi pour les totaux du jour (« Échanges du jour »). |
 | 1 | Flux publié | Un flux publié fixe l'export ou l'import d'un créneau avec un pays. |
 | 1 | Une seule barre pour cette case | Une case qu'une seule barre peut encore couvrir reçoit cette barre. |
 | 1 | La barre qui ne tient qu'à un endroit | Une barre de l'inventaire qui n'a plus qu'une place possible y va. |
 | 1 | Programme publié | La barre annoncée par un programme va sur la seule ligne où elle tient. |
+| 1 | Durée de marche | La barre dont on connaît la durée de marche va à la seule place où cette durée tient. |
 | 1 | La silhouette suit les barres | Un export ou un pompage qui laisserait une case impossible à couvrir est exclu. |
 | 1 | Cases interchangeables | Quand on connaît le nombre de cases de chaque pièce dans une colonne, l'ordre ne compte pas. |
+| 1 | Le plateau barre la ligne du dessus | Au-dessus de sa base, la rampe occupe aussi la ligne suivante sur tout son plateau : aucun ruban de cette ligne ne la traverse. |
+| 1 | L'épaule appelle une case | La case au-dessus d'une épaule est fermée côté plateau : seule une pièce d'une case, ou une barre qui s'arrête pile là, peut la couvrir. |
 | 2 | La case la plus chère | Un prix publié exige au moins une case de cette centrale dans la colonne : s'il n'y a qu'une place possible, c'est elle. |
 | 2 | Le creux coupe le ruban | Chaque ligne se découpe en rubans entre les creux : une barre qui laisserait un bout impossible à remplir est exclue. |
 | 2 | Inventaire juste | S'il reste exactement autant de cases possibles que de cases à poser pour une pièce, toutes sont à elle. |
 | 2 | Compter la colonne | Une colonne a autant de cases que sa hauteur : connaissant les autres pièces, on déduit celle qui reste. |
 | 2 | Plafond carbone | Une barre qui ferait dépasser le plafond CO₂ est exclue. |
+| 2 | Une case seule est une épaule | Une seule case de rampe dans une colonne, c'est une épaule : la rampe continue à deux cases d'un côté et s'arrête de l'autre. |
 | 3 | Répartition de l'inventaire | Les barres doivent toutes trouver une ligne : un découpage qui empêche les autres de se placer est exclu. |
+| 3 | Deux épaules se relaient | Deux cases de rampe sans plateau autour : une rampe s'arrête et une autre démarre sur son épaule. |
 | 4 | Hypothèse réfutée | Si un choix mène à une impasse par les règles simples, il est exclu (une seule hypothèse, jamais imbriquée). |
+
+Les quatre techniques de rampe (trapèze, `docs/next/rampe.md` §2) ne servent qu'aux grilles dont le charbon est une rampe ; leurs niveaux sont provisoires. « Cases interchangeables » ne compte que les cases sûres et les relevés de la colonne : quand il faut la hauteur de la colonne, c'est « Compter la colonne ». Les noms et phrases sont les mêmes dans `web/src/i18n/fr.ts` et dans les traces du solveur (testé).
 
 **Ce qui crée la difficulté** (constaté sur les tirages) : des choix réels, c'est-à-dire un voisin, un STEP ou l'absence d'inventaire. Sans voisin et avec un inventaire exact, les grilles sont toujours faciles.
 
@@ -139,12 +151,17 @@ Les techniques sont écrites pour des barres d'une case de haut, les seules du p
 
 ## 10. Génération des grilles
 
-1. Tirer une silhouette, les centrales disponibles et les mécaniques actives (paramètres : nombre de créneaux, hauteur, pièces, voisins, STEP, surplus, plafond CO₂).
-2. Calculer une **pose de référence plausible** : l'ordre d'appel réel (le moins cher d'abord), qui place le nucléaire en base et les centrales chères en pointe.
-3. Construire l'inventaire au format voulu (exact ou sans inventaire).
-4. **Choisir les indices** : ajouter un à un l'indice qui laisse le moins de cases indécises, jusqu'à ce que la déduction aboutisse, puis retirer ceux qui ne servent plus.
-5. Vérifier l'unicité par un solveur exact (le prototype utilise OR-Tools CP-SAT) et la résolubilité par le solveur de déduction ; noter la difficulté ; rejeter au-delà d'un nombre maximal d'indices ou si la note ne correspond pas à la note visée.
-6. **Viser la diversité** : varier les silhouettes, les mécaniques et les types d'indices d'une grille à l'autre (retour de test : la démo manque de diversité).
+Le générateur (`solver/`, `dispatch_solver.generate`) produit des **lots** de grilles candidates pour le labo.
+
+1. **Tirer une journée** : 6, 8 ou 12 créneaux ; une famille de silhouette (pointe du soir, deux bosses, midi solaire, surplus de midi, nuit plate, plateau d'hiver, vent de nuit) donne la demande et la météo (soleil le jour, vent la nuit) ; les centrales disponibles et les mécaniques actives (voisins, STEP, surplus, plafond CO₂, stock d'un barrage, pièce haute, rampe).
+2. **Pose de référence plausible** : l'ordre d'appel réel (somme des rangs minimale, le moins cher d'abord), avec un départage aléatoire entre poses de même coût ; une rampe ou une pièce haute demandée doit y figurer. Pour la rampe, un bonus tiré par case de rampe varie les largeurs, et une grille sur trois en demande deux (relais).
+3. **Inventaire** au format voulu (exact ou sans inventaire) ; seules les centrales de la pose de référence sont listées.
+4. **Choisir les indices** : réserve de tout ce que la référence peut publier ; on ajoute un à un l'indice qui laisse le moins de cases indécises (techniques de niveaux 1-2), en préférant un type pas encore utilisé, jusqu'à ce que la déduction aboutisse avec les techniques jusqu'au **niveau visé** ; puis on retire ceux qui ne servent plus. Retirer n'importe quel indice restant casse la déduction (§8.3). Le niveau visé est le levier sur la note : 1 donne des grilles faciles ; pour 3 et 4, l'indice est tiré parmi ceux qui font progresser, avec un inventaire exact et sans prix (recette mesurée).
+5. **Contrôles** : une seule composition (CP-SAT), déduction complète (§9), note provisoire et mesures (techniques, nombre d'étapes, étapes de niveau ≥ 2). Rejets nommés et comptés : `infeasible`, `trivial`, `one_plant` (une seule centrale dans la référence), `not_unique`, `blocked`, `too_many_clues` (au-delà du nombre de créneaux), `rating_mismatch`, `duplicate` (même résiduel à un décalage vertical près, ou même composition), `quota`, `error:<type>` (un tirage qui plante ne stoppe pas le lot).
+6. **Diversité imposée** : un lot mélange des configurations pondérées et applique des quotas (par défaut sur 20 grilles : au plus 3 par famille de silhouette, 4 par ensemble de mécaniques, 4 par profil d'indices, au moins 2 par note). Les tirages visent d'abord les notes qui manquent ; une grille finie refusée seulement pour réserver une note attend dans une réserve.
+7. **Bulletin** : titre, court texte et ciel par créneau, écrits par gabarits à partir de ce que voit le joueur (jamais de la solution). Le brouillon va dans le bloc `lab` ; le labo lui donne un numéro et une date à la promotion.
+
+Sortie : `lab/candidates/<lot>.json` (grilles §14 plus un bloc `lab` : famille, mécaniques, profil d'indices, niveau visé, résumé de la trace, techniques de rampe employées, brouillon de bulletin) et `<lot>.stats.json` (tirages, rejets, répartition). Le bloc `lab` est retiré quand une grille entre dans le jeu.
 
 ## 11. Tutoriel
 
@@ -203,9 +220,10 @@ Champs de la grille complète, en plus de l'exemple ci-dessus :
 - **Tête** : `id` (entier > 0), `title`, `section` (`"tutorial"` ou `"rated"`), `intro` (texte affiché avant de jouer, facultatif) et `teaches` (ids des techniques introduites, pour les grilles de tutoriel).
 - **`column.counts`** : une clé est un id de pièce, ou `I:<pays>` pour les imports d'un seul voisin (ex. `{"G": 2, "I:DE": 0}`).
 - **`height`** : facultatif sur une pose (`solution.placements`) et sur un indice `engaged` ; 1 par défaut, et toujours une valeur de `pieces.<id>.height`.
+- **`pieces.<id>.shape`** : `"rect"` (défaut), `"trap"` (rampe 1 → 2 → 1) ou `"stair"` (escalier 2 → 1). Seul le charbon `C` peut être une rampe ; une rampe n'a pas de `height` ; `len` est sa largeur totale (≥ 3 pour `trap`, ≥ 2 pour `stair`). Une pose de rampe garde `{piece, row, col, len}` : `row` est sa ligne de base, ses cases se déduisent de la forme (`web/src/model/shapes.ts`). Exemple : `"C": {"shape": "trap", "len": [3, 4, 5], "rank": 3, "co2": 3}`.
 - **`inventory.pieces.<id>.max_cells`** : stock maximal en cases d'une pièce, connu du joueur même au niveau `none` (ex. l'eau d'un barrage : `"B": {"max_cells": 2}`). Le moteur refuse une pose qui dépasse ce stock.
 
-Contrôles du validateur : de 6 à 12 colonnes ; rang et CO₂ de chaque pièce égaux à ceux du §3 ; `pieces` et `inventory.pieces` ont les mêmes clés ; `imports` ne mêle pas `"*"` et des clés par pays ; chaque pose a une largeur et une hauteur permises, tient dans la grille, et un import fait 1 case ; un bulletin a un numéro, un titre, un texte, un ciel par colonne et une date ISO réelle ; une grille avec STEP publie son nombre de paires (`inventory.step` en exact, `step` d'un indice `exchanges` sinon) ; dans `solution.step`, `pump` est avant `turbine` ; un flux ou un export ne dépasse pas le `cap` de la ligne.
+Contrôles du validateur : de 6 à 12 colonnes ; rang et CO₂ de chaque pièce égaux à ceux du §3 ; `pieces` et `inventory.pieces` ont les mêmes clés ; `imports` ne mêle pas `"*"` et des clés par pays ; une rampe est du charbon, sans `height`, assez large ; chaque pose a une largeur et une hauteur permises (aucune hauteur pour une rampe), tient dans la grille, et un import fait 1 case ; un bulletin a un numéro, un titre, un texte, un ciel par colonne et une date ISO réelle ; une grille avec STEP publie son nombre de paires (`inventory.step` en exact, `step` d'un indice `exchanges` sinon) ; dans `solution.step`, `pump` est avant `turbine` ; un flux ou un export ne dépasse pas le `cap` de la ligne.
 
 - **`bulletin`** (facultatif) : le bulletin du marché publié avec la grille, `{"number", "title", "text", "weather", "published"}`.
   - `number` : numéro du bulletin (entier > 0, unique d'une grille à l'autre) ; `title` et `text` : titre et court texte de contexte (non vides).
@@ -219,5 +237,7 @@ En inventaire exact : `"inventory": {"level": "exact", "pieces": {"N": {"bars": 
 ## 15. Code (référence)
 
 - `web/` : le jeu (TypeScript + Vite) : format §14 et son validateur (`src/model/grid.ts`), moteur pur (`src/engine/`), interface et impression (`src/ui/`), grilles (`src/data/grids.json`).
-- `solver/` : solveur exact (Python, OR-Tools CP-SAT), solveur de déduction humaine (`deduce.py`, règles du §9), générateur à indices minimaux et CLI. Il contient aussi des modes à score (v1, v2, score cible), qui ne font plus partie du jeu.
-- `docs/archive/demo/` : prototype JS d'origine ; `grids-pose.json` est la source des 11 grilles actuelles (`web/scripts/convert-grids.ts`).
+- `solver/` : package Python `dispatch_solver` (OR-Tools CP-SAT), au format §14 : validateur (mêmes contrôles et messages que `grid.ts`), pièces décrites case par case (rectangles, pièces hautes, rampes du charbon derrière un drapeau), solveur exact (unicité sur la composition), solveur de déduction humaine (techniques du §9, traces, note), générateur par lots et CLI `dispatch-solver`. Conception : `docs/next/solver-v2.md`.
+- `fixtures/grids/` : jeu de grilles de référence (valides, invalides, non publiables) joué par les tests Python et TypeScript, pour que les deux implémentations ne divergent pas.
+- `lab/` : lots du générateur et grilles candidates.
+- `docs/archive/` : prototype JS d'origine (`demo/`, dont `grids-pose.json`, source des 11 grilles actuelles via `web/scripts/convert-grids.ts`) et ancien solveur au format « pose » (`solver-v1/`).

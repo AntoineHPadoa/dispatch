@@ -8,6 +8,8 @@
  * - The rectangle follows the piece shape: a piece one row high stays on the start row, a piece
  *   one slot wide stays in the start column. A drag of a piece one row high only follows columns
  *   (`alongShape`), so a vertical swipe never previews a bar.
+ * - A coal ramp is laid like a bar: the touched row is its base, the drag gives its total width;
+ *   the board draws the plateau above it.
  *
  * Example:
  *   let g = idle();
@@ -21,11 +23,15 @@ export interface Cell {
   col: number;
 }
 
-/** Allowed widths and heights of the selected piece. */
+/** Allowed widths and heights of the selected piece; `kind` is set for a ramp (fixed profile). */
 export interface Shape {
   lens: readonly number[];
   heights: readonly number[];
+  kind?: 'rect' | 'trap' | 'stair';
 }
+
+/** A ramp is laid by its base row, like a bar one row high. */
+const laidFlat = (shape: Shape) => (shape.kind !== undefined && shape.kind !== 'rect') || Math.max(...shape.heights) === 1;
 
 export interface Rect {
   row: number;
@@ -57,11 +63,11 @@ export const idle = (): GestureState => ({ anchor: null, drag: null, hover: null
 
 /** A piece that can only be one cell: laid on the first tap. */
 export const isSingleCell = (shape: Shape) =>
-  Math.max(...shape.lens) === 1 && Math.max(...shape.heights) === 1;
+  Math.max(...shape.lens) === 1 && laidFlat(shape);
 
 /** Rectangle spanned by two cells, constrained by the piece shape. */
 export function rectBetween(a: Cell, b: Cell, shape: Shape): Rect {
-  const flat = Math.max(...shape.heights) === 1;
+  const flat = laidFlat(shape);
   const narrow = Math.max(...shape.lens) === 1;
   const row = flat ? a.row : Math.min(a.row, b.row);
   const height = flat ? 1 : Math.abs(a.row - b.row) + 1;
@@ -71,7 +77,7 @@ export function rectBetween(a: Cell, b: Cell, shape: Shape): Rect {
 }
 
 /** A piece one row high: the board lets vertical swipes scroll the page (touch). */
-export const isFlat = (shape: Shape) => Math.max(...shape.heights) === 1;
+export const isFlat = (shape: Shape) => laidFlat(shape);
 
 /**
  * Cell a drag from `start` stands for: a piece one row high stays on the start row, so a move

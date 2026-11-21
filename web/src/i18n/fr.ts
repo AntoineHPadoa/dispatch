@@ -3,6 +3,7 @@
  * inventory status. The engine and the UI import from here; no player text lives elsewhere.
  */
 import type { Clue, Grid, PieceId } from '../model/grid';
+import { isRamp, shapeKind, type ShapeKind } from '../model/shapes';
 
 interface PieceWords {
   /** Palette label. */
@@ -109,7 +110,7 @@ export function clueText(grid: Grid, clue: Clue): string {
     }
     case 'engaged':
       return `Déjà engagé : ${PIECE_WORDS[clue.piece].a} de ${at(clue.col)} à ${at(clue.col + clue.len)}, `
-        + `ligne ${clue.row + 1}.`;
+        + `${isRamp(shapeKind(grid.pieces[clue.piece])) ? 'base ' : ''}ligne ${clue.row + 1}.`;
   }
 }
 
@@ -149,14 +150,15 @@ function lenText(lens: number[]): string {
 
 /** Rule violations, one function per reason. */
 export const MSG = {
-  bounds: () => 'La barre dépasse de la grille.',
+  bounds: (ramp = false) => `La ${ramp ? 'rampe' : 'barre'} dépasse de la grille.`,
   length: (name: string, lens: number[]) => `La barre ${name} doit faire ${lenText(lens)}.`,
+  rampLength: (lens: number[]) => `Une rampe de charbon fait ${lenText(lens)}.`,
   height: (name: string, heights: number[]) => `La barre ${name} doit faire ${heights.join(' ou ')} GW de haut.`,
   silhouette: (col: string) => `Hors de la silhouette à ${col}.`,
   overlap: () => 'Case déjà occupée.',
   unavailable: (of: string) => `Pas de centrale ${of} dans cette grille.`,
   unknownCountry: () => 'Ce pays n’est pas relié à la grille.',
-  inventoryBar: (name: string, len: number) => `Plus de barre ${name} de ${plural(len, 'créneau', 'créneaux')} dans l’inventaire.`,
+  inventoryBar: (name: string, len: number, ramp = false) => `Plus de ${ramp ? 'rampe' : 'barre'} ${name} de ${plural(len, 'créneau', 'créneaux')} dans l’inventaire.`,
   inventoryCells: (name: string, total: number) => `Plus de case ${name} dans l’inventaire (${total} au total).`,
   stock: (piece: string, of: string, total: number) => (piece === 'B'
     ? `Plus d’eau dans le barrage (${plural(total, 'case')} au plus).`
@@ -215,11 +217,12 @@ export const TECHNIQUES: Record<string, { name: string; text: string }> = {
   room: { name: 'Pas de place', text: 'Une barre ne peut ni dépasser de la silhouette ni chevaucher une barre déjà posée.' },
   exhausted: { name: 'Inventaire épuisé', text: 'Quand toutes les cases d’une pièce sont trouvées, elle ne va nulle part ailleurs ; une barre plus longue que ce qu’il reste ne passe plus.' },
   price_cap: { name: 'Le prix plafonne la colonne', text: 'Sous un prix publié, aucune case n’est plus chère que ce prix.' },
-  record: { name: 'Le relevé compte les cases', text: 'Un relevé atteint interdit d’autres cases de cette pièce ; s’il reste juste assez de cases possibles, elles y passent toutes.' },
+  record: { name: 'Le relevé compte les cases', text: 'Un relevé atteint interdit d’autres cases de cette pièce ; s’il reste juste assez de cases possibles, elles y passent toutes. Les échanges du jour se comptent de même.' },
   flow: { name: 'Flux publié', text: 'Un flux publié fixe l’export ou l’import d’un créneau avec un pays.' },
   single_cover: { name: 'Une seule barre pour cette case', text: 'Une case qu’une seule barre peut encore couvrir reçoit cette barre.' },
   single_spot: { name: 'La barre qui ne tient qu’à un endroit', text: 'Une barre de l’inventaire qui n’a plus qu’une place possible y va.' },
   program: { name: 'Programme publié', text: 'La barre annoncée par un programme va sur la seule ligne où elle tient.' },
+  length: { name: 'Durée de marche', text: 'La barre dont on connaît la durée de marche va à la seule place où cette durée tient.' },
   silhouette: { name: 'La silhouette suit les barres', text: 'Un export ou un pompage qui laisserait une case impossible à couvrir est exclu.' },
   swap: { name: 'Cases interchangeables', text: 'Quand on connaît le nombre de cases de chaque pièce dans une colonne, l’ordre ne compte pas.' },
   top_price: { name: 'La case la plus chère', text: 'Un prix publié exige au moins une case de cette centrale dans la colonne : s’il n’y a qu’une place possible, c’est elle.' },
@@ -227,6 +230,10 @@ export const TECHNIQUES: Record<string, { name: string; text: string }> = {
   just_enough: { name: 'Inventaire juste', text: 'S’il reste exactement autant de cases possibles que de cases à poser pour une pièce, toutes sont à elle.' },
   column_sum: { name: 'Compter la colonne', text: 'Une colonne a autant de cases que sa hauteur : connaissant les autres pièces, on déduit celle qui reste.' },
   carbon: { name: 'Plafond carbone', text: 'Une barre qui ferait dépasser le plafond CO₂ est exclue.' },
+  ramp_plateau: { name: 'Le plateau barre la ligne du dessus', text: 'Au-dessus de sa base, la rampe occupe aussi la ligne suivante sur tout son plateau : aucun ruban de cette ligne ne la traverse.' },
+  ramp_shoulder: { name: 'L’épaule appelle une case', text: 'La case au-dessus d’une épaule est fermée côté plateau : seule une pièce d’une case, ou une barre qui s’arrête pile là, peut la couvrir.' },
+  ramp_lone: { name: 'Une case seule est une épaule', text: 'Une seule case de rampe dans une colonne, c’est une épaule : la rampe continue à deux cases d’un côté et s’arrête de l’autre.' },
+  ramp_relay: { name: 'Deux épaules se relaient', text: 'Deux cases de rampe sans plateau autour : une rampe s’arrête et une autre démarre sur son épaule.' },
   share_out: { name: 'Répartition de l’inventaire', text: 'Les barres doivent toutes trouver une ligne : un découpage qui empêche les autres de se placer est exclu.' },
   refuted: { name: 'Hypothèse réfutée', text: 'Si un choix mène à une impasse par les règles simples, il est exclu (une seule hypothèse, jamais imbriquée).' },
 };
@@ -259,8 +266,9 @@ export const programLabel = (grid: Grid, piece: PieceId, col: number, len: numbe
   `${SHORT_NAME[piece]} ${columnLabel(grid, col)} → ${columnLabel(grid, col + len)}`;
 
 /** Shape hint under a plant name in the order book: "ruban de 3 à 6", "1 case, pointe", "stock : 2 cases". */
-export function pieceHint(piece: PieceId, lens: number[], heights: number[], maxCells?: number): string {
+export function pieceHint(piece: PieceId, lens: number[], heights: number[], maxCells?: number, shape: ShapeKind = 'rect'): string {
   if (maxCells !== undefined) return `stock : ${plural(maxCells, 'case')}`;
+  if (shape !== 'rect') return `rampe de ${lenText(lens)}`;
   const minL = lens[0] ?? 1;
   const maxL = lens[lens.length - 1] ?? minL;
   const minH = heights[0] ?? 1;
@@ -276,9 +284,10 @@ export function pieceHint(piece: PieceId, lens: number[], heights: number[], max
 
 /** "TAC à 8h, ligne 6", "Gaz de 4h à 12h, ligne 2" (rows count from 1 at the bottom). */
 export function placementLabel(grid: Grid, piece: string, country: string | undefined, row: number, col: number,
-  len: number, height = 1): string {
+  len: number, height = 1, shape: ShapeKind = 'rect'): string {
   const name = piece === 'I' ? `Import ${countryFrom(grid, country ?? '')}` : PIECE_WORDS[piece as PieceId]?.name ?? piece;
   const when = len === 1 ? `à ${columnLabel(grid, col)}` : `de ${columnLabel(grid, col)} à ${columnLabel(grid, col + len)}`;
+  if (shape !== 'rect') return `${name} en rampe ${when}, base ligne ${row + 1}`;
   const where = height > 1 ? `lignes ${row + 1} à ${row + height}` : `ligne ${row + 1}`;
   return `${name} ${when}, ${where}`;
 }
@@ -389,7 +398,7 @@ export const UI = {
   hintSecondTap: (label: string) => `${label} : touche maintenant la case d’arrivée.`,
   hintErase: 'Gomme : touche une centrale pour la retirer.',
   poseOk: (label: string) => `${label} : la pose tient.`,
-  /** "Remplace 1 barre de gaz et 2 imports d’Allemagne" (bars covered by a new placement). */
+  /** "Remplace 1 barre de gaz et 2 imports d’Allemagne", "1 rampe de charbon" (bars covered by a new placement). */
   replaces: (grid: Grid, bars: readonly { piece: string; country?: string }[]) => {
     const counts = new Map<string, number>();
     for (const b of bars) {
@@ -398,7 +407,7 @@ export const UI = {
     }
     const parts = [...counts].map(([key, k]) => (key.startsWith('I:')
       ? `${plural(k, 'import')} ${countryFrom(grid, key.slice(2))}`
-      : `${plural(k, 'barre')} ${PIECE_WORDS[key as PieceId]?.of ?? key}`));
+      : `${plural(k, isRamp(shapeKind(grid.pieces[key as PieceId])) ? 'rampe' : 'barre')} ${PIECE_WORDS[key as PieceId]?.of ?? key}`));
     const list = parts.length > 1 ? `${parts.slice(0, -1).join(', ')} et ${parts[parts.length - 1]}` : parts[0] ?? '';
     return `Remplace ${list}`;
   },

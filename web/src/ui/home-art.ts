@@ -3,12 +3,15 @@
  * - logoSvg(): the Dispatch mark, a D of four stacked plant bars in their original colours.
  * - siteHead(): header shared by the home, dossier and game pages (logo, name, optional right slot).
  * - sheetSilhouette(): the demand silhouette of the sheet of the day with the sky of each slot
- *   and the cell that sets the price; once finished, the solution in plant colours (STEP included).
+ *   and the cell that sets the price; once finished, the solution in plant colours (STEP included,
+ *   a coal ramp as one outline).
  * - miniSilhouette(): the small demand outline of a previous sheet or a dossier.
  * - cellSilhouette(): the demand drawn as small cells (dossier cards).
  * Colours come from app.css (`.sil-cell`, `.mini-sil`).
  */
 import type { Grid, WeatherKind } from '../model/grid';
+import { cellsOf, isRamp, kindOf, profileOf } from '../model/shapes';
+import { roundedPath, skyline } from './board';
 import { UI } from '../i18n/fr';
 import { PIECE_COLORS, colorKey, esc } from './palette';
 
@@ -52,7 +55,7 @@ export function sheetSilhouette(grid: Grid, weather: readonly WeatherKind[], lab
   const cell = 40, top = 30, n = grid.demand.length;
   const heights = grid.demand.map((d, c) => d + Object.values(solved?.exports ?? {}).reduce((a, e) => a + (e[c] ?? 0), 0)
     + (solved?.step ?? []).reduce((a, q) => a + (q.pump === c ? 1 : 0) - (q.turbine === c ? 1 : 0), 0));
-  const rows = Math.max(1, ...heights, ...(solved?.placements ?? []).map((p) => p.row + (p.height ?? 1)));
+  const rows = Math.max(1, ...heights, ...(solved?.placements ?? []).flatMap((p) => cellsOf(grid, p).map(([r]) => r + 1)));
   const w = n * cell, hBars = rows * cell, h = top + hBars + 18;
   const hi = solved ? null : priceCell(grid);
   let s = `<svg class="sil" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(label)}">`;
@@ -69,6 +72,12 @@ export function sheetSilhouette(grid: Grid, weather: readonly WeatherKind[], lab
   for (const p of solved?.placements ?? []) {
     const hh = p.height ?? 1;
     const col = PIECE_COLORS[colorKey(p.piece)];
+    if (isRamp(kindOf(grid, p))) {
+      // A coal ramp: one outline following its profile (plateau above the base row).
+      const d = roundedPath(skyline(p.col * cell, top + (rows - p.row) * cell, profileOf(grid, p).map(([b, h]) => b + h), cell, 3), 8);
+      s += `<path class="sil-piece" d="${d}" fill="${col.a}" stroke="${col.ink}" stroke-width="1.5"/>`;
+      continue;
+    }
     s += `<rect class="sil-piece" x="${p.col * cell + 1.5}" y="${top + (rows - p.row - hh) * cell + 1.5}" width="${p.len * cell - 3}" height="${hh * cell - 3}" rx="8" fill="${col.a}" stroke="${col.ink}" stroke-width="1.5"/>`;
   }
   grid.columns.forEach((t, i) => {

@@ -130,17 +130,17 @@ describe('home lists', () => {
     expect(weekdayIndex('2026-11-22')).toBe(0);
   });
 
-  it('the training dossier "Premiers pas" holds the 7 tutorial grids in order', () => {
+  it('the training dossier "Premiers pas" holds the 9 tutorial grids in order', () => {
     const [d] = dossiers(grids);
     expect(d?.id).toBe('premiers-pas');
-    expect(d?.grids.map((g) => g.id)).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    expect(d?.grids.map((g) => g.id)).toEqual([1, 2, 3, 4, 5, 6, 7, 12, 13]);
     expect(dossiers(rated)).toEqual([]);
   });
 
   it('dossier progress counts finished grids; the card opens the first unfinished one', () => {
     const d = dossiers(grids)[0]!;
     const done = new Set([1, 2, 4]);
-    expect(dossierProgress(d, (id) => done.has(id))).toEqual({ done: 3, total: 7 });
+    expect(dossierProgress(d, (id) => done.has(id))).toEqual({ done: 3, total: 9 });
     expect(dossierNext(d, (id) => done.has(id))?.id).toBe(3);
     expect(dossierNext(d, () => true)?.id).toBe(1);
   });
@@ -218,9 +218,9 @@ describe('home rendering', () => {
     expect(root.innerHTML).toContain('Premier bulletin le 18 novembre 2026');
   });
 
-  it('dossier page lists the 7 tutorial grids', () => {
+  it('dossier page lists the 9 tutorial grids', () => {
     const root = stub();
     renderDossier(root, dossiers(grids)[0]!, emptyProgress());
-    expect(root.innerHTML.match(/class="fiche /g)).toHaveLength(7);
+    expect(root.innerHTML.match(/class="fiche /g)).toHaveLength(9);
   });
 });

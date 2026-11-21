@@ -1,0 +1,242 @@
+{
+ "name": "reference-breaks-clue",
+ "grid": {
+  "id": 202,
+  "title": "Moyen",
+  "section": "rated",
+  "intro": "Sans inventaire. Un seul relevé de production : à toi de découper les rubans.",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   4,
+   5,
+   5,
+   5,
+   6,
+   5,
+   4,
+   5
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "DE",
+    "name": "Allemagne",
+    "cap": 1,
+    "co2": 3
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 3,
+    "counts": {
+     "N": 6
+    }
+   },
+   {
+    "type": "exchanges",
+    "exports": {
+     "DE": 0
+    },
+    "imports": {
+     "DE": 6
+    }
+   }
+  ],
+  "solution": {
+   "exports": {
+    "DE": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "I",
+     "country": "DE",
+     "row": 3,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "country": "DE",
+     "row": 3,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "country": "DE",
+     "row": 3,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 1,
+     "len": 4
+    },
+    {
+     "piece": "I",
+     "country": "DE",
+     "row": 4,
+     "col": 5,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "country": "DE",
+     "row": 4,
+     "col": 7,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "country": "DE",
+     "row": 5,
+     "col": 4,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "record",
+    "single_cover",
+    "column_sum",
+    "ribbon",
+    "swap"
+   ]
+  },
+  "bulletin": {
+   "number": 212,
+   "title": "Plateau de midi",
+   "text": "Le froid s’installe et la demande reste haute toute la journée, sans vraie vallée. Le ruban nucléaire porte l’essentiel, le reste se joue sur les marges.",
+   "weather": [
+    "moon",
+    "cloud",
+    "cloud",
+    "sun",
+    "sun",
+    "cloud",
+    "wind",
+    "moon"
+   ],
+   "published": "2026-11-19"
+  }
+ },
+ "expect": {
+  "valid": true,
+  "errors": [],
+  "compositions": 0,
+  "deduction": "contradiction",
+  "reference_solves": false,
+  "requires": []
+ }
+}
