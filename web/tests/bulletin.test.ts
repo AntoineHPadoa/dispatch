@@ -87,7 +87,8 @@ describe('sheet of the day', () => {
   });
 
   it('keeps the last published one when the stock runs out', () => {
-    expect(currentBulletin(grids, '2031-01-01')?.id).toBe(d!.id);
+    const latest = [...rated].sort((x, y) => x.bulletin!.published.localeCompare(y.bulletin!.published)).at(-1)!;
+    expect(currentBulletin(grids, '2999-01-01')?.id).toBe(latest.id);
   });
 
   it('is null before the first publication', () => {
@@ -189,7 +190,7 @@ describe('home rendering', () => {
 
   it('stamps a finished sheet', () => {
     const root = stub();
-    const done = rated.at(-1)!;
+    const done = currentBulletin(grids, '2026-11-21')!;
     const p = { grids: { [done.id]: { status: 'done' } } } as unknown as ReturnType<typeof emptyProgress>;
     renderHome(root, grids, p, '2026-11-21');
     expect(root.innerHTML).toContain('Bouclé');
@@ -218,9 +219,9 @@ describe('home rendering', () => {
     expect(root.innerHTML).toContain('Premier bulletin le 18 novembre 2026');
   });
 
-  it('dossier page lists the 9 tutorial grids', () => {
+  it('dossier page lists every tutorial grid', () => {
     const root = stub();
     renderDossier(root, dossiers(grids)[0]!, emptyProgress());
-    expect(root.innerHTML.match(/class="fiche /g)).toHaveLength(9);
+    expect(root.innerHTML.match(/class="fiche /g)).toHaveLength(grids.filter((g) => g.section === 'tutorial').length);
   });
 });

@@ -24,6 +24,7 @@ import { STEP_KEY, bookEntries, inventoryExchanges, isDayClue, orderClues, withI
 import { renderSheet, slotLegend } from '../src/ui/print';
 import { stepArrowAction, stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from '../src/ui/step';
 import { UI } from '../src/i18n/fr';
+import { currentBulletin } from '../src/model/bulletin';
 
 const grids = gridsJson as unknown as Grid[];
 const byId = (id: number) => structuredClone(grids.find((g) => g.id === id)!);
@@ -255,11 +256,14 @@ describe('progress', () => {
   });
 
   it('play order: tutorials then rated grids; next grid follows it', () => {
-    const order = playOrder(grids).map((g) => g.section);
-    expect(order.lastIndexOf('tutorial')).toBeLessThan(order.indexOf('rated'));
-    expect(nextGrid(grids, 7)?.id).toBe(12);
-    expect(nextGrid(grids, 13)?.section).toBe('rated');
-    expect(nextGrid(grids, playOrder(grids).slice(-1)[0]!.id)).toBeNull();
+    const today = '2026-11-21';
+    const order = playOrder(grids, today);
+    const sections = order.map((g) => g.section);
+    expect(sections.lastIndexOf('tutorial')).toBeLessThan(sections.indexOf('rated'));
+    const tutorials = order.filter((g) => g.section === 'tutorial');
+    for (let i = 0; i + 1 < tutorials.length; i++) expect(nextGrid(grids, tutorials[i]!.id, today)?.id).toBe(tutorials[i + 1]!.id);
+    expect(nextGrid(grids, tutorials.at(-1)!.id, today)?.id).toBe(currentBulletin(grids, today)!.id);
+    expect(nextGrid(grids, order.at(-1)!.id, today)).toBeNull();
   });
 });
 
