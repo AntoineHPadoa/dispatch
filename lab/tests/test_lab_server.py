@@ -195,3 +195,20 @@ def test_failed_generation_is_reported(tmp_path):
             break
         time.sleep(0.02)
     assert lab.job(job["id"])["status"] == "failed"
+
+
+def test_ramp_candidates_are_flagged_and_refused(tmp_path):
+    g = grid(1)
+    g["lab"]["mechanics"] = ["neighbors:1", "ramp:trap"]
+    (tmp_path / "candidates").mkdir()
+    (tmp_path / "candidates" / "t.json").write_text(json.dumps([g, grid(2)]))
+    grids = tmp_path / "grids.json"
+    grids.write_text("[]")
+    lab = lab_server.Lab(tmp_path, grids, checker=lambda x: dict(OK_REPORT))
+    assert [c["playable"] for c in lab.candidates("t")] == [False, True]
+    with pytest.raises(lab_server.LabError) as e:
+        lab.blind_grid("t", 1)
+    assert e.value.status == 422
+    with pytest.raises(lab_server.LabError):
+        lab.promote("t", 1, 1, "2026-11-21")
+    assert grids.read_text() == "[]"

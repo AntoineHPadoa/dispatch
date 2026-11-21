@@ -43,7 +43,7 @@ export async function renderEnd(root: HTMLElement, ctx: LabCtx, lot: string, ind
       + (all !== null ? `<dt>Moyenne perçue</dt><dd>${all.toFixed(1)}</dd>` : '')
       + `<dt>Techniques</dt><dd>${r.difficulty.techniques.map((t) => `<span class="lab-chip">${esc(t)}${ts.techniques?.[t] ? ` ×${ts.techniques[t]}` : ''}</span>`).join(' ')}</dd>`
       + `<dt>Étapes</dt><dd>${ts.steps ?? '?'}${ts.level2_steps !== undefined ? ` dont ${ts.level2_steps} de niveau 2` : ''}</dd>`
-      + `<dt>Goulots</dt><dd>${ts.bottlenecks ?? '?'}</dd><dt>Indices</dt><dd>${esc((r.lab.clue_profile ?? []).join(', '))}</dd>`
+      + `<dt>Étapes à effet unique</dt><dd>${ts.single_effect_steps ?? '?'}</dd><dt>Indices</dt><dd>${esc((r.lab.clue_profile ?? []).join(', '))}</dd>`
       + `<dt>Mécaniques</dt><dd>${esc((r.lab.mechanics ?? []).join(', ') || 'aucune')}</dd></dl>`;
   }
 

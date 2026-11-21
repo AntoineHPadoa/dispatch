@@ -67,7 +67,7 @@ export async function renderList(root: HTMLElement, ctx: LabCtx): Promise<() => 
     return `<h3>Candidate ${c.index}</h3><div class="lab-big">${silhouetteSvg(c.silhouette, 10, 10)}</div>`
       + `<dl class="lab-kv"><dt>Famille</dt><dd>${esc(c.family ?? '')}</dd><dt>Créneaux</dt><dd>${c.cols}</dd><dt>Note solveur</dt><dd>${c.rating ?? '?'}</dd>`
       + `<dt>Indices</dt><dd>${c.clues} (${esc(c.clue_profile.join(', '))})</dd>${byPlayer}</dl>`
-      + `<div class="lab-actions"><button type="button" class="lab-btn pri" data-play="${c.index}">Jouer à l'aveugle</button>`
+      + `<div class="lab-actions">${c.playable ? `<button type="button" class="lab-btn pri" data-play="${c.index}">Jouer à l'aveugle</button>` : '<span class="lab-note">Rampe : pas encore jouable dans le jeu.</span>'}`
       + `<button type="button" class="lab-btn" data-star="${c.index}">${c.kept ? '★ Gardée' : '☆ Garder'}</button></div>`
       + (c.promoted ? `<p class="lab-note">Promue : grille ${c.promoted.id}, bulletin n° ${c.promoted.number}.</p>` : '');
   }

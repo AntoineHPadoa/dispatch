@@ -7,7 +7,7 @@ import {
 
 const cand = (index: number, over: Partial<Candidate> = {}): Candidate => ({
   lot: 't', index, title: 'x', cols: 8, clues: 6, rating: 2, techniques: ['record'], family: 'pointe_soir',
-  mechanics: ['neighbors:1'], clue_profile: [], trace_summary: { steps: 10 }, silhouette: [1], plays: 0, kept: false,
+  mechanics: ['neighbors:1'], clue_profile: [], trace_summary: { steps: 10 }, silhouette: [1], playable: true, plays: 0, kept: false,
   felt: {}, promoted: null, ...over,
 });
 

@@ -58,6 +58,14 @@ def default_runner(lot_path: Path, out_dir: Path, log: Callable[[str], None]) ->
     return proc.wait()
 
 
+def has_ramp(g: dict[str, Any]) -> bool:
+    """Ramp-shaped pieces: not playable in the web game until S6, and not accepted by validateGrid."""
+    mechanics = g.get("lab", {}).get("mechanics", [])
+    return any(m.split(":")[0] == "ramp" for m in mechanics) or any(
+        isinstance(p, dict) and "ramp" in p for p in g.get("pieces", {}).values()
+    )
+
+
 class Lab:
     """Files and rules of the lab; the HTTP layer only calls these methods."""
 
@@ -137,7 +145,7 @@ class Lab:
                 "techniques": g.get("difficulty", {}).get("techniques", []),
                 "family": lab.get("family"), "mechanics": lab.get("mechanics", []),
                 "clue_profile": lab.get("clue_profile", []), "trace_summary": lab.get("trace_summary", {}),
-                "silhouette": g["demand"], "plays": len(mine),
+                "silhouette": g["demand"], "playable": not has_ramp(g), "plays": len(mine),
                 "kept": bool(note.get("kept")), "felt": note.get("felt", {}),
                 "promoted": note.get("promoted"),
             })
@@ -146,6 +154,8 @@ class Lab:
     def blind_grid(self, lot: str, index: int) -> dict[str, Any]:
         """Grid for playing: no `lab` block, solver rating, techniques or bulletin text."""
         g = copy.deepcopy(self._find(lot, index))
+        if has_ramp(g):
+            raise LabError("ramp grids cannot be played in the web game yet", 422)
         g.pop("lab", None)
         g.pop("bulletin", None)
         g["id"] = index
@@ -267,6 +277,8 @@ class Lab:
             if any(g["id"] == new_id for g in grids):
                 raise LabError(f"grid id {new_id} is already used", 409)
             grid = copy.deepcopy(self._find(lot, index))
+            if has_ramp(grid):
+                raise LabError("ramp grids cannot be promoted until the game supports them", 422)
             grid.pop("lab", None)
             grid["id"] = new_id
             grid["section"] = "rated"

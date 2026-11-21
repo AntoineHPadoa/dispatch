@@ -20,8 +20,10 @@ export interface Candidate {
   family: string | null;
   mechanics: string[];
   clue_profile: string[];
-  trace_summary: { steps?: number; level2_steps?: number; bottlenecks?: number; techniques?: Record<string, number> };
+  trace_summary: { steps?: number; level2_steps?: number; single_effect_steps?: number; techniques?: Record<string, number> };
   silhouette: number[];
+  /** False for ramp grids, which the web game cannot play yet. */
+  playable: boolean;
   plays: number;
   kept: boolean;
   felt: Record<string, number>;
