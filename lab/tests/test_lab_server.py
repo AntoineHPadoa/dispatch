@@ -337,23 +337,24 @@ def test_partial_lot_is_reported_as_partial(tmp_path):
     assert done["status"] == "partial" and done["kept"] == 2 and done["size"] == 5
 
 
-def test_ramp_candidates_are_flagged_and_refused(tmp_path):
-    g = grid(0)
-    g["lab"]["mechanics"] = ["neighbors:1", "ramp:trap"]
-    shaped = grid(2)
-    shaped["pieces"] = {"C": {"len": [3], "shape": "trap"}, "N": {"len": [2], "height": [1]}}  # M2: real format
+def test_only_unplayable_shapes_are_flagged_and_refused(tmp_path):
+    trap = grid(0)
+    trap["lab"]["mechanics"] = ["neighbors:1", "ramp:trap"]
+    trap["pieces"] = {"C": {"len": [3], "shape": "trap"}, "N": {"len": [2], "height": [1]}}
+    stair = grid(2)
+    stair["pieces"] = {"C": {"len": [3], "shape": "stair"}, "N": {"len": [2], "height": [1]}}
     (tmp_path / "candidates").mkdir()
-    (tmp_path / "candidates" / "t.json").write_text(json.dumps([g, grid(1), shaped]))
+    (tmp_path / "candidates" / "t.json").write_text(json.dumps([trap, grid(1), stair]))
     grids = tmp_path / "grids.json"
     grids.write_text("[]")
     lab = lab_server.Lab(tmp_path, grids, checker=lambda x: dict(OK_REPORT))
-    assert [c["playable"] for c in lab.candidates("t", creation=True)] == [False, True, False]
+    # The web game plays trapezoid ramps, not staircases.
+    assert [c["playable"] for c in lab.candidates("t", creation=True)] == [True, True, False]
     with pytest.raises(lab_server.LabError) as e:
-        lab.blind_grid("t", 0)
+        lab.blind_grid("t", 2)
     assert e.value.status == 422
-    for index in (0, 2):
-        with pytest.raises(lab_server.LabError):
-            lab.promote("t", index, 1, "2026-11-21")
+    with pytest.raises(lab_server.LabError):
+        lab.promote("t", 2, 1, "2026-11-21")
     assert grids.read_text() == "[]"
 
 

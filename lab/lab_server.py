@@ -51,7 +51,7 @@ def default_checker(grid: dict[str, Any]) -> dict[str, Any]:
         from dispatch_solver.api import check_grid
     except ImportError as e:  # pragma: no cover - depends on the environment
         raise LabError(f"dispatch_solver is not installed: {e}", 501) from e
-    return check_grid(grid)
+    return check_grid(grid, allow_ramp=True)
 
 
 def default_runner(lot_path: Path, out_dir: Path, log: Callable[[str], None]) -> int:
@@ -66,11 +66,13 @@ def default_runner(lot_path: Path, out_dir: Path, log: Callable[[str], None]) ->
     return proc.wait()
 
 
+PLAYABLE_SHAPES = {"rect", "trap"}
+
+
 def has_ramp(g: dict[str, Any]) -> bool:
-    """Ramp-shaped pieces: not playable in the web game until S6, and not accepted by validateGrid."""
-    mechanics = g.get("lab", {}).get("mechanics", [])
-    return any(m.split(":")[0] == "ramp" for m in mechanics) or any(
-        isinstance(p, dict) and p.get("shape", "rect") != "rect" for p in g.get("pieces", {}).values()
+    """Shapes the web game cannot play: only rectangles and trapezoid ramps are supported (staircase is not)."""
+    return any(
+        isinstance(p, dict) and p.get("shape", "rect") not in PLAYABLE_SHAPES for p in g.get("pieces", {}).values()
     )
 
 

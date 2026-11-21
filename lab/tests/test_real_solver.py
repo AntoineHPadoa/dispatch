@@ -39,13 +39,9 @@ def test_generated_lot_indices_start_at_zero_and_ids_follow(lab):
 
 def test_real_ramp_grids_are_flagged(lab):
     cands = lab.candidates("demo-01", creation=True)
-    ramps = [c for c in cands if any(m.startswith("ramp") for m in c["mechanics"])]
-    assert ramps and all(not c["playable"] for c in ramps)
-    assert all(c["playable"] for c in cands if c not in ramps)
-    with pytest.raises(lab_server.LabError) as e:
-        lab.blind_grid("demo-01", ramps[0]["index"])
-    assert e.value.status == 422
-
+    stairs = [c for c in cands if "ramp:stair" in c["mechanics"]]
+    assert all(not c["playable"] for c in stairs)
+    assert all(c["playable"] for c in cands if c not in stairs)
 
 def test_real_check_grid_reports_what_promotion_needs():
     published = json.loads(PUBLISHED.read_text())
