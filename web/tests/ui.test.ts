@@ -16,7 +16,7 @@ import {
 } from '../src/ui/progress';
 import { boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard } from '../src/ui/board';
 import { applyLockedExports, displayTitle, initialState, nextExportValue } from '../src/ui/game';
-import { bookEntries, isDayClue, renderBook, renderCo2, richClueText } from '../src/ui/panels';
+import { STEP_KEY, bookEntries, isDayClue, publishedStepPairs, renderBook, renderCo2, richClueText } from '../src/ui/panels';
 import { renderSheet } from '../src/ui/print';
 
 const grids = gridsJson as unknown as Grid[];
@@ -326,5 +326,41 @@ describe('print sheet', () => {
     const html = renderCo2(g, r.ok ? r.state : s);
     expect(html).toContain('4 points sur 9');
     expect(html).not.toContain('gauge over');
+  });
+});
+
+describe('STEP in the order book', () => {
+  const g7 = byId(7);
+
+  it('is a book entry with its published pairs, or pairs to deduce', () => {
+    expect(bookEntries(g7).map((e) => e.key)).toContain(STEP_KEY);
+    expect(bookEntries(byId(1)).map((e) => e.key)).not.toContain(STEP_KEY);
+    expect(publishedStepPairs(g7)).toBe(1);
+    const html = renderBook(g7, initialState(g7), STEP_KEY);
+    expect(html).toContain('data-piece="STEP"');
+    expect(html).toContain('1 paire');
+    expect(html).toContain('0 / 1');
+    const free = { ...structuredClone(g7), inventory: { level: 'none' as const, pieces: { N: {} } } };
+    expect(publishedStepPairs(free)).toBeNull();
+    expect(renderBook(free, newGame(free), null)).toContain('paires à déduire');
+  });
+
+  it('screen: no STEP row; tags removable by a tap, linked by a line; pending pump drawn', () => {
+    const s = { ...initialState(g7), step: [{ pump: 3, turbine: 4 }] };
+    const svg = renderBoard({ grid: g7, state: s, ev: evaluate(g7, s), style: 'A', cell: 50, interactive: true }).svg;
+    expect(svg).not.toContain('STEP · pompage');
+    expect(svg.match(/data-act="step-tag"/g)?.length).toBe(2);
+    expect(svg).toContain('class="step-link"');
+    const pending = renderBoard({ grid: g7, state: initialState(g7), ev: null, style: 'A', cell: 50, stepPending: 2 }).svg;
+    expect(pending).toContain('class="step-pending"');
+    expect(boardGeometry(g7, 'A', 50).bottomRows).toBe(1);
+  });
+
+  it('paper keeps its STEP boxes and draws no pair', () => {
+    const sheet = renderSheet(g7, 7);
+    expect(sheet).toContain('STEP · pompage');
+    expect(sheet).not.toContain('step-tag');
+    expect(sheet).not.toContain('data-piece="STEP"');
+    expect(boardGeometry(g7, 'B', 40).bottomRows).toBe(2);
   });
 });

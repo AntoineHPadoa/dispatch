@@ -21,7 +21,18 @@ export interface BookEntry {
   heights: number[];
 }
 
-/** Plants and import lines the player can lay, in merit order. */
+/** Book entry of the STEP (pumped storage): chosen like a plant, laid as pump then turbine. */
+export const STEP_KEY = 'STEP';
+
+/** STEP pairs published by the grid (exact inventory or exchanges clue), or null when to deduce. */
+export function publishedStepPairs(grid: Grid): number | null {
+  if (!grid.step) return null;
+  if (grid.inventory.step !== undefined) return grid.inventory.step;
+  for (const c of grid.clues) if (c.type === 'exchanges' && c.step !== undefined) return c.step;
+  return null;
+}
+
+/** Plants, import lines and the STEP the player can lay, in merit order. */
 export function bookEntries(grid: Grid): BookEntry[] {
   const out: BookEntry[] = [];
   for (const id of PIECE_IDS) {
@@ -38,6 +49,7 @@ export function bookEntries(grid: Grid): BookEntry[] {
     }
     out.push({ key: `I:${nb.id}`, piece: IMPORT_PIECE, country: nb.id, lens: [1], heights: [1] });
   }
+  if (grid.step) out.push({ key: STEP_KEY, piece: STEP_KEY, lens: [1], heights: [1] });
   return out;
 }
 
@@ -51,7 +63,8 @@ function mb(p: string, w: number, h: number, o: { used?: boolean; dashFrom?: num
   return `<span class="mb${o.used ? ' used' : ''}" style="grid-template-columns:repeat(${w},auto)"${o.label ? ` title="${esc(o.label)}"` : ''}>${cells}</span>`;
 }
 
-const name = (e: BookEntry) => (e.piece === IMPORT_PIECE ? UI.importName : PIECE_WORDS[e.piece as PieceId].name);
+const name = (e: BookEntry) => (e.piece === STEP_KEY ? UI.stepName
+  : e.piece === IMPORT_PIECE ? UI.importName : PIECE_WORDS[e.piece as PieceId].name);
 
 function importCells(state: PlayState, country: string): number {
   return state.bars.filter((b) => b.piece === IMPORT_PIECE && b.country === country).reduce((a, b) => a + b.len * (b.height ?? 1), 0);
@@ -60,12 +73,19 @@ function importCells(state: PlayState, country: string): number {
 /** Order book (exact) or available plants (none). `selected` is highlighted; paper hides usage. */
 export function renderBook(grid: Grid, state: PlayState, selected: PieceKey | null, paper = false): string {
   const inv = grid.inventory;
-  const rows = bookEntries(grid).map((e) => {
+  const rows = bookEntries(grid).filter((e) => !paper || e.piece !== STEP_KEY).map((e) => {
     let hint: string;
     let glyphs = '';
     let count = '';
     let overUse = false;
-    if (e.piece === IMPORT_PIECE) {
+    if (e.piece === STEP_KEY) {
+      const want = publishedStepPairs(grid);
+      const used = state.step.length;
+      hint = want === null ? UI.stepPairsToDeduce : UI.pairs(want);
+      glyphs = `<span class="step-glyph" aria-hidden="true">▲▼</span>`;
+      count = want === null ? UI.pairsLaid(used) : `${used} / ${want}`;
+      overUse = want !== null && used > want;
+    } else if (e.piece === IMPORT_PIECE) {
       const country = e.country ?? '';
       const nbName = grid.neighbors.find((nb) => nb.id === country)?.name ?? country;
       hint = UI.importHint(nbName);
@@ -131,7 +151,7 @@ function exchangesLine(grid: Grid, state: PlayState, paper: boolean): string {
       pills.push(pill('exp', paper ? `→ ${nb.id} ${want}` : UI.exportPill(nb.id, got, want), got === want));
     }
   }
-  if (grid.step && (inv.step ?? 0) > 0) {
+  if (paper && grid.step && (inv.step ?? 0) > 0) {
     const want = inv.step ?? 0;
     pills.push(pill('step', paper ? `▲▼ ${UI.pairs(want)}` : UI.stepPill(state.step.length, want), state.step.length === want));
   }

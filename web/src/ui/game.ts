@@ -10,13 +10,13 @@ import {
   barIndexAt, checkPlaceOver, evaluate, newGame, placeOver, remove, removeStep, addStep, setExport, exportsAt,
   importsAt, type Evaluation, type PlayState,
 } from '../engine';
-import { TECHNIQUES, UI, columnLabel, durationText, placementLabel } from '../i18n/fr';
+import { MSG, TECHNIQUES, UI, columnLabel, durationText, placementLabel } from '../i18n/fr';
 import { lockedExports, renderBoard, cellAt, type BoardGeometry } from './board';
 import {
   cancel, idle, moveTo, press, previewRect, release, tap, type Cell, type GestureState, type Rect, type Shape,
 } from './gesture';
 import { canUndo, push, reset, start, undo, type History } from './history';
-import { bookEntries, renderBook, renderClues, renderCo2, type BookEntry } from './panels';
+import { STEP_KEY, bookEntries, publishedStepPairs, renderBook, renderClues, renderCo2, type BookEntry } from './panels';
 import { esc, icon } from './palette';
 import { dailyGrid, nextGrid, recordState, type ProgressStore } from './progress';
 
@@ -81,6 +81,8 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   let geo: BoardGeometry | null = null;
   let longPress: number | undefined;
   let longPressFired = false;
+  /** Pill or tag pressed by a pointer: activated when the same one is released (mouse and touch). */
+  let pressedAct: string | null = null;
   const elapsedBase = saved?.elapsedMs ?? 0;
   const sessionStart = Date.now();
   let frozenElapsed: number | null = saved?.status === 'done' && ev.solved ? elapsedBase : null;
@@ -142,7 +144,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
 
   // ---- rendering
   function preview() {
-    if (!selected || erase) return null;
+    if (!selected || erase || selected.piece === STEP_KEY) return null;
     const r = previewRect(gesture, shapeOf(selected));
     if (!r) return null;
     const bar = barOf(selected, r);
@@ -193,7 +195,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     } else if (!m) {
       if (ev.invalidBars.length) m = { text: `${UI.invalidBars(ev.invalidBars.length)} ${ev.errors[0]?.message ?? ''}`, tone: 'bad' };
       else if (ev.errors.length) m = { text: ev.errors[0]!.message, tone: 'bad' };
-      else m = { text: erase ? UI.hintErase : UI.hintChoose, tone: 'info' };
+      else m = { text: erase ? UI.hintErase : selected?.piece === STEP_KEY ? UI.hintStep : UI.hintChoose, tone: 'info' };
     }
     msgSlot.innerHTML = `<div class="msg ${m.tone}">${esc(m.text)}</div>`;
   }
@@ -254,6 +256,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
 
   function removeAt(c: Cell) {
     const i = barIndexAt(history.present, c.row, c.col);
+    if (i < 0 && isStepCell(c) && removePairAt(c.col)) return;
     const bar = i >= 0 ? history.present.bars[i] : undefined;
     const res = remove(history.present, c.row, c.col);
     if (res.ok && bar) commit(res.state, UI.removed(labelOf(bar)), 'info');
@@ -262,6 +265,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
 
   function select(key: string) {
     selected = entries.find((e) => e.key === key) ?? selected;
+    if (selected?.piece !== STEP_KEY) stepPending = null;
     erase = false;
     gesture = cancel(gesture);
     message = null;
@@ -280,35 +284,43 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     else if (exportsAt(res.state, country, col) !== cur) commit(res.state, null);
   }
 
-  function stepAt(col: number) {
-    const s = history.present;
-    const k = s.step.findIndex((p) => p.pump === col || p.turbine === col);
-    if (stepPending === null && k >= 0) {
-      const res = removeStep(s, k);
-      if (res.ok) commit(res.state, UI.stepRemoved, 'info');
-      return;
-    }
-    if (stepPending === null && col === grid.columns.length - 1) {
-      say(UI.stepLastSlot, 'bad');
-      return;
-    }
-    if (stepPending === null || col === stepPending) {
-      stepPending = stepPending === col ? null : col;
-      message = stepPending === null ? null : { text: UI.stepPending(columnLabel(grid, col)), tone: 'info' };
-      drawBoard();
-      return;
-    }
-    if (col < stepPending) {
+  /** STEP chosen: the first tap pumps, a tap on a later slot turbines. */
+  function stepTap(col: number) {
+    const s0 = history.present;
+    const at = (c: number) => columnLabel(grid, c);
+    if (stepPending === null) {
+      if (col === grid.columns.length - 1) { say(UI.stepLastSlot, 'bad'); return; }
+      const want = publishedStepPairs(grid);
+      if (grid.inventory.level === 'exact' && want !== null && s0.step.length >= want) { say(MSG.stepCount(want), 'bad'); return; }
       stepPending = col;
-      say(UI.stepPending(columnLabel(grid, col)), 'info');
+      message = { text: UI.stepPending(at(col)), tone: 'info' };
       drawBoard();
       return;
     }
+    if (col <= stepPending) { say(UI.stepTooEarly(at(stepPending)), 'bad'); return; }
     const pump = stepPending;
+    const res = addStep(grid, s0, pump, col);
+    if (!res.ok) { say(res.error.message, 'bad'); return; }
     stepPending = null;
-    const res = addStep(grid, s, pump, col);
-    if (res.ok) commit(res.state, UI.stepAdded(columnLabel(grid, pump), columnLabel(grid, col)));
-    else { say(res.error.message, 'bad'); drawBoard(); }
+    commit(res.state, UI.stepAdded(at(pump), at(col)));
+  }
+
+  /** Remove the STEP pair pumping or turbining in a column. */
+  function removePairAt(col: number): boolean {
+    const k = history.present.step.findIndex((p) => p.pump === col || p.turbine === col);
+    if (k < 0) return false;
+    const res = removeStep(history.present, k);
+    if (res.ok) commit(res.state, UI.stepRemoved, 'info');
+    return res.ok;
+  }
+
+  /** Is this empty cell a pumped cell or a turbined ghost (eraser target)? */
+  function isStepCell(c: Cell): boolean {
+    const s0 = history.present;
+    const pumps = s0.step.filter((p) => p.pump === c.col).length;
+    const turbs = s0.step.filter((p) => p.turbine === c.col).length;
+    const top = ev.silhouette[c.col] ?? 0;
+    return (pumps > 0 && c.row >= top - pumps && c.row < top) || (turbs > 0 && c.row >= top && c.row < top + turbs);
   }
 
   // ---- pointer input
@@ -328,12 +340,15 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
 
   function onPointerDown(e: PointerEvent) {
     keyboard = false;
-    if ((e.target as Element).closest('[data-act]')) return;
+    const act = (e.target as Element).closest('[data-act]');
+    pressedAct = act ? actKey(act) : null;
+    if (act) return;
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     const c = cellFromEvent(e);
     if (!c) return;
     cursor = c;
     if (erase) { removeAt(c); return; }
+    if (selected?.piece === STEP_KEY) { stepTap(c.col); return; }
     const occupied = barIndexAt(history.present, c.row, c.col) >= 0;
     longPressFired = false;
     if (occupied && e.pointerType !== 'mouse') {
@@ -360,6 +375,12 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
 
   function onPointerUp(e: PointerEvent) {
     clearLongPress();
+    if (pressedAct !== null) {
+      const act = (e.target as Element).closest('[data-act]');
+      if (act && actKey(act) === pressedAct) activate(act);
+      pressedAct = null;
+      return;
+    }
     if (!gesture.drag || !selected) return;
     if (longPressFired) { gesture = cancel(gesture); drawBoard(); return; }
     const c = cellFromEvent(e) ?? gesture.drag.current;
@@ -382,15 +403,13 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     if (c) { gesture = cancel(gesture); removeAt(c); }
   }
 
-  function onBoardClick(e: MouseEvent) {
-    const act = (e.target as Element).closest<SVGElement>('[data-act]');
-    if (act) activate(act);
-  }
+  /** Identity of a pill or tag across re-renders. */
+  const actKey = (el: Element) => ['data-act', 'data-col', 'data-country'].map((a) => el.getAttribute(a) ?? '').join('|');
 
   function activate(el: Element) {
     const col = Number(el.getAttribute('data-col'));
     if (el.getAttribute('data-act') === 'export') cycleExport(el.getAttribute('data-country') ?? '', col);
-    else if (el.getAttribute('data-act') === 'step') stepAt(col);
+    else if (el.getAttribute('data-act') === 'step-tag') removePairAt(col);
     const again = scroll.querySelector<SVGElement>(`[data-act="${el.getAttribute('data-act')}"][data-col="${col}"]${el.getAttribute('data-country') ? `[data-country="${el.getAttribute('data-country')}"]` : ''}`);
     if (again && document.activeElement !== again && el === document.activeElement) again.focus();
   }
@@ -424,6 +443,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       e.preventDefault();
       cursor = c;
       if (erase) { removeAt(c); return; }
+      if (selected?.piece === STEP_KEY) { stepTap(c.col); return; }
       if (!selected) return;
       const r = tap(gesture, c, shapeOf(selected));
       gesture = r.state;
@@ -454,6 +474,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     const tool = btn.getAttribute('data-tool');
     if (tool === 'erase') {
       erase = !erase;
+      stepPending = null;
       gesture = cancel(gesture);
       message = null;
       drawAll();
@@ -505,7 +526,6 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   scroll.addEventListener('pointerup', onPointerUp);
   scroll.addEventListener('pointercancel', onPointerCancel);
   scroll.addEventListener('contextmenu', onContextMenu);
-  scroll.addEventListener('click', onBoardClick);
   wrap.addEventListener('keydown', onKeyDown);
   wrap.addEventListener('focus', onWrapFocus);
   wrap.addEventListener('blur', onWrapBlur);

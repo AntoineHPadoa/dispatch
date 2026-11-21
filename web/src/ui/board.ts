@@ -130,7 +130,8 @@ export function boardGeometry(grid: Grid, style: BoardStyle, cell: number, state
   const need = Math.max(0, ...tags.map((k, c) => (k ? k * 22 + 6 - (rows - tops[c]!) * cell : 0)));
   const topPad = Math.max(8, need);
   const programRows = programLanes(grid).reduce((m, l) => Math.max(m, l.lane + 1), 0);
-  const bottomRows = grid.neighbors.length + (grid.step ? 1 : 0);
+  // STEP: chosen from the order book on screen; on paper, a row of boxes to note it in.
+  const bottomRows = grid.neighbors.length + (grid.step && style === 'B' ? 1 : 0);
   const botPad = 20 + programRows * 26 + bottomRows * 40 + 4;
   return { n, cell, rows, weather, topPad, botPad, width: n * cell + 4, height: rows * cell + topPad + botPad, programRows, bottomRows };
 }
@@ -293,7 +294,8 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   const stack = grid.columns.map(() => 0);
   const barTop = grid.columns.map(() => 0);
   if (A) for (const b of state.bars) for (let c = b.col; c < Math.min(n, b.col + b.len); c++) barTop[c] = Math.max(barTop[c]!, b.row + barHeight(b));
-  const topOf = (c: number) => weather[c]! + Math.max(sil[c]! + turbines[c]!, barTop[c]!);
+  const pendingAt = A ? input.stepPending ?? null : null;
+  const topOf = (c: number) => weather[c]! + Math.max(sil[c]! + turbines[c]! + (pendingAt === c ? 1 : 0), barTop[c]!);
   const tagY = (c: number) => y(topOf(c) - 1) - 24 - stack[c]!++ * 22;
   // A pill centred on `mid`, kept inside the board; a verified pill grows by 10 to hold its tick.
   // `content(textCentre, left)` draws what is inside.
@@ -334,14 +336,40 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     s += `<g class="tag">${pill(x(cl.col) + cell / 2, ty, w, '#fff', A ? '#d9cbd3' : ink, inner, statusOf(i))}</g>`;
   });
   if (A) {
+    // STEP tags: "▲ pompe" over the pumped column, "▼ turbine" over the turbined one, linked by a
+    // faint line; a tap on a tag removes its pair. A pending pump shows a dashed tag.
+    const tagAt = new Map<number, { left: number; right: number; y: number }>();
+    let tags = '';
+    const pending = input.stepPending ?? null;
     for (let c = 0; c < n; c++) {
-      if (!pumps[c] && !turbines[c]) continue;
+      const isPending = pending === c;
+      if (!pumps[c] && !turbines[c] && !isPending) continue;
       const ty = tagY(c);
-      const pump = pumps[c]! > 0;
+      const pump = pumps[c]! > 0 || isPending;
       const full = cell >= 48;
       const label = pump && turbines[c] ? '▲▼' : pump ? (full ? UI.stepPump : '▲') : full ? UI.stepTurbine : '▼';
       const w = full ? Math.max(cell - 8, label.length * 5 + 12) : cell - 8;
-      s += pill(x(c) + cell / 2, ty, w, pump ? '#e3eefa' : '#eef0f3', pump ? PIECE_COLORS.B.ink : '#b9b3bf', (tc) => T(tc, ty + 12.5, label, { size: full ? 8.5 : 9.5 }), null);
+      const mid = x(c) + cell / 2;
+      const left = Math.min(Math.max(mid - w / 2, 0), Math.max(0, W - w));
+      tagAt.set(c, { left, right: left + w, y: ty + 9 });
+      const k = state.step.findIndex((q) => q.pump === c || q.turbine === c);
+      const pair = k >= 0 ? state.step[k] : undefined;
+      const act = input.interactive && pair && !isPending
+        ? ` data-act="step-tag" data-col="${c}" tabindex="0" role="button" aria-label="${esc(UI.stepTagLabel(columnLabel(grid, pair.pump), columnLabel(grid, pair.turbine)))}"` : '';
+      tags += `<g class="tag step-tag${act ? ' act' : ''}"${act}>`
+        + pill(mid, ty, w, pump ? '#e3eefa' : '#eef0f3', pump ? PIECE_COLORS.B.ink : '#b9b3bf', (tc) => T(tc, ty + 12.5, label, { size: full ? 8.5 : 9.5 }), null)
+          .replace('<rect ', isPending ? '<rect stroke-dasharray="3 2" stroke-width="1.6" ' : '<rect ')
+        + '</g>';
+    }
+    for (const q of state.step) {
+      const a = tagAt.get(q.pump);
+      const b = tagAt.get(q.turbine);
+      if (a && b) s += `<path class="step-link" d="M${a.right} ${a.y} L${b.left} ${b.y}" stroke="${PIECE_COLORS.B.ink}" stroke-opacity=".5" stroke-width="1.2" stroke-dasharray="2 3" fill="none" pointer-events="none"/>`;
+    }
+    s += tags;
+    if (pending !== null && pending >= 0 && pending < n) {
+      const { bx, by, w } = box(pending, weather[pending]! + sil[pending]! + turbines[pending]!);
+      s += `<rect class="step-pending" x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" fill-opacity=".6" stroke="${PIECE_COLORS.B.ink}" stroke-opacity=".7" stroke-width="1.6" stroke-dasharray="4 3" pointer-events="none"/>`;
     }
   }
 
@@ -410,26 +438,14 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       s += '</g>';
     }
   });
-  if (grid.step) {
+  if (grid.step && !A) {
     const ry = baseY + grid.neighbors.length * 40;
     s += T(0, ry + 8, UI.stepLine, { anchor: 'start', w: 700, size: 9, color: soft });
     for (let c = 0; c < n; c++) {
       const px = x(c) + 6;
       const w = cell - 12;
       const yy = ry + 14;
-      if (!A) {
-        s += `<rect x="${px + w / 2 - 8}" y="${yy}" width="16" height="16" fill="#fff" stroke="${ink}" stroke-width=".8"/>`;
-        continue;
-      }
-      const p = pumps[c]!;
-      const t = turbines[c]!;
-      const pending = input.stepPending === c;
-      const label = pending ? '▲ ?' : p && t ? '▲▼' : p ? '▲' : t ? '▼' : '·';
-      const act = input.interactive ? ` data-act="step" data-col="${c}"${focus}` : '';
-      const on = p || t || pending;
-      s += `<g class="pill${act ? ' act' : ''}"${act} aria-label="${esc(UI.stepCellLabel(columnLabel(grid, c)))}">`
-        + `<rect x="${px}" y="${yy}" width="${w}" height="18" rx="9" fill="${on ? (p || pending ? '#e3eefa' : '#eef0f3') : '#fbf7f9'}" stroke="${on ? (p || pending ? PIECE_COLORS.B.ink : '#b9b3bf') : '#dccfd7'}"${on ? '' : ' stroke-dasharray="3 3"'}${pending ? ' stroke-width="1.8"' : ''}/>`
-        + T(px + w / 2, yy + 12.5, label, { w: on ? 800 : 700, size: 9, color: on ? ink : '#c3b5be' }) + '</g>';
+      s += `<rect x="${px + w / 2 - 8}" y="${yy}" width="16" height="16" fill="#fff" stroke="${ink}" stroke-width=".8"/>`;
     }
   }
 

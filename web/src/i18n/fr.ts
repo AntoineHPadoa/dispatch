@@ -323,6 +323,12 @@ export const UI = {
   co2Kind: 'Plafond CO₂',
   neighborLine: (name: string, cap: number) => `${name} · ligne de ${cap} ${cap > 1 ? 'blocs' : 'bloc'} par créneau`,
   stepLine: 'STEP · pompage ▲ puis turbinage ▼',
+  stepName: 'STEP',
+  stepPairsToDeduce: 'paires à déduire',
+  pairsLaid: (k: number) => `${k} ${k > 1 ? 'paires posées' : 'paire posée'}`,
+  stepTagLabel: (pump: string, turbine: string) => `Paire STEP : pompage à ${pump}, turbinage à ${turbine}. Touche pour la retirer.`,
+  hintStep: 'STEP : touche le créneau du pompage, puis un créneau plus tard pour le turbinage. Touche une étiquette ▲ ou ▼ pour retirer la paire.',
+  stepTooEarly: (pump: string) => `Le turbinage vient après le pompage de ${pump} : touche un créneau plus tard.`,
   stepPump: '▲ pompe',
   stepTurbine: '▼ turbine',
   exportLabel: (name: string, col: string, value: number, imports: number) =>
