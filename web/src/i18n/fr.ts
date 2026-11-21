@@ -353,8 +353,6 @@ export const UI = {
   dayClues: 'Indices de la journée',
   gridClues: 'Indices sur la grille',
   cluesChecked: (k: number, n: number) => `${k} sur ${n} ${k > 1 ? 'vérifiés' : 'vérifié'}`,
-  gridCluesNote: 'Les indices liés à un créneau sont dessinés sur la grille : prix, relevés, programmes, flux.',
-  allClues: 'Tous les indices en texte',
   clueState: { ok: 'vérifié', open: 'à vérifier', broken: 'contredit' } as const,
   chipsLabel: 'Centrales',
   tools: { erase: 'Gomme', undo: 'Annuler', reset: 'Recommencer', print: 'Imprimer' },

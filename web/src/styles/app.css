@@ -46,7 +46,7 @@ button { font: inherit; color: inherit; }
 
 /* ---- game layout ---- */
 .game { display: grid; grid-template-columns: auto minmax(340px, 520px); justify-content: start; grid-template-areas: "head head" "play ttl" "play intro" "play side"; grid-template-rows: auto auto auto 1fr; gap: 18px 30px; align-items: start; }
-.game > .site-head { grid-area: head; margin-bottom: 4px; position: relative; z-index: 2; }
+.game > .site-head { grid-area: head; margin-bottom: 22px; position: relative; z-index: 2; }
 .game > .ttl { grid-area: ttl; display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; }
 .game h1 { font-family: var(--f-title); font-weight: 300; font-size: 1.75rem; letter-spacing: -.02em; margin: 0; line-height: 1.1; }
 .game > .intro { grid-area: intro; }
@@ -130,9 +130,6 @@ button.prow:hover { background: #faf4f7; }
 .pc { display: inline-flex; align-items: center; gap: 4px; font-weight: 800; white-space: nowrap; }
 .pc::before { content: ""; width: 9px; height: 9px; border-radius: 3px; background: var(--dot); }
 .slot { font-weight: 800; font-variant-numeric: tabular-nums; border-bottom: 1.5px dotted var(--soft); }
-.all-clues { margin-top: 12px; font-size: .78rem; }
-.all-clues summary { cursor: pointer; color: var(--soft); font-weight: 700; }
-.all-clues .clues { margin-top: 10px; }
 
 /* ---- CO2 gauge ---- */
 .gauge { display: grid; gap: 6px; }
@@ -257,6 +254,7 @@ body.print-preview #print-root .a4 { box-shadow: 0 2px 18px rgba(59, 51, 64, .12
   .game { grid-template-columns: minmax(0, 1fr); grid-template-areas: none; grid-template-rows: none; gap: 14px; }
   .game > .site-head, .game > .ttl, .game > .intro, .game > .play, .game > .side { grid-area: auto; }
   .game > .play { margin-top: 0; }
+  .game > .site-head { margin-bottom: 12px; }
   .chips { display: flex; gap: 8px; width: 0; min-width: 100%; align-items: center; }
   .chips-row { display: flex; gap: 6px; overflow-x: auto; flex: 1; min-width: 0; padding: 2px 0 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
   .chips-row::-webkit-scrollbar { display: none; }

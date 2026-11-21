@@ -199,19 +199,22 @@ export function clueItem(grid: Grid, clue: Clue, status: ClueReport['status'] | 
     + `<span><span class="kind">${kind}</span><span class="txt">${txt}</span></span>${stateDot(status)}</li>`;
 }
 
-/** Clue card: day clues listed, slot clues counted; every clue in text in a collapsed list. */
+/** Clues in reading order: day clues first (no slot), then slot clues by column; ties keep the grid order. */
+export function orderClues<T extends { clue: Clue }>(reports: readonly T[]): T[] {
+  const col = (c: Clue) => ('col' in c && typeof c.col === 'number' ? c.col : -1);
+  return reports
+    .map((r, i) => ({ r, i }))
+    .sort((a, b) => col(a.r.clue) - col(b.r.clue) || a.i - b.i)
+    .map(({ r }) => r);
+}
+
+/** Clue card: every clue in text, day clues first, then slot clues in time order. */
 export function renderClues(grid: Grid, reports: readonly ClueReport[]): string {
   if (!grid.clues.length) return '';
   const ok = reports.filter((r) => r.status === 'ok').length;
-  const day = reports.filter((r) => isDayClue(r.clue));
-  const slot = reports.filter((r) => !isDayClue(r.clue));
-  const items = (rs: readonly ClueReport[]) => `<ul class="clues">${rs.map((r) => clueItem(grid, r.clue, r.status)).join('')}</ul>`;
-  // Day clues listed, slot clues one click away; without day clues, every clue is listed.
-  const title = day.length ? UI.dayClues : UI.gridClues;
-  const list = items(day.length ? day : reports);
-  const note = day.length && slot.length ? `<p class="note">${esc(UI.gridCluesNote)}</p>` : '';
-  const all = day.length && slot.length ? `<details class="all-clues"><summary>${esc(UI.allClues)}</summary>${items(reports)}</details>` : '';
-  return `<section class="card" aria-label="${esc(title)}"><h2 class="ct">${esc(title)} <small>${esc(UI.cluesChecked(ok, reports.length))}</small></h2>${list}${note}${all}</section>`;
+  const title = reports.some((r) => isDayClue(r.clue)) ? UI.dayClues : UI.gridClues;
+  const list = `<ul class="clues">${orderClues(reports).map((r) => clueItem(grid, r.clue, r.status)).join('')}</ul>`;
+  return `<section class="card" aria-label="${esc(title)}"><h2 class="ct">${esc(title)} <small>${esc(UI.cluesChecked(ok, reports.length))}</small></h2>${list}</section>`;
 }
 
 /** CO2 gauge in cells, split by plant (only when the grid has a cap). */

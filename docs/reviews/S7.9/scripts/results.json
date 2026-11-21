@@ -1,0 +1,512 @@
+[
+ {
+  "name": "[1280] G7 : tous les indices listés, sans repliable",
+  "ok": true,
+  "detail": "6/6 ; titre « Indices sur la grille 2 sur 6 vérifiés »"
+ },
+ {
+  "name": "[1280] G7 : ordre (sans créneau en tête, puis horaire)",
+  "ok": true,
+  "detail": "Flux: À 0h, 1 bloc part vers l’Allemagne. | Prix: À 3h, c’est le nucléaire qui fixe le prix. | Flux: À 6h, 1 bloc part vers l’Allemagne. | Relevé: Relevé de 9h : 4 cases de nucléaire. | Prix: À 12h, c’est le nucléaire qui fixe le prix. | Programme: Un réacteur tourne de 15h à 24h."
+ },
+ {
+  "name": "[1280] G7 : chaque indice a un état",
+  "ok": true,
+  "detail": "vérifié, à vérifier, vérifié, à vérifier, à vérifier, à vérifier"
+ },
+ {
+  "name": "[1280] G7 : indices toujours dessinés sur la grille",
+  "ok": true,
+  "detail": "6 marques"
+ },
+ {
+  "name": "[1280] G7 : logo à la même place qu'à l'accueil",
+  "ok": true,
+  "detail": "accueil 66.0,26.0 ; grille 66.0,26.0"
+ },
+ {
+  "name": "[1280] G7 : marge en-tête → contenu",
+  "ok": true,
+  "detail": "40.0 px jusqu'à .ttl"
+ },
+ {
+  "name": "[1280] G7 : plateau (étiquettes comprises) sous l'en-tête",
+  "ok": true,
+  "detail": "en-tête bas 64.0 ; plus haut élément du plateau 82.0 (écart 18.0)"
+ },
+ {
+  "name": "[1280] G7 : colonne de droite intacte, case haute alignée sur l'eyebrow",
+  "ok": true,
+  "detail": "plateau 66–550 ; colonne 580–1100, 342–934 ; case haute 106.0 / eyebrow 104.0 ; page 982 px"
+ },
+ {
+  "name": "[1280] G7 : aucun scroll horizontal",
+  "ok": true,
+  "detail": "0 px"
+ },
+ {
+  "name": "[1280] G7 : solution posée → tous « vérifié »",
+  "ok": true,
+  "detail": "avant dernière barre : vérifié, vérifié, vérifié, à vérifier, à vérifier, vérifié ; après : vérifié, vérifié, vérifié, vérifié, vérifié, vérifié ; titre « Indices sur la grille 6 sur 6 vérifiés » ; bandeau « Programme bouclé »"
+ },
+ {
+  "name": "[1280] G7 : aucun scroll horizontal (bouclée)",
+  "ok": true,
+  "detail": "0 px"
+ },
+ {
+  "name": "[1280] G7 : aucune erreur JS",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[1280] G10 : tous les indices listés, sans repliable",
+  "ok": true,
+  "detail": "3/3 ; titre « Indices de la journée 0 sur 3 vérifié »"
+ },
+ {
+  "name": "[1280] G10 : ordre (sans créneau en tête, puis horaire)",
+  "ok": true,
+  "detail": "Échanges du jour: Aujourd’hui : 2 blocs exportés, 2 blocs importés. | Relevé: Relevé de 9h : 3 cases de nucléaire. | Relevé: Relevé de 15h : 3 cases de nucléaire."
+ },
+ {
+  "name": "[1280] G10 : chaque indice a un état",
+  "ok": true,
+  "detail": "à vérifier, à vérifier, à vérifier"
+ },
+ {
+  "name": "[1280] G10 : indices toujours dessinés sur la grille",
+  "ok": true,
+  "detail": "4 marques"
+ },
+ {
+  "name": "[1280] G10 : logo à la même place qu'à l'accueil",
+  "ok": true,
+  "detail": "accueil 66.0,26.0 ; grille 66.0,26.0"
+ },
+ {
+  "name": "[1280] G10 : marge en-tête → contenu",
+  "ok": true,
+  "detail": "40.0 px jusqu'à .ttl"
+ },
+ {
+  "name": "[1280] G10 : plateau (étiquettes comprises) sous l'en-tête",
+  "ok": true,
+  "detail": "en-tête bas 64.0 ; plus haut élément du plateau 107.5 (écart 43.5)"
+ },
+ {
+  "name": "[1280] G10 : colonne de droite intacte, case haute alignée sur l'eyebrow",
+  "ok": true,
+  "detail": "plateau 66–550 ; colonne 580–1100, 251–610 ; case haute 106.0 / eyebrow 104.0 ; page 900 px"
+ },
+ {
+  "name": "[1280] G10 : aucun scroll horizontal",
+  "ok": true,
+  "detail": "0 px"
+ },
+ {
+  "name": "[1280] G10 : solution posée → tous « vérifié »",
+  "ok": true,
+  "detail": "avant dernière barre : vérifié, vérifié, vérifié ; après : vérifié, vérifié, vérifié ; titre « Indices de la journée 3 sur 3 vérifiés » ; bandeau « Programme bouclé »"
+ },
+ {
+  "name": "[1280] G10 : aucun scroll horizontal (bouclée)",
+  "ok": true,
+  "detail": "0 px"
+ },
+ {
+  "name": "[1280] G10 : aucune erreur JS",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[1280] G11 : tous les indices listés, sans repliable",
+  "ok": true,
+  "detail": "3/3 ; titre « Indices de la journée 0 sur 3 vérifié »"
+ },
+ {
+  "name": "[1280] G11 : ordre (sans créneau en tête, puis horaire)",
+  "ok": true,
+  "detail": "Échanges du jour: Aujourd’hui : 2 blocs exportés, aucun bloc importé. | Relevé: Relevé de 0h : 1 case de nucléaire. | Relevé: Relevé de 6h : 3 cases de nucléaire."
+ },
+ {
+  "name": "[1280] G11 : chaque indice a un état",
+  "ok": true,
+  "detail": "à vérifier, à vérifier, à vérifier"
+ },
+ {
+  "name": "[1280] G11 : indices toujours dessinés sur la grille",
+  "ok": true,
+  "detail": "4 marques"
+ },
+ {
+  "name": "[1280] G11 : logo à la même place qu'à l'accueil",
+  "ok": true,
+  "detail": "accueil 66.0,26.0 ; grille 66.0,26.0"
+ },
+ {
+  "name": "[1280] G11 : marge en-tête → contenu",
+  "ok": true,
+  "detail": "40.0 px jusqu'à .ttl"
+ },
+ {
+  "name": "[1280] G11 : plateau (étiquettes comprises) sous l'en-tête",
+  "ok": true,
+  "detail": "en-tête bas 64.0 ; plus haut élément du plateau 107.5 (écart 43.5)"
+ },
+ {
+  "name": "[1280] G11 : colonne de droite intacte, case haute alignée sur l'eyebrow",
+  "ok": true,
+  "detail": "plateau 66–550 ; colonne 580–1100, 251–610 ; case haute 106.0 / eyebrow 104.0 ; page 900 px"
+ },
+ {
+  "name": "[1280] G11 : aucun scroll horizontal",
+  "ok": true,
+  "detail": "0 px"
+ },
+ {
+  "name": "[1280] G11 : solution posée → tous « vérifié »",
+  "ok": true,
+  "detail": "avant dernière barre : vérifié, vérifié, vérifié ; après : vérifié, vérifié, vérifié ; titre « Indices de la journée 3 sur 3 vérifiés » ; bandeau « Programme bouclé »"
+ },
+ {
+  "name": "[1280] G11 : aucun scroll horizontal (bouclée)",
+  "ok": true,
+  "detail": "0 px"
+ },
+ {
+  "name": "[1280] G11 : aucune erreur JS",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[375] G7 : tous les indices listés, sans repliable",
+  "ok": true,
+  "detail": "6/6 ; titre « Indices sur la grille 2 sur 6 vérifiés »"
+ },
+ {
+  "name": "[375] G7 : ordre (sans créneau en tête, puis horaire)",
+  "ok": true,
+  "detail": "Flux: À 0h, 1 bloc part vers l’Allemagne. | Prix: À 3h, c’est le nucléaire qui fixe le prix. | Flux: À 6h, 1 bloc part vers l’Allemagne. | Relevé: Relevé de 9h : 4 cases de nucléaire. | Prix: À 12h, c’est le nucléaire qui fixe le prix. | Programme: Un réacteur tourne de 15h à 24h."
+ },
+ {
+  "name": "[375] G7 : chaque indice a un état",
+  "ok": true,
+  "detail": "vérifié, à vérifier, vérifié, à vérifier, à vérifier, à vérifier"
+ },
+ {
+  "name": "[375] G7 : indices toujours dessinés sur la grille",
+  "ok": true,
+  "detail": "6 marques"
+ },
+ {
+  "name": "[375] G7 : logo à la même place qu'à l'accueil",
+  "ok": true,
+  "detail": "accueil 16.0,18.0 ; grille 16.0,18.0"
+ },
+ {
+  "name": "[375] G7 : marge en-tête → contenu",
+  "ok": true,
+  "detail": "26.0 px jusqu'à .ttl"
+ },
+ {
+  "name": "[375] G7 : plateau (étiquettes comprises) sous l'en-tête",
+  "ok": true,
+  "detail": "en-tête bas 56.0 ; plus haut élément du plateau 417.3 (écart 361.3)"
+ },
+ {
+  "name": "[375] G7 : aucun scroll horizontal",
+  "ok": true,
+  "detail": "0 px"
+ },
+ {
+  "name": "[375] G7 : solution posée → tous « vérifié »",
+  "ok": true,
+  "detail": "avant dernière barre : vérifié, vérifié, vérifié, à vérifier, à vérifier, vérifié ; après : vérifié, vérifié, vérifié, vérifié, vérifié, vérifié ; titre « Indices sur la grille 6 sur 6 vérifiés » ; bandeau « Programme bouclé »"
+ },
+ {
+  "name": "[375] G7 : aucun scroll horizontal (bouclée)",
+  "ok": true,
+  "detail": "0 px"
+ },
+ {
+  "name": "[375] G7 : aucune erreur JS",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[375] G10 : tous les indices listés, sans repliable",
+  "ok": true,
+  "detail": "3/3 ; titre « Indices de la journée 0 sur 3 vérifié »"
+ },
+ {
+  "name": "[375] G10 : ordre (sans créneau en tête, puis horaire)",
+  "ok": true,
+  "detail": "Échanges du jour: Aujourd’hui : 2 blocs exportés, 2 blocs importés. | Relevé: Relevé de 9h : 3 cases de nucléaire. | Relevé: Relevé de 15h : 3 cases de nucléaire."
+ },
+ {
+  "name": "[375] G10 : chaque indice a un état",
+  "ok": true,
+  "detail": "à vérifier, à vérifier, à vérifier"
+ },
+ {
+  "name": "[375] G10 : indices toujours dessinés sur la grille",
+  "ok": true,
+  "detail": "4 marques"
+ },
+ {
+  "name": "[375] G10 : logo à la même place qu'à l'accueil",
+  "ok": true,
+  "detail": "accueil 16.0,18.0 ; grille 16.0,18.0"
+ },
+ {
+  "name": "[375] G10 : marge en-tête → contenu",
+  "ok": true,
+  "detail": "26.0 px jusqu'à .ttl"
+ },
+ {
+  "name": "[375] G10 : plateau (étiquettes comprises) sous l'en-tête",
+  "ok": true,
+  "detail": "en-tête bas 56.0 ; plus haut élément du plateau 288.2 (écart 232.2)"
+ },
+ {
+  "name": "[375] G10 : aucun scroll horizontal",
+  "ok": true,
+  "detail": "0 px"
+ },
+ {
+  "name": "[375] G10 : solution posée → tous « vérifié »",
+  "ok": true,
+  "detail": "avant dernière barre : vérifié, vérifié, vérifié ; après : vérifié, vérifié, vérifié ; titre « Indices de la journée 3 sur 3 vérifiés » ; bandeau « Programme bouclé »"
+ },
+ {
+  "name": "[375] G10 : aucun scroll horizontal (bouclée)",
+  "ok": true,
+  "detail": "0 px"
+ },
+ {
+  "name": "[375] G10 : aucune erreur JS",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[375] G11 : tous les indices listés, sans repliable",
+  "ok": true,
+  "detail": "3/3 ; titre « Indices de la journée 0 sur 3 vérifié »"
+ },
+ {
+  "name": "[375] G11 : ordre (sans créneau en tête, puis horaire)",
+  "ok": true,
+  "detail": "Échanges du jour: Aujourd’hui : 2 blocs exportés, aucun bloc importé. | Relevé: Relevé de 0h : 1 case de nucléaire. | Relevé: Relevé de 6h : 3 cases de nucléaire."
+ },
+ {
+  "name": "[375] G11 : chaque indice a un état",
+  "ok": true,
+  "detail": "à vérifier, à vérifier, à vérifier"
+ },
+ {
+  "name": "[375] G11 : indices toujours dessinés sur la grille",
+  "ok": true,
+  "detail": "4 marques"
+ },
+ {
+  "name": "[375] G11 : logo à la même place qu'à l'accueil",
+  "ok": true,
+  "detail": "accueil 16.0,18.0 ; grille 16.0,18.0"
+ },
+ {
+  "name": "[375] G11 : marge en-tête → contenu",
+  "ok": true,
+  "detail": "26.0 px jusqu'à .ttl"
+ },
+ {
+  "name": "[375] G11 : plateau (étiquettes comprises) sous l'en-tête",
+  "ok": true,
+  "detail": "en-tête bas 56.0 ; plus haut élément du plateau 288.2 (écart 232.2)"
+ },
+ {
+  "name": "[375] G11 : aucun scroll horizontal",
+  "ok": true,
+  "detail": "0 px"
+ },
+ {
+  "name": "[375] G11 : solution posée → tous « vérifié »",
+  "ok": true,
+  "detail": "avant dernière barre : vérifié, vérifié, vérifié ; après : vérifié, vérifié, vérifié ; titre « Indices de la journée 3 sur 3 vérifiés » ; bandeau « Programme bouclé »"
+ },
+ {
+  "name": "[375] G11 : aucun scroll horizontal (bouclée)",
+  "ok": true,
+  "detail": "0 px"
+ },
+ {
+  "name": "[375] G11 : aucune erreur JS",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[320] G7 : tous les indices listés, sans repliable",
+  "ok": true,
+  "detail": "6/6 ; titre « Indices sur la grille 2 sur 6 vérifiés »"
+ },
+ {
+  "name": "[320] G7 : ordre (sans créneau en tête, puis horaire)",
+  "ok": true,
+  "detail": "Flux: À 0h, 1 bloc part vers l’Allemagne. | Prix: À 3h, c’est le nucléaire qui fixe le prix. | Flux: À 6h, 1 bloc part vers l’Allemagne. | Relevé: Relevé de 9h : 4 cases de nucléaire. | Prix: À 12h, c’est le nucléaire qui fixe le prix. | Programme: Un réacteur tourne de 15h à 24h."
+ },
+ {
+  "name": "[320] G7 : chaque indice a un état",
+  "ok": true,
+  "detail": "vérifié, à vérifier, vérifié, à vérifier, à vérifier, à vérifier"
+ },
+ {
+  "name": "[320] G7 : indices toujours dessinés sur la grille",
+  "ok": true,
+  "detail": "6 marques"
+ },
+ {
+  "name": "[320] G7 : logo à la même place qu'à l'accueil",
+  "ok": true,
+  "detail": "accueil 16.0,18.0 ; grille 16.0,18.0"
+ },
+ {
+  "name": "[320] G7 : marge en-tête → contenu",
+  "ok": true,
+  "detail": "26.0 px jusqu'à .ttl"
+ },
+ {
+  "name": "[320] G7 : plateau (étiquettes comprises) sous l'en-tête",
+  "ok": true,
+  "detail": "en-tête bas 56.0 ; plus haut élément du plateau 423.0 (écart 367.0)"
+ },
+ {
+  "name": "[320] G7 : aucun scroll horizontal",
+  "ok": true,
+  "detail": "0 px"
+ },
+ {
+  "name": "[320] G7 : solution posée → tous « vérifié »",
+  "ok": true,
+  "detail": "avant dernière barre : vérifié, vérifié, vérifié, à vérifier, à vérifier, vérifié ; après : vérifié, vérifié, vérifié, vérifié, vérifié, vérifié ; titre « Indices sur la grille 6 sur 6 vérifiés » ; bandeau « Programme bouclé »"
+ },
+ {
+  "name": "[320] G7 : aucun scroll horizontal (bouclée)",
+  "ok": true,
+  "detail": "0 px"
+ },
+ {
+  "name": "[320] G7 : aucune erreur JS",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[320] G10 : tous les indices listés, sans repliable",
+  "ok": true,
+  "detail": "3/3 ; titre « Indices de la journée 0 sur 3 vérifié »"
+ },
+ {
+  "name": "[320] G10 : ordre (sans créneau en tête, puis horaire)",
+  "ok": true,
+  "detail": "Échanges du jour: Aujourd’hui : 2 blocs exportés, 2 blocs importés. | Relevé: Relevé de 9h : 3 cases de nucléaire. | Relevé: Relevé de 15h : 3 cases de nucléaire."
+ },
+ {
+  "name": "[320] G10 : chaque indice a un état",
+  "ok": true,
+  "detail": "à vérifier, à vérifier, à vérifier"
+ },
+ {
+  "name": "[320] G10 : indices toujours dessinés sur la grille",
+  "ok": true,
+  "detail": "4 marques"
+ },
+ {
+  "name": "[320] G10 : logo à la même place qu'à l'accueil",
+  "ok": true,
+  "detail": "accueil 16.0,18.0 ; grille 16.0,18.0"
+ },
+ {
+  "name": "[320] G10 : marge en-tête → contenu",
+  "ok": true,
+  "detail": "26.0 px jusqu'à .ttl"
+ },
+ {
+  "name": "[320] G10 : plateau (étiquettes comprises) sous l'en-tête",
+  "ok": true,
+  "detail": "en-tête bas 56.0 ; plus haut élément du plateau 281.2 (écart 225.2)"
+ },
+ {
+  "name": "[320] G10 : aucun scroll horizontal",
+  "ok": true,
+  "detail": "0 px"
+ },
+ {
+  "name": "[320] G10 : solution posée → tous « vérifié »",
+  "ok": true,
+  "detail": "avant dernière barre : vérifié, vérifié, vérifié ; après : vérifié, vérifié, vérifié ; titre « Indices de la journée 3 sur 3 vérifiés » ; bandeau « Programme bouclé »"
+ },
+ {
+  "name": "[320] G10 : aucun scroll horizontal (bouclée)",
+  "ok": true,
+  "detail": "0 px"
+ },
+ {
+  "name": "[320] G10 : aucune erreur JS",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "[320] G11 : tous les indices listés, sans repliable",
+  "ok": true,
+  "detail": "3/3 ; titre « Indices de la journée 0 sur 3 vérifié »"
+ },
+ {
+  "name": "[320] G11 : ordre (sans créneau en tête, puis horaire)",
+  "ok": true,
+  "detail": "Échanges du jour: Aujourd’hui : 2 blocs exportés, aucun bloc importé. | Relevé: Relevé de 0h : 1 case de nucléaire. | Relevé: Relevé de 6h : 3 cases de nucléaire."
+ },
+ {
+  "name": "[320] G11 : chaque indice a un état",
+  "ok": true,
+  "detail": "à vérifier, à vérifier, à vérifier"
+ },
+ {
+  "name": "[320] G11 : indices toujours dessinés sur la grille",
+  "ok": true,
+  "detail": "4 marques"
+ },
+ {
+  "name": "[320] G11 : logo à la même place qu'à l'accueil",
+  "ok": true,
+  "detail": "accueil 16.0,18.0 ; grille 16.0,18.0"
+ },
+ {
+  "name": "[320] G11 : marge en-tête → contenu",
+  "ok": true,
+  "detail": "26.0 px jusqu'à .ttl"
+ },
+ {
+  "name": "[320] G11 : plateau (étiquettes comprises) sous l'en-tête",
+  "ok": true,
+  "detail": "en-tête bas 56.0 ; plus haut élément du plateau 281.2 (écart 225.2)"
+ },
+ {
+  "name": "[320] G11 : aucun scroll horizontal",
+  "ok": true,
+  "detail": "0 px"
+ },
+ {
+  "name": "[320] G11 : solution posée → tous « vérifié »",
+  "ok": true,
+  "detail": "avant dernière barre : vérifié, vérifié, vérifié ; après : vérifié, vérifié, vérifié ; titre « Indices de la journée 3 sur 3 vérifiés » ; bandeau « Programme bouclé »"
+ },
+ {
+  "name": "[320] G11 : aucun scroll horizontal (bouclée)",
+  "ok": true,
+  "detail": "0 px"
+ },
+ {
+  "name": "[320] G11 : aucune erreur JS",
+  "ok": true,
+  "detail": ""
+ }
+]
