@@ -1,0 +1,296 @@
+[
+ {
+  "id": "I1",
+  "mode": "T",
+  "got": "daily href #/grille/10 -> /grille/10",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I2",
+  "mode": "T",
+  "got": "card 'Le creux coupe le ruban'/Moyen -> 'Le creux coupe le ruban'/Moyen (TUTORIEL 4 SUR 7) /grille/4",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I3",
+  "mode": "T",
+  "got": "url / ; card 1: TUTORIEL 1 Facile Poser l’inventaire Cases interchangeables En cours Reprendre",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I4",
+  "mode": "T",
+  "got": "back -> /grille/1 (bars saved: 1) ; forward -> /",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I5",
+  "mode": "T",
+  "got": "/imprimer/tout with 11 sheets",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I6",
+  "mode": "T",
+  "got": "#/grille/99:home #/xyz:home #/imprimer/42:home",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I7",
+  "mode": "T",
+  "got": "aria-pressed=true ; msg: Glisse sur la grille pour poser la centrale choisie (ou touche la case de départ puis celle d’arrivée). Change de centrale dans le carnet.",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I8",
+  "mode": "T",
+  "got": "during: 1 preview stroke #5f9e78 'Nucléaire de 0h à 24h, ligne 1 : la pose tient.' ; after: 1 bar, msg 'Nucléaire de 0h à 24h, ligne 1 : la pose tient.', book 'Nucléaire ruban de 3 à 6'",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I9",
+  "mode": "T",
+  "got": "during: 'Gaz de 0h à 8h, ligne 3 : hors de la silhouette à 0h.' ; after: 'Gaz de 0h à 8h, ligne 3 : hors de la silhouette à 0h.' bars=1 tone=msg bad",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I10",
+  "mode": "T",
+  "got": "1st: 'Nucléaire à 0h, ligne 2 : touche maintenant la case d’arrivée.' anchor=0 preview=0 ; 2nd: 'Nucléaire de 0h à 24h, ligne 2 : la pose tient.' bars=2",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I12",
+  "mode": "T",
+  "got": "'TAC à 20h, ligne 3 : la pose tient.' bars=3",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I13",
+  "mode": "T",
+  "got": "'Nucléaire de 8h à 16h, ligne 3 : la barre de nucléaire doit faire 3 à 6 créneaux.'",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I14",
+  "mode": "T",
+  "got": "G#2: 'Gaz de 0h à 8h, ligne 2 : plus de barre de gaz de 2 créneaux dans l’inventaire.'",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I15",
+  "mode": "T",
+  "got": "during 'TAC à 8h, ligne 2 : remplace 1 barre de nucléaire.' ; bars 4->4 after, undo once -> 4 ; msg 'Dernière action annulée.'",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I16",
+  "mode": "T",
+  "got": "'Retiré : Gaz de 8h à 16h, ligne 3.' bars=3",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I17",
+  "mode": "T",
+  "got": "empty inside silhouette: 'Aucune centrale sur cette case.' ; outside: 'Aucune centrale sur cette case.'",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I19",
+  "mode": "T",
+  "got": "bars 3->2 'Retiré : Nucléaire de 0h à 24h, ligne 2.' anchor=0",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I20",
+  "mode": "T",
+  "got": "undo: bars 3->4 'Glisse sur la grille pour poser la centrale choisie (ou touche la case de départ puis celle d’arrivée). Change de centrale dans le carnet.' ; disabled on fresh grid=True ; after reload=True",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I21",
+  "mode": "T",
+  "got": "bars 4 -> reset 0 'Grille remise à zéro. « Annuler » la rétablit.' -> undo 4",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I22",
+  "mode": "T",
+  "got": "exports {'DE': [0, 0, 0, 0, 1, 0, 0, 0]} then {'DE': [0, 0, 0, 0, 0, 0, 0, 0]} ; label 'Allemagne, 12h : 1 exporté. Touche pour changer l’export.' ; svg h 282->282",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I24",
+  "mode": "T",
+  "got": "'Import d’Allemagne à 21h, ligne 1 : la pose tient.' ; book 'Import Allemagne, 1 case 1 case posée'",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I23",
+  "mode": "T",
+  "got": "'Ligne vers l’Allemagne saturée à 21h.' tone=msg bad",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I25",
+  "mode": "T",
+  "got": "'Flux publié à 0h : verrouillé.' label 'Allemagne, 0h : flux publié, verrouillé.' exports changed=False",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I26",
+  "mode": "T",
+  "got": "hint 'STEP : touche le créneau du pompage, puis un créneau plus tard pour le turbinage. Touche une étiquette ▲ ou ▼ pour retirer la paire.' ; 1st 'Pompage à 9h : touche un créneau plus tard pour le turbinage.' ; 2nd 'STEP : pompage à 9h, turbinage à 12h.' ; tags=2",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I27",
+  "mode": "T",
+  "got": "'Le turbinage vient après le pompage de 9h : touche un créneau plus tard.'",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I29",
+  "mode": "T",
+  "got": "'Toutes les paires STEP sont déjà posées (1).'",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I30",
+  "mode": "T",
+  "got": "tag: 'Paire STEP retirée.' pairs=0",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I28",
+  "mode": "T",
+  "got": "'Pas de pompage sur le dernier créneau : aucun turbinage ne peut suivre.'",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I30",
+  "mode": "T",
+  "got": "gomme sur la case pompée: 'Paire STEP retirée.' pairs=0",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I31",
+  "mode": "T",
+  "got": "grid 2 TAC at 16h: 'TAC à 16h, ligne 3 : contredit l’indice « 16h : le barrage fixe le prix ».' tone=msg bad ; clue state: contredit ; counter '0 sur 1 vérifié'",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I31",
+  "mode": "T",
+  "got": "grid 7 counter: start '2 sur 6 vérifiés', before last '4 sur 6 vérifiés', end '6 sur 6 vérifiés' ; banner=True",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I40",
+  "mode": "T",
+  "got": "1st click on 'Grille suivante' -> /grille/8",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I32",
+  "mode": "T",
+  "got": "bars kept=1/1 ; '1 centrale ne tient plus : hachurée en rouge. Hors de la silhouette à 0h.' tone=msg bad ; hatch elems=7",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I33",
+  "mode": "T",
+  "got": "'Programme bouclé | Toutes les cases sont couvertes. 13 s. | Grille suivante' ; print buttons in banner visible=0 ; toolbar print hidden=True",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I35",
+  "mode": "T",
+  "got": "'Grille suivante' on grid 1 -> /grille/2",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I34",
+  "mode": "T",
+  "got": "'TAC à 16h, ligne 3 : contredit l’indice « 16h : le barrage fixe le prix ».' tone=msg bad banner=0",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I35",
+  "mode": "T",
+  "got": "grid 11 last link -> /",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I36",
+  "mode": "T",
+  "got": "details open=True items=3",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I37",
+  "mode": "T",
+  "got": "toolbar print visible=False",
+  "ok": true,
+  "note": "masqué sous 600 px (décision)"
+ },
+ {
+  "id": "I38",
+  "mode": "T",
+  "got": "grid 10: bars=1 exports={'DE': [0, 0, 0, 0, 1, 0, 0, 0]} elapsed 5177->7995 ; grid 7 done after reload banner=1 step=1",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "I41",
+  "mode": "T",
+  "got": "after drag, 1st tap: preview=0 'Nucléaire à 0h, ligne 2 : touche maintenant la case d’arrivée.'",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "id": "2.7",
+  "mode": "T",
+  "got": "2nd tap on anchor: 'Glisse sur la grille pour poser la centrale choisie (ou touche la case de départ puis celle d’arrivée). Change de centrale dans le carnet.' tone=msg info",
+  "ok": true,
+  "note": ""
+ }
+]
