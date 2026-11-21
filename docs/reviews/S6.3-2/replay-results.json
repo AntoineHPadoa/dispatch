@@ -1,0 +1,122 @@
+[
+ [
+  "I40 S « Grille suivante » au 1er clic",
+  "#/grille/2",
+  "#/grille/2",
+  "OK"
+ ],
+ [
+  "I40 S « Imprimer » de la bannière au 1er clic",
+  "1 appel à window.print()",
+  "1 appel(s)",
+  "OK"
+ ],
+ [
+  "2.6 S aide à l'ouverture",
+  "« Glisse sur la grille pour poser la centrale choisie… »",
+  "msg info | Glisse sur la grille pour poser la centrale choisie (ou touche la case de départ puis celle d’arrivée). Change de centrale dans le carnet.",
+  "OK"
+ ],
+ [
+  "I41 S 1er toucher après un glisser",
+  "ancre seule, « touche maintenant la case d’arrivée », 0 aperçu",
+  "msg info | Nucléaire à 0h, ligne 2 : touche maintenant la case d’arrivée. ; 0 aperçu",
+  "OK"
+ ],
+ [
+  "2.7 S 2e toucher sur l'ancre",
+  "ancre retirée, aide (ton info), pas de refus",
+  "msg info | Glisse sur la grille pour poser la centrale choisie (ou touche la case de départ puis celle d’arrivée). Change de centrale dans le carnet.",
+  "OK"
+ ],
+ [
+  "I11 S survol après ancre",
+  "aperçu et « la pose tient »",
+  "msg ok | Nucléaire de 0h à 24h, ligne 2 : la pose tient. ; 1 aperçu",
+  "OK"
+ ],
+ [
+  "I10 S pose en deux touchers",
+  "« Nucléaire de 0h à 24h, ligne 2 : la pose tient. »",
+  "msg ok | Nucléaire de 0h à 24h, ligne 2 : la pose tient.",
+  "OK"
+ ],
+ [
+  "2.5 S message de retrait",
+  "« Retiré : Nucléaire de 0h à 24h, ligne 2. »",
+  "msg info | Retiré : Nucléaire de 0h à 24h, ligne 2.",
+  "OK"
+ ],
+ [
+  "2.4 S TAC sous « € Barr. »",
+  "pose faite, message rouge « contredit l’indice »",
+  "msg bad | TAC à 16h, ligne 1 : contredit l’indice « 16h : le barrage fixe le prix ».",
+  "OK"
+ ],
+ [
+  "I40 T « Grille suivante » au 1er clic",
+  "#/grille/2",
+  "#/grille/2",
+  "OK"
+ ],
+ [
+  "2.3 T « Imprimer » de la bannière masqué à 375 px",
+  "masqué",
+  "masqué",
+  "OK"
+ ],
+ [
+  "2.6 T aide à l'ouverture",
+  "« Glisse sur la grille pour poser la centrale choisie… »",
+  "msg info | Glisse sur la grille pour poser la centrale choisie (ou touche la case de départ puis celle d’arrivée). Change de centrale dans le carnet.",
+  "OK"
+ ],
+ [
+  "I41 T 1er toucher après un glisser",
+  "ancre seule, « touche maintenant la case d’arrivée », 0 aperçu",
+  "msg info | Nucléaire à 0h, ligne 2 : touche maintenant la case d’arrivée. ; 0 aperçu",
+  "OK"
+ ],
+ [
+  "2.7 T 2e toucher sur l'ancre",
+  "ancre retirée, aide (ton info), pas de refus",
+  "msg info | Glisse sur la grille pour poser la centrale choisie (ou touche la case de départ puis celle d’arrivée). Change de centrale dans le carnet.",
+  "OK"
+ ],
+ [
+  "I10 T pose en deux touchers",
+  "« Nucléaire de 0h à 24h, ligne 2 : la pose tient. »",
+  "msg ok | Nucléaire de 0h à 24h, ligne 2 : la pose tient.",
+  "OK"
+ ],
+ [
+  "2.5 T message de retrait",
+  "« Retiré : Nucléaire de 0h à 24h, ligne 2. »",
+  "msg info | Retiré : Nucléaire de 0h à 24h, ligne 2.",
+  "OK"
+ ],
+ [
+  "2.4 T TAC sous « € Barr. »",
+  "pose faite, message rouge « contredit l’indice »",
+  "msg bad | TAC à 16h, ligne 1 : contredit l’indice « 16h : le barrage fixe le prix ».",
+  "OK"
+ ],
+ [
+  "I39 S clavier : Entrée deux fois",
+  "aperçu puis pose",
+  "msg ok | Nucléaire de 0h à 24h, ligne 1 : la pose tient. → msg ok | Nucléaire de 0h à 24h, ligne 1 : la pose tient.",
+  "OK"
+ ],
+ [
+  "2.7 S clavier : Entrée deux fois sur la même case",
+  "ancre retirée, aide",
+  "msg info | Glisse sur la grille pour poser la centrale choisie (ou touche la case de départ puis celle d’arrivée). Change de centrale dans le carnet.",
+  "OK"
+ ],
+ [
+  "I39 S curseur caché au blur",
+  "curseur visible au clavier, caché après un clic hors du plateau",
+  "avant : visible, après : caché",
+  "OK"
+ ]
+]

@@ -284,8 +284,9 @@ export function placementLabel(grid: Grid, piece: string, country: string | unde
 export function durationText(ms: number): string {
   const s = Math.max(0, Math.round(ms / 1000));
   const m = Math.floor(s / 60);
-  if (m >= 60) return `${Math.floor(m / 60)} h ${m % 60} min`;
-  return m ? `${m} min ${s % 60} s` : `${s} s`;
+  // Non-breaking spaces: the duration never wraps inside a sentence.
+  if (m >= 60) return `${Math.floor(m / 60)}\u00a0h\u00a0${m % 60}\u00a0min`;
+  return m ? `${m}\u00a0min\u00a0${s % 60}\u00a0s` : `${s}\u00a0s`;
 }
 
 export const UI = {
@@ -317,7 +318,7 @@ export const UI = {
   techniqueOfDay: 'Technique du jour',
   instructions: 'Consigne',
   book: 'Carnet d’ordres',
-  bookHint: 'choisis une centrale, puis glisse sur la grille',
+  bookHint: 'touche une centrale pour la choisir',
   available: 'Centrales disponibles',
   availableHint: 'formes autorisées, quantités à déduire',
   importName: 'Import',
@@ -359,8 +360,9 @@ export const UI = {
   lockedTap: (col: string) => `Flux publié à ${col} : verrouillé.`,
   stepCellLabel: (col: string) => `STEP à ${col}`,
   /** Idle hint: `list` when the grid has no order book, `exports` when it has a neighbor line. */
-  hintChoose: (list: boolean, exports: boolean) => `Choisis une centrale dans ${list ? 'la liste' : 'le carnet'}, puis glisse sur la grille`
-    + ` (ou touche la case de départ puis celle d’arrivée).${exports ? ' Exporte en touchant les pastilles sous la grille.' : ''}`,
+  hintChoose: (list: boolean, exports: boolean) => 'Glisse sur la grille pour poser la centrale choisie'
+    + ` (ou touche la case de départ puis celle d’arrivée). Change de centrale dans ${list ? 'la liste' : 'le carnet'}.`
+    + `${exports ? ' Exporte en touchant les pastilles sous la grille.' : ''}`,
   hintSecondTap: (label: string) => `${label} : touche maintenant la case d’arrivée.`,
   hintErase: 'Gomme : touche une centrale pour la retirer.',
   poseOk: (label: string) => `${label} : la pose tient.`,
@@ -379,7 +381,9 @@ export const UI = {
   },
   poseOver: (label: string, replaces: string) => `${label} : ${replaces.charAt(0).toLowerCase()}${replaces.slice(1)}.`,
   poseBad: (label: string, why: string) => `${label} : ${why.charAt(0).toLowerCase()}${why.slice(1)}`,
-  removed: (label: string) => `${label} retirée.`,
+  removed: (label: string) => `Retiré : ${label}.`,
+  /** A pose that turns a clue to contradicted; `clue` is its short text ("16h : le barrage fixe le prix"). */
+  poseContradicts: (label: string, clue: string) => `${label} : contredit l’indice « ${clue.replace(/\.$/, '')} ».`,
   undone: 'Dernière action annulée.',
   nothingToUndo: 'Rien à annuler.',
   resetDone: 'Grille remise à zéro. « Annuler » la rétablit.',

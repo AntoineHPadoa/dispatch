@@ -4,13 +4,15 @@
  *   each change.
  * - Remove a plant with the eraser, a right click or a long press; invalid plants stay on the
  *   board, hatched in red, until the player removes them.
+ * - The message slot is rewritten only when its HTML changes: a redraw never replaces a banner
+ *   link under a pointer that is pressing it.
  */
 import type { Grid, Placement } from '../model/grid';
 import {
   barIndexAt, checkPlaceOver, evaluate, newGame, placeOver, remove, removeStep, addStep, setExport, exportsAt,
-  importsAt, type Evaluation, type PlayState,
+  importsAt, type ClueReport, type Evaluation, type PlayState,
 } from '../engine';
-import { MSG, TECHNIQUES, UI, columnLabel, countryTo, durationText, placementLabel } from '../i18n/fr';
+import { MSG, TECHNIQUES, UI, columnLabel, countryTo, durationText, placementLabel, slotClueShort } from '../i18n/fr';
 import { lockedExports, renderBoard, cellAt, type BoardGeometry } from './board';
 import {
   cancel, idle, moveTo, press, previewRect, release, tap, type Cell, type GestureState, type Rect, type Shape,
@@ -93,6 +95,18 @@ export function exportTap(grid: Grid, state: PlayState, country: string, col: nu
   return { state: exportsAt(res.state, country, col) !== cur ? res.state : null };
 }
 
+/** First clue a change turned to contradicted (null when none did). */
+export function newlyBroken(before: readonly ClueReport[], after: readonly ClueReport[]): ClueReport | null {
+  return after.find((c, i) => c.status === 'broken' && before[i]?.status !== 'broken') ?? null;
+}
+
+/** Message after a successful pose: a contradicted clue first, else what was replaced, else "it fits". */
+export function poseMessage(grid: Grid, label: string, replaced: readonly { piece: string; country?: string }[],
+  broken: ClueReport | null): { text: string; tone: Tone } {
+  if (broken) return { text: UI.poseContradicts(label, slotClueShort(grid, broken.clue)), tone: 'bad' };
+  return { text: replaced.length ? UI.poseOver(label, UI.replaces(grid, replaced)) : UI.poseOk(label), tone: 'ok' };
+}
+
 export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () => void {
   const saved = ctx.store.get().grids[String(grid.id)];
   const initial = initialState(grid);
@@ -111,6 +125,8 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   let geo: BoardGeometry | null = null;
   let longPress: number | undefined;
   let longPressFired = false;
+  /** Last HTML written to the message slot. */
+  let msgHtml = '';
   /** Pill or tag pressed by a pointer: activated when the same one is released (mouse and touch). */
   let pressedAct: string | null = null;
   const elapsedBase = saved?.elapsedMs ?? 0;
@@ -211,10 +227,11 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   function drawMessage(pv: ReturnType<typeof preview> = preview()) {
     if (ev.solved) {
       const next = nextGrid(ctx.grids, grid.id);
-      msgSlot.innerHTML = `<div class="banner" role="status"><b>${esc(UI.doneTitle)}</b>`
+      const html = `<div class="banner" role="status"><b>${esc(UI.doneTitle)}</b>`
         + `<span>${esc(UI.doneText(grid.clues.length, durationText(elapsed())))}</span></div>`
         + `<div class="tools done-tools">${next ? `<a class="tool on" href="#/grille/${next.id}">${esc(UI.next)}${icon('next')}</a>` : `<a class="tool on" href="#/">${esc(UI.home)}</a>`}`
-        + `<button type="button" class="tool" data-tool="print">${icon('print')}${esc(UI.tools.print)}</button></div>`;
+        + `<button type="button" class="tool print-tool" data-tool="print">${icon('print')}${esc(UI.tools.print)}</button></div>`;
+      setMsg(html);
       return;
     }
     let m = message;
@@ -232,7 +249,13 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
         tone: 'info',
       };
     }
-    msgSlot.innerHTML = `<div class="msg ${m.tone}">${esc(m.text)}</div>`;
+    setMsg(`<div class="msg ${m.tone}">${esc(m.text)}</div>`);
+  }
+
+  function setMsg(html: string) {
+    if (html === msgHtml) return;
+    msgHtml = html;
+    msgSlot.innerHTML = html;
   }
 
   function drawSide() {
@@ -259,11 +282,12 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   }
 
   // ---- state changes
-  function commit(next: PlayState, text: string | null, tone: Tone = 'ok') {
+  function commit(next: PlayState, text: string | null | ((before: Evaluation) => { text: string; tone: Tone }), tone: Tone = 'ok') {
     const wasSolved = ev.solved;
+    const before = ev;
     history = push(history, next);
     afterChange(wasSolved);
-    message = text ? { text, tone } : null;
+    message = typeof text === 'function' ? text(before) : text ? { text, tone } : null;
     drawAll();
   }
 
@@ -287,7 +311,8 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     if (!selected) return;
     const bar = barOf(selected, r);
     const res = placeOver(grid, history.present, bar);
-    if (res.ok) commit(res.state, res.replaced.length ? UI.poseOver(labelOf(bar), UI.replaces(grid, res.replaced)) : UI.poseOk(labelOf(bar)));
+    // A pose that contradicts a clue is allowed (the player may try things), but the message says so.
+    if (res.ok) commit(res.state, (before) => poseMessage(grid, labelOf(bar), res.replaced, newlyBroken(before.clues, ev.clues)));
     else { message = { text: UI.poseBad(labelOf(bar), res.error.message), tone: 'bad' }; drawBoard(); }
   }
 
@@ -417,6 +442,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     const c = cellFromEvent(e) ?? gesture.drag.current;
     const r = release(gesture, c, shapeOf(selected));
     gesture = r.state;
+    if (r.dropped) message = null;
     if (r.commit) layAt(r.commit);
     else drawBoard();
   }
@@ -479,6 +505,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       if (!selected) return;
       const r = tap(gesture, c, shapeOf(selected));
       gesture = r.state;
+      if (r.dropped) message = null;
       if (r.commit) layAt(r.commit);
       else drawBoard();
       return;
@@ -536,7 +563,8 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   }
 
   function onWrapFocus() { keyboard = wrap.matches(':focus-visible'); if (!cursor) cursor = { row: 0, col: 0 }; drawBoard(); }
-  function onWrapBlur() { drawBoard(); }
+  /** Losing focus only hides the keyboard cursor: no redraw when it was not shown. */
+  function onWrapBlur() { if (keyboard && cursor) drawBoard(); }
 
   // ---- size
   function fit() {

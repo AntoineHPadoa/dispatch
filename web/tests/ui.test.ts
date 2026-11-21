@@ -15,7 +15,10 @@ import {
   playOrder, recordState, statusOf, type KeyValueStore,
 } from '../src/ui/progress';
 import { boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard } from '../src/ui/board';
-import { applyLockedExports, boardMessage, displayTitle, exportTap, initialState, nextExportValue } from '../src/ui/game';
+import {
+  applyLockedExports, boardMessage, displayTitle, exportTap, initialState, newlyBroken, nextExportValue, poseMessage,
+} from '../src/ui/game';
+import { durationText } from '../src/i18n/fr';
 import { STEP_KEY, bookEntries, isDayClue, publishedStepPairs, renderBook, renderCo2, richClueText } from '../src/ui/panels';
 import { renderSheet, slotLegend } from '../src/ui/print';
 
@@ -76,6 +79,72 @@ describe('gestures', () => {
     const anchored = tap(idle(), { row: 1, col: 1 }, BAR).state;
     expect(previewRect(anchored, BAR)).toBeNull();
     expect(previewRect(moveTo(anchored, { row: 1, col: 5 }), BAR)).toEqual({ row: 1, col: 1, len: 5, height: 1 });
+  });
+});
+
+describe('gestures after another gesture', () => {
+  it('a drag, then a tap elsewhere: the anchor alone, no stale preview', () => {
+    let g = press(idle(), { row: 0, col: 0 });
+    g = moveTo(g, { row: 0, col: 5 });
+    const dragged = release(g, { row: 0, col: 5 }, BAR);
+    expect(dragged.commit).not.toBeNull();
+    const pressed = press(dragged.state, { row: 1, col: 0 });
+    expect(previewRect(pressed, BAR)).toBeNull();
+    const first = release(pressed, { row: 1, col: 0 }, BAR);
+    expect(first.state.anchor).toEqual({ row: 1, col: 0 });
+    expect(previewRect(first.state, BAR)).toBeNull();
+  });
+
+  it('a drag ending on another row does not leak into the next two-tap preview', () => {
+    let g = press(idle(), { row: 0, col: 0 });
+    g = moveTo(g, { row: 2, col: 1 });
+    const first = tap(release(g, { row: 2, col: 1 }, BAR).state, { row: 1, col: 3 }, BAR);
+    expect(previewRect(first.state, BAR)).toBeNull();
+    expect(previewRect(cancel(moveTo(idle(), { row: 0, col: 4 })), BAR)).toBeNull();
+  });
+
+  it('a second tap on the anchor drops it, with nothing to lay or preview', () => {
+    const a = tap(idle(), { row: 1, col: 0 }, BAR);
+    const again = press(a.state, { row: 1, col: 0 });
+    expect(previewRect(again, BAR)).toBeNull();
+    const r = release(again, { row: 1, col: 0 }, BAR);
+    expect(r.commit).toBeNull();
+    expect(r.dropped).toBe(true);
+    expect(r.state.anchor).toBeNull();
+    expect(tap(a.state, { row: 1, col: 0 }, BAR).dropped).toBe(true);
+    // A one-cell piece is still laid on a single tap.
+    expect(tap(idle(), { row: 1, col: 0 }, CELL).commit).toEqual({ row: 1, col: 0, len: 1, height: 1 });
+  });
+});
+
+describe('pose messages', () => {
+  it('a pose that contradicts a clue says so in the bad tone', () => {
+    const g2 = byId(2);
+    const price = g2.clues.find((c) => c.type === 'price')!;
+    if (price.type !== 'price') throw new Error('price clue expected');
+    const s0 = newGame(g2);
+    const other = (['T', 'G', 'N'] as const).find((p) => p !== price.piece && g2.pieces[p])!;
+    const r = place(g2, s0, { piece: other, row: 0, col: price.col, len: 1 });
+    const before = evaluate(g2, s0).clues;
+    const after = evaluate(g2, r.ok ? r.state : s0).clues;
+    const broken = newlyBroken(before, after);
+    expect(broken?.clue).toBe(price);
+    const m = poseMessage(g2, 'TAC à 16h, ligne 1', [], broken);
+    expect(m.tone).toBe('bad');
+    expect(m.text).toMatch(/^TAC à 16h, ligne 1 : contredit l’indice « .+ fixe le prix »\.$/);
+  });
+
+  it('without a contradiction: replaced plants, else the pose fits', () => {
+    const g1 = byId(1);
+    expect(poseMessage(g1, 'TAC à 8h, ligne 2', [], null)).toEqual({ text: 'TAC à 8h, ligne 2 : la pose tient.', tone: 'ok' });
+    expect(poseMessage(g1, 'TAC à 8h, ligne 2', [{ piece: 'N' }], null).text).toBe('TAC à 8h, ligne 2 : remplace 1 barre de nucléaire.');
+    const ok = [{ clue: byId(2).clues[0]!, text: '', status: 'broken' as const }];
+    expect(newlyBroken(ok, ok)).toBeNull();
+  });
+
+  it('durations never wrap inside', () => {
+    expect(durationText(254000)).toBe('4\u00a0min\u00a014\u00a0s');
+    expect(durationText(9000)).toBe('9\u00a0s');
   });
 });
 
