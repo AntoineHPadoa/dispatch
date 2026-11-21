@@ -16,6 +16,7 @@ from typing import Any
 
 from ortools.sat.python import cp_model
 
+from .. import exact
 from ..board import Puzzle
 from ..exact import Model
 
@@ -26,8 +27,12 @@ def solve_reference(
     exports: dict[str, int] | None = None,
     import_cost: int = 6,
     time_limit: float = 10.0,
+    require: tuple[str, ...] = (),
 ) -> dict[str, Any] | None:
-    """§14 solution of the draft at minimal merit-order cost, or None if infeasible."""
+    """§14 solution of the draft at minimal merit-order cost, or None if infeasible.
+
+    `require`: shape kinds the solution must use at least once (e.g. "ramp_trap", "tall").
+    """
     pz = Puzzle(draft)
 
     def extra(model: Model) -> None:
@@ -41,12 +46,16 @@ def solve_reference(
                 if not isinstance(model.cells[k, c], int):
                     cost.append(100 * unit * model.cells[k, c])
         cost += [rng.randint(0, 20) * x for x in model.x]
+        for kind in require:
+            m.AddBoolOr(
+                [model.x[i] for i, pl in enumerate(pz.placements) if pl.shape.kind == kind] or [m.NewConstant(0)]
+            )
         m.Minimize(sum(cost))
 
     model = Model(pz, extra)
     solver = cp_model.CpSolver()
     solver.parameters.max_time_in_seconds = time_limit
-    solver.parameters.num_workers = 8
+    solver.parameters.num_workers = exact.NUM_WORKERS
     solver.parameters.random_seed = rng.randint(0, 10**6)
     if solver.Solve(model.m) not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
         return None

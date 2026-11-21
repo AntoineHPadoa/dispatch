@@ -19,6 +19,8 @@ from ortools.sat.python import cp_model
 
 from .board import Puzzle
 
+NUM_WORKERS = 8  # CP-SAT workers; the generator's worker processes set 1
+
 
 @dataclass
 class ExactResult:
@@ -181,7 +183,7 @@ def count(g: dict[str, Any] | Puzzle, cap: int = 2, time_limit: float = 30.0, ex
     m = model.m
     solver = cp_model.CpSolver()
     solver.parameters.max_time_in_seconds = time_limit
-    solver.parameters.num_workers = 8
+    solver.parameters.num_workers = NUM_WORKERS
     res = ExactResult(0, False)
     comp_vars = model.comp_vars()
     while res.count < cap:

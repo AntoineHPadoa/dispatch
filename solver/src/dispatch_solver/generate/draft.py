@@ -27,6 +27,19 @@ COUNTRY_NAMES = {
     "BE": "Belgique",
     "CH": "Suisse",
 }
+COUNTRY_ARTICLES = {
+    "Allemagne": "l'",
+    "Espagne": "l'",
+    "Royaume-Uni": "le ",
+    "Italie": "l'",
+    "Belgique": "la ",
+    "Suisse": "la ",
+}
+
+
+def with_article(name: str) -> str:
+    """'Allemagne' -> "l'Allemagne"; unknown names stay as they are."""
+    return COUNTRY_ARTICLES.get(name, "") + name
 
 
 def column_labels(n: int) -> list[str]:

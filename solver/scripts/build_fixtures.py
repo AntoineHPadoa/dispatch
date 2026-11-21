@@ -49,7 +49,7 @@ VALID: dict[str, tuple[dict[str, Any], str, dict[str, int], tuple[str, ...], lis
     ),
     "three-neighbors": (
         dict(
-            residual=[4, 3, 4, 6, 7, 6, 8, 9, 7, 5],
+            residual=[4, 3, 4, 6, 7, 6, 8, 9, 7, 6, 5, 4],
             pieces="NBCGT",
             neighbors=[("DE", 1, 2), ("ES", 1, 0), ("UK", 1, 1)],
             max_cells={"B": 2},
@@ -85,7 +85,7 @@ VALID: dict[str, tuple[dict[str, Any], str, dict[str, int], tuple[str, ...], lis
         ("price", "column", "flow", "exchanges"),
         [],
     ),
-    "length-clues": (dict(residual=[3, 4, 4, 5, 5, 6, 6, 4, 3], pieces="NGT"), "none", {}, ("length", "column"), []),
+    "length-clues": (dict(residual=[3, 4, 4, 5, 5, 6, 6, 4], pieces="NGT"), "none", {}, ("length", "column"), []),
     "partial-totals": (
         dict(residual=[4, 4, 5, 6, 6, 7, 6, 5], pieces="NGT", neighbors=[("DE", 1, 2)]),
         "none",
