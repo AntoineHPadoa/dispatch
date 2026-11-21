@@ -152,10 +152,10 @@
    "rating": 3,
    "label": "Difficile",
    "techniques": [
+    "exhausted",
     "room",
     "share_out",
-    "single_cover",
-    "swap"
+    "single_cover"
    ]
   }
  },
@@ -169,10 +169,10 @@
   ],
   "rating": 3,
   "techniques": [
+   "exhausted",
    "room",
    "share_out",
-   "single_cover",
-   "swap"
+   "single_cover"
   ],
   "composition": {
    "cells": [

@@ -3,8 +3,12 @@
 - Each turn applies every instance of the easiest technique that changes something, then starts again at
   level 1. A technique only removes candidates no solution uses, or places pieces every solution uses.
 - Solved when the silhouette is fixed and the cells of each key in each column are known (the composition):
-  by cells with a single possible key, or by counting (Cases interchangeables).
-- Stuck: not solvable without guessing; the grid is not publishable.
+  by cells with a single possible key, or by counting (Cases interchangeables) from the sure cells and the
+  records of the column only. When the counts need the column height, the step is Compter la colonne.
+- Coal ramps (trapezoid, docs/next/rampe.md §2) have four techniques of their own: the plateau bars the
+  row above, the shoulder calls a cell, a lone cell is a shoulder, two shoulders relay each other.
+- Published exchange totals (inventory or `exchanges` clue) are applied by steps (exhausted / record).
+- Stuck: not solvable without guessing; the grid is not publishable. Hypothèse réfutée has a work budget.
 
 Example: res = Solver(Puzzle(grid)).run(); res.status, res.rating, res.techniques()
 """
@@ -21,6 +25,7 @@ from .trace import RULES, Result, Step
 
 MAX_TILINGS = 4000  # per row, for share_out
 MAX_SHARE_WORK = 300000
+MAX_REFUTE_WORK = 4000  # rule calls of the sub-solvers, per refuted turn
 BIG = 10**6
 SilPred = Callable[[int, int, Exports], bool]  # (column, height to fill, exports) -> keep
 
@@ -41,27 +46,35 @@ class Solver:
             if r.export_total_clue.get(k) is not None
         }
         if st is None:
-            sil = apply_totals(pz, initial_sil(pz), self.inv_totals)
-            st = State(set(range(len(pz.placements))), set(), sil)
+            st = State(set(range(len(pz.placements))), set(), initial_sil(pz))
         self.st = st
         self._cur: Step | None = None
+        self.ramps = [i for i, pl in enumerate(pz.placements) if pl.shape.kind == "ramp_trap"]
+        self.work = 0  # rule calls, for the refutation budget
+        self.done = False  # solved by counting the columns
+        self.budget: int | None = None
         self.rules: list[tuple[int, Callable[[View], bool]]] = [
+            (1, self.r_ramp_plateau),
             (1, self.r_room),
             (1, self.r_exhausted),
             (1, self.r_price_cap),
             (1, self.r_record),
             (1, self.r_flow),
+            (1, self.r_ramp_shoulder),
             (1, self.r_single_cover),
             (1, self.r_single_spot),
             (1, self.r_program),
             (1, self.r_length),
             (1, self.r_silhouette),
+            (2, self.r_ramp_lone),
             (2, self.r_top_price),
             (2, self.r_ribbon),
             (2, self.r_just_enough),
             (2, self.r_column_sum),
+            (2, self.r_column_count),
             (2, self.r_carbon),
             (3, self.r_share_out),
+            (3, self.r_ramp_relay),
             (4, self.r_refuted),
         ]
 
@@ -132,7 +145,6 @@ class Solver:
                 after[si] = new
         if after == before:
             return
-        after = apply_totals(pz, after, self.inv_totals)
         if not after:
             raise Contradiction("no silhouette left")
         self.st.sil = after
@@ -146,20 +158,30 @@ class Solver:
         def hs(sil: Sil, c: int) -> set[int]:
             return {pz.residual[c] + pz.deltas[si][c] + sum(e) for si, cols in sil.items() for e in cols[c]}
 
+        cur = self._cur
         for c in range(pz.n):
             hb, ha = hs(before, c), hs(after, c)
             if len(hb) > 1 and len(ha) == 1:
                 out.append(f"hauteur {next(iter(ha))} à {pz.columns[c]}")
-                self._cur.cells.append((next(iter(ha)), c)) if self._cur else None
+                if cur is not None:
+                    cur.columns.append(c)
+            elif ha != hb and cur is not None:
+                cur.columns.append(c)
         if len(after) == 1 and len(before) > 1:
             s = pz.step_options[next(iter(after))]
             out += [f"pompage {pz.columns[p]} -> turbinage {pz.columns[t]}" for p, t in s]
+            if cur is not None:
+                cur.exchanges.setdefault("step", []).extend([p, t] for p, t in s)
+                cur.columns += [c for pair in s for c in pair]
         for k, nid in enumerate(pz.countries):
             for c in range(pz.n):
                 vb = {e[k] for cols in before.values() for e in cols[c]}
                 va = {e[k] for cols in after.values() for e in cols[c]}
                 if len(vb) > 1 and len(va) == 1:
                     out.append(f"export {nid} {next(iter(va))} à {pz.columns[c]}")
+                    if cur is not None:
+                        cur.exchanges.setdefault(nid, {}).setdefault("export", []).append([c, next(iter(va))])
+                        cur.columns.append(c)
 
         def size(sil: Sil) -> int:
             return sum(len(es) for cols in sil.values() for es in cols)
@@ -192,7 +214,7 @@ class Solver:
             while True:
                 v = View(self.pz, self.st)
                 self.check(v)
-                if self.solved(v):
+                if self.done or self.solved(v):
                     return Result("solved", self.steps, self.composition(v), 0)
                 for level, rule in self.rules:
                     if level <= self.max_level and rule(v):
@@ -202,8 +224,12 @@ class Solver:
         except Contradiction as exc:
             return Result("contradiction", self.steps, None, 0, str(exc))
 
-    def bounds(self, v: View) -> tuple[dict[tuple[str, int], int], dict[tuple[str, int], int]]:
-        """Bounds on the cells of each key in each column, by counting (raises Contradiction)."""
+    def bounds(self, v: View, local: bool = False) -> tuple[dict[tuple[str, int], int], dict[tuple[str, int], int]]:
+        """Bounds on the cells of each key in each column, by counting (raises Contradiction).
+
+        local: only the sure cells and the records of each column (no column height, day total, line or
+        price), what Cases interchangeables may use.
+        """
         pz = self.pz
         lo: dict[tuple[str, int], int] = {}
         hi: dict[tuple[str, int], int] = {}
@@ -213,17 +239,20 @@ class Solver:
                 lo[k, c] = sum(1 for x in col if v.sure(x) and v.dom[x] == frozenset([k]))
                 hi[k, c] = sum(1 for x in col if k in v.dom[x])
         cons: list[tuple[list[tuple[str, int]], int, int]] = []
-        for c in range(pz.n):
-            cons.append(([(k, c) for k in pz.keys], v.minh[c], v.maxh[c]))
         for g in pz.rules.counts:
+            if local and (g.cols is None or len(g.cols) != 1):
+                continue
             keys = [(k, c) for k in g.keys for c in range(pz.n) if g.cols is None or c in g.cols]
             cons.append((keys, g.lo, g.hi if g.hi is not None else BIG))
-        for j, nid in enumerate(pz.countries):
-            if f"I:{nid}" in pz.keys:
-                for c in range(pz.n):
-                    cons.append(([(f"I:{nid}", c)], 0, pz.caps[j] - v.emin[j][c]))
-        for c, p in pz.rules.prices.items():
-            cons.append(([(p, c)], 1, BIG))
+        if not local:
+            for c in range(pz.n):
+                cons.append(([(k, c) for k in pz.keys], v.minh[c], v.maxh[c]))
+            for j, nid in enumerate(pz.countries):
+                if f"I:{nid}" in pz.keys:
+                    for c in range(pz.n):
+                        cons.append(([(f"I:{nid}", c)], 0, pz.caps[j] - v.emin[j][c]))
+            for c, p in pz.rules.prices.items():
+                cons.append(([(p, c)], 1, BIG))
         changed = True
         while changed:
             changed = False
@@ -249,16 +278,31 @@ class Solver:
             return False
         if all(len(v.dom[x]) == 1 for x in v.cells):
             return True
+        lo, hi = self.bounds(v, local=True)
+        if lo != hi:
+            return False
+        self._counted("swap", v, lo)
+        return True
+
+    def r_column_count(self, v: View) -> bool:
+        """Compter la colonne, last form: the column heights fix every count, the order is free."""
+        if not v.single_sil:
+            return False
         lo, hi = self.bounds(v)
         if lo != hi:
             return False
-        self._begin("swap")
+        self._counted("column_sum", v, lo)
+        self.done = True
+        return True
+
+    def _counted(self, rule: str, v: View, lo: dict[tuple[str, int], int]) -> None:
+        self._begin(rule)
         for c in sorted({c for r, c in v.cells if len(v.dom[(r, c)]) > 1}):
             parts = [f"{lo[k, c]} {k}" for k in self.pz.keys if lo.get((k, c))]
             self._cur.effects.append(f"{self.pz.columns[c]} : {', '.join(parts)} (ordre libre)")
             self._cur.cells += [x for x in v.column(c) if len(v.dom[x]) > 1]
+            self._cur.columns.append(c)
         self._end()
-        return True
 
     def composition(self, v: View) -> dict[str, Any]:
         pz = self.pz
@@ -340,9 +384,14 @@ class Solver:
                     continue
                 k = sum(1 for x in pl.cells if (g.cols is None or x[1] in g.cols) and x not in sure_in)
                 if k > left:
+                    if left == 1 and k == 2 and self._lone_case(g, i):
+                        continue  # a lone ramp cell is a shoulder: technique of its own (level 2)
                     hits.add(i)
-            if hits and self._cur is not None and g.clue is not None:
-                self._cur.clues.append(g.clue)
+            if hits and self._cur is not None:
+                if g.clue is not None:
+                    self._cur.clues.append(g.clue)
+                if g.cols is None:
+                    self._cur.scope = "day"
             rm |= hits
         if "inventory" in kinds:
             for (p, w), k in pz.rules.bars.items():
@@ -368,6 +417,8 @@ class Solver:
             if len(self._cur.effects) > before:
                 if g.clue is not None:
                     self._cur.clues.append(g.clue)
+                if g.cols is None:
+                    self._cur.scope = "day"
                 self._cur.cells += possible
                 return
 
@@ -379,22 +430,25 @@ class Solver:
     def _at_most(cap: dict[int, int]) -> SilPred:
         return lambda c, h, e: h <= cap.get(c, BIG)
 
-    def _day_totals(self, v: View) -> None:
-        """Published day totals of exports (exchanges clue): counting over the columns."""
-        if not self.clue_totals:
+    def _day_totals(self, totals: dict[int, int], clues: list[int]) -> None:
+        """Published day totals of exports (inventory or exchanges clue): counting over the columns."""
+        if not totals:
             return
         before = self.st.sil
-        after = apply_totals(self.pz, before, {k: t for k, (t, _) in self.clue_totals.items()})
+        after = apply_totals(self.pz, before, totals)
         if after != before:
             if not after:
                 raise Contradiction("export total out of reach")
-            self.st.sil = apply_totals(self.pz, after, self.inv_totals)
-            self._cur.effects += self._describe_sil(before, self.st.sil) if self.record else ["totals"]
-            self._cur.clues += [ci for _, ci in self.clue_totals.values()]
+            self.st.sil = after
+            self._cur.effects += self._describe_sil(before, after) if self.record else ["totals"]
+            self._cur.clues += clues
+            self._cur.scope = "day"
 
     def r_exhausted(self, v: View) -> bool:
         self._begin("exhausted")
         self._count_hi(v, ("inventory",))
+        if not self._cur.effects:
+            self._day_totals(self.inv_totals, [])
         return self._end()
 
     def r_record(self, v: View) -> bool:
@@ -403,14 +457,24 @@ class Solver:
         if not self._cur.effects:
             self._count_lo(v, ("record",))
         if not self._cur.effects:
-            self._day_totals(v)
+            self._day_totals(
+                {k: t for k, (t, _) in self.clue_totals.items()}, [c for _, c in self.clue_totals.values()]
+            )
         return self._end()
 
     def r_flow(self, v: View) -> bool:
+        pz = self.pz
         self._begin("flow")
         self._count_hi(v, ("flow",))
         if not self._cur.effects:
             self._count_lo(v, ("flow",))
+        if not self._cur.effects:
+            # An export that fills the line leaves no room for an import in that slot.
+            full = {
+                (f"I:{nid}", c) for j, nid in enumerate(pz.countries) for c in range(pz.n) if v.emin[j][c] >= pz.caps[j]
+            }
+            self.remove([i for i in self.free() if (pz.placements[i].key, pz.placements[i].col) in full])
+            self._cur.columns += [c for _k, c in full if self._cur.effects]
         return self._end()
 
     def r_price_cap(self, v: View) -> bool:
@@ -518,6 +582,103 @@ class Solver:
             return all(e[j] + sum(1 for r in rows if r < h) <= pz.caps[j] for j, cc, rows in lines if cc == c)
 
         self.keep_sil(keep)
+        return self._end()
+
+    def r_ramp_plateau(self, v: View) -> bool:
+        """Le plateau barre la ligne du dessus: nothing crosses the plateau row of a placed ramp."""
+        pz = self.pz
+        placed = [i for i in self.st.placed if pz.placements[i].shape.kind == "ramp_trap"]
+        if not placed:
+            return False
+        self._begin("ramp_plateau")
+        bar = 0
+        for i in placed:
+            for x in _ramp_parts(pz, i)[0]:
+                bar |= pz.bit(*x)
+        self.remove([i for i in self.free() if pz.masks[i] & bar])
+        return self._end()
+
+    def r_ramp_shoulder(self, v: View) -> bool:
+        """L'épaule appelle une case: the cell above a shoulder, closed by the plateau, gets its only cover."""
+        pz = self.pz
+        placed = [i for i in self.st.placed if pz.placements[i].shape.kind == "ramp_trap"]
+        if not placed:
+            return False
+        self._begin("ramp_shoulder")
+        add: set[int] = set()
+        for i in placed:
+            for x in _ramp_parts(pz, i)[1]:
+                if x in v.occupied or not v.sure(x):
+                    continue
+                cov = v.cover[x]
+                if len(cov) == 1:
+                    add.add(cov[0])
+                    self._cur.cells.append(x)
+        self.place(add)
+        return self._end()
+
+    def _lone_case(self, g: Any, i: int) -> bool:
+        """A record of one coal cell in one slot, against a trapezoid whose plateau covers that slot."""
+        pl = self.pz.placements[i]
+        return (
+            pl.shape.kind == "ramp_trap"
+            and g.rule == "record"
+            and g.cols is not None
+            and len(g.cols) == 1
+            and g.keys == frozenset([pl.key])
+        )
+
+    def r_ramp_lone(self, v: View) -> bool:
+        """Une case seule est une épaule: one coal cell in a slot excludes every plateau over it."""
+        pz = self.pz
+        if not self.ramps:
+            return False
+        self._begin("ramp_lone")
+        rm: set[int] = set()
+        for g in pz.rules.counts:
+            if g.rule != "record" or g.cols is None or len(g.cols) != 1 or g.hi is None:
+                continue
+            (c,) = g.cols
+            sure_in = sum(1 for x in v.column(c) if v.sure(x) and v.dom[x] and v.dom[x] <= g.keys)
+            if g.hi - sure_in != 1:
+                continue
+            hits = {
+                i
+                for i in self.free()
+                if self._lone_case(g, i) and sum(1 for x in pz.placements[i].cells if x[1] == c) == 2
+            }
+            hits = {i for i in hits if not any(x in v.occupied for x in pz.placements[i].cells if x[1] == c)}
+            if hits:
+                rm |= hits
+                if g.clue is not None:
+                    self._cur.clues.append(g.clue)
+                self._cur.columns.append(c)
+        self.remove(rm)
+        return self._end()
+
+    def r_ramp_relay(self, v: View) -> bool:
+        """Deux épaules se relaient: two coal cells and no plateau over a slot, one ramp ends, one starts."""
+        pz = self.pz
+        if not self.ramps:
+            return False
+        keys = {pz.placements[i].key for i in self.ramps}
+        lo, _hi = self.bounds(v)
+        self._begin("ramp_relay")
+        add: set[int] = set()
+        for c in range(pz.n):
+            for k in keys:
+                if lo.get((k, c), 0) < 2:
+                    continue
+                here = [i for i in self.ramps if i in self.st.cands and pz.placements[i].cells_in(c)]
+                if not here or any(pz.placements[i].cells_in(c) == 2 for i in here):
+                    continue
+                ends = [i for i in here if pz.placements[i].col + pz.placements[i].width - 1 == c]
+                starts = [i for i in here if pz.placements[i].col == c]
+                for side in (ends, starts):
+                    if len(side) == 1 and side[0] not in self.st.placed:
+                        add.add(side[0])
+                        self._cur.columns.append(c)
+        self.place(add)
         return self._end()
 
     # ----- level 2 -----
@@ -764,7 +925,8 @@ class Solver:
 
     # ----- level 4 -----
 
-    def _fails(self, st: State) -> bool:
+    def _fails(self, st: State) -> bool | None:
+        """True if the hypothesis leads to a contradiction by the level 1-2 rules; None past the budget."""
         sub = Solver(self.pz, st, max_level=2, record=False)
         try:
             while True:
@@ -773,7 +935,12 @@ class Solver:
                 if sub.solved(v):
                     return False
                 for level, rule in sub.rules:
-                    if level <= 2 and rule(v):
+                    if level > 2:
+                        continue
+                    self.work += 1
+                    if self.work > MAX_REFUTE_WORK:
+                        return None
+                    if rule(v):
                         break
                 else:
                     return False
@@ -783,11 +950,22 @@ class Solver:
     def r_refuted(self, v: View) -> bool:
         pz = self.pz
         self._begin("refuted")
+        self.work = 0
         bad = []
+        # Only placements that touch a cell still open: the others decide nothing.
+        open_mask = 0
+        for x in v.cells:
+            if not (v.sure(x) and len(v.dom[x]) == 1):
+                open_mask |= pz.bit(*x)
         for i in sorted(self.free()):
+            if not pz.masks[i] & open_mask:
+                continue
             st = self.st.copy()
             st.placed.add(i)
-            if self._fails(st):
+            failed = self._fails(st)
+            if failed is None:
+                break
+            if failed:
                 bad.append(i)
         if bad:
             for i in bad:
@@ -819,18 +997,33 @@ class Solver:
         for kind, a, e0, sil in hyps:
             st = self.st.copy()
             st.sil = apply_totals(pz, sil, self.inv_totals)
-            if st.sil and not self._fails(st):
-                continue
+            if st.sil:
+                failed = self._fails(st)
+                if failed is None:
+                    break
+                if not failed:
+                    continue
             if kind == "step":
                 p_t = ", ".join(f"{pz.columns[p]} -> {pz.columns[t]}" for p, t in pz.step_options[a])
                 self._cur.effects.append(f"le pompage {p_t} mène à une impasse")
                 self.keep_sil(lambda c, h, e: True, steps=lambda si, a=a: si != a)
             else:
-                self._cur.effects.append(f"les exports {e0} à {pz.columns[a]} mènent à une impasse")
-                self._cur.cells.append((0, a))
+                parts = ", ".join(f"{x} vers {nid}" for x, nid in zip(e0, pz.countries, strict=True))
+                self._cur.effects.append(f"exporter {parts} à {pz.columns[a]} mène à une impasse")
+                self._cur.columns.append(a)
                 self.keep_sil(lambda c, h, e, a=a, e0=e0: c != a or e != e0)
             return self._end()
         return self._end()
+
+
+# ----- coal ramps (trapezoid) -----
+
+
+def _ramp_parts(pz: Puzzle, i: int) -> tuple[set[Cell], list[Cell]]:
+    """(plateau cells, cells above the shoulders) of a trapezoid ramp placement."""
+    pl = pz.placements[i]
+    r, a, w = pl.row, pl.col, pl.width
+    return {(r + 1, c) for c in range(a + 1, a + w - 1)}, [(r + 1, a), (r + 1, a + w - 1)]
 
 
 def rule_level(rule: str) -> int:

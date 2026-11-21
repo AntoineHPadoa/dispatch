@@ -116,6 +116,9 @@ def read_rules(g: dict[str, Any]) -> Rules:
                 r.counts.append(Count(frozenset([k]), frozenset([cl["col"]]), v, v, "record", i))
         elif t == "flow":
             if cl["dir"] == "export":
+                for k, c, v, _ in r.export_flows:
+                    if (k, c) == (cl["country"], cl["col"]) and v != cl["value"]:
+                        r.contradictions.append(f"two flows to {k} at column {c}")
                 r.export_flows.append((cl["country"], cl["col"], cl["value"], i))
             else:
                 r.counts.append(

@@ -179,8 +179,7 @@
     "record",
     "room",
     "share_out",
-    "single_cover",
-    "swap"
+    "single_cover"
    ]
   }
  },
@@ -198,8 +197,7 @@
    "record",
    "room",
    "share_out",
-   "single_cover",
-   "swap"
+   "single_cover"
   ],
   "composition": {
    "cells": [

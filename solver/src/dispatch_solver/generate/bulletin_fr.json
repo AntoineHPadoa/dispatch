@@ -1,30 +1,153 @@
 {
  "titles": {
-  "pointe_soir": ["Pointe du soir", "Le soir s'allume", "Tout le monde rentre"],
-  "deux_bosses": ["Deux bosses", "Matin et soir", "La journée en deux temps"],
-  "midi_solaire": ["Midi au soleil", "Le creux de midi", "Plein soleil"],
-  "surplus_midi": ["Trop de soleil", "Midi déborde", "Le surplus de midi"],
-  "nuit_plate": ["Nuit calme", "Une journée sans relief", "Le ruban tient"],
-  "plateau_hiver": ["Plateau d'hiver", "Journée froide", "Le chauffage tient bon"],
-  "vent_nocturne": ["Vent de nuit", "La nuit souffle", "Les éoliennes veillent"]
+  "pointe_soir": [
+   "Pointe du soir",
+   "Le soir s'allume",
+   "Tout le monde rentre",
+   "La soirée sous tension",
+   "Le pic de 19 heures"
+  ],
+  "deux_bosses": [
+   "Deux bosses",
+   "Matin et soir",
+   "La journée en deux temps",
+   "Deux pointes",
+   "Réveil et dîner"
+  ],
+  "midi_solaire": [
+   "Midi au soleil",
+   "Le creux de midi",
+   "Plein soleil",
+   "La courbe en canard",
+   "Midi creux"
+  ],
+  "surplus_midi": [
+   "Trop de soleil",
+   "Midi déborde",
+   "Le surplus de midi",
+   "Le soleil en trop",
+   "Midi en excédent"
+  ],
+  "nuit_plate": [
+   "Nuit calme",
+   "Une journée sans relief",
+   "Le ruban tient",
+   "Un jour tranquille",
+   "La base fait tout"
+  ],
+  "plateau_hiver": [
+   "Plateau d'hiver",
+   "Journée froide",
+   "Le chauffage tient bon",
+   "Grand froid",
+   "Le froid s'installe"
+  ],
+  "vent_nocturne": [
+   "Vent de nuit",
+   "La nuit souffle",
+   "Les éoliennes veillent",
+   "Rafales nocturnes",
+   "Le vent de la nuit"
+  ]
  },
  "openings": {
-  "pointe_soir": ["La consommation grimpe jusqu'à {peak}.", "Le pic arrive à {peak}, quand tout s'allume."],
-  "deux_bosses": ["Un premier pic le matin, un second vers {peak}.", "La demande monte deux fois : au réveil et vers {peak}."],
-  "midi_solaire": ["Le soleil de midi creuse la demande.", "À midi, les panneaux font une bonne part du travail."],
-  "surplus_midi": ["À {surplus}, le soleil produit plus que le pays ne consomme.", "Le soleil déborde à {surplus} : il faut écouler le surplus."],
-  "nuit_plate": ["La demande reste presque plate toute la journée.", "Peu de relief aujourd'hui : la base fait l'essentiel."],
-  "plateau_hiver": ["Le froid tient la demande haute toute la journée.", "De {start} au soir, le chauffage maintient un plateau."],
-  "vent_nocturne": ["Le vent souffle la nuit et soulage la base.", "Les éoliennes tournent fort la nuit, moins le jour."]
+  "pointe_soir": [
+   "La consommation grimpe jusqu'à {peak}.",
+   "Le pic arrive à {peak}, quand tout s'allume."
+  ],
+  "deux_bosses": [
+   "Un premier pic le matin, un second vers {evening}.",
+   "La demande monte deux fois : au réveil et vers {evening}."
+  ],
+  "midi_solaire": [
+   "Le soleil de midi creuse la demande.",
+   "À midi, les panneaux font une bonne part du travail."
+  ],
+  "surplus_midi": [
+   "À {surplus}, le soleil produit plus que le pays ne consomme.",
+   "Le soleil déborde à {surplus} : il faut écouler le surplus."
+  ],
+  "nuit_plate": [
+   "La demande reste presque plate toute la journée.",
+   "Peu de relief aujourd'hui : la base fait l'essentiel."
+  ],
+  "plateau_hiver": [
+   "Le froid tient la demande haute toute la journée.",
+   "De {start} au soir, le chauffage maintient un plateau."
+  ],
+  "vent_nocturne": [
+   "Le vent souffle la nuit et soulage la base.",
+   "Les éoliennes tournent fort la nuit, moins le jour."
+  ]
  },
  "mechanics": {
-  "neighbors": ["La ligne vers {country} reste ouverte.", "{Country} peut acheter ou vendre selon la ligne."],
-  "neighbors_many": ["{Countries} ont leurs lignes ouvertes.", "Plusieurs frontières à surveiller : {countries}."],
-  "step": ["Le lac de la STEP attend son pompage.", "La STEP peut stocker l'eau pour plus tard."],
-  "co2": ["Le plafond carbone est serré : {cap} au plus.", "Pas plus de {cap} de CO₂ aujourd'hui."],
-  "ramp": ["La centrale à charbon démarre et s'arrête en douceur.", "Le charbon monte en charge par paliers."],
-  "tall": ["Le charbon ne descend pas sous 2 GW quand il tourne.", "Une centrale à charbon tourne à pleine puissance."],
-  "stock": ["Le barrage n'a que {stock} cases d'eau.", "Réserve d'eau limitée : {stock} cases."],
-  "none": ["Le marché a publié ses relevés.", "Les relevés du jour sont tombés."]
+  "neighbors": [
+   "La ligne vers {country} reste ouverte.",
+   "{Country} peut acheter ou vendre selon la ligne."
+  ],
+  "neighbors_many": [
+   "{Countries} ont leurs lignes ouvertes.",
+   "Plusieurs frontières à surveiller : {countries}."
+  ],
+  "step": [
+   "Le lac de la STEP attend son pompage.",
+   "La STEP peut stocker l'eau pour plus tard."
+  ],
+  "co2": [
+   "Le plafond carbone est serré : {cap} points au plus.",
+   "Pas plus de {cap} points de CO₂ aujourd'hui."
+  ],
+  "tall": [
+   "Le charbon peut tourner à 1 ou 2 GW.",
+   "Une centrale à charbon tourne à 1 ou 2 GW, selon le besoin."
+  ],
+  "stock": [
+   "Le barrage n'a que {stock} cases d'eau.",
+   "Réserve d'eau limitée : {stock} cases."
+  ],
+  "none": [
+   "Le marché a publié ses relevés.",
+   "Les relevés du jour sont tombés."
+  ],
+  "ramp_trap": [
+   "La centrale à charbon démarre et s'arrête en douceur.",
+   "Le charbon monte en charge, tient son plateau, puis redescend."
+  ],
+  "ramp_stair": [
+   "Le charbon démarre d'un coup et s'arrête par paliers.",
+   "La centrale à charbon s'arrête en deux temps."
+  ]
+ },
+ "trait_titles": {
+  "step": [
+   "Le lac remonte",
+   "La STEP au travail",
+   "Pomper, puis turbiner"
+  ],
+  "neighbors": [
+   "Ligne chargée",
+   "Frontière ouverte",
+   "Échanges du jour"
+  ],
+  "co2": [
+   "Sous le plafond",
+   "Carbone compté"
+  ],
+  "ramp_trap": [
+   "Montée en charge",
+   "Le charbon prend son temps"
+  ],
+  "ramp_stair": [
+   "Arrêt en douceur",
+   "Le charbon descend"
+  ],
+  "tall": [
+   "Le charbon à deux étages",
+   "Charbon à pleine charge"
+  ],
+  "stock": [
+   "Le barrage compte ses gouttes",
+   "Réserve d'eau"
+  ]
  }
 }

@@ -195,11 +195,10 @@
    "techniques": [
     "exhausted",
     "price_cap",
-    "record",
+    "ramp_lone",
     "refuted",
     "ribbon",
-    "share_out",
-    "swap"
+    "share_out"
    ]
   }
  },
@@ -215,11 +214,10 @@
   "techniques": [
    "exhausted",
    "price_cap",
-   "record",
+   "ramp_lone",
    "refuted",
    "ribbon",
-   "share_out",
-   "swap"
+   "share_out"
   ],
   "composition": {
    "cells": [

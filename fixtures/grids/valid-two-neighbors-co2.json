@@ -171,7 +171,7 @@
      "piece": "N",
      "row": 3,
      "col": 2,
-     "len": 3
+     "len": 6
     },
     {
      "piece": "N",
@@ -208,12 +208,6 @@
      "row": 1,
      "col": 5,
      "len": 3
-    },
-    {
-     "piece": "N",
-     "row": 3,
-     "col": 5,
-     "len": 3
     }
    ]
   },
@@ -221,11 +215,12 @@
    "rating": 2,
    "label": "Moyen",
    "techniques": [
+    "flow",
     "price_cap",
     "record",
     "ribbon",
-    "silhouette",
-    "swap"
+    "room",
+    "silhouette"
    ]
   }
  },
@@ -236,11 +231,12 @@
   "deduction": "solved",
   "rating": 2,
   "techniques": [
+   "flow",
    "price_cap",
    "record",
    "ribbon",
-   "silhouette",
-   "swap"
+   "room",
+   "silhouette"
   ],
   "composition": {
    "cells": [

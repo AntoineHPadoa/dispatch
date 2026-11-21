@@ -2,7 +2,8 @@
 
 - Puzzle: residual demand, composition keys, rules (clues.py), every placement that may fit, and the
   silhouette options: STEP options (sets of pump/turbine pairs) x per-column export tuples (one value per
-  neighbor). Height to fill: residual + exports + pumping - turbining, never negative (surplus absorbed).
+  neighbor). Height to fill: residual + exports + pumping - turbining, never negative (a surplus is
+  absorbed by exports or pumping). with_clues() reuses the placements for another clue set (generator).
 - composition_of(): §8.1 composition of a solution, in the same canonical form as the web engine's
   composition(): per column {key: cells} (zeros omitted), exports per neighbor, pumps and turbines.
 
@@ -11,6 +12,7 @@ Example: pz = Puzzle(grid); len(pz.placements)
 
 from __future__ import annotations
 
+import copy
 import itertools
 from typing import Any
 
@@ -47,12 +49,6 @@ class Puzzle:
         self.step_options: list[StepOption] = (
             list(itertools.combinations_with_replacement(pairs, self.rules.step)) if self.rules.step else [()]
         )
-        fixed: dict[tuple[int, int], int] = {}
-        for k, c, v, _ in self.rules.export_flows:
-            i = self.countries.index(k)
-            if fixed.get((i, c), v) != v:
-                self.rules.contradictions.append(f"two flows to {k} at column {c}")
-            fixed[i, c] = v
         self.export_options: list[list[Exports]] = []
         for c in range(n):
             ranges = [list(range(cap + 1)) for cap in self.caps]
@@ -76,6 +72,16 @@ class Puzzle:
                 # Exact inventory: widths it does not list are not offered (not a deduction).
                 shapes = [sh for sh in shapes_of(g["pieces"][k]) if self.rules.bars.get((k, sh.width), 1) > 0]
                 self._add_shapes(k, k, None, shapes)
+
+    def with_clues(self, clues: list[dict[str, Any]]) -> Puzzle:
+        """Same board with other clues: placements are reused unless the composition keys change."""
+        g = {**self.g, "clues": clues}
+        rules = read_rules(g)
+        if rules.keys != self.keys:
+            return Puzzle(g)
+        out = copy.copy(self)
+        out.g, out.rules = g, rules
+        return out
 
     def _add_shapes(self, key: str, piece: str, country: str | None, shapes: list[Shape]) -> None:
         for sh in shapes:

@@ -161,7 +161,7 @@
    "rating": 1,
    "label": "Facile",
    "techniques": [
-    "swap"
+    "exhausted"
    ]
   }
  },
@@ -172,7 +172,7 @@
   "deduction": "solved",
   "rating": 1,
   "techniques": [
-   "swap"
+   "exhausted"
   ],
   "composition": {
    "cells": [

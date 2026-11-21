@@ -162,8 +162,7 @@
    "label": "Facile",
    "techniques": [
     "exhausted",
-    "price_cap",
-    "swap"
+    "price_cap"
    ]
   }
  },
@@ -178,8 +177,7 @@
   "rating": 1,
   "techniques": [
    "exhausted",
-   "price_cap",
-   "swap"
+   "price_cap"
   ],
   "composition": {
    "cells": [

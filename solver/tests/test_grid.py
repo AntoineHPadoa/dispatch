@@ -8,7 +8,7 @@ from dispatch_solver.grid import validate
 
 @pytest.mark.parametrize("fx", fixtures(), ids=lambda fx: fx["file"])
 def test_fixture_verdict(fx):
-    allow = "ramp" in fx["expect"]["requires"] and fx["expect"]["valid"]
+    allow = fx["expect"].get("allow_ramp", "ramp" in fx["expect"]["requires"] and fx["expect"]["valid"])
     assert validate(fx["grid"], allow_ramp=allow) == fx["expect"]["errors"]
 
 

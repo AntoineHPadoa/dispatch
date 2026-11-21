@@ -2,8 +2,9 @@
 
 - Each family shapes the demand over the day (hour of each column) and the renewables R (sun by day,
   wind by night); the residual (demand - R - F) is what the plants fill.
-- draw_day() returns (family, demand, R, F) with the residual clipped to [lo, height] except where the
-  family wants a surplus (negative residual, to be absorbed by an export).
+- draw_day() returns (family, demand, R, F) with the residual clipped to [lo, height] by adjusting the
+  demand (R keeps the family's sun and wind), except where the family wants a surplus (negative residual,
+  absorbed by an export or pumping).
 - sky() gives the bulletin weather of each slot: moon, wind, sun or cloud.
 
 Example: family, demand, r, f = draw_day(random.Random(1), 8, "pointe_soir", height=6)
@@ -80,7 +81,8 @@ def draw_day(
         want = min(height, max(lo, residual[c]))
         if c == surplus_col:
             want = -1
-        r[c] = max(0, demand[c] - f_val - want)
+            r[c] = max(r[c], demand[c] - f_val - want, 1 - f_val)  # the sun makes the surplus
+        # Clip the demand, not the weather: R stays what the family drew (the sky follows it).
         demand[c] = want + r[c] + f_val
     return family, demand, r, [f_val] * n
 

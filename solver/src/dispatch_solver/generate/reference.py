@@ -2,6 +2,8 @@
 
 - solve_reference(): CP-SAT minimises the sum of the merit-order ranks of the laid cells (imports cost
   `import_cost`), plus a tiny random weight per placement so that equal-cost layouts vary with the seed.
+  A required shape (ramp, tall piece) may be asked several times, and ramp cells may get a bonus (wider
+  ramps, two ramps relaying each other).
   Exchange totals of the draft (exports per neighbor, STEP pairs) are imposed.
 - fill_inventory(): writes `inventory` (exact: bar widths, cells of one-cell plants; none: `{}`) from the
   reference, keeping `max_cells`.
@@ -28,10 +30,13 @@ def solve_reference(
     import_cost: int = 6,
     time_limit: float = 10.0,
     require: tuple[str, ...] = (),
+    min_count: int = 1,
+    ramp_bonus: int = 0,
 ) -> dict[str, Any] | None:
     """§14 solution of the draft at minimal merit-order cost, or None if infeasible.
 
-    `require`: shape kinds the solution must use at least once (e.g. "ramp_trap", "tall").
+    `require`: shape kinds the solution must use at least `min_count` times (e.g. "ramp_trap", "tall").
+    `ramp_bonus`: cost removed per ramp cell, so that wider ramps (and relays) win over the shortest one.
     """
     pz = Puzzle(draft)
 
@@ -46,10 +51,14 @@ def solve_reference(
                 if not isinstance(model.cells[k, c], int):
                     cost.append(100 * unit * model.cells[k, c])
         cost += [rng.randint(0, 20) * x for x in model.x]
+        if ramp_bonus:
+            cost += [
+                -ramp_bonus * len(pl.cells) * model.x[i]
+                for i, pl in enumerate(pz.placements)
+                if pl.shape.kind.startswith("ramp")
+            ]
         for kind in require:
-            m.AddBoolOr(
-                [model.x[i] for i, pl in enumerate(pz.placements) if pl.shape.kind == kind] or [m.NewConstant(0)]
-            )
+            m.Add(sum(model.x[i] for i, pl in enumerate(pz.placements) if pl.shape.kind == kind) >= min_count)
         m.Minimize(sum(cost))
 
     model = Model(pz, extra)

@@ -161,110 +161,57 @@
     "piece": "N"
    },
    {
-    "type": "price",
-    "col": 7,
-    "piece": "B"
-   },
-   {
-    "type": "column",
-    "col": 7,
-    "counts": {
-     "B": 1
-    }
-   },
-   {
-    "type": "price",
-    "col": 9,
-    "piece": "N"
-   },
-   {
-    "type": "column",
-    "col": 9,
-    "counts": {
-     "N": 6
-    }
-   },
-   {
-    "type": "column",
-    "col": 3,
-    "counts": {
-     "N": 6
-    }
-   },
-   {
-    "type": "price",
-    "col": 1,
-    "piece": "N"
-   },
-   {
-    "type": "price",
-    "col": 2,
-    "piece": "N"
-   },
-   {
-    "type": "price",
-    "col": 10,
-    "piece": "N"
-   },
-   {
-    "type": "column",
-    "col": 2,
-    "counts": {
-     "N": 4
-    }
-   },
-   {
-    "type": "column",
-    "col": 8,
-    "counts": {
-     "N": 8
-    }
-   },
-   {
-    "type": "column",
-    "col": 10,
-    "counts": {
-     "N": 5
-    }
-   },
-   {
-    "type": "column",
-    "col": 11,
-    "counts": {
-     "N": 4
-    }
-   },
-   {
     "type": "flow",
     "col": 1,
-    "country": "DE",
-    "dir": "export",
-    "value": 1
-   },
-   {
-    "type": "flow",
-    "col": 5,
     "country": "DE",
     "dir": "export",
     "value": 0
    },
    {
-    "type": "flow",
-    "col": 8,
-    "country": "DE",
-    "dir": "export",
-    "value": 1
+    "type": "exchanges",
+    "exports": {
+     "UK": 1
+    }
+   },
+   {
+    "type": "exchanges",
+    "exports": {
+     "DE": 2
+    }
+   },
+   {
+    "type": "column",
+    "col": 7,
+    "counts": {
+     "N": 8
+    }
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 6,
+    "len": 5
+   },
+   {
+    "type": "price",
+    "col": 7,
+    "piece": "B"
+   },
+   {
+    "type": "price",
+    "col": 9,
+    "piece": "N"
    }
   ],
   "solution": {
    "exports": {
     "DE": [
      0,
+     0,
+     0,
+     0,
+     0,
      1,
-     0,
-     0,
-     0,
-     0,
      0,
      0,
      1,
@@ -274,11 +221,11 @@
     ],
     "UK": [
      0,
-     0,
-     0,
-     0,
-     0,
      1,
+     0,
+     0,
+     0,
+     0,
      0,
      0,
      0,
@@ -399,6 +346,7 @@
    "techniques": [
     "flow",
     "price_cap",
+    "program",
     "record",
     "ribbon",
     "room",
@@ -416,6 +364,7 @@
   "techniques": [
    "flow",
    "price_cap",
+   "program",
    "record",
    "ribbon",
    "room",
@@ -465,11 +414,11 @@
    "exports": {
     "DE": [
      0,
+     0,
+     0,
+     0,
+     0,
      1,
-     0,
-     0,
-     0,
-     0,
      0,
      0,
      1,
@@ -493,11 +442,11 @@
     ],
     "UK": [
      0,
-     0,
-     0,
-     0,
-     0,
      1,
+     0,
+     0,
+     0,
+     0,
      0,
      0,
      0,

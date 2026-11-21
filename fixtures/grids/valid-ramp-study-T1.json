@@ -130,8 +130,7 @@
    "rating": 1,
    "label": "Facile",
    "techniques": [
-    "exhausted",
-    "swap"
+    "exhausted"
    ]
   }
  },
@@ -145,8 +144,7 @@
   ],
   "rating": 1,
   "techniques": [
-   "exhausted",
-   "swap"
+   "exhausted"
   ],
   "composition": {
    "cells": [

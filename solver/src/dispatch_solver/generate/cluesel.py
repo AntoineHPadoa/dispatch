@@ -5,7 +5,8 @@
   width, day totals (exports, imports, STEP pairs).
 - select_clues(): mandatory clues first (a STEP grid publishes its pairs), then greedy: add the clue that
   leaves the fewest undecided cells after the level 1-2 techniques (ties: the least used clue type), until
-  the full deduction solves the grid; then prune every clue the grid can do without.
+  the deduction up to `max_level` solves the grid (levels 3-4 are only tried near the end); then prune
+  every clue the grid can do without. `max_level` is the generator's lever on the rating.
 - Monotone: removing any remaining clue makes the deduction fail (tested).
 
 Example: clues = select_clues(grid, pool)  # None when even the whole pool does not suffice
@@ -13,10 +14,11 @@ Example: clues = select_clues(grid, pool)  # None when even the whole pool does 
 
 from __future__ import annotations
 
+import random
 from typing import Any
 
 from ..board import Puzzle, reference_composition
-from ..deduce import Solver, deduce
+from ..deduce import Solver
 
 TYPE_ORDER = ("price", "column", "flow", "bar", "length", "exchanges", "engaged")
 PRUNE_ORDER = ("engaged", "bar", "length", "flow", "column", "exchanges", "price")
@@ -87,46 +89,81 @@ def mandatory_clues(g: dict[str, Any]) -> list[dict[str, Any]]:
     return []
 
 
-def _with(g: dict[str, Any], clues: list[dict[str, Any]]) -> dict[str, Any]:
-    return {**g, "clues": clues}
+class _Judge:
+    """Runs the deduction on one board with several clue sets (placements built once)."""
 
+    def __init__(self, g: dict[str, Any]) -> None:
+        self.pz = Puzzle(g)
+        self.ref = reference_composition(g)
 
-def _undecided(g: dict[str, Any]) -> int:
-    res = Solver(Puzzle(g), max_level=2, record=False).run()
-    if res.status == "contradiction":
-        return 10**6
-    return 0 if res.solved else res.unresolved
+    def run(self, clues: list[dict[str, Any]], level: int) -> Any:
+        return Solver(self.pz.with_clues(clues), max_level=level, record=False).run()
 
+    def undecided(self, clues: list[dict[str, Any]], level: int) -> int:
+        res = self.run(clues, level)
+        if res.status == "contradiction":
+            return 10**6
+        return 0 if res.solved else res.unresolved
 
-def _solves(g: dict[str, Any], max_level: int) -> bool:
-    res = deduce(g, max_level=max_level, record=False)
-    return res.solved and res.composition == reference_composition(g)
+    def solves(self, clues: list[dict[str, Any]], level: int) -> bool:
+        """Solved by the techniques up to `level`; the cheap levels are tried first."""
+        for lv in sorted({min(level, 2), level}):
+            res = self.run(clues, lv)
+            if res.solved:
+                return res.composition == self.ref
+        return False
 
 
 def select_clues(
-    g: dict[str, Any], pool: list[dict[str, Any]], max_level: int = 4, max_clues: int | None = None
+    g: dict[str, Any],
+    pool: list[dict[str, Any]],
+    max_level: int = 4,
+    max_clues: int | None = None,
+    rng: random.Random | None = None,
 ) -> list[dict[str, Any]] | None:
-    """Minimal clue list for g (its reference solution), or None if the pool does not make it deducible."""
+    """Minimal clue list for g (its reference solution), or None if the pool does not make it deducible.
+
+    max_level: highest technique level allowed (the aimed rating); max_clues: stop (None) past this
+    number of clues besides the mandatory ones. rng: draw each clue among those that make progress
+    instead of taking the best one, and try the full deduction at every step: less informative clues,
+    harder grids (used when aiming at levels 3-4).
+    """
+    judge = _Judge(g)
     base = mandatory_clues(g)
     chosen = list(base)
     left = [c for c in pool if c not in chosen]
     limit = max_clues if max_clues is not None else len(pool)
-    while not _solves(_with(g, chosen), max_level):
-        if not left or len(chosen) - len(base) >= limit + 2:
+    cheap = min(max_level, 2)
+    near = len(g["columns"])  # undecided cells under which the full deduction is worth a try
+    und = judge.undecided(chosen, cheap)
+    while und:
+        full = max_level > cheap and (rng is not None or und <= near or not left or len(chosen) - len(base) >= limit)
+        if full and judge.solves(chosen, max_level):
+            break
+        if not left or len(chosen) - len(base) >= limit:
             return None
         used = {c["type"] for c in chosen}
         best = None
+        scored = []
         for i, clue in enumerate(left):
-            score = (_undecided(_with(g, chosen + [clue])), clue["type"] in used, TYPE_ORDER.index(clue["type"]), i)
+            score = (judge.undecided(chosen + [clue], cheap), clue["type"] in used, TYPE_ORDER.index(clue["type"]), i)
+            scored.append((score, clue))
             if best is None or score < best[0]:
                 best = (score, clue)
         assert best is not None
+        if rng is not None:
+            useful = [x for x in scored if x[0][0] < und]
+            if useful:
+                best = rng.choice(useful)
         chosen.append(best[1])
         left.remove(best[1])
+        und = best[0][0]
+    if und == 0 and judge.run(chosen, cheap).composition != judge.ref:
+        return None
     # Prune: drop what the grid can do without (engaged bars first, prices last).
     for t in PRUNE_ORDER:
         for clue in [c for c in chosen if c["type"] == t and c not in base]:
             trial = [c for c in chosen if c is not clue]
-            if _solves(_with(g, trial), max_level):
+            if judge.solves(trial, max_level):
                 chosen = trial
     return chosen

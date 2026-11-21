@@ -35,6 +35,7 @@ SHAPES = ("rect", "trap", "stair")
 RAMP_PIECE = "C"
 RAMP_MIN_WIDTH = {"trap": 3, "stair": 2}
 LABELS = {1: "Facile", 2: "Moyen", 3: "Difficile", 4: "Expert"}
+_MISSING = object()
 
 
 def _is_int(v: Any) -> bool:
@@ -216,7 +217,7 @@ def validate(g: Any, allow_ramp: bool = False) -> list[str]:
         return _is_nat(c) and c < n
 
     def check_country_totals(where: str, v: Any, allow_any: bool) -> None:
-        if v is None:
+        if v is _MISSING:  # absent key; an explicit null is refused, as in the TS validator
             return
         if not _is_obj(v):
             err(f"{where}: object expected")
@@ -268,8 +269,8 @@ def validate(g: Any, allow_ramp: bool = False) -> list[str]:
                     err(f"inventory.pieces.{pid}: no bars/cells at level none")
         if inv.get("level") == "none" and any(k in inv for k in ("exports", "imports", "step")):
             err("inventory: exchange totals belong to an exchanges clue at level none")
-        check_country_totals("inventory.exports", inv.get("exports"), False)
-        check_country_totals("inventory.imports", inv.get("imports"), True)
+        check_country_totals("inventory.exports", inv.get("exports", _MISSING), False)
+        check_country_totals("inventory.imports", inv.get("imports", _MISSING), True)
         if "step" in inv and not _is_nat(inv["step"]):
             err("inventory.step: integer >= 0 expected")
         if _is_pos(inv.get("step")) and g.get("step") is not True:
@@ -436,8 +437,8 @@ def _check_clue(
         elif neighbor_cap(cl.get("country")) is not None and cl["value"] > neighbor_cap(cl["country"]):
             err(f"{at}.value: over the line capacity")
     elif t == "exchanges":
-        check_country_totals(f"{at}.exports", cl.get("exports"), False)
-        check_country_totals(f"{at}.imports", cl.get("imports"), True)
+        check_country_totals(f"{at}.exports", cl.get("exports", _MISSING), False)
+        check_country_totals(f"{at}.imports", cl.get("imports", _MISSING), True)
         if "step" in cl and not _is_nat(cl["step"]):
             err(f"{at}.step: integer >= 0 expected")
     elif t == "engaged":

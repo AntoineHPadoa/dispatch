@@ -111,6 +111,33 @@ RULE_LIST = [
     ),
     Rule("carbon", "Plafond carbone", 2, "Une centrale qui ferait dépasser le plafond CO₂ est exclue."),
     Rule(
+        "ramp_plateau",
+        "Le plateau barre la ligne du dessus",
+        1,
+        "Au-dessus de sa base, la rampe occupe aussi la ligne suivante sur tout son plateau : aucun ruban de "
+        "cette ligne ne la traverse.",
+    ),
+    Rule(
+        "ramp_shoulder",
+        "L'épaule appelle une case",
+        1,
+        "La case au-dessus d'une épaule est fermée côté plateau : seule une pièce d'une case, ou une barre qui "
+        "s'arrête pile là, peut la couvrir.",
+    ),
+    Rule(
+        "ramp_lone",
+        "Une case seule est une épaule",
+        2,
+        "Une seule case de rampe dans une colonne, c'est une épaule : la rampe continue à deux cases d'un côté "
+        "et s'arrête de l'autre.",
+    ),
+    Rule(
+        "ramp_relay",
+        "Deux épaules se relaient",
+        3,
+        "Deux cases de rampe sans plateau autour : une rampe s'arrête et une autre démarre sur son épaule.",
+    ),
+    Rule(
         "share_out",
         "Répartition de l'inventaire",
         3,
@@ -124,6 +151,7 @@ RULE_LIST = [
     ),
 ]
 RULES = {r.id: r for r in RULE_LIST}
+RAMP_RULES = ("ramp_plateau", "ramp_shoulder", "ramp_lone", "ramp_relay")
 
 
 @dataclass
@@ -135,6 +163,9 @@ class Step:
     cells: list[tuple[int, int]] = field(default_factory=list)
     clues: list[int] = field(default_factory=list)
     shapes: list[str] = field(default_factory=list)
+    columns: list[int] = field(default_factory=list)  # slots whose exchanges or counts changed
+    exchanges: dict[str, Any] = field(default_factory=dict)  # {country: {"export": [[col, value]]}, "step": [[p, t]]}
+    scope: str | None = None  # "day" when a day total (inventory or exchanges clue) was used
 
     @property
     def level(self) -> int:
@@ -147,11 +178,15 @@ class Step:
             "level": self.level,
             "effects": self.effects,
         }
-        for k in ("removed", "placed", "clues", "shapes"):
+        for k in ("removed", "placed", "clues", "shapes", "exchanges"):
             if getattr(self, k):
                 out[k] = getattr(self, k)
         if self.cells:
             out["cells"] = [list(x) for x in sorted(set(self.cells))]
+        if self.columns:
+            out["columns"] = sorted(set(self.columns))
+        if self.scope:
+            out["scope"] = self.scope
         return out
 
 
