@@ -14,7 +14,7 @@ def test_fixture_verdict(fx):
 
 def test_published_grids_are_valid():
     for g in published():
-        assert validate(g) == [], g["id"]
+        assert validate(g, allow_ramp=True) == [], g["id"]  # the web game knows coal ramps
 
 
 def test_ramp_needs_the_flag():

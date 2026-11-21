@@ -1,4 +1,4 @@
-"""The 11 published grids: one composition, the reference one, deducible, with their stored rating."""
+"""The published grids (coal ramps included): one composition, the reference one, deducible, with their stored rating."""
 
 import json
 
@@ -23,7 +23,7 @@ def test_published_grid(g):
 
 
 def test_check_published_reports_ok():
-    ok, lines = check_published(published())
+    ok, lines = check_published(published(), allow_ramp=True)
     assert ok and lines[-1].startswith("OK")
 
 
