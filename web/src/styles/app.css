@@ -46,11 +46,11 @@ button { font: inherit; color: inherit; }
 
 /* ---- game layout ---- */
 .game { display: grid; grid-template-columns: auto minmax(340px, 520px); justify-content: start; grid-template-areas: "head head" "play ttl" "play intro" "play side"; grid-template-rows: auto auto auto 1fr; gap: 18px 30px; align-items: start; }
-.game > .site-head { grid-area: head; margin-bottom: 4px; position: relative; z-index: 2; }
+.game > .site-head { grid-area: head; margin-bottom: 22px; position: relative; z-index: 2; }
 .game > .ttl { grid-area: ttl; display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; }
 .game h1 { font-family: var(--f-title); font-weight: 300; font-size: 1.75rem; letter-spacing: -.02em; margin: 0; line-height: 1.1; }
 .game > .intro { grid-area: intro; }
-.game > .play { grid-area: play; display: grid; gap: 12px; min-width: 0; margin-top: calc(-1 * var(--lift, 0px)); }
+.game > .play { grid-area: play; display: grid; gap: 12px; min-width: 0; }
 .game > .side { grid-area: side; display: grid; gap: 14px; min-width: 0; }
 .game:not(:has(> .intro)) { grid-template-areas: "head head" "play ttl" "play side" "play side"; }
 .intro { background: #f1eaf7; border-radius: 16px; padding: 12px 14px; display: grid; gap: 3px; border: 1px solid #e4d9ef; }
@@ -58,6 +58,7 @@ button { font: inherit; color: inherit; }
 .intro b { font-family: var(--f-title); font-weight: 500; font-size: 1rem; }
 .intro span:last-child { font-size: .82rem; }
 
+.board-card { padding: 12px 14px; display: grid; gap: 6px; }
 .board-wrap { border-radius: 16px; min-width: 0; }
 .board-wrap:focus-visible { outline-offset: 4px; }
 .board-scroll { overflow-x: auto; overflow-y: hidden; display: flex; padding: 2px 0 6px; -webkit-overflow-scrolling: touch; }
@@ -106,16 +107,12 @@ button.prow:hover { background: #faf4f7; }
 .mb.used::after { content: ""; position: absolute; left: -2px; right: -2px; top: 50%; border-top: 1.5px solid var(--soft); }
 .count { font-size: .7rem; color: var(--soft); font-variant-numeric: tabular-nums; margin-left: 2px; }
 .count.over { color: var(--bad); font-weight: 800; }
-.xrow { cursor: default; }
 .step-glyph { font-size: .66rem; font-weight: 800; letter-spacing: .05em; color: #4f7fb8; background: #e3eefa; border: 1px solid #bfd7f1; border-radius: 6px; padding: 1px 6px; }
 .board-svg .step-tag.act, .board-svg .step-arrow.act { cursor: pointer; }
 .board-svg .step-arrow:focus { outline: none; }
 .board-svg .step-arrow:focus-visible circle { stroke: var(--accent); stroke-width: 2.5; }
 .board-svg .step-tag:focus { outline: none; }
 .board-svg .step-tag:focus-visible rect { stroke: var(--accent); stroke-width: 2.5; }
-.xpill { font-size: .72rem; font-weight: 800; border-radius: 999px; padding: 2px 9px; background: #d6c9f1; font-variant-numeric: tabular-nums; }
-.xpill.step { background: #e3eefa; }
-.xpill.done { box-shadow: inset 0 0 0 1.5px var(--ok); }
 
 /* ---- clues ---- */
 .clues { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
@@ -128,12 +125,10 @@ button.prow:hover { background: #faf4f7; }
 .state.ok::after { content: ""; position: absolute; left: 5px; top: 2px; width: 4px; height: 8px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
 .state.bad { background: var(--bad); border-color: var(--bad); }
 .state.bad::after { content: "!"; position: absolute; inset: 0; display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 11px; }
+.nw { white-space: nowrap; }
 .pc { display: inline-flex; align-items: center; gap: 4px; font-weight: 800; white-space: nowrap; }
 .pc::before { content: ""; width: 9px; height: 9px; border-radius: 3px; background: var(--dot); }
 .slot { font-weight: 800; font-variant-numeric: tabular-nums; border-bottom: 1.5px dotted var(--soft); }
-.all-clues { margin-top: 12px; font-size: .78rem; }
-.all-clues summary { cursor: pointer; color: var(--soft); font-weight: 700; }
-.all-clues .clues { margin-top: 10px; }
 
 /* ---- CO2 gauge ---- */
 .gauge { display: grid; gap: 6px; }
@@ -257,7 +252,7 @@ body.print-preview #print-root .a4 { box-shadow: 0 2px 18px rgba(59, 51, 64, .12
 @media (max-width: 860px) {
   .game { grid-template-columns: minmax(0, 1fr); grid-template-areas: none; grid-template-rows: none; gap: 14px; }
   .game > .site-head, .game > .ttl, .game > .intro, .game > .play, .game > .side { grid-area: auto; }
-  .game > .play { margin-top: 0; }
+  .game > .site-head { margin-bottom: 12px; }
   .chips { display: flex; gap: 8px; width: 0; min-width: 100%; align-items: center; }
   .chips-row { display: flex; gap: 6px; overflow-x: auto; flex: 1; min-width: 0; padding: 2px 0 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
   .chips-row::-webkit-scrollbar { display: none; }
@@ -267,6 +262,7 @@ body.print-preview #print-root .a4 { box-shadow: 0 2px 18px rgba(59, 51, 64, .12
   .hgrid { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 600px) {
+  .board-card { padding: 8px; }
   .m { padding-top: 16px; }
   .home { gap: 22px; }
   .home .band { padding: 14px 16px; }
