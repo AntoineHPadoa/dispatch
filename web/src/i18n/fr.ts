@@ -325,6 +325,8 @@ export const UI = {
   } as Record<string, { title: string; lead: string }>,
   dossierCount: (k: number) => `${k} ${k > 1 ? 'grilles' : 'grille'}`,
   dossierProgress: (done: number, total: number) => `${done} / ${total}`,
+  dossierDone: (done: number, total: number) => `${done} / ${total} ${total > 1 ? 'terminées' : 'terminée'}`,
+  dossierNext: 'à jouer ensuite',
   status: { new: 'Pas commencée', started: 'En cours', done: 'Terminée' } as const,
   play: 'Jouer',
   resume: 'Reprendre',

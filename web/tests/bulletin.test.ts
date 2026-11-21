@@ -204,6 +204,6 @@ describe('home rendering', () => {
   it('dossier page lists the 7 tutorial grids', () => {
     const root = stub();
     renderDossier(root, dossiers(grids)[0]!, emptyProgress());
-    expect(root.innerHTML.match(/class="gcard/g)).toHaveLength(7);
+    expect(root.innerHTML.match(/class="fiche /g)).toHaveLength(7);
   });
 });

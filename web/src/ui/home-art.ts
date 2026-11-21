@@ -62,3 +62,14 @@ export function miniSilhouette(demand: readonly number[], w: number, h: number, 
   demand.forEach((v, i) => { d += ` L${i * cw} ${h - v * ch} L${(i + 1) * cw} ${h - v * ch}`; });
   return `<svg class="mini-sil" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true"><path d="${d} L${w} ${h} Z" class="${done ? 'done' : ''}"/></svg>`;
 }
+
+/** Demand curve drawn as small cells (dossier cards); colours come from app.css (`.sil-cell`). */
+export function cellSilhouette(demand: readonly number[], cell: number): string {
+  const rows = Math.max(1, ...demand);
+  const w = demand.length * cell, h = rows * cell;
+  let s = `<svg class="cell-sil" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true">`;
+  demand.forEach((d, c) => {
+    for (let r = 0; r < d; r++) s += `<rect x="${c * cell + 1}" y="${(rows - 1 - r) * cell + 1}" width="${cell - 2}" height="${cell - 2}" rx="${cell / 5}" class="sil-cell"/>`;
+  });
+  return `${s}</svg>`;
+}

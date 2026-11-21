@@ -5,12 +5,12 @@
  * - Dossier page: the grids of one dossier with their status.
  * - Accent: one pink (stamp, price cell, progress, finished items); plant colours stay in the game.
  */
-import { UI, PIECE_WORDS } from '../i18n/fr';
+import { UI, PIECE_WORDS, TECHNIQUES } from '../i18n/fr';
 import { currentBulletin, localIsoDate, previousBulletins, type BulletinGrid } from '../model/bulletin';
 import { dossierNext, dossierProgress, dossiers, type Dossier } from '../model/dossiers';
 import type { Grid, PieceId } from '../model/grid';
-import { bulletinTag, displayTitle, techniqueLine } from './game';
-import { logoSvg, miniSilhouette, sheetSilhouette } from './home-art';
+import { bulletinTag, displayTitle } from './game';
+import { cellSilhouette, logoSvg, miniSilhouette, sheetSilhouette } from './home-art';
 import { esc, icon } from './palette';
 import { statusOf, type GridStatus, type Progress } from './progress';
 
@@ -106,22 +106,27 @@ export function renderHome(root: HTMLElement, grids: readonly Grid[], progress: 
 const statusChip = (st: GridStatus) => `<span class="status ${st}">${esc(UI.status[st])}</span>`;
 const action = (st: GridStatus) => (st === 'done' ? UI.review : st === 'started' ? UI.resume : UI.play);
 
-/** Dossier page: its grids in order, each with its status. */
+/** Dossier page: one card per grid (silhouette, technique taught, difficulty, status, button), in order. */
 export function renderDossier(root: HTMLElement, d: Dossier, progress: Progress): void {
   const words = UI.dossier[d.id] ?? { title: d.id, lead: '' };
   const next = dossierNext(d, (id) => statusOf(progress, id) === 'done');
+  const { done, total } = dossierProgress(d, (id) => statusOf(progress, id) === 'done');
   const cards = d.grids.map((g, i) => {
     const st = statusOf(progress, g.id);
-    const tech = techniqueLine(g);
-    return `<li><a class="gcard ${st}${g.id === next?.id && st !== 'done' ? ' next' : ''}" href="#/grille/${g.id}">
-      <span class="gtop"><span class="eyebrow">${esc(UI.tutorialShort(i + 1))}</span></span>
-      <b>${esc(displayTitle(g))}</b>
-      ${tech ? `<span class="tech">${esc(tech)}</span>` : ''}
-      <span class="gfoot">${statusChip(st)}<span class="go">${esc(action(st))}${icon('next')}</span></span>
+    const tech = (g.teaches ?? []).map((t) => TECHNIQUES[t]).find(Boolean);
+    const isNext = g.id === next?.id && st !== 'done';
+    return `<li class="fiche ${st}${isNext ? ' next' : ''}"><a href="#/grille/${g.id}">
+      <span class="fband">${cellSilhouette(g.demand, 11)}<span class="fnum" aria-hidden="true">${i + 1}</span></span>
+      <span class="fbody"><span class="eyebrow">${esc(UI.tutorialShort(i + 1))} · ${esc(g.difficulty.label)}${isNext ? ` · ${esc(UI.dossierNext)}` : ''}</span>
+        <b>${esc(displayTitle(g))}</b>
+        ${tech ? `<span class="tchip">${esc(tech.name)}</span><span class="ftxt">${esc(tech.text)}</span>` : ''}</span>
+      <span class="ffoot"><span class="fmeta">${dots(g)}${statusChip(st)}</span><span class="fbtn">${esc(action(st))}</span></span>
     </a></li>`;
   }).join('');
   root.innerHTML = `<div class="m home">
     <a class="backlink" href="#/">${icon('back')}${esc(UI.back)}</a>
-    <section class="glist"><div class="sh"><h1>${esc(words.title)}</h1><p>${esc(words.lead)}</p></div><ol class="cards">${cards}</ol></section>
+    <section class="glist"><div class="sh"><h1>${esc(words.title)}</h1><p>${esc(words.lead)}</p></div>
+      <div class="prog"><span>${esc(UI.dossierDone(done, total))}</span><span class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${total ? (done / total) * 100 : 0}%"></i></span></div>
+      <ol class="fiches">${cards}</ol></section>
   </div>`;
 }
