@@ -1,0 +1,265 @@
+{
+ "name": "ramp-study-E1",
+ "grid": {
+  "id": 305,
+  "title": "Rampe E1",
+  "section": "tutorial",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   2,
+   3,
+   3,
+   3,
+   3,
+   2,
+   2,
+   2
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     2,
+     3,
+     4
+    ],
+    "shape": "stair",
+    "rank": 3,
+    "co2": 3
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      4,
+      4
+     ]
+    },
+    "C": {
+     "bars": [
+      4
+     ]
+    },
+    "G": {
+     "bars": [
+      3
+     ]
+    },
+    "T": {
+     "cells": 2
+    }
+   }
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 4,
+    "counts": {
+     "C": 1
+    }
+   },
+   {
+    "type": "column",
+    "col": 0,
+    "counts": {
+     "N": 1
+    }
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "C",
+     "row": 1,
+     "col": 1,
+     "len": 4
+    },
+    {
+     "piece": "T",
+     "row": 1,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 2,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "G",
+     "row": 1,
+     "col": 5,
+     "len": 3
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 4,
+   "label": "Expert",
+   "techniques": [
+    "record",
+    "refuted",
+    "share_out",
+    "swap"
+   ]
+  }
+ },
+ "expect": {
+  "valid": true,
+  "errors": [],
+  "compositions": 1,
+  "deduction": "solved",
+  "requires": [
+   "ramp"
+  ],
+  "rating": 4,
+  "techniques": [
+   "record",
+   "refuted",
+   "share_out",
+   "swap"
+  ],
+  "composition": {
+   "cells": [
+    {
+     "N": 1,
+     "T": 1
+    },
+    {
+     "C": 2,
+     "N": 1
+    },
+    {
+     "C": 2,
+     "N": 1
+    },
+    {
+     "C": 2,
+     "N": 1
+    },
+    {
+     "C": 1,
+     "N": 1,
+     "T": 1
+    },
+    {
+     "G": 1,
+     "N": 1
+    },
+    {
+     "G": 1,
+     "N": 1
+    },
+    {
+     "G": 1,
+     "N": 1
+    }
+   ],
+   "exports": {},
+   "pumps": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "turbines": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  }
+ }
+}

@@ -1,0 +1,195 @@
+{
+ "name": "ramp-study-T1",
+ "grid": {
+  "id": 301,
+  "title": "Rampe T1",
+  "section": "tutorial",
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "demand": [
+   3,
+   3,
+   2,
+   2,
+   2,
+   2
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4,
+     5
+    ],
+    "shape": "trap",
+    "rank": 3,
+    "co2": 3
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      3,
+      6
+     ]
+    },
+    "C": {
+     "bars": [
+      3
+     ]
+    },
+    "T": {
+     "cells": 1
+    }
+   }
+  },
+  "clues": [],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "C",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 2,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 3
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": [
+    "exhausted",
+    "swap"
+   ]
+  }
+ },
+ "expect": {
+  "valid": true,
+  "errors": [],
+  "compositions": 1,
+  "deduction": "solved",
+  "requires": [
+   "ramp"
+  ],
+  "rating": 1,
+  "techniques": [
+   "exhausted",
+   "swap"
+  ],
+  "composition": {
+   "cells": [
+    {
+     "C": 1,
+     "N": 1,
+     "T": 1
+    },
+    {
+     "C": 2,
+     "N": 1
+    },
+    {
+     "C": 1,
+     "N": 1
+    },
+    {
+     "N": 2
+    },
+    {
+     "N": 2
+    },
+    {
+     "N": 2
+    }
+   ],
+   "exports": {},
+   "pumps": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "turbines": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  }
+ }
+}

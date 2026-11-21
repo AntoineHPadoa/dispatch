@@ -1,0 +1,30 @@
+{
+ "titles": {
+  "pointe_soir": ["Pointe du soir", "Le soir s'allume", "Tout le monde rentre"],
+  "deux_bosses": ["Deux bosses", "Matin et soir", "La journée en deux temps"],
+  "midi_solaire": ["Midi au soleil", "Le creux de midi", "Plein soleil"],
+  "surplus_midi": ["Trop de soleil", "Midi déborde", "Le surplus de midi"],
+  "nuit_plate": ["Nuit calme", "Une journée sans relief", "Le ruban tient"],
+  "plateau_hiver": ["Plateau d'hiver", "Journée froide", "Le chauffage tient bon"],
+  "vent_nocturne": ["Vent de nuit", "La nuit souffle", "Les éoliennes veillent"]
+ },
+ "openings": {
+  "pointe_soir": ["La consommation grimpe jusqu'à {peak}.", "Le pic arrive à {peak}, quand tout s'allume."],
+  "deux_bosses": ["Un premier pic le matin, un second vers {peak}.", "La demande monte deux fois : au réveil et vers {peak}."],
+  "midi_solaire": ["Le soleil de midi creuse la demande.", "À midi, les panneaux font une bonne part du travail."],
+  "surplus_midi": ["À {surplus}, le soleil produit plus que le pays ne consomme.", "Le soleil déborde à {surplus} : il faut écouler le surplus."],
+  "nuit_plate": ["La demande reste presque plate toute la journée.", "Peu de relief aujourd'hui : la base fait l'essentiel."],
+  "plateau_hiver": ["Le froid tient la demande haute toute la journée.", "De {start} au soir, le chauffage maintient un plateau."],
+  "vent_nocturne": ["Le vent souffle la nuit et soulage la base.", "Les éoliennes tournent fort la nuit, moins le jour."]
+ },
+ "mechanics": {
+  "neighbors": ["La ligne vers {country} reste ouverte.", "{Country} peut acheter ou vendre selon la ligne."],
+  "neighbors_many": ["{Countries} ont leurs lignes ouvertes.", "Plusieurs frontières à surveiller : {countries}."],
+  "step": ["Le lac de la STEP attend son pompage.", "La STEP peut stocker l'eau pour plus tard."],
+  "co2": ["Le plafond carbone est serré : {cap} au plus.", "Pas plus de {cap} de CO₂ aujourd'hui."],
+  "ramp": ["La centrale à charbon démarre et s'arrête en douceur.", "Le charbon monte en charge par paliers."],
+  "tall": ["Le charbon ne descend pas sous 2 GW quand il tourne.", "Une centrale à charbon tourne à pleine puissance."],
+  "stock": ["Le barrage n'a que {stock} cases d'eau.", "Réserve d'eau limitée : {stock} cases."],
+  "none": ["Le marché a publié ses relevés.", "Les relevés du jour sont tombés."]
+ }
+}

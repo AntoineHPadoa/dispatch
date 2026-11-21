@@ -10,10 +10,12 @@ Printable logic puzzle on the power grid: fill the day's demand curve with power
   - `src/ui/` — hash router, home, game screen (SVG board, gestures, undo, progress in `localStorage`), print sheets; `src/styles/` screen and print CSS.
   - `src/i18n/fr.ts` — every text shown to the player.
   - `src/data/grids.json` — the 11 grids (7 tutorial, 4 rated).
-  - `scripts/convert-grids.ts` (prototype format → §14), `scripts/check_unique.py` (uniqueness with the solver).
-  - `tests/` — Vitest: grids, engine, place-over, convert, UI logic.
+  - `scripts/convert-grids.ts` (prototype format → §14), `scripts/check_unique.py` (every grid unique, equal to its reference and deducible, with `dispatch_solver`).
+  - `tests/` — Vitest: grids, engine, place-over, convert, UI logic, shared reference grids.
 - `lab/` — grid lab (the human's creation tool): `lab_server.py` (local JSON API, standard library only), `run.sh` (one launch command), `candidates/` (lots written by `dispatch-solver generate`), `lots/`, `plays.jsonl`, `notes.json`, `players.json`; tests in `lab/tests/`. Page: `web/lab.html` + `web/src/lab/` (dev server only, never in the published build).
-- `solver/` — Python (OR-Tools CP-SAT): exact solver, human-deduction solver and difficulty rating, grid generator, CLI `spot-solver`. Its score modes (v1, v2, target) are not part of the game: leave them.
+- `solver/` — Python package `dispatch_solver` (OR-Tools CP-SAT), §14 native: validator (port of `validateGrid`, same messages), cell-by-cell shapes (rectangles, tall pieces, coal ramps `trap`/`stair` behind a flag), exact solver (uniqueness on the composition), human-deduction solver (§9 techniques, traces, provisional rating), generator (lots with imposed diversity, minimal clues, bulletin drafts), CLI `dispatch-solver`. Design: `docs/next/solver-v2.md`. The old pose-format solver is in `docs/archive/solver-v1/`.
+- `fixtures/grids/` — shared reference grids (valid, invalid, unpublishable, each with `expect`), played by pytest and by `web/tests/reference.test.ts`; rebuilt by `solver/scripts/build_fixtures.py`.
+- `lab/` — grid lab data: `lots/<lot>.json` (generator configs and quotas), `candidates/<lot>.json` (§14 grids + `lab` block: measures, bulletin draft) and `.stats.json`.
 - `docs/next/` — next iteration brief, `docs/next/brief.md` (local, untracked).
 - `docs/style-reference.html` — visual reference (screen style A, paper style B); `docs/reviews/` reviews and captures; `docs/archive/` prototype and superseded notes (read-only).
 - `.github/workflows/deploy.yml` — solver tests + uniqueness check, web tests, build and publish on every push to `main`.
@@ -33,7 +35,10 @@ npm run convert           # regenerate src/data/grids.json from docs/archive/dem
 
 cd solver
 uv sync                   # creates .venv
-.venv/bin/pytest -q       # solver tests
+.venv/bin/pytest -q       # solver tests (~1 min)
+.venv/bin/dispatch-solver check ../web/src/data/grids.json --id 7   # validity, compositions, deduction, rating
+.venv/bin/dispatch-solver deduce ../web/src/data/grids.json --id 11 # deduction trace
+.venv/bin/dispatch-solver generate ../lab/lots/demo-01.json         # fill a lot into lab/candidates/
 ```
 
 ```bash
