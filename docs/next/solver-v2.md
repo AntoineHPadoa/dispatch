@@ -1,6 +1,6 @@
 # Solveur et générateur v2 — conception (S4.1)
 
-Document à valider avant tout code. Base : `GAME-DESIGN.md` (§8, §9, §10, §14), brief v2 §1 et §2, plan rev-3 (S4). Les choix ouverts sont regroupés à la fin (§12), chacun avec ma recommandation.
+Conception d'origine (S4.1), tenue à jour sur les points marqués ; les comptes de grilles (« 11 grilles ») et les mesures datent de S4 et restent comme historique. Base : `GAME-DESIGN.md` (§8, §9, §10, §14), brief v2 §1 et §2, plan rev-3 (S4). Les choix ouverts sont regroupés à la fin (§12), chacun avec ma recommandation.
 
 ## 1. Ce qui change, en bref
 
@@ -309,6 +309,7 @@ Bloc `lab` d'une candidate : `lot`, `index` (0…), `seed`, `aim` (niveau visé)
 ## 14. Écarts constatés à l'implémentation (S4.2)
 
 - **Modules** : `rate.py` est fondu dans `deduce/trace.py` (`Result.summary()`) ; `api.py` regroupe les points d'entrée (CLI, `check_unique.py`, labo).
+- **Étapes non tracées** : les poses qui dépassent la silhouette maximale (aucun export ni pompage ne peut l'atteindre) sont écartées dès la construction du plateau (`board.py`), sans étape « Pas de place ». Sur une grille sans voisin ni STEP, `steps` sous-estime donc un peu le travail du joueur ; à garder en tête en lisant les mesures du labo.
 - **Mesure « goulots »** remplacée par `single_effect_steps` (étapes qui ne changent qu'une chose) : compter les tours où une seule technique s'applique imposait de tester toutes les techniques à chaque tour.
 - **Silhouette** : les options sont factorisées (option STEP × exports par colonne) au lieu d'énumérer des silhouettes complètes. Les totaux de l'inventaire exact sont réappliqués en silence (comme l'ancien solveur) ; un total publié par un indice `exchanges` est une étape `record` (C3).
 - **Inventaire exact** : les largeurs qu'il ne cite pas et les imports à total nul ne sont pas proposés (ce n'est pas une déduction), comme dans l'ancien solveur.

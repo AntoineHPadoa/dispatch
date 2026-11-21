@@ -2,7 +2,7 @@
 
 Étude sur papier de la rampe (brief §2) : une centrale thermique qui démarre et s'arrête par paliers, posée d'un bloc. Deux profils sont traités à fond : le **trapèze 1 → 2 → 1** et l'**escalier 2 → 1**. Aucun code de jeu n'est écrit ici.
 
-- **Planche visuelle** des 8 mini-grilles (style papier B, énoncé, solution, déductions) : https://claude.ai/artifact/HN1VS9hZ5ngGY141CKAzLg (source : `docs/next/rampe-grilles.html`).
+- **Planche visuelle** des 8 mini-grilles (style papier B, énoncé, solution, déductions) : https://claude.ai/artifact/HN1VS9hZ5ngGY141CKAzLg (source : `docs/archive/maquettes/rampe-grilles.html`).
 - **Vérification** : `docs/next/rampe/check_ramp.py` (CP-SAT, jetable, hors du package) sur `docs/next/rampe/grids.json`.
 - **Recommandation** : traiter le **trapèze** en premier (§5).
 

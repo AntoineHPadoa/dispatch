@@ -26,7 +26,7 @@ Le chantier dont dépend tout le reste : il produit de belles grilles, intéress
 
 ## 3. Menu : le bulletin du marché
 
-Maquettes : `docs/next/menu-bulletin.html`. La section « Tour 5 » montre les choix retenus ; les tours précédents restent pour mémoire.
+Maquettes : `docs/archive/maquettes/menu-bulletin.html`. La section « Tour 5 » montre les choix retenus ; les tours précédents restent pour mémoire.
 
 - **Concept** : chaque grille est un bulletin publié par le marché. Il porte un numéro, un titre (« Pointe du soir ») et un court texte qui raconte la journée. Le générateur doit produire ce titre, ce texte et la météo par créneau.
 - **Fiche du jour C1** (« fiche de quart ») : bande en tête (numéro, jour court, titre, tampon « À servir »), puis le texte de contexte, la silhouette avec la météo et la case qui fixe le prix, une rangée de pastilles neutres pour les centrales, enfin la difficulté et le bouton « Prendre le quart ».

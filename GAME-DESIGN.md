@@ -49,7 +49,7 @@ Aujourd'hui, R et F ne font que réduire la demande à couvrir. Elles restent de
 **La rampe du charbon** : une grille peut déclarer son charbon en rampe (trapèze 1 → 2 → 1), jamais rectangle et rampe à la fois.
 - Une rampe de largeur W occupe W cases sur sa **ligne de base** et W − 2 cases (le **plateau**) sur la ligne juste au-dessus ; les deux cases du bout de la base sont les **épaules**. Elle compte 2W − 2 cases.
 - Elle se pose comme une barre : la largeur totale est sa durée de marche, la hauteur est fixe. Elle se pose à n'importe quelle ligne.
-- Un escalier 2 → 1 est prévu par le format (`shape: "stair"`) mais n'est pas encore dans le jeu.
+- Un escalier 2 → 1 est prévu par le format (`shape: "stair"`) : le validateur et le dessin le connaissent, mais il n'est pas joué (le labo refuse de le jouer ou de le promouvoir, aucune grille publiée n'en a, le moteur n'a pas de test qui le pose).
 
 Le **rang de prix** suit l'ordre d'appel réel (merit order). Il ne sert qu'aux indices de prix : « à 8h, c'est le gaz qui fixe le prix » veut dire que la case pilotable la plus chère de la colonne est du gaz. L'import n'a pas de rang : un indice de prix ne porte jamais sur un créneau qui contient un import.
 
@@ -230,7 +230,8 @@ Contrôles du validateur : de 6 à 12 colonnes ; rang et CO₂ de chaque pièce 
   - `weather` : un ciel par créneau, parmi `sun`, `moon`, `cloud`, `wind` (autant de valeurs que de colonnes).
   - `published` : jour de publication, ISO `YYYY-MM-DD`.
   - **Fiche du jour** : le bulletin dont la date de publication est la plus récente et ≤ aujourd'hui (date locale du navigateur). Stock épuisé : le dernier publié reste affiché ; avant la première publication, il n'y en a pas (`web/src/model/bulletin.ts`).
-  - Les bulletins des 4 grilles notées sont écrits à la main dans `web/scripts/bulletins.ts`, repris par `npm run convert`.
+  - Les bulletins des 4 premières grilles notées ont été écrits à la main (`web/scripts/bulletins.ts`) ; ceux des grilles promues viennent du brouillon du labo.
+  - **Titre** : une grille avec bulletin s'affiche sous le titre de son bulletin (`displayTitle`) ; le champ `title` ne sert qu'aux outils. Une grille promue depuis le labo prend le titre de son bulletin, les 4 premières grilles notées gardent « Facile »… « Expert ».
 
 En inventaire exact : `"inventory": {"level": "exact", "pieces": {"N": {"bars": [6, 6, 5]}, "T": {"cells": 5}}, "exports": {...}, "imports": {...}, "step": 1}`.
 
@@ -240,4 +241,4 @@ En inventaire exact : `"inventory": {"level": "exact", "pieces": {"N": {"bars": 
 - `solver/` : package Python `dispatch_solver` (OR-Tools CP-SAT), au format §14 : validateur (mêmes contrôles et messages que `grid.ts`), pièces décrites case par case (rectangles, pièces hautes, rampes du charbon derrière un drapeau), solveur exact (unicité sur la composition), solveur de déduction humaine (techniques du §9, traces, note), générateur par lots et CLI `dispatch-solver`. Conception : `docs/next/solver-v2.md`.
 - `fixtures/grids/` : jeu de grilles de référence (valides, invalides, non publiables) joué par les tests Python et TypeScript, pour que les deux implémentations ne divergent pas.
 - `lab/` : lots du générateur et grilles candidates.
-- `docs/archive/` : prototype JS d'origine (`demo/`, dont `grids-pose.json`, source des 11 grilles actuelles via `web/scripts/convert-grids.ts`) et ancien solveur au format « pose » (`solver-v1/`).
+- `docs/archive/` : prototype JS d'origine (`demo/`, dont `grids-pose.json`, source des 11 premières grilles via `web/scripts/convert-grids.ts`, outil ponctuel), ancien solveur au format « pose » (`solver-v1/`) et maquettes terminées (`maquettes/`).

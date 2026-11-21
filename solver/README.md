@@ -7,7 +7,7 @@ Solveurs et générateur des grilles de Dispatch, au format §14 de `GAME-DESIGN
 ```bash
 cd solver
 uv sync                 # Python >= 3.11, OR-Tools, pytest
-.venv/bin/pytest -q     # ~100 tests, ~50 s
+.venv/bin/pytest -q     # ~170 tests, ~3 min
 ```
 
 ## Commandes

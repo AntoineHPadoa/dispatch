@@ -1,6 +1,6 @@
 /*
  * Hand-written market bulletins of the 4 rated grids (prototype ids 8 to 11).
- * - Read by convert-grids.ts, so `npm run convert` keeps them in src/data/grids.json.
+ * - Read by convert-grids.ts (one-off prototype converter); grids.json holds the published copies.
  * - Publication days are consecutive; the sheet of the day follows the browser date (src/model/bulletin.ts).
  */
 import type { Bulletin } from '../src/model/grid';
