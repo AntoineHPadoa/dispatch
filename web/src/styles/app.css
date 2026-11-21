@@ -106,7 +106,9 @@ button.prow:hover { background: #faf4f7; }
 .count.over { color: var(--bad); font-weight: 800; }
 .xrow { cursor: default; }
 .step-glyph { font-size: .66rem; font-weight: 800; letter-spacing: .05em; color: #4f7fb8; background: #e3eefa; border: 1px solid #bfd7f1; border-radius: 6px; padding: 1px 6px; }
-.board-svg .step-tag.act { cursor: pointer; }
+.board-svg .step-tag.act, .board-svg .step-arrow.act { cursor: pointer; }
+.board-svg .step-arrow:focus { outline: none; }
+.board-svg .step-arrow:focus-visible circle { stroke: var(--accent); stroke-width: 2.5; }
 .board-svg .step-tag:focus { outline: none; }
 .board-svg .step-tag:focus-visible rect { stroke: var(--accent); stroke-width: 2.5; }
 .xpill { font-size: .72rem; font-weight: 800; border-radius: 999px; padding: 2px 9px; background: #d6c9f1; font-variant-numeric: tabular-nums; }
@@ -222,10 +224,26 @@ body:has(.home) { background-color: #faf8f9; background-image: radial-gradient(#
 body.print-preview #print-root { display: grid; gap: 24px; justify-items: center; padding: 0 16px 48px; }
 body.print-preview #print-root .a4 { box-shadow: 0 2px 18px rgba(59, 51, 64, .12); }
 
+/* ---- compact plant row (one column only) ---- */
+.chips { display: none; }
+.chip { flex: none; display: inline-flex; align-items: center; gap: 6px; font-size: .76rem; background: var(--card); border: 1px solid var(--hair); border-radius: 999px; padding: 5px 11px; min-height: 34px; cursor: pointer; white-space: nowrap; color: var(--ink); }
+.chip b { font-weight: 800; }
+.chip small { font-size: .68rem; color: var(--soft); font-variant-numeric: tabular-nums; }
+.chip .sw { width: 10px; height: 10px; border-radius: 3px; border: 1.5px solid; display: block; }
+.chip.sel { background: var(--wash); border-color: #e2c3d3; }
+.chip svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.erase-chip { flex: none; padding: 5px 9px; color: var(--soft); }
+.erase-chip.sel { color: var(--ink); border-color: var(--ink); background: var(--card); }
+
 /* ---- one column ---- */
 @media (max-width: 860px) {
   .game { grid-template-columns: minmax(0, 1fr); grid-template-areas: none; grid-template-rows: none; gap: 14px; }
   .game > .top, .game > .intro, .game > .play, .game > .side { grid-area: auto; }
+  .chips { display: flex; gap: 8px; width: 0; min-width: 100%; align-items: center; }
+  .chips-row { display: flex; gap: 6px; overflow-x: auto; flex: 1; min-width: 0; padding: 2px 0 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .chips-row::-webkit-scrollbar { display: none; }
+  .chips-row { -webkit-mask-image: linear-gradient(to right, transparent, #000 12px, #000 calc(100% - 12px), transparent); mask-image: linear-gradient(to right, transparent, #000 12px, #000 calc(100% - 12px), transparent); }
+  .erase-tool { display: none; }
   .game:not(:has(> .intro)) { grid-template-areas: none; }
   .hgrid { grid-template-columns: minmax(0, 1fr); }
 }
@@ -246,3 +264,5 @@ body.print-preview #print-root .a4 { box-shadow: 0 2px 18px rgba(59, 51, 64, .12
 /* 210 mm at .36 is 286 px: the sheet keeps a 16 px margin on a 320 px screen. */
 @media screen and (max-width: 380px) { body.print-preview #print-root .a4 { zoom: .36; } }
 @media (max-width: 360px) { .tool { padding: 6px 8px; gap: 4px; font-size: .74rem; } }
+
+.board-svg [data-act] { -webkit-tap-highlight-color: transparent; }

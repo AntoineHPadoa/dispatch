@@ -251,6 +251,9 @@ export const priceTag = (piece: PieceId) => {
   return `€ ${name.length > 6 ? `${name.slice(0, 4)}.` : name}`;
 };
 
+/** Price tag on paper, short to save room: "€ N", "€ G". */
+export const priceTagShort = (piece: PieceId) => `€ ${piece}`;
+
 /** Programme bracket label: "Réacteur 4h → 20h". */
 export const programLabel = (grid: Grid, piece: PieceId, col: number, len: number) =>
   `${SHORT_NAME[piece]} ${columnLabel(grid, col)} → ${columnLabel(grid, col + len)}`;
@@ -351,6 +354,7 @@ export const UI = {
   gridCluesNote: 'Les indices liés à un créneau sont dessinés sur la grille : prix, relevés, programmes, flux.',
   allClues: 'Tous les indices en texte',
   clueState: { ok: 'vérifié', open: 'à vérifier', broken: 'contredit' } as const,
+  chipsLabel: 'Centrales',
   tools: { erase: 'Gomme', undo: 'Annuler', reset: 'Recommencer', print: 'Imprimer' },
   toolsLabel: 'Outils',
   co2: 'CO₂',
@@ -367,7 +371,10 @@ export const UI = {
   stepPairsToDeduce: 'paires à déduire',
   pairsLaid: (k: number) => `${k} ${k > 1 ? 'paires posées' : 'paire posée'}`,
   stepTagLabel: (pump: string, turbine: string) => `Paire STEP : pompage à ${pump}, turbinage à ${turbine}. Touche pour la retirer.`,
-  hintStep: 'STEP : touche le créneau du pompage, puis un créneau plus tard pour le turbinage. Touche une étiquette ▲ ou ▼ pour retirer la paire.',
+  hintStep: 'STEP : touche ▲ au-dessus du créneau où l’on pompe. Touche une étiquette ▲ ou ▼ posée pour retirer la paire.',
+  stepArrowPump: (col: string) => `Pomper à ${col}`,
+  stepArrowChosen: (col: string) => `Pompage à ${col} choisi. Touche pour l’annuler.`,
+  stepArrowTurbine: (col: string) => `Turbiner à ${col}`,
   stepTooEarly: (pump: string) => `Le turbinage vient après le pompage de ${pump} : touche un créneau plus tard.`,
   stepPump: '▲ pompe',
   stepTurbine: '▼ turbine',
@@ -377,8 +384,8 @@ export const UI = {
   lockedTap: (col: string) => `Flux publié à ${col} : verrouillé.`,
   stepCellLabel: (col: string) => `STEP à ${col}`,
   /** Idle hint: `list` when the grid has no order book, `exports` when it has a neighbor line. */
-  hintChoose: (list: boolean, exports: boolean) => 'Glisse sur la grille pour poser la centrale choisie'
-    + ` (ou touche la case de départ puis celle d’arrivée). Change de centrale dans ${list ? 'la liste' : 'le carnet'}.`
+  hintChoose: (list: boolean, exports: boolean, phone = false) => 'Glisse sur la grille pour poser la centrale choisie'
+    + ` (ou touche la case de départ puis celle d’arrivée). Change de centrale dans ${phone ? 'la rangée sous la grille' : list ? 'la liste' : 'le carnet'}.`
     + `${exports ? ' Exporte en touchant les pastilles sous la grille.' : ''}`,
   hintSecondTap: (label: string) => `${label} : touche maintenant la case d’arrivée.`,
   hintErase: 'Gomme : touche une centrale pour la retirer.',
@@ -405,9 +412,10 @@ export const UI = {
   nothingToUndo: 'Rien à annuler.',
   resetDone: 'Grille remise à zéro. « Annuler » la rétablit.',
   nothingToReset: 'Rien à recommencer.',
-  stepPending: (col: string) => `Pompage à ${col} : touche un créneau plus tard pour le turbinage.`,
+  stepPending: (col: string) => `Pompage à ${col}. Touche ▼ sur le créneau du turbinage.`,
   stepAdded: (pump: string, turbine: string) => `STEP : pompage à ${pump}, turbinage à ${turbine}.`,
   stepRemoved: 'Paire STEP retirée.',
+  stepPendingDropped: 'Pompage en attente annulé.',
   stepEarlier: 'Le turbinage doit venir après le pompage.',
   invalidBars: (k: number) => `${k} ${k > 1 ? 'centrales ne tiennent plus' : 'centrale ne tient plus'} : hachurée${k > 1 ? 's' : ''} en rouge.`,
   doneTitle: 'Programme bouclé',
@@ -426,10 +434,10 @@ export const UI = {
   stepLastSlot: 'Pas de pompage sur le dernier créneau : aucun turbinage ne peut suivre.',
   boardHelp: 'Flèches pour déplacer le curseur, Entrée pour poser (case de départ puis d’arrivée), Suppr pour retirer, Échap pour annuler.',
   // Print sheet
-  printFoot: 'Couvre toute la silhouette. Une seule solution.',
-  printFootStep: 'Pompage ▲ et turbinage ▼ : note-les dans les cases sous la grille.',
-  printFootExports: 'Exports et imports : note-les dans les cases sous chaque créneau.',
-  printFootBoth: 'Exports, imports, pompage ▲ et turbinage ▼ : note-les dans les cases sous la grille.',
+  printFoot: 'Couvre tout ce qui est sous le trait épais. Une seule solution.',
+  printFootStep: 'Pompage ▲ et turbinage ▼ : note-les sous la grille. Remonte le trait épais d’une case par pompage, descends-le par turbinage.',
+  printFootExports: 'Exports et imports : note-les sous chaque créneau. Remonte le trait épais d’une case par export.',
+  printFootBoth: 'Note exports, imports, pompage ▲ et turbinage ▼ sous la grille. Remonte le trait épais d’une case par export ou pompage, descends-le par turbinage.',
   printLegend: 'Indices sur la grille',
   printId: (id: number) => `Dispatch · n° ${id}`,
   printTitle: 'Impression',

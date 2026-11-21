@@ -3,6 +3,8 @@
  * - stepTapResult: the first tap on a slot pumps (pending), a tap on a strictly later slot turbines
  *   and adds the pair; every refusal comes with the message to show and leaves the pending slot as is.
  * - stepPairIndexAt: index of the pair pumping or turbining in a column (tap on its ▲ or ▼ removes it).
+ * - stepUndoPlan: a pending pump is not in the undo history, so Undo drops it before any recorded action.
+ * - stepEraseResult: the eraser on the pending slot drops the pump (nothing else lives there yet).
  */
 import type { Grid } from '../model/grid';
 import { addStep, type PlayState } from '../engine';
@@ -37,4 +39,17 @@ export function stepTapResult(grid: Grid, state: PlayState, pending: number | nu
 /** Index of the STEP pair pumping or turbining in `col`, or -1. */
 export function stepPairIndexAt(state: PlayState, col: number): number {
   return state.step.findIndex((p) => p.pump === col || p.turbine === col);
+}
+
+/** An arrow tap: the chosen ▲ cancels the pending pump, any other arrow goes through stepTapResult. */
+export const stepArrowAction = (pending: number | null, col: number): 'cancel' | 'tap' => (pending === col ? 'cancel' : 'tap');
+
+/** What Undo does: drop the pending pump first (it is not recorded), else undo the last recorded action. */
+export function stepUndoPlan(pending: number | null): 'drop-pending' | 'undo' {
+  return pending === null ? 'undo' : 'drop-pending';
+}
+
+/** The eraser on the pending slot drops the pump; elsewhere it leaves the pending pump alone. */
+export function stepEraseResult(pending: number | null, col: number): { pending: number | null; dropped: boolean } {
+  return pending !== null && pending === col ? { pending: null, dropped: true } : { pending, dropped: false };
 }

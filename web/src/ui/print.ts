@@ -1,13 +1,13 @@
 /*
  * Print sheets (style B): one grid per A4 page, in colour, without the answer.
- * - Empty silhouette except what is imposed (weather, engaged plants, published flows); slot
- *   clues drawn on the grid and listed in short text under it; order book or available plants;
+ * - Full rectangle at the maximum height, a thick line for the demand; slot clues in a band above
+ *   it (outside the cells) and listed in short text under it; weather, engaged plants and published flows inside; order book or available plants;
  *   day clues; boxes for exchanges.
  * - No clue status and no pumping or turbining drawn: the paper only shows the puzzle.
  */
 import type { Grid } from '../model/grid';
 import { TECHNIQUES, UI, slotClueShort } from '../i18n/fr';
-import { renderBoard } from './board';
+import { boardGeometry, renderBoard } from './board';
 import { bulletinTag, displayTitle, initialState } from './game';
 import { clueItem, co2RuleText, isDayClue, renderBook } from './panels';
 import { esc } from './palette';
@@ -16,7 +16,7 @@ import { esc } from './palette';
 export function printCell(grid: Grid): number {
   // Printable width is about 680 CSS px; keep the board within about 620 px of height.
   const n = grid.columns.length;
-  const rows = Math.max(...grid.demand.map((d, c) => Math.max(d, (grid.weather.R[c] ?? 0) + (grid.weather.F[c] ?? 0))));
+  const rows = boardGeometry(grid, 'B', 1).rows;
   const below = 3 + grid.neighbors.length + (grid.step ? 1 : 0) + grid.clues.filter((c) => c.type === 'bar').length * 0.6;
   return Math.max(26, Math.min(64, Math.floor(660 / n), Math.floor(620 / (rows + below))));
 }
