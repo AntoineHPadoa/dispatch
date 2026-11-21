@@ -367,6 +367,7 @@ export const UI = {
   co2Kind: 'Plafond CO₂',
   neighborLine: (name: string, cap: number) => `${name} · ligne de ${cap} ${cap > 1 ? 'blocs' : 'bloc'} par créneau`,
   stepLine: 'STEP · pompage ▲ puis turbinage ▼',
+  stepLineNumbered: 'STEP · pompage ▲ puis turbinage ▼ · numérote les paires : ▲1 ▼1, ▲2 ▼2…',
   stepName: 'STEP',
   stepPairsToDeduce: 'paires à déduire',
   pairsLaid: (k: number) => `${k} ${k > 1 ? 'paires posées' : 'paire posée'}`,
@@ -376,8 +377,8 @@ export const UI = {
   stepArrowChosen: (col: string) => `Pompage à ${col} choisi. Touche pour l’annuler.`,
   stepArrowTurbine: (col: string) => `Turbiner à ${col}`,
   stepTooEarly: (pump: string) => `Le turbinage vient après le pompage de ${pump} : touche un créneau plus tard.`,
-  stepPump: '▲ pompe',
-  stepTurbine: '▼ turbine',
+  stepPumpWord: 'pompe',
+  stepTurbineWord: 'turbine',
   exportLabel: (name: string, col: string, value: number, imports: number) =>
     `${name}, ${col} : ${value} exporté${value > 1 ? 's' : ''}${imports ? `, ${imports} importé${imports > 1 ? 's' : ''}` : ''}. Touche pour changer l’export.`,
   exportLocked: (name: string, col: string) => `${name}, ${col} : flux publié, verrouillé.`,
