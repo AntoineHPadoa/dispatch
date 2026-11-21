@@ -21,6 +21,8 @@ export interface BoardPreview {
   rect: Rect;
   piece: string;
   valid: boolean;
+  /** Indexes of the bars this placement would replace (drawn faded, pale red). */
+  replacing?: number[];
 }
 
 export interface BoardInput {
@@ -238,12 +240,15 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     }
     return out;
   };
+  const replacing = new Set(input.preview?.replacing ?? []);
   state.bars.forEach((b, i) => {
     if (!A && !b.locked) return;
     const h = barHeight(b);
     const f = fill(b.piece);
-    s += drawRect(b.col, b.len, b.row, h, (rx, ry, rw, rh) => `<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" rx="${rad}" fill="${f}"${A ? '' : ` stroke="${ink}" stroke-width="1.2"`}/>`
-      + (invalid.has(i) ? `<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" rx="${rad}" fill="url(#hX${id})" stroke="${BAD}" stroke-width="2"/>` : ''));
+    const gone = replacing.has(i);
+    s += drawRect(b.col, b.len, b.row, h, (rx, ry, rw, rh) => `<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" rx="${rad}" fill="${f}"${A ? '' : ` stroke="${ink}" stroke-width="1.2"`}${gone ? ' fill-opacity=".3"' : ''}/>`
+      + (invalid.has(i) && !gone ? `<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" rx="${rad}" fill="url(#hX${id})" stroke="${BAD}" stroke-width="2"/>` : '')
+      + (gone ? `<rect class="replacing" x="${rx + 1}" y="${ry + 1}" width="${rw - 2}" height="${rh - 2}" rx="${rad}" fill="${BAD}" fill-opacity=".12" stroke="${BAD}" stroke-opacity=".45" stroke-width="1.4" stroke-dasharray="3 3"/>` : ''));
     const last = runs(geo, b.col, b.len).slice(-1)[0]!;
     const first = runs(geo, b.col, b.len)[0]!;
     if (b.locked) {

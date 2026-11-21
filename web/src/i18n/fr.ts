@@ -150,6 +150,7 @@ export const MSG = {
   stepCount: (total: number) => `Toutes les paires STEP sont déjà posées (${total}).`,
   co2: (got: number, cap: number) => `Plafond CO₂ dépassé : ${got} / ${cap}.`,
   locked: () => 'Cette centrale est déjà engagée : on ne peut pas la retirer.',
+  lockedOver: () => 'Une centrale déjà engagée occupe cette place : on ne peut pas la remplacer.',
   nothingHere: () => 'Aucune centrale sur cette case.',
   tooManyBars: (name: string, extra: number[]) => `Barres ${name} en trop : ${extra.join(', ')}.`,
   tooManyCells: (name: string, got: number, want: number) => `Trop de cases ${name} : ${got} pour ${want}.`,
@@ -332,6 +333,20 @@ export const UI = {
   hintSecondTap: (label: string) => `${label} : touche maintenant la case d’arrivée.`,
   hintErase: 'Gomme : touche une centrale pour la retirer.',
   poseOk: (label: string) => `${label} : la pose tient.`,
+  /** "Remplace 1 barre de gaz et 2 imports d’Allemagne" (bars covered by a new placement). */
+  replaces: (grid: Grid, bars: readonly { piece: string; country?: string }[]) => {
+    const counts = new Map<string, number>();
+    for (const b of bars) {
+      const key = b.piece === 'I' ? `I:${b.country ?? ''}` : b.piece;
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+    const parts = [...counts].map(([key, k]) => (key.startsWith('I:')
+      ? `${plural(k, 'import')} ${countryFrom(grid, key.slice(2))}`
+      : `${plural(k, 'barre')} ${PIECE_WORDS[key as PieceId]?.of ?? key}`));
+    const list = parts.length > 1 ? `${parts.slice(0, -1).join(', ')} et ${parts[parts.length - 1]}` : parts[0] ?? '';
+    return `Remplace ${list}`;
+  },
+  poseOver: (label: string, replaces: string) => `${label} : ${replaces.charAt(0).toLowerCase()}${replaces.slice(1)}.`,
   poseBad: (label: string, why: string) => `${label} : ${why.charAt(0).toLowerCase()}${why.slice(1)}`,
   removed: (label: string) => `${label} retirée.`,
   undone: 'Dernière action annulée.',

@@ -7,7 +7,7 @@
  */
 import type { Grid, Placement } from '../model/grid';
 import {
-  barIndexAt, checkPlacement, evaluate, newGame, place, remove, removeStep, addStep, setExport, exportsAt,
+  barIndexAt, checkPlaceOver, evaluate, newGame, placeOver, remove, removeStep, addStep, setExport, exportsAt,
   importsAt, type Evaluation, type PlayState,
 } from '../engine';
 import { TECHNIQUES, UI, columnLabel, durationText, placementLabel } from '../i18n/fr';
@@ -73,6 +73,8 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   let erase = false;
   let gesture: GestureState = idle();
   let cursor: Cell | null = null;
+  /** The keyboard cursor shows only after a key press, not after a pointer gesture. */
+  let keyboard = false;
   let stepPending: number | null = null;
   let message: { text: string; tone: Tone } | null = null;
   let cell = MAX_CELL;
@@ -144,7 +146,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     const r = previewRect(gesture, shapeOf(selected));
     if (!r) return null;
     const bar = barOf(selected, r);
-    const check = checkPlacement(grid, history.present, bar);
+    const check = checkPlaceOver(grid, history.present, bar);
     return { bar, check, rect: r };
   }
 
@@ -152,8 +154,8 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     const pv = preview();
     const out = renderBoard({
       grid, state: history.present, ev, style: 'A', cell,
-      preview: pv ? { rect: pv.rect, piece: pv.bar.piece, valid: pv.check.ok } : null,
-      anchor: gesture.anchor, cursor: document.activeElement === wrap ? cursor : null, stepPending, interactive: true,
+      preview: pv ? { rect: pv.rect, piece: pv.bar.piece, valid: pv.check.ok, replacing: pv.check.ok ? pv.check.replaced : [] } : null,
+      anchor: gesture.anchor, cursor: keyboard && document.activeElement === wrap ? cursor : null, stepPending, interactive: true,
     });
     geo = out.geo;
     scroll.innerHTML = out.svg;
@@ -183,7 +185,9 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     let m = message;
     if (pv && (gesture.drag || gesture.anchor)) {
       const label = labelOf(pv.bar);
-      m = pv.check.ok ? { text: UI.poseOk(label), tone: 'ok' } : { text: UI.poseBad(label, pv.check.error.message), tone: 'bad' };
+      const over = pv.check.replaced.map((i) => history.present.bars[i]!).filter(Boolean);
+      if (!pv.check.ok) m = { text: UI.poseBad(label, pv.check.error.message), tone: 'bad' };
+      else m = { text: over.length ? UI.poseOver(label, UI.replaces(grid, over)) : UI.poseOk(label), tone: 'ok' };
     } else if (gesture.anchor && selected) {
       m = { text: UI.hintSecondTap(labelOf(barOf(selected, { ...gesture.anchor, len: 1, height: 1 }))), tone: 'info' };
     } else if (!m) {
@@ -243,8 +247,8 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   function layAt(r: Rect) {
     if (!selected) return;
     const bar = barOf(selected, r);
-    const res = place(grid, history.present, bar);
-    if (res.ok) commit(res.state, UI.poseOk(labelOf(bar)));
+    const res = placeOver(grid, history.present, bar);
+    if (res.ok) commit(res.state, res.replaced.length ? UI.poseOver(labelOf(bar), UI.replaces(grid, res.replaced)) : UI.poseOk(labelOf(bar)));
     else { message = { text: UI.poseBad(labelOf(bar), res.error.message), tone: 'bad' }; drawBoard(); }
   }
 
@@ -323,6 +327,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   const clearLongPress = () => { if (longPress !== undefined) { window.clearTimeout(longPress); longPress = undefined; } };
 
   function onPointerDown(e: PointerEvent) {
+    keyboard = false;
     if ((e.target as Element).closest('[data-act]')) return;
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     const c = cellFromEvent(e);
@@ -392,6 +397,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
 
   // ---- keyboard
   function onKeyDown(e: KeyboardEvent) {
+    keyboard = true;
     const act = (e.target as Element).closest?.('[data-act]');
     if (act && (e.key === 'Enter' || e.key === ' ')) {
       e.preventDefault();
@@ -476,7 +482,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     if (row) select(row.getAttribute('data-piece') ?? '');
   }
 
-  function onWrapFocus() { if (!cursor) cursor = { row: 0, col: 0 }; drawBoard(); }
+  function onWrapFocus() { keyboard = wrap.matches(':focus-visible'); if (!cursor) cursor = { row: 0, col: 0 }; drawBoard(); }
   function onWrapBlur() { drawBoard(); }
 
   // ---- size

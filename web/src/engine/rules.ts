@@ -128,6 +128,49 @@ export function place(grid: Grid, state: PlayState, bar: Placement): ActionResul
   return { ok: true, state: { ...state, bars: [...state.bars, copy] } };
 }
 
+/** A placement that may lay over bars already on the board: the bars it would replace. */
+export type OverCheck = { ok: true; replaced: number[] } | { ok: false; error: EngineError; replaced: number[] };
+
+/** Indexes of the bars a placement would cover. */
+export function coveredBars(state: PlayState, bar: Placement): number[] {
+  const out: number[] = [];
+  state.bars.forEach((o, i) => {
+    for (let c = bar.col; c < bar.col + bar.len; c++) {
+      for (let r = bar.row; r < bar.row + barHeight(bar); r++) {
+        if (covers(o, r, c)) { if (!out.includes(i)) out.push(i); return; }
+      }
+    }
+  });
+  return out;
+}
+
+/**
+ * Can `bar` be laid, replacing the bars it covers? Engaged bars are never replaced. The covered
+ * bars go back to the inventory before the budget check.
+ */
+export function checkPlaceOver(grid: Grid, state: PlayState, bar: Placement): OverCheck {
+  const shape = checkShape(grid, bar);
+  if (!shape.ok) return { ...shape, replaced: [] };
+  const replaced = coveredBars(state, bar);
+  if (replaced.some((i) => state.bars[i]?.locked)) return { ...fail('locked', MSG.lockedOver()), replaced };
+  const rest: PlayState = { ...state, bars: state.bars.filter((_, i) => !replaced.includes(i)) };
+  const sil = checkSilhouette(grid, silhouette(grid, rest), bar);
+  if (!sil.ok) return { ...sil, replaced };
+  const budget = checkBudget(grid, rest, bar);
+  if (!budget.ok) return { ...budget, replaced };
+  return { ok: true, replaced };
+}
+
+/** Lay a bar over the board: the bars it covers are removed first, in one action. */
+export function placeOver(grid: Grid, state: PlayState, bar: Placement): ActionResult & { replaced: PlacedBar[] } {
+  const check = checkPlaceOver(grid, state, bar);
+  const replaced = check.replaced.map((i) => state.bars[i]!).filter(Boolean);
+  if (!check.ok) return { ...refuse(state, check), replaced };
+  const rest: PlayState = { ...state, bars: state.bars.filter((_, i) => !check.replaced.includes(i)) };
+  const r = place(grid, rest, bar);
+  return r.ok ? { ...r, replaced } : { ...r, state, replaced };
+}
+
 /** Remove the bar covering a cell (engaged bars stay). */
 export function remove(state: PlayState, row: number, col: number): ActionResult {
   const i = barIndexAt(state, row, col);
