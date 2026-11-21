@@ -20,7 +20,7 @@ import {
   poseMessage, techniqueLine,
 } from '../src/ui/game';
 import { MSG, durationText } from '../src/i18n/fr';
-import { STEP_KEY, bookEntries, isDayClue, publishedStepPairs, renderBook, renderChips, renderCo2, richClueText } from '../src/ui/panels';
+import { STEP_KEY, bookEntries, isDayClue, orderClues, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, richClueText } from '../src/ui/panels';
 import { renderSheet, slotLegend } from '../src/ui/print';
 import { stepArrowAction, stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from '../src/ui/step';
 import { UI } from '../src/i18n/fr';
@@ -672,5 +672,30 @@ describe('phone hint', () => {
   it('points to the row under the board below 860 px', () => {
     expect(UI.hintChoose(false, false, true)).toContain('la rangée sous la grille');
     expect(UI.hintChoose(false, false)).toContain('le carnet');
+  });
+});
+
+describe('clue card (every clue in text, time order)', () => {
+  const slotOf = (c: Grid['clues'][number]) => ('col' in c && typeof c.col === 'number' ? c.col : -1);
+
+  it('puts day clues first, then slot clues by column, keeping grid order on ties', () => {
+    for (const grid of grids) {
+      const ordered = orderClues(grid.clues.map((clue) => ({ clue })));
+      expect(ordered).toHaveLength(grid.clues.length);
+      const cols = ordered.map((r) => slotOf(r.clue));
+      expect(cols).toEqual([...cols].sort((a, b) => a - b));
+      const dayCount = grid.clues.filter((c) => slotOf(c) < 0).length;
+      expect(ordered.slice(0, dayCount).every((r) => slotOf(r.clue) < 0)).toBe(true);
+    }
+  });
+
+  it('lists every clue, with no collapsed list', () => {
+    for (const grid of grids) {
+      if (!grid.clues.length) continue;
+      const ev = evaluate(grid, newGame(grid));
+      const html = renderClues(grid, ev.clues);
+      expect(html.match(/<li class="clue"/g)?.length ?? 0).toBe(grid.clues.length);
+      expect(html).not.toContain('<details');
+    }
   });
 });
