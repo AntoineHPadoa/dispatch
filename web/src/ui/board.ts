@@ -5,11 +5,13 @@
  * - boardGeometry() is pure (sizes, rows, hit-testing); renderBoard() returns the SVG markup.
  * - Rows count from 0 at the bottom of the dispatchable part; weather cells sit below row 0.
  * - Fixed layout: the card never moves while the player exports or pumps. Rows cover the highest
- *   reach of every column; the empty reach is drawn as a faint reserve (only with a neighbor or a
- *   STEP). Price tags sit under the slot hours; each neighbor has a row of cells under the grid,
- *   headed by its id in a left gutter, and a tap on a cell exports a block in that slot.
+ *   reach of every column, so the room above the demand is reserved from the start but drawn empty:
+ *   a dashed cell shows only where an export or a pumping has been laid.
+ * - Slot clues (price, record, programme) sit in one band under the slot hours, aligned on the
+ *   columns; each neighbor has a row of cells under the band, headed by its id in a left gutter, and
+ *   a tap on a cell exports a block in that slot.
  */
-import type { Clue, Grid, PieceId } from '../model/grid';
+import type { Grid, PieceId } from '../model/grid';
 import {
   barHeight, exportsAt, importsAt, rawSilhouette, residual, type Evaluation, type PlayState, type ClueStatus,
 } from '../engine';
@@ -45,6 +47,8 @@ export interface BoardInput {
   stepMode?: boolean;
   /** Interactive pills (neighbors, STEP) get focus and button roles. */
   interactive?: boolean;
+  /** Placement of the slot clues under the hours (mockups compare two). */
+  bands?: BandLayout;
 }
 
 /** Export flow clues fix the export of one column: `country:col` -> value. */
@@ -72,20 +76,6 @@ export function maxStepPairs(grid: Grid): number {
   return ex && ex.type === 'exchanges' ? ex.step ?? 0 : 0;
 }
 
-interface Lane { col: number; len: number; lane: number; clue: Clue; index: number }
-
-/** Programme brackets, each on the first lane where it does not overlap another. */
-function programLanes(grid: Grid): Lane[] {
-  const lanes: Lane[] = [];
-  grid.clues.forEach((clue, index) => {
-    if (clue.type !== 'bar') return;
-    let lane = 0;
-    while (lanes.some((l) => l.lane === lane && l.col < clue.col + clue.len && clue.col < l.col + l.len)) lane++;
-    lanes.push({ col: clue.col, len: clue.len, lane, clue, index });
-  });
-  return lanes;
-}
-
 export interface BoardGeometry {
   n: number;
   cell: number;
@@ -97,15 +87,14 @@ export interface BoardGeometry {
   botPad: number;
   width: number;
   height: number;
-  programRows: number;
   /** Bottom rows: one export row per neighbor, plus STEP on paper when the grid has one. */
   bottomRows: number;
   /** Width of the left gutter holding the neighbor ids of the export rows (0 without neighbors). */
   lead: number;
   /** Highest cell count of each column (weather included): demand plus every export and pumping it may take. */
   reach: number[];
-  /** 1 when the grid has price tags (a fixed row under the hours), else 0. */
-  priceRows: number;
+  /** Height of the slot-clue band under the hours (0 without slot clues). */
+  bandHeight: number;
 }
 
 /** Width of the left gutter of the export rows: the neighbor id ("DE") stands there. */
@@ -114,22 +103,110 @@ export const boardLead = (grid: Grid): number => (grid.neighbors.length ? BOARD_
 /** Height of one export cell (a touch target), and the pitch of one neighbor row (cells plus its caption). */
 export const exportCellHeight = (cell: number): number => Math.max(24, Math.round(cell * 0.55));
 const neighborPitch = (cell: number): number => exportCellHeight(cell) + 24;
-const PRICE_ROW = 24;
 
-/** Number of tags stacked above each column (records, STEP pairs on screen); prices sit under the hours. */
+/** Number of tags stacked above each column: the STEP arrows and pair tags; slot clues sit under the hours. */
 function tagsPerColumn(grid: Grid, style: BoardStyle): number[] {
   const t = grid.columns.map(() => 0);
-  for (const cl of grid.clues) if (cl.type === 'column') t[cl.col]! += 1;
   // One slot per column for the STEP arrows and pair tags, so the board never jumps when the mode opens.
   if (style === 'A' && grid.step) for (let c = 0; c < t.length; c++) t[c]! += 1;
   return t;
+}
+
+
+// ---- slot-clue band under the hours
+export type BandLayout = 'rows' | 'shared';
+const BAND_PITCH = 26;
+const BAR_PITCH = 32;
+
+type BandKind = 'price' | 'column' | 'bar';
+export interface BandItem {
+  kind: BandKind;
+  /** Index of the clue in `grid.clues`. */
+  index: number;
+  label: string;
+  /** Pill width without the verified tick. */
+  w: number;
+  /** Centre of the pill (user units). */
+  mid: number;
+  /** Extent of the item (pill with its tick, bracket for a programme), for the packing. */
+  x1: number;
+  x2: number;
+  /** Top of the item inside the band, and its lane in its group. */
+  top: number;
+  lane: number;
+  /** Programme: its range (user units). */
+  range?: [number, number];
+}
+
+export interface BandPlan { items: BandItem[]; height: number; /** Shift of the hour labels (room for the thin programme bar). */ offset: number }
+
+/**
+ * Where each slot clue sits under the hours. Every item is centred on its slot (a programme on its
+ * range); items that would touch go on the next lane of their group, so nothing overlaps whatever the
+ * play state. 'rows': one group per kind (price, record, programme), each aligned on the columns;
+ * 'shared': one group for all, programmes drawn as a thin bar under the grid.
+ */
+export function bandPlan(grid: Grid, cell: number, layout: BandLayout = 'rows'): BandPlan {
+  const X0 = boardLead(grid);
+  const xs = (c: number) => X0 + c * cell;
+  const minX = X0;
+  const maxX = X0 + grid.columns.length * cell;
+  const raw: Omit<BandItem, 'top' | 'lane'>[] = [];
+  const extent = (mid: number, w: number) => {
+    const tot = w + 10;
+    const px = Math.min(Math.max(mid - tot / 2, minX), Math.max(minX, maxX - tot));
+    return [px, px + tot] as const;
+  };
+  grid.clues.forEach((cl, index) => {
+    if (cl.type === 'price') {
+      const long = priceTag(cl.piece);
+      const label = long.length * 5.6 + 10 > cell - 4 ? priceTagShort(cl.piece) : long;
+      const w = Math.min(cell - 4, Math.max(cell - 6, label.length * 5.6 + 10));
+      const mid = xs(cl.col) + cell / 2;
+      const [x1, x2] = extent(mid, w);
+      raw.push({ kind: 'price', index, label, w, mid, x1, x2 });
+    } else if (cl.type === 'column') {
+      const narrow = cell < 44;
+      const w = (narrow ? 12 : 16) + Object.keys(cl.counts).length * 20;
+      const mid = xs(cl.col) + cell / 2;
+      const [x1, x2] = extent(mid, w);
+      raw.push({ kind: 'column', index, label: '', w, mid, x1, x2 });
+    } else if (cl.type === 'bar') {
+      const label = programLabel(grid, cl.piece as PieceId, cl.col, cl.len);
+      const w = label.length * 5.3 + 18;
+      const r1 = xs(cl.col) + 6;
+      const r2 = xs(cl.col + cl.len) - 6;
+      const mid = (r1 + r2) / 2;
+      const [p1, p2] = extent(mid, w);
+      raw.push({ kind: 'bar', index, label, w, mid, x1: Math.min(p1, r1), x2: Math.max(p2, r2), range: [r1, r2] });
+    }
+  });
+  const groups: BandKind[][] = layout === 'rows' ? [['price'], ['column'], ['bar']] : [['price', 'column', 'bar']];
+  const items: BandItem[] = [];
+  // 'shared': the thin bar under the grid pushes the hour labels and the band down by 4.
+  let top = layout === 'shared' && raw.some((r) => r.kind === 'bar') ? 4 : 0;
+  const start = top;
+  for (const kinds of groups) {
+    const members = raw.filter((r) => kinds.includes(r.kind)).sort((a, b) => a.x1 - b.x1 || a.index - b.index);
+    if (!members.length) continue;
+    const pitch = layout === 'rows' && kinds[0] === 'bar' ? BAR_PITCH : BAND_PITCH;
+    const ends: number[] = [];
+    for (const m of members) {
+      let lane = ends.findIndex((e) => e + 4 <= m.x1);
+      if (lane < 0) { lane = ends.length; ends.push(0); }
+      ends[lane] = m.x2;
+      items.push({ ...m, lane, top: top + lane * pitch });
+    }
+    top += ends.length * pitch;
+  }
+  return { items, height: top, offset: start };
 }
 
 /**
  * Board sizes. The row count covers the highest the silhouette can go (exports up to the line
  * capacity, STEP pairs), so the rows under the grid never move while the player exports.
  */
-export function boardGeometry(grid: Grid, style: BoardStyle, cell: number): BoardGeometry {
+export function boardGeometry(grid: Grid, style: BoardStyle, cell: number, bands: BandLayout = 'rows'): BoardGeometry {
   const n = grid.columns.length;
   const res = residual(grid);
   const weather = grid.columns.map((_, c) => (grid.weather.R[c] ?? 0) + (grid.weather.F[c] ?? 0));
@@ -149,15 +226,14 @@ export function boardGeometry(grid: Grid, style: BoardStyle, cell: number): Boar
   const tops = style === 'B' ? res.map(() => rows) : colMax;
   const need = Math.max(0, ...tags.map((k, c) => (k ? k * 22 + 6 - (rows - tops[c]!) * cell : 0)));
   const topPad = Math.max(8, need);
-  const programRows = programLanes(grid).reduce((m, l) => Math.max(m, l.lane + 1), 0);
-  const priceRows = grid.clues.some((c) => c.type === 'price') ? 1 : 0;
+  const bandHeight = bandPlan(grid, cell, bands).height;
   // Export rows (one per neighbor); STEP: chosen from the order book on screen, a row of boxes on paper.
   const bottomRows = grid.neighbors.length + (grid.step && style === 'B' ? 1 : 0);
   const lead = boardLead(grid);
-  const botPad = 20 + priceRows * PRICE_ROW + programRows * 26 + bottomRows * neighborPitch(cell) + 4;
+  const botPad = 20 + (bandHeight ? bandHeight + 4 : 0) + bottomRows * neighborPitch(cell) + 4;
   return {
     n, cell, rows, weather, topPad, botPad, width: lead + n * cell + 4, height: rows * cell + topPad + botPad,
-    programRows, bottomRows, lead, reach: colMax, priceRows,
+    bottomRows, lead, reach: colMax, bandHeight,
   };
 }
 
@@ -188,7 +264,8 @@ let uid = 0;
 export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometry } {
   const { grid, state, ev, style, cell } = input;
   const A = style === 'A';
-  const geo = boardGeometry(grid, style, cell);
+  const geo = boardGeometry(grid, style, cell, input.bands);
+  const plan = bandPlan(grid, cell, input.bands);
   const { n, rows: H, weather } = geo;
   const ink = A ? INK_A : INK_B;
   const soft = A ? SOFT_A : SOFT_B;
@@ -257,16 +334,14 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       } else if (kind === 'pump') {
         s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" stroke="${PIECE_COLORS.B.ink}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
       } else {
-        // Exported block: a filled cell in the neighbor's colour.
-        s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="${PIECE_COLORS.I.a}" stroke="${PIECE_COLORS.I.ink}" stroke-width="1.5"/>`;
+        // Exported block: a dashed violet cell above the column.
+        s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" stroke="${PIECE_COLORS.I.ink}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
       }
     }
-    // Reserve: what the column can still take (exports, pumping), a faint dashed outline, empty until something rises.
-    if (A && (grid.neighbors.length > 0 || grid.step)) {
-      for (let r = k + turbines[c]!; r < geo.reach[c]! - weather[c]!; r++) {
-        const { bx, by, w } = box(c, weather[c]! + r);
-        s += `<rect class="reserve" x="${bx}" y="${by}" width="${w}" height="${w}" rx="${rad}" fill="none" stroke="#e4d9e0" stroke-width="1.2" stroke-dasharray="3 3"/>`;
-      }
+    // The pump chosen but not yet turbined: its dashed cell shows already.
+    if (A && input.stepPending === c) {
+      const { bx, by, w } = box(c, weather[c]! + k + turbines[c]!);
+      s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" stroke="${PIECE_COLORS.B.ink}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
     }
     // Paper: the grid is a full rectangle; cells above the demand line are plain white too.
     if (!A) {
@@ -342,7 +417,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     s += `<path d="${d} L${x(n)} ${H * cell} Z" fill="none" stroke="${ink}" stroke-width="3.2" stroke-linejoin="miter"/>`;
   }
 
-  // ---- tags above the columns: record, STEP (prices are drawn under the hours)
+  // ---- tags above the columns: STEP (the slot clues are drawn under the hours)
   // Tags sit above the highest reach of their column: fixed, whatever the player has laid.
   const stack = grid.columns.map(() => 0);
   const topOf = (c: number) => (A ? geo.reach[c]! : H);
@@ -368,21 +443,6 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     if (st === 'broken') o += `<rect x="${px - 1.5}" y="${py - 1.5}" width="${tot + 3}" height="21" rx="10.5" fill="none" stroke="${BAD}" stroke-width="2"/>`;
     return o;
   };
-  grid.clues.forEach((cl, i) => {
-    if (cl.type !== 'column') return;
-    const entries = Object.entries(cl.counts);
-    const ty = tagY(cl.col);
-    // Tighter side padding on narrow cells, so a one-plant record fits its column.
-    const narrow = cell < 44;
-    const w = (narrow ? 12 : 16) + entries.length * 20;
-    const inner = (_tc: number, left: number) => entries.map(([k, v], j) => {
-      const bx = left + (narrow ? 7 : 9) + j * 20;
-      const p = k.startsWith('I:') ? 'I' : k;
-      return `<rect x="${bx - 4}" y="${ty + 5}" width="8" height="8" rx="${A ? 2.5 : 0}" fill="${fill(p)}"${A ? '' : ` stroke="${ink}" stroke-width=".8"`}/>`
-        + T(bx + 9, ty + 12.5, String(v));
-    }).join('');
-    s += `<g class="tag">${pill(x(cl.col) + cell / 2, ty, w, '#fff', A ? '#d9cbd3' : ink, inner, statusOf(i))}</g>`;
-  });
   if (A) {
     // STEP tags: "▲ pompe" over the pumped column, "▼ turbine" over the turbined one, both light blue
     // (the shared colour and icons tell the pair); a tap on a tag removes its pair. With several pairs
@@ -431,40 +491,50 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   }
 
   // ---- column labels
-  grid.columns.forEach((label, c) => { s += T(x(c) + cell / 2, H * cell + 14, label, { w: 600, size: Math.min(10.5, fs + 1), color: soft }); });
+  grid.columns.forEach((label, c) => { s += T(x(c) + cell / 2, H * cell + 14 + plan.offset, label, { w: 600, size: Math.min(10.5, fs + 1), color: soft }); });
 
-  // ---- price tags: under the hour of their slot, a fixed row that shows nothing of the column's height
-  grid.clues.forEach((cl, i) => {
-    if (cl.type !== 'price') return;
-    const ty = H * cell + 21;
-    const longLabel = A ? priceTag(cl.piece) : priceTagShort(cl.piece);
-    // Neighbouring slots must not overlap: switch to the short label when the long one does not fit, and cap the width.
-    const label = longLabel.length * 5.6 + 10 > cell - 4 ? priceTagShort(cl.piece) : longLabel;
-    const w = Math.min(cell - 4, Math.max(cell - 6, label.length * 5.6 + 10));
-    s += `<g class="tag">${pill(x(cl.col) + cell / 2, ty, w, A ? fill(cl.piece) : '#fff', A ? null : ink, (tc) => T(tc, ty + 12.5, label), statusOf(i))}</g>`;
-  });
-
-  // ---- programme brackets
-  for (const l of programLanes(grid)) {
-    if (l.clue.type !== 'bar') continue;
-    const piece = l.clue.piece as PieceId;
-    const by = H * cell + 26 + geo.priceRows * PRICE_ROW + l.lane * 26;
-    const x1 = x(l.col) + 6;
-    const x2 = x(l.col + l.len) - 6;
-    const mid = (x1 + x2) / 2;
-    const st = statusOf(l.index);
-    const color = A ? PIECE_COLORS[piece].ink : ink;
-    s += `<path d="M${x1} ${by - 5} V${by} H${x2} V${by - 5}" fill="none" stroke="${st === 'broken' ? BAD : color}" stroke-width="2" stroke-linecap="round"/>`;
-    const label = programLabel(grid, piece, l.col, l.len);
-    const tw = label.length * 5.3 + 18;
-    s += pill(mid, by + 3, tw, A ? fill(piece) : '#fff', A ? null : ink, (tc) => T(tc, by + 15.5, label), st);
+  // ---- slot clues: one band under the hours, aligned on the columns (see bandPlan)
+  const bandY = H * cell + 20;
+  for (const it of plan.items) {
+    const cl = grid.clues[it.index]!;
+    const st = statusOf(it.index);
+    if (cl.type === 'price') {
+      const py = bandY + it.top + 3;
+      s += `<g class="tag">${pill(it.mid, py, it.w, A ? fill(cl.piece) : '#fff', A ? null : ink, (tc) => T(tc, py + 12.5, it.label), st)}</g>`;
+    } else if (cl.type === 'column') {
+      const entries = Object.entries(cl.counts);
+      const py = bandY + it.top + 3;
+      const narrow = cell < 44;
+      const inner = (_tc: number, left: number) => entries.map(([k, v], j) => {
+        const bx = left + (narrow ? 7 : 9) + j * 20;
+        const p = k.startsWith('I:') ? 'I' : k;
+        return `<rect x="${bx - 4}" y="${py + 5}" width="8" height="8" rx="${A ? 2.5 : 0}" fill="${fill(p)}"${A ? '' : ` stroke="${ink}" stroke-width=".8"`}/>`
+          + T(bx + 9, py + 12.5, String(v));
+      }).join('');
+      s += `<g class="tag">${pill(it.mid, py, it.w, '#fff', A ? '#d9cbd3' : ink, inner, st)}</g>`;
+    } else if (cl.type === 'bar' && it.range) {
+      const color = A ? PIECE_COLORS[cl.piece as PieceId].ink : ink;
+      const stroke = st === 'broken' ? BAD : color;
+      const [r1, r2] = it.range;
+      let py: number;
+      if (input.bands === 'shared') {
+        // A thin bar right under the grid on the programme's range; its label sits in the band.
+        s += `<rect x="${r1}" y="${H * cell + 1}" width="${r2 - r1}" height="4" rx="2" fill="${stroke}"/>`;
+        py = bandY + it.top + 3;
+      } else {
+        const by = bandY + it.top + 8;
+        s += `<path d="M${r1} ${by - 5} V${by} H${r2} V${by - 5}" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round"/>`;
+        py = by + 3;
+      }
+      s += pill(it.mid, py, it.w, A ? fill(cl.piece as PieceId) : '#fff', A ? null : ink, (tc) => T(tc, py + 12.5, it.label), st);
+    }
   }
 
   // ---- neighbors: one row of cells per country under the grid (its id in the gutter), then STEP on paper
   const locked = lockedExports(grid);
   const flowClue = (country: string, c: number) => grid.clues.findIndex((cl) => cl.type === 'flow' && cl.country === country && cl.col === c);
   const focus = input.interactive ? ' tabindex="0" role="button"' : '';
-  const baseY = H * cell + 22 + geo.priceRows * PRICE_ROW + geo.programRows * 26;
+  const baseY = H * cell + 24 + geo.bandHeight;
   const rowH = exportCellHeight(cell);
   const pitch = rowH + 24;
   const cgap = 3;

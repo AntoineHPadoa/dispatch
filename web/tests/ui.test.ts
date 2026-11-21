@@ -734,19 +734,39 @@ describe('board card: fixed layout, price row, export rows', () => {
     }
   });
 
-  it('a reserve is drawn only when the grid has a neighbor or a STEP', () => {
-    expect(draw(byId(1)).svg).not.toContain('class="reserve"');
-    expect(draw(byId(2)).svg).not.toContain('class="reserve"');
-    for (const id of [6, 7, 10, 11]) expect(draw(byId(id)).svg).toContain('class="reserve"');
+  it('nothing is drawn above the demand until an export or a pumping is laid: the room is reserved, empty', () => {
+    for (const id of [1, 2, 6, 10, 11]) {
+      const svg = draw(byId(id)).svg;
+      expect(svg).not.toContain('class="reserve"');
+      expect(svg).not.toContain('stroke="#8f78cf" stroke-width="1.6" stroke-dasharray="4 3"'); // no dashed violet cell
+    }
+    // The card keeps the room: rows reach above the highest demand when the grid can export.
+    for (const id of [6, 10, 11]) {
+      const g = byId(id);
+      expect(boardGeometry(g, 'A', 50).rows).toBeGreaterThan(Math.max(...g.demand));
+    }
+    const g1 = byId(1);
+    expect(boardGeometry(g1, 'A', 50).rows).toBe(Math.max(...g1.demand));
   });
 
-  it('an export fills a reserve cell: the reserve stays drawn above, nothing else changes', () => {
+  it('an export draws a dashed violet cell above its column; the card does not move', () => {
     const g = byId(11);
-    const before = draw(g).svg.match(/class="reserve"/g)?.length ?? 0;
+    const before = draw(g);
     const r = exportTap(g, initialState(g), 'DE', 2);
     expect(r.state).not.toBeNull();
-    const after = draw(g, r.state!).svg.match(/class="reserve"/g)?.length ?? 0;
-    expect(after).toBe(before - 1);
+    const after = draw(g, r.state!);
+    expect(after.svg).toContain('stroke="#8f78cf" stroke-width="1.6" stroke-dasharray="4 3"');
+    expect(viewBox(after.svg)).toBe(viewBox(before.svg));
+  });
+
+  it('a pump chosen but not yet turbined already shows its dashed blue cell; the turbine only once laid', () => {
+    const g = byId(7);
+    const st = initialState(g);
+    const plain = renderBoard({ grid: g, state: st, ev: evaluate(g, st), style: 'A', cell: 50, stepMode: true, interactive: true });
+    const pend = renderBoard({ grid: g, state: st, ev: evaluate(g, st), style: 'A', cell: 50, stepMode: true, interactive: true, stepPending: 3 });
+    const blue = (svg: string) => (svg.match(/stroke="#6f9bd0" stroke-width="1.6" stroke-dasharray="4 3"/g) ?? []).length;
+    expect(blue(pend.svg)).toBe(blue(plain.svg) + 1);
+    expect(viewBox(pend.svg)).toBe(viewBox(plain.svg));
   });
 
   it('price tags sit under the hours, below the grid, not above the columns', () => {
@@ -755,11 +775,14 @@ describe('board card: fixed layout, price row, export rows', () => {
     const hoursY = geo.rows * 50;
     const prices = [...svg.matchAll(/<g class="tag"><rect x="[\d.]+" y="([\d.-]+)"/g)].map((m) => Number(m[1]));
     expect(g.clues.filter((c) => c.type === 'price').length).toBeGreaterThan(0);
-    // Every price pill is below the hour labels (record tags above the columns have a negative or small y).
+    // Every price and record pill is below the hour labels, in the band; none is above the columns.
     const below = prices.filter((y) => y > hoursY);
-    expect(below.length).toBe(g.clues.filter((c) => c.type === 'price').length);
-    expect(geo.priceRows).toBe(1);
-    expect(boardGeometry(byId(10), 'A', 50).priceRows).toBe(0); // no price clue: no row
+    expect(below.length).toBe(g.clues.filter((c) => c.type === 'price' || c.type === 'column').length);
+    expect(prices.every((y) => y > hoursY)).toBe(true);
+    expect(geo.bandHeight).toBeGreaterThan(0);
+    expect(boardGeometry(byId(2), 'A', 50).bandHeight).toBeGreaterThan(0); // tutorial 2 has price clues
+    expect(boardGeometry(byId(1), 'A', 50).bandHeight).toBe(0); // no slot clue: no band
+    expect(boardGeometry(byId(11), 'A', 50).bandHeight).toBeGreaterThan(0); // the daily grid has records
   });
 
   it('neighbouring price tags never overlap, even with a 30 px cell', () => {
