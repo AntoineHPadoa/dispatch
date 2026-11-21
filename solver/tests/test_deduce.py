@@ -95,10 +95,10 @@ def test_ramp_techniques_in_traces():
 
 
 def test_trace_fields():
-    g = next(x for x in published() if x["id"] == 11)
+    g = next(x for x in published() if x["difficulty"]["rating"] == 3)
     res = deduce(g)
     d = res.to_dict()
-    assert d["status"] == "solved" and d["rating"] == 4
+    assert d["status"] == "solved" and d["rating"] == 3
     assert all(s["rule"] in RULES and s["effects"] for s in d["steps"])
     assert any(s.get("cells") for s in d["steps"])
     assert d["summary"]["order"][0] in RULES and d["summary"]["level2_steps"] >= 1

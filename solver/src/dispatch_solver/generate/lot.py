@@ -27,7 +27,7 @@ from typing import Any
 from .. import __version__, exact
 from ..board import reference_composition
 from ..deduce import deduce
-from ..deduce.trace import RAMP_RULES
+from ..deduce.trace import RAMP_OWN, RAMP_RULES
 from ..grid import LABELS, validate
 from .bulletin import make_bulletin
 from .cluesel import clue_pool, select_clues
@@ -506,6 +506,7 @@ def run_lot(lot: dict[str, Any], workers: int = 6, log: Any = None) -> tuple[lis
         "clue_profiles": {" ".join(k): v for k, v in quotas.profile.items()},
         "ramp_grids": len(ramp),
         "ramp_grids_with_technique": sum(1 for g in ramp if g["lab"]["ramp_techniques"]),
+        "ramp_grids_with_own_technique": sum(1 for g in ramp if set(g["lab"]["ramp_techniques"]) & set(RAMP_OWN)),
         "ramp_techniques": dict(
             sorted({k: sum(g["lab"]["ramp_techniques"].get(k, 0) for g in ramp) for k in RAMP_RULES}.items())
         ),

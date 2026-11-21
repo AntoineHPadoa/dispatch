@@ -74,10 +74,14 @@ class Puzzle:
                 self._add_shapes(k, k, None, shapes)
 
     def with_clues(self, clues: list[dict[str, Any]]) -> Puzzle:
-        """Same board with other clues: placements are reused unless the composition keys change."""
+        """Same board with other clues: reused unless the composition keys or the STEP pairs change.
+
+        The number of STEP pairs may come from an `exchanges` clue (inventory level none): the silhouette
+        options depend on it.
+        """
         g = {**self.g, "clues": clues}
         rules = read_rules(g)
-        if rules.keys != self.keys:
+        if rules.keys != self.keys or rules.step != self.rules.step:
             return Puzzle(g)
         out = copy.copy(self)
         out.g, out.rules = g, rules

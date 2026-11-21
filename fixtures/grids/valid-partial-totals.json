@@ -186,6 +186,7 @@
    "label": "Facile",
    "techniques": [
     "record",
+    "room",
     "silhouette",
     "single_cover"
    ]
@@ -199,6 +200,7 @@
   "rating": 1,
   "techniques": [
    "record",
+   "room",
    "silhouette",
    "single_cover"
   ],
