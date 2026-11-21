@@ -1,14 +1,15 @@
 /*
  * Print sheets (style B): one grid per A4 page, in colour, without the answer.
- * - Full rectangle at the maximum height, a thick line for the demand; slot clues in a band above
- *   it (outside the cells) and listed in short text under it; weather, engaged plants and published flows inside; order book or available plants;
- *   day clues; boxes for exchanges.
+ * - Full rectangle at the maximum height, a thick line for the demand; slot clues in one band under
+ *   the hours, as on screen (programme range as a thin bar under the rectangle), and listed in short
+ *   text under the board; weather, engaged plants and published flows inside; order book or
+ *   available plants; day clues; boxes for exchanges.
  * - No clue status and no pumping or turbining drawn: the paper only shows the puzzle.
  * - Exchanges imposed by an exact inventory are listed with the day clues (market publications).
  */
 import type { Grid } from '../model/grid';
 import { TECHNIQUES, UI, slotClueShort } from '../i18n/fr';
-import { boardGeometry, renderBoard } from './board';
+import { bandPlan, boardGeometry, renderBoard } from './board';
 import { bulletinTag, displayTitle, initialState } from './game';
 import { clueItem, co2RuleText, inventoryExchanges, isDayClue, renderBook } from './panels';
 import { esc } from './palette';
@@ -18,8 +19,13 @@ export function printCell(grid: Grid): number {
   // Printable width is about 680 CSS px; keep the board within about 620 px of height.
   const n = grid.columns.length;
   const rows = boardGeometry(grid, 'B', 1).rows;
-  const below = 3 + grid.neighbors.length + (grid.step ? 1 : 0) + (grid.clues.some((c) => c.type === 'price') ? 0.5 : 0) + grid.clues.filter((c) => c.type === 'bar').length * 0.6;
-  return Math.max(26, Math.min(64, Math.floor(660 / n), Math.floor(620 / (rows + below))));
+  // Under the rectangle: hours, the slot-clue band (its height depends on the cell, so two passes), the rows of boxes.
+  const fit = (band: number) => {
+    const below = 3 + grid.neighbors.length + (grid.step ? 1 : 0) + band / 48;
+    return Math.max(26, Math.min(64, Math.floor(660 / n), Math.floor(620 / (rows + below))));
+  };
+  // Second pass: the band height depends on the cell size, so re-estimate it with the first result.
+  return fit(bandPlan(grid, fit(bandPlan(grid, 48, 'B').height), 'B').height);
 }
 
 export function renderSheet(grid: Grid, tutorialIndex: number | null): string {

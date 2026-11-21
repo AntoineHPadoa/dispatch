@@ -1,0 +1,1175 @@
+{
+ "today": 11,
+ "cells": {
+  "1@1280": 60,
+  "2@1280": 60,
+  "3@1280": 60,
+  "4@1280": 60,
+  "5@1280": 60,
+  "6@1280": 60,
+  "7@1280": 60,
+  "8@1280": 60,
+  "9@1280": 60,
+  "10@1280": 60,
+  "11@1280": 60,
+  "1@375": 53,
+  "2@375": 53,
+  "3@375": 49,
+  "4@375": 49,
+  "5@375": 49,
+  "6@375": 49,
+  "7@375": 37,
+  "8@375": 37,
+  "9@375": 37,
+  "10@375": 37,
+  "11@375": 37,
+  "1@320": 44,
+  "2@320": 44,
+  "3@320": 40,
+  "4@320": 40,
+  "5@320": 40,
+  "6@320": 40,
+  "7@320": 30,
+  "8@320": 30,
+  "9@320": 30,
+  "10@320": 30,
+  "11@320": 30
+ },
+ "results": [
+  {
+   "name": "grid of the day found on the home page (G11)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G1@1280 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G1@1280 cell 60: 0 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G1@1280 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G1@1280 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G2@1280 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G2@1280 cell 60: 1 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G2@1280 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G2@1280 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G3@1280 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G3@1280 cell 60: 0 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G3@1280 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G3@1280 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G4@1280 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G4@1280 cell 60: 0 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G4@1280 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G4@1280 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G5@1280 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G5@1280 cell 60: 0 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G5@1280 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G5@1280 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@1280 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@1280 cell 60: 2 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@1280 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@1280 tutorial 6: both price pills on one line",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@1280 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@1280 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@1280 cell 60: 4 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@1280 no dashed cell before any move but the 2 published exports",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@1280 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G8@1280 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G8@1280 cell 60: 1 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G8@1280 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G8@1280 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G9@1280 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G9@1280 cell 60: 1 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G9@1280 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G9@1280 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G10@1280 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G10@1280 cell 60: 2 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G10@1280 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G10@1280 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@1280 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@1280 cell 60: 2 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@1280 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@1280 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G1@375 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G1@375 cell 53: 0 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G1@375 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G1@375 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G2@375 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G2@375 cell 53: 1 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G2@375 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G2@375 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G3@375 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G3@375 cell 49: 0 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G3@375 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G3@375 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G4@375 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G4@375 cell 49: 0 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G4@375 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G4@375 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G5@375 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G5@375 cell 49: 0 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G5@375 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G5@375 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@375 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@375 cell 49: 2 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@375 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@375 tutorial 6: both price pills on one line",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@375 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@375 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@375 cell 37: 4 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@375 no dashed cell before any move but the 2 published exports",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@375 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G8@375 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G8@375 cell 37: 1 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G8@375 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G8@375 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G9@375 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G9@375 cell 37: 1 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G9@375 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G9@375 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G10@375 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G10@375 cell 37: 2 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G10@375 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G10@375 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@375 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@375 cell 37: 2 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@375 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@375 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G1@320 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G1@320 cell 44: 0 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G1@320 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G1@320 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G2@320 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G2@320 cell 44: 1 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G2@320 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G2@320 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G3@320 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G3@320 cell 40: 0 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G3@320 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G3@320 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G4@320 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G4@320 cell 40: 0 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G4@320 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G4@320 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G5@320 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G5@320 cell 40: 0 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G5@320 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G5@320 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@320 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@320 cell 40: 2 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@320 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@320 tutorial 6: both price pills on one line",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@320 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@320 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@320 cell 30: 4 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@320 no dashed cell before any move but the 2 published exports",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@320 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G8@320 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G8@320 cell 30: 1 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G8@320 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G8@320 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G9@320 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G9@320 cell 30: 1 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G9@320 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G9@320 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G10@320 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G10@320 cell 30: 2 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G10@320 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G10@320 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@320 no horizontal scroll (page 0, inner 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@320 cell 30: 2 pills, none overlapped or cut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@320 no dashed cell before any move",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@320 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@1280 export at slot 3: card, board and logo still",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@1280 export at slot 3: one dashed violet cell appears",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@1280 export at slot 3: clues still whole and apart",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@1280 export at slot 3: no horizontal scroll",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@1280 export at slot 5: card, board and logo still",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@1280 export at slot 5: export refused (exact inventory already published), 2 published dashed cells kept",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@1280 export at slot 5: clues still whole and apart",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@1280 export at slot 5: no horizontal scroll",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@1280 export at slot 4: card, board and logo still",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@1280 export at slot 4: one dashed violet cell appears",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@1280 export at slot 4: clues still whole and apart",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@1280 export at slot 4: no horizontal scroll",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@375 export at slot 3: card, board and logo still",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@375 export at slot 3: one dashed violet cell appears",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@375 export at slot 3: clues still whole and apart",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@375 export at slot 3: no horizontal scroll",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@375 export at slot 5: card, board and logo still",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@375 export at slot 5: export refused (exact inventory already published), 2 published dashed cells kept",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@375 export at slot 5: clues still whole and apart",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@375 export at slot 5: no horizontal scroll",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@375 export at slot 4: card, board and logo still",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@375 export at slot 4: one dashed violet cell appears",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@375 export at slot 4: clues still whole and apart",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@375 export at slot 4: no horizontal scroll",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@320 export at slot 3: card, board and logo still",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@320 export at slot 3: one dashed violet cell appears",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@320 export at slot 3: clues still whole and apart",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G6@320 export at slot 3: no horizontal scroll",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@320 export at slot 5: card, board and logo still",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@320 export at slot 5: export refused (exact inventory already published), 2 published dashed cells kept",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@320 export at slot 5: clues still whole and apart",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7@320 export at slot 5: no horizontal scroll",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@320 export at slot 4: card, board and logo still",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@320 export at slot 4: one dashed violet cell appears",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@320 export at slot 4: clues still whole and apart",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G11@320 export at slot 4: no horizontal scroll",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@1280 STEP mode: 7 ▲ on their column top (gap 0..14), centred",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@1280 STEP mode: card, board and logo still",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@1280 pump pending at slot 2: ▲ and ▼ on their column tops",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@1280 pump pending: one dashed blue cell",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@1280 pump pending: card, board and logo still",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@1280 pump pending: clues whole and apart",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@1280 turbine at slot 7: card, board and logo still",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@1280 pair laid: clues whole and apart",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@1280 pair laid: 2 STEP tags",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@1280 STEP mode over the laid pair: arrows clear of tags, nothing clipped",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@1280 STEP mode over the laid pair: card, board and logo still",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@1280 no horizontal scroll",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@1280 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@375 STEP mode: 7 ▲ on their column top (gap 0..14), centred",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@375 STEP mode: card, board and logo still",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@375 pump pending at slot 2: ▲ and ▼ on their column tops",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@375 pump pending: one dashed blue cell",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@375 pump pending: card, board and logo still",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@375 pump pending: clues whole and apart",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@375 turbine at slot 7: card, board and logo still",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@375 pair laid: clues whole and apart",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@375 pair laid: 2 STEP tags",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@375 STEP mode over the laid pair: arrows clear of tags, nothing clipped",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@375 STEP mode over the laid pair: card, board and logo still",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@375 no horizontal scroll",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@375 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@320 STEP mode: 7 ▲ on their column top (gap 0..14), centred",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@320 STEP mode: card, board and logo still",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@320 pump pending at slot 2: ▲ and ▼ on their column tops",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@320 pump pending: one dashed blue cell",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@320 pump pending: card, board and logo still",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@320 pump pending: clues whole and apart",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@320 turbine at slot 7: card, board and logo still",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@320 pair laid: clues whole and apart",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@320 pair laid: 2 STEP tags",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@320 STEP mode over the laid pair: arrows clear of tags, nothing clipped",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@320 STEP mode over the laid pair: card, board and logo still",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@320 no horizontal scroll",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "G7 STEP@320 no JS error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "home -> G11@1280: logo at the same place",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "home -> G11@375: logo at the same place",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "home -> G11@320: logo at the same place",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "render: 186/186 off-app boards with clues whole and apart",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "sheet G6: 2 pills under the rectangle, none above (0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "sheet G6: pills whole and apart",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "sheet G6: PDF on 1 page(s)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "sheet G7: 4 pills under the rectangle, none above (0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "sheet G7: pills whole and apart",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "sheet G7: PDF on 1 page(s)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "sheet G10: 2 pills under the rectangle, none above (0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "sheet G10: pills whole and apart",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "sheet G10: PDF on 1 page(s)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "sheet G11: 2 pills under the rectangle, none above (0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "sheet G11: pills whole and apart",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "sheet G11: PDF on 1 page(s)",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}
