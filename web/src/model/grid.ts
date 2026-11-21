@@ -2,10 +2,12 @@
  * Grid format (GAME-DESIGN.md §14): TypeScript types and a structural validator.
  * - Types describe one puzzle: silhouette (demand - weather), pieces, neighbors, STEP, CO2 cap,
  *   inventory, market clues, reference solution, difficulty and the optional market bulletin.
- * - validateGrid() checks shape, cross-references (columns, pieces, countries) and geometry of the
- *   laid pieces (allowed width and height, inside the grid, STEP order, line capacity); it does not
+ * - validateGrid() checks structure, cross-references (columns, pieces, countries) and geometry of the
+ *   laid pieces (allowed width, height and ramp shape, inside the grid, STEP order, line capacity); it does not
  *   check that the solution satisfies the rules (that is the engine's job).
  */
+
+import { RAMP_MIN_WIDTH, RAMP_PIECE, SHAPE_KINDS, type ShapeKind } from './shapes';
 
 /** Dispatchable plants, from cheapest to most expensive (merit order). */
 export const PIECE_IDS = ['N', 'B', 'C', 'G', 'T'] as const;
@@ -29,10 +31,12 @@ export const MIN_COLUMNS = 6;
 export const MAX_COLUMNS = 12;
 
 export interface PieceDef {
-  /** Allowed widths (time slots), ascending. */
+  /** Shape: a rectangle (default), or a coal ramp (`trap` 1 -> 2 -> 1, `stair` 2 -> 1; see shapes.ts). */
+  shape?: ShapeKind;
+  /** Allowed widths (time slots), ascending; a ramp's total width. */
   len: number[];
-  /** Allowed heights (GW), ascending. */
-  height: number[];
+  /** Allowed heights (GW), ascending; absent for a ramp (fixed profile). */
+  height?: number[];
   /** Merit-order rank: 1 is the cheapest. Only used by price clues. */
   rank: number;
   /** CO2 per cell. */
@@ -154,7 +158,7 @@ export const CLUE_TYPES: readonly ClueType[] = [
   'price', 'bar', 'length', 'column', 'flow', 'exchanges', 'engaged',
 ];
 
-/** A laid rectangle. Rows count from 0 at the bottom; `height` defaults to 1. */
+/** A laid piece. Rows count from 0 at the bottom (a ramp's base row); `height` defaults to 1. */
 export interface Placement {
   piece: PlacementPiece;
   row: number;
@@ -300,7 +304,16 @@ export function validateGrid(raw: unknown): ValidationResult {
       pieceIds.add(id);
       if (!isObj(def)) { err(`pieces.${id}: object expected`); continue; }
       if (!isSizeList(def.len)) err(`pieces.${id}.len: ascending positive integers expected`);
-      if (!isSizeList(def.height)) err(`pieces.${id}.height: ascending positive integers expected`);
+      const kind = def.shape ?? 'rect';
+      if (!(SHAPE_KINDS as readonly unknown[]).includes(kind)) {
+        err(`pieces.${id}.shape: one of ${SHAPE_KINDS.join(', ')} expected`);
+      } else if (kind !== 'rect') {
+        if (id !== RAMP_PIECE) err(`pieces.${id}.shape: only coal (${RAMP_PIECE}) can be a ramp`);
+        if (def.height !== undefined) err(`pieces.${id}.height: a ramp has no height`);
+        const min = RAMP_MIN_WIDTH[kind as Exclude<ShapeKind, 'rect'>];
+        if (isSizeList(def.len) && (def.len[0] as number) < min) err(`pieces.${id}.len: a ${kind} ramp is at least ${min} wide`);
+      }
+      if (kind === 'rect' && !isSizeList(def.height)) err(`pieces.${id}.height: ascending positive integers expected`);
       if (!isPos(def.rank)) err(`pieces.${id}.rank: positive integer expected`);
       else if (def.rank !== PIECE_SPEC[id].rank) err(`pieces.${id}.rank: ${PIECE_SPEC[id].rank} expected (§3)`);
       if (!isNat(def.co2)) err(`pieces.${id}.co2: integer >= 0 expected`);
@@ -317,6 +330,7 @@ export function validateGrid(raw: unknown): ValidationResult {
   };
   const allowsHeight = (id: PieceId, height: unknown) => {
     const d = pieceDef(id);
+    if (d && d.shape !== undefined && d.shape !== 'rect') return height === 1; // a ramp has a fixed profile
     return !!d && Array.isArray(d.height) && d.height.includes(height);
   };
   /** Geometry of a laid bar: allowed width and height, inside the grid. */

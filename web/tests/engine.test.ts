@@ -216,10 +216,10 @@ describe('placement rules (one invalid case per rule)', () => {
     const h = makeGrid({ clues: [{ type: 'engaged', piece: 'T', row: 0, col: 5, len: 1 }] });
     const s = newGame(h);
     expect(s.bars).toEqual([{ piece: 'T', row: 0, col: 5, len: 1, locked: true }]);
-    expect(refused(remove(s, 0, 5)).code).toBe('locked');
-    expect(refused(remove(s, 0, 0)).code).toBe('empty');
+    expect(refused(remove(h, s, 0, 5)).code).toBe('locked');
+    expect(refused(remove(h, s, 0, 0)).code).toBe('empty');
     const t = ok(place(h, s, { piece: 'G', row: 0, col: 0, len: 2 }));
-    expect(ok(remove(t, 0, 1)).bars).toHaveLength(1);
+    expect(ok(remove(h, t, 0, 1)).bars).toHaveLength(1);
   });
 
   it('checkPlacement previews without changing the board', () => {
@@ -393,7 +393,7 @@ describe('immutability', () => {
     const s1 = deepFreeze(ok(place(g, s0, N(0, 0, 6))));
     const s2 = deepFreeze(ok(setExport(g, s1, 'DE', 2, 1)));
     const s3 = deepFreeze(ok(addStep(g, s2, 0, 2)));
-    const s4 = ok(remove(s3, 0, 0));
+    const s4 = ok(remove(g, s3, 0, 0));
     ok(removeStep(s3, 0));
     evaluate(g, s3);
     expect(s0.bars).toHaveLength(0);

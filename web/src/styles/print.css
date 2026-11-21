@@ -17,6 +17,7 @@
 .a4 .pname span { font-size: 7.5pt; color: #6c7d78; }
 .a4 .mb i { width: 9px; height: 9px; border-radius: 0; outline: .8px solid #1f2a27; outline-offset: -.8px; }
 .a4 .mb i.d { outline: none; border: 1px dashed #1f2a27; }
+.a4 .mb i.e { outline: none; }
 .a4 .count { color: #6c7d78; font-size: 7.5pt; }
 .a4 .xpill { background: #fff; border: .8px solid #1f2a27; font-size: 8pt; }
 .a4 .clues { gap: 2mm; }

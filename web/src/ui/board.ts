@@ -4,8 +4,11 @@
  *   contour, empty except what is imposed (weather, engaged plants), boxes to write exchanges in.
  * - boardGeometry() is pure (sizes, rows, hit-testing); renderBoard() returns the SVG markup.
  * - Rows count from 0 at the bottom of the dispatchable part; weather cells sit below row 0.
+ * - Rectangles are drawn as rects; a coal ramp as one outline following its profile (rounded
+ *   corners on screen, concave ones included; square on paper).
  */
-import type { Clue, Grid, PieceId } from '../model/grid';
+import type { Clue, Grid, PieceId, Placement } from '../model/grid';
+import { cellsOf, isRamp, kindOf, profileOf, topIn } from '../model/shapes';
 import {
   barHeight, exportsAt, importsAt, rawSilhouette, residual, type Evaluation, type PlayState, type ClueStatus,
 } from '../engine';
@@ -168,6 +171,50 @@ function runs(geo: BoardGeometry, col: number, len: number): { col: number; len:
   return out;
 }
 
+/**
+ * SVG path of a polygon with every corner rounded to `r` (at most half of each side), concave
+ * corners included; `r` = 0 keeps square corners.
+ */
+export function roundedPath(pts: readonly (readonly [number, number])[], r: number): string {
+  const n = pts.length;
+  const f = (v: number) => Number(v.toFixed(2));
+  if (r <= 0) return `M${pts.map(([px, py]) => `${f(px)} ${f(py)}`).join(' L')} Z`;
+  let d = '';
+  for (let i = 0; i < n; i++) {
+    const [x0, y0] = pts[(i - 1 + n) % n]!;
+    const [x1, y1] = pts[i]!;
+    const [x2, y2] = pts[(i + 1) % n]!;
+    const l1 = Math.hypot(x0 - x1, y0 - y1);
+    const l2 = Math.hypot(x2 - x1, y2 - y1);
+    const k = Math.min(r, l1 / 2, l2 / 2);
+    const a = [x1 + ((x0 - x1) * k) / l1, y1 + ((y0 - y1) * k) / l1];
+    const b = [x1 + ((x2 - x1) * k) / l2, y1 + ((y2 - y1) * k) / l2];
+    d += `${i ? ' L' : 'M'}${f(a[0]!)} ${f(a[1]!)} Q${f(x1)} ${f(y1)} ${f(b[0]!)} ${f(b[1]!)}`;
+  }
+  return `${d} Z`;
+}
+
+/**
+ * Outline of a run of columns standing on one base line (`yBase`, bottom of the cells): column i
+ * spans [x0 + i * cell, x0 + (i + 1) * cell] with height `heights[i]` cells. The `gap` between
+ * cells is kept on the outer edges; a step sits on the edge of the taller column.
+ */
+export function skyline(x0: number, yBase: number, heights: readonly number[], cell: number, gap: number): [number, number][] {
+  const g = gap / 2;
+  const top = (h: number) => yBase - h * cell + g;
+  const pts: [number, number][] = [[x0 + g, yBase - g], [x0 + g, top(heights[0]!)]];
+  for (let i = 1; i < heights.length; i++) {
+    const h0 = heights[i - 1]!;
+    const h1 = heights[i]!;
+    if (h0 === h1) continue;
+    const sx = x0 + i * cell + (h1 > h0 ? g : -g);
+    pts.push([sx, top(h0)], [sx, top(h1)]);
+  }
+  const xr = x0 + heights.length * cell - g;
+  pts.push([xr, top(heights[heights.length - 1]!)], [xr, yBase - g]);
+  return pts;
+}
+
 let uid = 0;
 
 /** SVG markup of the board. */
@@ -209,7 +256,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     const fading = new Set(input.preview?.replacing ?? []);
     state.bars.forEach((b, i) => {
       if (fading.has(i)) return;
-      for (let c = b.col; c < b.col + b.len; c++) for (let r = b.row; r < b.row + barHeight(b); r++) hidden.add(`${r},${c}`);
+      for (const [r, c] of cellsOf(grid, b)) hidden.add(`${r},${c}`);
     });
   }
   const box = (c: number, v: number) => ({ bx: x(c) + gap / 2, by: y(v) + gap / 2, w: cell - gap });
@@ -269,20 +316,39 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     }
     return out;
   };
+  /** A ramp, run by run: one outline per run of columns with the same weather offset. */
+  const drawRamp = (b: Placement, attrs: (d: string, inset: number) => string, inset = 0) => {
+    const prof = profileOf(grid, b);
+    let out = '';
+    for (const run of runs(geo, b.col, b.len)) {
+      const heights = prof.slice(run.col - b.col, run.col - b.col + run.len).map(([, h]) => h);
+      const pts = skyline(x(run.col), y(run.off + b.row, 0), heights, cell, gap + 2 * inset);
+      out += attrs(roundedPath(pts, rad), inset);
+    }
+    return out;
+  };
   const replacing = new Set(input.preview?.replacing ?? []);
   state.bars.forEach((b, i) => {
     if (!A && !b.locked) return;
     const h = barHeight(b);
     const f = fill(b.piece);
     const gone = replacing.has(i);
-    s += drawRect(b.col, b.len, b.row, h, (rx, ry, rw, rh) => `<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" rx="${rad}" fill="${f}"${A ? '' : ` stroke="${ink}" stroke-width="1.2"`}${gone ? ' fill-opacity=".3"' : ''}/>`
-      + (invalid.has(i) && !gone ? `<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" rx="${rad}" fill="url(#hX${id})" stroke="${BAD}" stroke-width="2"/>` : '')
-      + (gone ? `<rect class="replacing" x="${rx + 1}" y="${ry + 1}" width="${rw - 2}" height="${rh - 2}" rx="${rad}" fill="${BAD}" fill-opacity=".12" stroke="${BAD}" stroke-opacity=".45" stroke-width="1.4" stroke-dasharray="3 3"/>` : ''));
+    const paperStroke = A ? '' : ` stroke="${ink}" stroke-width="1.2"`;
+    if (isRamp(kindOf(grid, b))) {
+      s += drawRamp(b, (d) => `<path d="${d}" fill="${f}"${paperStroke}${gone ? ' fill-opacity=".3"' : ''}/>`
+        + (invalid.has(i) && !gone ? `<path d="${d}" fill="url(#hX${id})" stroke="${BAD}" stroke-width="2"/>` : ''));
+      if (gone) s += drawRamp(b, (d) => `<path class="replacing" d="${d}" fill="${BAD}" fill-opacity=".12" stroke="${BAD}" stroke-opacity=".45" stroke-width="1.4" stroke-dasharray="3 3"/>`, 1);
+    } else {
+      s += drawRect(b.col, b.len, b.row, h, (rx, ry, rw, rh) => `<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" rx="${rad}" fill="${f}"${paperStroke}${gone ? ' fill-opacity=".3"' : ''}/>`
+        + (invalid.has(i) && !gone ? `<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" rx="${rad}" fill="url(#hX${id})" stroke="${BAD}" stroke-width="2"/>` : '')
+        + (gone ? `<rect class="replacing" x="${rx + 1}" y="${ry + 1}" width="${rw - 2}" height="${rh - 2}" rx="${rad}" fill="${BAD}" fill-opacity=".12" stroke="${BAD}" stroke-opacity=".45" stroke-width="1.4" stroke-dasharray="3 3"/>` : ''));
+    }
     const last = runs(geo, b.col, b.len).slice(-1)[0]!;
     const first = runs(geo, b.col, b.len)[0]!;
     if (b.locked) {
+      // Top right corner of the last column (a ramp's last shoulder).
       const lx = x(last.col + last.len) - gap / 2 - cell * 0.32;
-      const ly = y(last.off + b.row, h) + gap / 2 + cell * 0.07;
+      const ly = y(last.off + topIn(grid, b, b.col + b.len - 1), 0) + gap / 2 + cell * 0.07;
       s += `<g transform="translate(${lx} ${ly}) scale(${(cell * 0.0115).toFixed(3)})" fill="none" stroke="${ink}" stroke-width="2" stroke-linecap="round">${ICONS.lock}</g>`;
     }
     const label = b.piece === 'I' ? b.country ?? '' : h > 1 ? `${h} GW` : '';
@@ -298,7 +364,10 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   if (pv) {
     const col = pv.valid ? OK : BAD;
     const f = fill(pv.piece);
-    s += drawRect(pv.rect.col, pv.rect.len, pv.rect.row, pv.rect.height, (rx, ry, rw, rh) => `<rect class="preview" x="${rx + 1.5}" y="${ry + 1.5}" width="${Math.max(0, rw - 3)}" height="${Math.max(0, rh - 3)}" rx="${rad}" fill="${f}" fill-opacity=".5" stroke="${col}" stroke-width="2" stroke-dasharray="5 3"/>`);
+    const bar: Placement = { piece: pv.piece as Placement['piece'], row: pv.rect.row, col: pv.rect.col, len: pv.rect.len };
+    if (pv.piece in grid.pieces && isRamp(kindOf(grid, bar))) {
+      s += drawRamp(bar, (d) => `<path class="preview" d="${d}" fill="${f}" fill-opacity=".5" stroke="${col}" stroke-width="2" stroke-dasharray="5 3"/>`, 1.5);
+    } else s += drawRect(pv.rect.col, pv.rect.len, pv.rect.row, pv.rect.height, (rx, ry, rw, rh) => `<rect class="preview" x="${rx + 1.5}" y="${ry + 1.5}" width="${Math.max(0, rw - 3)}" height="${Math.max(0, rh - 3)}" rx="${rad}" fill="${f}" fill-opacity=".5" stroke="${col}" stroke-width="2" stroke-dasharray="5 3"/>`);
   }
   const ring = (c: Cell, color: string, dash: string) => {
     if (c.col < 0 || c.col >= n) return '';
@@ -321,7 +390,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   // ---- tags above the columns: price, record, STEP
   const stack = grid.columns.map(() => 0);
   const barTop = grid.columns.map(() => 0);
-  if (A) for (const b of state.bars) for (let c = b.col; c < Math.min(n, b.col + b.len); c++) barTop[c] = Math.max(barTop[c]!, b.row + barHeight(b));
+  if (A) for (const b of state.bars) for (let c = b.col; c < Math.min(n, b.col + b.len); c++) barTop[c] = Math.max(barTop[c]!, topIn(grid, b, c));
   const topOf = (c: number) => (A ? weather[c]! + Math.max(sil[c]! + turbines[c]!, barTop[c]!) : H);
   const tagY = (c: number) => y(topOf(c) - 1) - 24 - stack[c]!++ * 22;
   // A pill centred on `mid`, kept inside the board; a verified pill grows by 10 to hold its tick.

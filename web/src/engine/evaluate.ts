@@ -14,9 +14,10 @@ import {
 } from '../i18n/fr';
 import { checkShape, checkSilhouette } from './rules';
 import {
-  barHeight, co2Total, exportsAt, importsAt, pieceCells, pieceKey, rawSilhouette,
+  co2Total, exportsAt, importsAt, pieceCells, pieceKey, rawSilhouette,
   solutionState, totalExports, totalImports, type EngineError, type PlacedBar, type PlayState,
 } from './state';
+import { cellCount, cellsOf, cellsInColumn } from '../model/shapes';
 
 export type ClueStatus = 'ok' | 'open' | 'broken';
 
@@ -73,7 +74,7 @@ export function composition(grid: Grid, state: PlayState): Composition {
     for (let c = b.col; c < Math.min(n, b.col + b.len); c++) {
       const col = cells[c]!;
       const k = pieceKey(b);
-      col[k] = (col[k] ?? 0) + barHeight(b);
+      col[k] = (col[k] ?? 0) + cellsInColumn(grid, b, c);
     }
   }
   const exports: Record<string, number[]> = {};
@@ -127,7 +128,7 @@ function barClueStatus(grid: Grid, board: Board, piece: PieceId, matches: (b: Pl
   const spec = grid.inventory.level === 'exact' ? grid.inventory.pieces[piece] : undefined;
   const mine = board.validBars.filter((b) => b.piece === piece);
   if (spec?.bars && mine.length >= spec.bars.length) return 'broken';
-  if (spec?.cells !== undefined && mine.reduce((a, b) => a + b.len * barHeight(b), 0) >= spec.cells) return 'broken';
+  if (spec?.cells !== undefined && mine.reduce((a, b) => a + cellCount(grid, b), 0) >= spec.cells) return 'broken';
   return 'open';
 }
 
@@ -181,7 +182,7 @@ function inventoryReport(grid: Grid, state: PlayState, errors: EngineError[], to
   const items: InventoryItem[] = [];
   for (const [id, spec] of Object.entries(inv.pieces) as [PieceId, NonNullable<typeof inv.pieces[PieceId]>][]) {
     const name = ofPiece(grid, id);
-    const used = pieceCells(state, id);
+    const used = pieceCells(grid, state, id);
     if (spec.bars) {
       const left = [...spec.bars];
       const extra: number[] = [];
@@ -288,9 +289,7 @@ export function evaluate(grid: Grid, state: PlayState): Evaluation {
     let error = fits.ok ? null : fits.error;
     const own: string[] = [];
     if (!error) {
-      for (let c = b.col; c < b.col + b.len; c++) {
-        for (let r = b.row; r < b.row + barHeight(b); r++) own.push(`${r},${c}`);
-      }
+      for (const [r, c] of cellsOf(grid, b)) own.push(`${r},${c}`);
       if (own.some((k) => covered.has(k))) error = { code: 'overlap', message: MSG.overlap() };
     }
     if (error) {

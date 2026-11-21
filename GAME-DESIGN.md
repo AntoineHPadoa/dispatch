@@ -32,7 +32,7 @@ Le prototype n'utilise encore que des barres d'une case de haut ; les pièces ve
 |---|---|---|---|---|
 | N | Nucléaire | barre de 3 à 6 créneaux (ou plus sur les grandes grilles), 1 GW | 1 (le moins cher) | 0 |
 | B | Barrage | 1 case ; le stock d'eau est limité par l'inventaire | 2 | 0 |
-| C | Charbon | barre de 3 à 5 | 3 | 3 |
+| C | Charbon | barre de 3 à 5, ou rampe 1 → 2 → 1 de 3 à 5 (voir ci-dessous) | 3 | 3 |
 | G | Gaz (cycle combiné) | barre de 2 à 3 | 4 | 1 |
 | T | TAC (turbine de pointe) | 1 case | 5 (le plus cher) | 2 |
 | I | Import | 1 case, depuis un pays voisin | sans rang | selon le pays |
@@ -46,6 +46,11 @@ Le prototype n'utilise encore que des barres d'une case de haut ; les pièces ve
 
 Aujourd'hui, R et F ne font que réduire la demande à couvrir. Elles restent des pièces à part entière pour ouvrir des mécaniques : prévision météo incertaine, écrêtement d'un surplus, indice « production solaire de midi », renouvelables qui varient d'un créneau à l'autre.
 
+**La rampe du charbon** : une grille peut déclarer son charbon en rampe (trapèze 1 → 2 → 1), jamais rectangle et rampe à la fois.
+- Une rampe de largeur W occupe W cases sur sa **ligne de base** et W − 2 cases (le **plateau**) sur la ligne juste au-dessus ; les deux cases du bout de la base sont les **épaules**. Elle compte 2W − 2 cases.
+- Elle se pose comme une barre : la largeur totale est sa durée de marche, la hauteur est fixe. Elle se pose à n'importe quelle ligne.
+- Un escalier 2 → 1 est prévu par le format (`shape: "stair"`) mais n'est pas encore dans le jeu.
+
 Le **rang de prix** suit l'ordre d'appel réel (merit order). Il ne sert qu'aux indices de prix : « à 8h, c'est le gaz qui fixe le prix » veut dire que la case pilotable la plus chère de la colonne est du gaz. L'import n'a pas de rang : un indice de prix ne porte jamais sur un créneau qui contient un import.
 
 Toutes les pièces ne sont pas présentes dans chaque grille : la grille déclare les centrales disponibles.
@@ -53,7 +58,7 @@ Toutes les pièces ne sont pas présentes dans chaque grille : la grille déclar
 ## 4. Règles de pose
 
 1. Chaque pièce est posée entièrement dans la silhouette, sans chevaucher une autre pièce.
-2. Sa largeur et sa hauteur font partie de celles autorisées pour sa pièce.
+2. Sa forme fait partie de celles autorisées pour sa pièce : largeur et hauteur pour un rectangle, largeur pour une rampe.
 3. Toutes les cases de la silhouette sont couvertes.
 4. L'inventaire est respecté (§6) et tous les indices sont vrais (§7).
 5. Les contraintes optionnelles de la grille sont respectées (§5).
@@ -131,6 +136,15 @@ Note = la technique la plus avancée nécessaire, à la Sudoku. Chaque technique
 | 3 | Répartition de l'inventaire | Les barres doivent toutes trouver une ligne : un découpage qui empêche les autres de se placer est exclu. |
 | 4 | Hypothèse réfutée | Si un choix mène à une impasse par les règles simples, il est exclu (une seule hypothèse, jamais imbriquée). |
 
+Techniques de la rampe (niveaux provisoires, à recaler par le calibrage humain ; le solveur de déduction ne les nomme pas encore) :
+
+| Niveau | Technique | Phrase pour le joueur |
+|---|---|---|
+| 1 | Le plateau barre la ligne du dessus | Au-dessus de sa base, la rampe occupe aussi la ligne suivante sur tout son plateau : aucun ruban de cette ligne ne la traverse. |
+| 1 | L'épaule appelle une case | La case au-dessus d'une épaule est fermée côté plateau : seule une pièce d'une case, ou une barre qui s'arrête pile là, peut la couvrir. |
+| 2 | Une case seule est une épaule | Une seule case de rampe dans une colonne, c'est une épaule : la rampe continue à deux cases d'un côté et s'arrête de l'autre. |
+| 3 | Deux épaules se relaient | Deux cases de rampe sans plateau autour : une rampe s'arrête et une autre démarre sur son épaule. |
+
 **Ce qui crée la difficulté** (constaté sur les tirages) : des choix réels, c'est-à-dire un voisin, un STEP ou l'absence d'inventaire. Sans voisin et avec un inventaire exact, les grilles sont toujours faciles.
 
 **À recalibrer en priorité** : en test humain, les grilles notées Expert et Difficile ont été jugées très faciles. Le classement des techniques (en particulier « Hypothèse réfutée » et « Répartition de l'inventaire ») ne correspond pas encore à la difficulté ressentie. Il faut le recalibrer avec des parties chronométrées de plusieurs joueurs (voir §12).
@@ -203,9 +217,10 @@ Champs de la grille complète, en plus de l'exemple ci-dessus :
 - **Tête** : `id` (entier > 0), `title`, `section` (`"tutorial"` ou `"rated"`), `intro` (texte affiché avant de jouer, facultatif) et `teaches` (ids des techniques introduites, pour les grilles de tutoriel).
 - **`column.counts`** : une clé est un id de pièce, ou `I:<pays>` pour les imports d'un seul voisin (ex. `{"G": 2, "I:DE": 0}`).
 - **`height`** : facultatif sur une pose (`solution.placements`) et sur un indice `engaged` ; 1 par défaut, et toujours une valeur de `pieces.<id>.height`.
+- **`pieces.<id>.shape`** : `"rect"` (défaut), `"trap"` (rampe 1 → 2 → 1) ou `"stair"` (escalier 2 → 1). Seul le charbon `C` peut être une rampe ; une rampe n'a pas de `height` ; `len` est sa largeur totale (≥ 3 pour `trap`, ≥ 2 pour `stair`). Une pose de rampe garde `{piece, row, col, len}` : `row` est sa ligne de base, ses cases se déduisent de la forme (`web/src/model/shapes.ts`). Exemple : `"C": {"shape": "trap", "len": [3, 4, 5], "rank": 3, "co2": 3}`.
 - **`inventory.pieces.<id>.max_cells`** : stock maximal en cases d'une pièce, connu du joueur même au niveau `none` (ex. l'eau d'un barrage : `"B": {"max_cells": 2}`). Le moteur refuse une pose qui dépasse ce stock.
 
-Contrôles du validateur : de 6 à 12 colonnes ; rang et CO₂ de chaque pièce égaux à ceux du §3 ; `pieces` et `inventory.pieces` ont les mêmes clés ; `imports` ne mêle pas `"*"` et des clés par pays ; chaque pose a une largeur et une hauteur permises, tient dans la grille, et un import fait 1 case ; un bulletin a un numéro, un titre, un texte, un ciel par colonne et une date ISO réelle ; une grille avec STEP publie son nombre de paires (`inventory.step` en exact, `step` d'un indice `exchanges` sinon) ; dans `solution.step`, `pump` est avant `turbine` ; un flux ou un export ne dépasse pas le `cap` de la ligne.
+Contrôles du validateur : de 6 à 12 colonnes ; rang et CO₂ de chaque pièce égaux à ceux du §3 ; `pieces` et `inventory.pieces` ont les mêmes clés ; `imports` ne mêle pas `"*"` et des clés par pays ; une rampe est du charbon, sans `height`, assez large ; chaque pose a une largeur et une hauteur permises (aucune hauteur pour une rampe), tient dans la grille, et un import fait 1 case ; un bulletin a un numéro, un titre, un texte, un ciel par colonne et une date ISO réelle ; une grille avec STEP publie son nombre de paires (`inventory.step` en exact, `step` d'un indice `exchanges` sinon) ; dans `solution.step`, `pump` est avant `turbine` ; un flux ou un export ne dépasse pas le `cap` de la ligne.
 
 - **`bulletin`** (facultatif) : le bulletin du marché publié avec la grille, `{"number", "title", "text", "weather", "published"}`.
   - `number` : numéro du bulletin (entier > 0, unique d'une grille à l'autre) ; `title` et `text` : titre et court texte de contexte (non vides).

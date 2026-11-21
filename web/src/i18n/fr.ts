@@ -3,6 +3,7 @@
  * inventory status. The engine and the UI import from here; no player text lives elsewhere.
  */
 import type { Clue, Grid, PieceId } from '../model/grid';
+import type { ShapeKind } from '../model/shapes';
 
 interface PieceWords {
   /** Palette label. */
@@ -151,6 +152,7 @@ function lenText(lens: number[]): string {
 export const MSG = {
   bounds: () => 'La barre dépasse de la grille.',
   length: (name: string, lens: number[]) => `La barre ${name} doit faire ${lenText(lens)}.`,
+  rampLength: (lens: number[]) => `Une rampe de charbon fait ${lenText(lens)}.`,
   height: (name: string, heights: number[]) => `La barre ${name} doit faire ${heights.join(' ou ')} GW de haut.`,
   silhouette: (col: string) => `Hors de la silhouette à ${col}.`,
   overlap: () => 'Case déjà occupée.',
@@ -229,6 +231,10 @@ export const TECHNIQUES: Record<string, { name: string; text: string }> = {
   carbon: { name: 'Plafond carbone', text: 'Une barre qui ferait dépasser le plafond CO₂ est exclue.' },
   share_out: { name: 'Répartition de l’inventaire', text: 'Les barres doivent toutes trouver une ligne : un découpage qui empêche les autres de se placer est exclu.' },
   refuted: { name: 'Hypothèse réfutée', text: 'Si un choix mène à une impasse par les règles simples, il est exclu (une seule hypothèse, jamais imbriquée).' },
+  ramp_plateau: { name: 'Le plateau barre la ligne du dessus', text: 'Au-dessus de sa base, la rampe occupe aussi la ligne suivante sur tout son plateau : aucun ruban de cette ligne ne la traverse.' },
+  ramp_shoulder: { name: 'L’épaule appelle une case', text: 'La case au-dessus d’une épaule est fermée côté plateau : seule une pièce d’une case, ou une barre qui s’arrête pile là, peut la couvrir.' },
+  ramp_single: { name: 'Une case seule est une épaule', text: 'Une seule case de rampe dans une colonne, c’est une épaule : la rampe continue à deux cases d’un côté et s’arrête de l’autre.' },
+  ramp_relay: { name: 'Deux épaules se relaient', text: 'Deux cases de rampe sans plateau autour : une rampe s’arrête et une autre démarre sur son épaule.' },
 };
 
 /** Clue kinds, as labels above each clue text. */
@@ -259,8 +265,9 @@ export const programLabel = (grid: Grid, piece: PieceId, col: number, len: numbe
   `${SHORT_NAME[piece]} ${columnLabel(grid, col)} → ${columnLabel(grid, col + len)}`;
 
 /** Shape hint under a plant name in the order book: "ruban de 3 à 6", "1 case, pointe", "stock : 2 cases". */
-export function pieceHint(piece: PieceId, lens: number[], heights: number[], maxCells?: number): string {
+export function pieceHint(piece: PieceId, lens: number[], heights: number[], maxCells?: number, shape: ShapeKind = 'rect'): string {
   if (maxCells !== undefined) return `stock : ${plural(maxCells, 'case')}`;
+  if (shape !== 'rect') return `rampe de ${lenText(lens)}`;
   const minL = lens[0] ?? 1;
   const maxL = lens[lens.length - 1] ?? minL;
   const minH = heights[0] ?? 1;
@@ -276,9 +283,10 @@ export function pieceHint(piece: PieceId, lens: number[], heights: number[], max
 
 /** "TAC à 8h, ligne 6", "Gaz de 4h à 12h, ligne 2" (rows count from 1 at the bottom). */
 export function placementLabel(grid: Grid, piece: string, country: string | undefined, row: number, col: number,
-  len: number, height = 1): string {
+  len: number, height = 1, shape: ShapeKind = 'rect'): string {
   const name = piece === 'I' ? `Import ${countryFrom(grid, country ?? '')}` : PIECE_WORDS[piece as PieceId]?.name ?? piece;
   const when = len === 1 ? `à ${columnLabel(grid, col)}` : `de ${columnLabel(grid, col)} à ${columnLabel(grid, col + len)}`;
+  if (shape !== 'rect') return `${name} en rampe ${when}, base ligne ${row + 1}`;
   const where = height > 1 ? `lignes ${row + 1} à ${row + height}` : `ligne ${row + 1}`;
   return `${name} ${when}, ${where}`;
 }
