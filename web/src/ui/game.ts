@@ -6,6 +6,8 @@
  *   board, hatched in red, until the player removes them.
  * - The message slot is rewritten only when its HTML changes: a redraw never replaces a banner
  *   link under a pointer that is pressing it.
+ * - Touch: with a piece one row high the board lets vertical swipes scroll the page; a swipe the
+ *   browser takes for scrolling cancels the gesture silently. Eraser and STEP taps act on release.
  */
 import type { Grid, Placement } from '../model/grid';
 import {
@@ -15,7 +17,7 @@ import {
 import { MSG, TECHNIQUES, UI, columnLabel, countryTo, durationText, placementLabel, slotClueShort } from '../i18n/fr';
 import { lockedExports, renderBoard, cellAt, type BoardGeometry } from './board';
 import {
-  cancel, idle, moveTo, press, previewRect, release, tap, type Cell, type GestureState, type Rect, type Shape,
+  alongShape, cancel, idle, isFlat, moveTo, press, previewRect, release, tap, type Cell, type GestureState, type Rect, type Shape,
 } from './gesture';
 import { canUndo, push, reset, start, undo, type History } from './history';
 import { STEP_KEY, bookEntries, publishedStepPairs, renderBook, renderClues, renderCo2, type BookEntry } from './panels';
@@ -38,6 +40,20 @@ const MAX_CELL = 54;
 /** Initial board: engaged plants and the exports fixed by published flows. */
 export function initialState(grid: Grid): PlayState {
   return applyLockedExports(grid, newGame(grid));
+}
+
+/** Is the board as a new game leaves it (no plant, no STEP pair, only the published exports)? */
+export function isInitialState(grid: Grid, state: PlayState): boolean {
+  if (state.bars.length || state.step.length) return false;
+  const start = initialState(grid);
+  return grid.neighbors.every((nb) => grid.columns.every((_, col) => exportsAt(state, nb.id, col) === exportsAt(start, nb.id, col)));
+}
+
+/** Bold technique line under "Technique du jour": empty when the title already names every technique. */
+export function techniqueLine(grid: Grid): string {
+  const names = (grid.teaches ?? []).map((t) => TECHNIQUES[t]?.name).filter(Boolean) as string[];
+  const title = displayTitle(grid).toLocaleLowerCase('fr');
+  return names.every((n) => title.includes(n.toLocaleLowerCase('fr'))) ? '' : names.join(' · ');
 }
 
 /** Force the exports fixed by flow clues (a saved board may predate them). */
@@ -129,6 +145,8 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   let msgHtml = '';
   /** Pill or tag pressed by a pointer: activated when the same one is released (mouse and touch). */
   let pressedAct: string | null = null;
+  /** Touch tap with the eraser or STEP: done on release, forgotten if the page scrolls instead. */
+  let pendingTap: Cell | null = null;
   const elapsedBase = saved?.elapsedMs ?? 0;
   const sessionStart = Date.now();
   let frozenElapsed: number | null = saved?.status === 'done' && ev.solved ? elapsedBase : null;
@@ -140,10 +158,10 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     ? UI.tutorialOf(tutorials.findIndex((g) => g.id === grid.id) + 1, tutorials.length)
     : `${daily?.id === grid.id ? UI.daily : UI.ratedEyebrow}${grid.inventory.level === 'none' ? ` · ${UI.noInventory}` : ''}`;
 
-  const techniques = (grid.teaches ?? []).map((t) => TECHNIQUES[t]?.name).filter(Boolean) as string[];
+  const tech = techniqueLine(grid);
   const intro = grid.intro
-    ? `<div class="intro"><span class="eyebrow">${esc(techniques.length ? UI.techniqueOfDay : UI.instructions)}</span>`
-      + (techniques.length ? `<b>${esc(techniques.join(' · '))}</b>` : '')
+    ? `<div class="intro"><span class="eyebrow">${esc(grid.teaches?.length ? UI.techniqueOfDay : UI.instructions)}</span>`
+      + (tech ? `<b>${esc(tech)}</b>` : '')
       + `<span>${esc(grid.intro)}</span></div>`
     : '';
 
@@ -211,6 +229,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     geo = out.geo;
     scroll.innerHTML = out.svg;
     wrap.classList.toggle('placing', !!selected && !erase);
+    wrap.classList.toggle('pan', !!selected && !erase && isFlat(shapeOf(selected)));
     wrap.classList.toggle('erasing', erase);
     syncSlider();
     drawMessage(pv);
@@ -403,8 +422,11 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     const c = cellFromEvent(e);
     if (!c) return;
     cursor = c;
-    if (erase) { removeAt(c); return; }
-    if (selected?.piece === STEP_KEY) { stepTap(c.col); return; }
+    if (erase || selected?.piece === STEP_KEY) {
+      if (e.pointerType === 'mouse') tapAction(c);
+      else pendingTap = c;
+      return;
+    }
     const occupied = barIndexAt(history.present, c.row, c.col) >= 0;
     longPressFired = false;
     if (occupied && e.pointerType !== 'mouse') {
@@ -420,9 +442,16 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     drawBoard();
   }
 
+  /** Eraser or STEP tap on a cell. */
+  function tapAction(c: Cell) {
+    if (erase) removeAt(c);
+    else stepTap(c.col);
+  }
+
   function onPointerMove(e: PointerEvent) {
-    const c = cellFromEvent(e);
-    if (!c || !selected || erase) return;
+    const at = cellFromEvent(e);
+    if (!at || !selected || erase) return;
+    const c = gesture.drag ? alongShape(gesture.drag.start, at, shapeOf(selected)) : at;
     const before = gesture;
     gesture = moveTo(gesture, c);
     if (gesture.drag && before.drag && (before.drag.current.row !== c.row || before.drag.current.col !== c.col)) clearLongPress();
@@ -437,9 +466,11 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       pressedAct = null;
       return;
     }
+    if (pendingTap) { const c = pendingTap; pendingTap = null; tapAction(c); return; }
     if (!gesture.drag || !selected) return;
     if (longPressFired) { gesture = cancel(gesture); drawBoard(); return; }
-    const c = cellFromEvent(e) ?? gesture.drag.current;
+    const at = cellFromEvent(e);
+    const c = at ? alongShape(gesture.drag.start, at, shapeOf(selected)) : gesture.drag.current;
     const r = release(gesture, c, shapeOf(selected));
     gesture = r.state;
     if (r.dropped) message = null;
@@ -447,8 +478,12 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     else drawBoard();
   }
 
+  /** The browser took the touch (page scroll): forget the press, without any message. */
   function onPointerCancel() {
     clearLongPress();
+    pendingTap = null;
+    pressedAct = null;
+    if (!gesture.drag) return;
     gesture = { ...gesture, drag: null };
     drawBoard();
   }
@@ -545,6 +580,13 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       message = { text: UI.undone, tone: 'info' };
       drawAll();
     } else if (tool === 'reset') {
+      // A board still as it started: nothing to stack, nothing to save.
+      if (isInitialState(grid, history.present)) {
+        gesture = cancel(gesture);
+        stepPending = null;
+        say(UI.nothingToReset, 'info');
+        return;
+      }
       const wasSolved = ev.solved;
       history = reset(history, initial);
       gesture = idle();
@@ -590,14 +632,15 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   wrap.addEventListener('blur', onWrapBlur);
   gameEl.addEventListener('click', onToolClick);
   side.addEventListener('click', onSideClick);
-  const onLeave = () => save();
+  /** Leaving saves the clock, but never makes a grid nobody played look started. */
+  const onLeave = () => { if (history.past.length || ctx.store.get().grids[String(grid.id)]) save(); };
   window.addEventListener('pagehide', onLeave);
 
   drawAll();
   fit();
 
   return () => {
-    if (history.past.length || saved) save();
+    onLeave();
     ro?.disconnect();
     clearLongPress();
     window.removeEventListener('pagehide', onLeave);

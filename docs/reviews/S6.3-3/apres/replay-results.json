@@ -1,0 +1,184 @@
+[
+ {
+  "id": "I42 (3.1)",
+  "mode": "T",
+  "expected": "la page défile, aucun refus, aucune ancre",
+  "got": "scrollY=301, msg='Glisse sur la grille pour poser la centrale choisie (ou touche la case de départ puis celle d’arrivée). Change de centrale dans la liste. Exporte en touchant les pastilles sous la grille.' (msg info)",
+  "ok": true
+ },
+ {
+  "id": "I42 (bande vide)",
+  "mode": "T",
+  "expected": "la page défile, aucune ancre",
+  "got": "scrollY=300, msg='Glisse sur la grille pour poser la centrale choisie (ou touche la case de départ puis celle d’arrivée). Change de centrale dans la liste. Exporte en touchant les pastilles sous la grille.'",
+  "ok": true
+ },
+ {
+  "id": "I42 (pastille)",
+  "mode": "T",
+  "expected": "la page défile, export inchangé",
+  "got": "scrollY=301, 'Allemagne, 6h : 0 exporté. Touche pour changer l’export.'",
+  "ok": true
+ },
+ {
+  "id": "I8",
+  "mode": "T",
+  "expected": "glisser horizontal : barre posée",
+  "got": "'Nucléaire de 0h à 12h, ligne 1 : la pose tient.', barres=1",
+  "ok": true
+ },
+ {
+  "id": "I10",
+  "mode": "T",
+  "expected": "2 touchers : ancre puis pose",
+  "got": "'Nucléaire à 15h, ligne 1 : touche maintenant la case d’arrivée.' → 'Nucléaire de 15h à 24h, ligne 1 : la pose tient.'",
+  "ok": true
+ },
+ {
+  "id": "I19",
+  "mode": "T",
+  "expected": "appui long : retrait, aucune ancre",
+  "got": "'Retiré : Nucléaire de 0h à 12h, ligne 1.', barres=1",
+  "ok": true
+ },
+ {
+  "id": "I22",
+  "mode": "T",
+  "expected": "toucher une pastille : 0 → 1",
+  "got": "'Allemagne, 12h : 1 exporté. Touche pour changer l’export.'",
+  "ok": true
+ },
+ {
+  "id": "I16 (balayage)",
+  "mode": "T",
+  "expected": "gomme + balayage : rien retiré, la page défile",
+  "got": "scrollY=301, barres=1",
+  "ok": true
+ },
+ {
+  "id": "I16",
+  "mode": "T",
+  "expected": "gomme + toucher : retrait",
+  "got": "'Retiré : Nucléaire de 15h à 24h, ligne 1.', barres=0",
+  "ok": true
+ },
+ {
+  "id": "I42 (STEP)",
+  "mode": "T",
+  "expected": "STEP + balayage : aucun pompage, la page défile",
+  "got": "scrollY 268 → 569, msg='STEP : touche le créneau du pompage, puis un créneau plus tard pour le turbinage. Touche une étiquette ▲ ou ▼ pour retirer la paire.'",
+  "ok": true
+ },
+ {
+  "id": "I26",
+  "mode": "T",
+  "expected": "STEP : pompage puis turbinage",
+  "got": "'Pompage à 9h : touche un créneau plus tard pour le turbinage.' → 'STEP : pompage à 9h, turbinage à 12h.'",
+  "ok": true
+ },
+ {
+  "id": "3.4",
+  "mode": "T",
+  "expected": "l'intro du tutoriel 7 explique ▲ et ▼",
+  "got": "TECHNIQUE DU JOUR | La silhouette suit les barres · Le relevé compte les cases · Programme publié | Nouveau : une STEP (pompage ▲ puis turbinage ▼), un relevé de production RTE et le programme publié d’une centrale. Le pompage ▲ ajoute une case à couvrir, le turbinage ▼ en retire une.",
+  "ok": true
+ },
+ {
+  "id": "I21 (3.2)",
+  "mode": "T",
+  "expected": "grille neuve : « Rien à recommencer. », Annuler grisé, carte « Pas commencée »",
+  "got": "'Rien à recommencer.', undo grisé=True, carte='Pas commencée'",
+  "ok": true
+ },
+ {
+  "id": "I21",
+  "mode": "T",
+  "expected": "Recommencer puis Annuler",
+  "got": "1 → 'Grille remise à zéro. « Annuler » la rétablit.' 0 → annuler 1",
+  "ok": true
+ },
+ {
+  "id": "3.3 + 3.5",
+  "mode": "T",
+  "expected": "pas de titre répété ; « ne coûte plus cher que celles »",
+  "got": "gras=0, 'TECHNIQUE DU JOUR | Nouveau : un prix publié par la bourse. Sous un prix publié, aucune case ne coûte plus cher que celles de cette centrale.'",
+  "ok": true
+ },
+ {
+  "id": "3.6",
+  "mode": "T",
+  "expected": "refus de stock entre parenthèses",
+  "got": "'Barrage à 6h, ligne 1 : plus d’eau dans le barrage (2 cases au plus).'",
+  "ok": true
+ },
+ {
+  "id": "I8",
+  "mode": "S",
+  "expected": "glisser : aperçu puis pose",
+  "got": "'Nucléaire de 0h à 12h, ligne 1 : la pose tient.' → 'Nucléaire de 0h à 12h, ligne 1 : la pose tient.'",
+  "ok": true
+ },
+ {
+  "id": "glisser vertical (S)",
+  "mode": "S",
+  "expected": "aucun aperçu ni refus ; relâché = ancre",
+  "got": "'Nucléaire de 0h à 12h, ligne 1 : la pose tient.' → 'Nucléaire à 15h, ligne 1 : touche maintenant la case d’arrivée.'",
+  "ok": true
+ },
+ {
+  "id": "I13",
+  "mode": "S",
+  "expected": "barre trop courte refusée",
+  "got": "'Nucléaire de 0h à 6h, ligne 2 : la barre de nucléaire doit faire 3 à 6 créneaux.'",
+  "ok": true
+ },
+ {
+  "id": "I16",
+  "mode": "S",
+  "expected": "gomme : retrait au clic",
+  "got": "'Retiré : Nucléaire de 0h à 12h, ligne 1.'",
+  "ok": true
+ },
+ {
+  "id": "I26",
+  "mode": "S",
+  "expected": "STEP : pompage puis turbinage",
+  "got": "'Pompage à 9h : touche un créneau plus tard pour le turbinage.' → 'STEP : pompage à 9h, turbinage à 12h.'",
+  "ok": true
+ },
+ {
+  "id": "I21 (3.2)",
+  "mode": "S",
+  "expected": "grille neuve : « Rien à recommencer. », Annuler grisé, carte « Pas commencée »",
+  "got": "'Rien à recommencer.', undo grisé=True, carte='Pas commencée'",
+  "ok": true
+ },
+ {
+  "id": "I21",
+  "mode": "S",
+  "expected": "Recommencer puis Annuler",
+  "got": "1 → 'Grille remise à zéro. « Annuler » la rétablit.' 0 → annuler 1",
+  "ok": true
+ },
+ {
+  "id": "3.3 + 3.5",
+  "mode": "S",
+  "expected": "pas de titre répété ; « ne coûte plus cher que celles »",
+  "got": "gras=0, 'TECHNIQUE DU JOUR | Nouveau : un prix publié par la bourse. Sous un prix publié, aucune case ne coûte plus cher que celles de cette centrale.'",
+  "ok": true
+ },
+ {
+  "id": "3.6",
+  "mode": "S",
+  "expected": "refus de stock entre parenthèses",
+  "got": "'Barrage à 6h, ligne 1 : plus d’eau dans le barrage (2 cases au plus).'",
+  "ok": true
+ },
+ {
+  "id": "console",
+  "mode": "S+T",
+  "expected": "aucune erreur JS",
+  "got": "0 erreur(s) []",
+  "ok": true
+ }
+]

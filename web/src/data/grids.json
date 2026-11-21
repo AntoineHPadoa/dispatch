@@ -148,7 +148,7 @@
     "id": 2,
     "title": "2. Le prix plafonne la colonne",
     "section": "tutorial",
-    "intro": "Nouveau : un prix publié par la bourse. Sous un prix publié, aucune case n’est plus chère que cette centrale.",
+    "intro": "Nouveau : un prix publié par la bourse. Sous un prix publié, aucune case ne coûte plus cher que celles de cette centrale.",
     "teaches": [
       "price_cap"
     ],
@@ -978,7 +978,7 @@
     "id": 7,
     "title": "7. Pompage, relevé et programme",
     "section": "tutorial",
-    "intro": "Nouveau : une STEP (pompage ▲ puis turbinage ▼), un relevé de production RTE et le programme publié d’une centrale.",
+    "intro": "Nouveau : une STEP (pompage ▲ puis turbinage ▼), un relevé de production RTE et le programme publié d’une centrale. Le pompage ▲ ajoute une case à couvrir, le turbinage ▼ en retire une.",
     "teaches": [
       "silhouette",
       "record",

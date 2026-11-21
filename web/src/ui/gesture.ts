@@ -6,7 +6,8 @@
  * - `hover` is where the pointer last was: after a release or a tap it is that cell, so a stale
  *   cell from an earlier gesture never feeds the two-tap preview.
  * - The rectangle follows the piece shape: a piece one row high stays on the start row, a piece
- *   one slot wide stays in the start column.
+ *   one slot wide stays in the start column. A drag of a piece one row high only follows columns
+ *   (`alongShape`), so a vertical swipe never previews a bar.
  *
  * Example:
  *   let g = idle();
@@ -67,6 +68,17 @@ export function rectBetween(a: Cell, b: Cell, shape: Shape): Rect {
   const col = narrow ? a.col : Math.min(a.col, b.col);
   const len = narrow ? 1 : Math.abs(a.col - b.col) + 1;
   return { row, col, len, height };
+}
+
+/** A piece one row high: the board lets vertical swipes scroll the page (touch). */
+export const isFlat = (shape: Shape) => Math.max(...shape.heights) === 1;
+
+/**
+ * Cell a drag from `start` stands for: a piece one row high stays on the start row, so a move
+ * that only changes row is no move at all (no preview, and a release there is a tap).
+ */
+export function alongShape(start: Cell, cell: Cell, shape: Shape): Cell {
+  return isFlat(shape) ? { row: start.row, col: cell.col } : cell;
 }
 
 export function press(state: GestureState, cell: Cell): GestureState {

@@ -7,7 +7,7 @@ import gridsJson from '../src/data/grids.json';
 import type { Grid } from '../src/model/grid';
 import { evaluate, newGame, place, solutionState } from '../src/engine';
 import {
-  cancel, idle, isSingleCell, moveTo, press, previewRect, rectBetween, release, tap, type Shape,
+  alongShape, cancel, idle, isFlat, isSingleCell, moveTo, press, previewRect, rectBetween, release, tap, type Shape,
 } from '../src/ui/gesture';
 import { canUndo, MAX_PAST, push, reset, start, undo } from '../src/ui/history';
 import {
@@ -16,9 +16,10 @@ import {
 } from '../src/ui/progress';
 import { boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard } from '../src/ui/board';
 import {
-  applyLockedExports, boardMessage, displayTitle, exportTap, initialState, newlyBroken, nextExportValue, poseMessage,
+  applyLockedExports, boardMessage, displayTitle, exportTap, initialState, isInitialState, newlyBroken, nextExportValue,
+  poseMessage, techniqueLine,
 } from '../src/ui/game';
-import { durationText } from '../src/i18n/fr';
+import { MSG, durationText } from '../src/i18n/fr';
 import { STEP_KEY, bookEntries, isDayClue, publishedStepPairs, renderBook, renderCo2, richClueText } from '../src/ui/panels';
 import { renderSheet, slotLegend } from '../src/ui/print';
 
@@ -495,5 +496,46 @@ describe('review S6.3 round 1', () => {
     expect(legend).toContain('<li>15h → 24h : un réacteur tourne</li>');
     expect(renderSheet(g7, 7)).toContain('Exports, imports, pompage ▲ et turbinage ▼');
     expect(slotLegend(byId(1))).toBe('');
+  });
+});
+
+describe('review S6.3 round 3', () => {
+  it('a vertical move of a one-row piece is no move: no preview, and its release is a tap', () => {
+    expect(isFlat(BAR)).toBe(true);
+    expect(isFlat(TALL)).toBe(false);
+    const start = { row: 1, col: 2 };
+    expect(alongShape(start, { row: 3, col: 2 }, BAR)).toEqual(start);
+    expect(alongShape(start, { row: 3, col: 5 }, BAR)).toEqual({ row: 1, col: 5 });
+    expect(alongShape(start, { row: 3, col: 2 }, TALL)).toEqual({ row: 3, col: 2 });
+    let g = press(idle(), start);
+    g = moveTo(g, alongShape(start, { row: 4, col: 2 }, BAR));
+    expect(previewRect(g, BAR)).toBeNull();
+    const r = release(g, alongShape(start, { row: 4, col: 2 }, BAR), BAR);
+    expect(r.commit).toBeNull();
+    expect(r.state.anchor).toEqual(start);
+  });
+
+  it('a new board is initial; a plant, a STEP pair or an export is not', () => {
+    for (const g of grids) expect(isInitialState(g, initialState(g))).toBe(true);
+    const g1 = byId(1);
+    expect(isInitialState(g1, solutionState(g1))).toBe(false);
+    const g10 = byId(10);
+    const tapped = exportTap(g10, initialState(g10), g10.neighbors[0]!.id, 0).state!;
+    expect(isInitialState(g10, tapped)).toBe(false);
+    const g7 = byId(7);
+    expect(isInitialState(g7, { ...initialState(g7), step: [{ pump: 2, turbine: 4 }] })).toBe(false);
+  });
+
+  it('the technique line is left out when the title already names every technique', () => {
+    expect(techniqueLine(byId(2))).toBe('');
+    expect(techniqueLine(byId(5))).toBe('');
+    expect(techniqueLine(byId(1))).toBe('Cases interchangeables');
+    expect(techniqueLine(byId(7))).toContain('Programme publié');
+    expect(techniqueLine(byId(10))).toBe('');
+  });
+
+  it('the stock refusal has one colon only', () => {
+    expect(MSG.stock('B', 'du barrage', 2)).toBe('Plus d’eau dans le barrage (2 cases au plus).');
+    expect(MSG.stock('G', 'de gaz', 1)).toBe('Plus de stock de gaz (1 case au plus).');
   });
 });

@@ -156,7 +156,7 @@ describe('placement rules (one invalid case per rule)', () => {
   it('stock (level none)', () => {
     const h = makeGrid({ inventory: { level: 'none', pieces: { B: { max_cells: 1 } } } });
     const s = ok(place(h, newGame(h), { piece: 'B', row: 0, col: 0, len: 1 }));
-    expect(refused(place(h, s, { piece: 'B', row: 0, col: 1, len: 1 }))).toEqual({ code: 'stock', message: 'Plus d’eau dans le barrage : 1 case au plus.' });
+    expect(refused(place(h, s, { piece: 'B', row: 0, col: 1, len: 1 }))).toEqual({ code: 'stock', message: 'Plus d’eau dans le barrage (1 case au plus).' });
     expect(evaluate(h, { ...s, bars: [...s.bars, { piece: 'B', row: 0, col: 1, len: 1 }] }).errors.map((e) => e.code)).toContain('stock');
   });
 
@@ -165,10 +165,10 @@ describe('placement rules (one invalid case per rule)', () => {
     let s = newGame(h);
     s = ok(place(h, s, { piece: 'B', row: 0, col: 0, len: 1 }));
     s = ok(place(h, s, { piece: 'B', row: 0, col: 1, len: 1 }));
-    expect(refused(place(h, s, { piece: 'B', row: 0, col: 5, len: 1 }))).toEqual({ code: 'stock', message: 'Plus d’eau dans le barrage : 2 cases au plus.' });
+    expect(refused(place(h, s, { piece: 'B', row: 0, col: 5, len: 1 }))).toEqual({ code: 'stock', message: 'Plus d’eau dans le barrage (2 cases au plus).' });
     const over: PlayState = { ...s, bars: [...s.bars, { piece: 'B', row: 0, col: 5, len: 1 }] };
     const ev = evaluate(h, over);
-    expect(ev.errors).toContainEqual({ code: 'stock', message: 'Plus d’eau dans le barrage : 2 cases au plus.' });
+    expect(ev.errors).toContainEqual({ code: 'stock', message: 'Plus d’eau dans le barrage (2 cases au plus).' });
     expect(ev.inventory.find((it) => it.key === 'B')).toMatchObject({ status: 'over', text: '3 / 2' });
   });
 

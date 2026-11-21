@@ -3,8 +3,8 @@
  * and the status of each grid (not started, in progress, finished).
  */
 import type { Grid } from '../model/grid';
-import { TECHNIQUES, UI } from '../i18n/fr';
-import { DIFF_CLASS, displayTitle } from './game';
+import { UI } from '../i18n/fr';
+import { DIFF_CLASS, displayTitle, techniqueLine } from './game';
 import { esc, icon } from './palette';
 import { dailyGrid, statusOf, type GridStatus, type Progress } from './progress';
 
@@ -13,8 +13,7 @@ const action = (st: GridStatus) => (st === 'done' ? UI.review : st === 'started'
 
 function card(grid: Grid, progress: Progress, eyebrow: string): string {
   const st = statusOf(progress, grid.id);
-  const names = (grid.teaches ?? []).map((t) => TECHNIQUES[t]?.name).filter(Boolean);
-  const tech = names.length === 1 && names[0] === displayTitle(grid) ? '' : names.join(' · ');
+  const tech = techniqueLine(grid);
   return `<li><a class="gcard ${st}" href="#/grille/${grid.id}">
     <span class="gtop"><span class="eyebrow">${esc(eyebrow)}</span><span class="diff ${DIFF_CLASS[grid.difficulty.rating] ?? 'd1'}">${esc(grid.difficulty.label)}</span></span>
     <b>${esc(displayTitle(grid))}</b>

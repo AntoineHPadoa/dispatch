@@ -159,8 +159,8 @@ export const MSG = {
   inventoryBar: (name: string, len: number) => `Plus de barre ${name} de ${plural(len, 'créneau', 'créneaux')} dans l’inventaire.`,
   inventoryCells: (name: string, total: number) => `Plus de case ${name} dans l’inventaire (${total} au total).`,
   stock: (piece: string, of: string, total: number) => (piece === 'B'
-    ? `Plus d’eau dans le barrage : ${plural(total, 'case')} au plus.`
-    : `Plus de stock ${of} : ${plural(total, 'case')} au plus.`),
+    ? `Plus d’eau dans le barrage (${plural(total, 'case')} au plus).`
+    : `Plus de stock ${of} (${plural(total, 'case')} au plus).`),
   inventoryImports: (from: string, total: number) => `Plus d’import ${from} dans l’inventaire (${total} au total).`,
   inventoryImportsAll: (total: number) => `Plus d’import dans l’inventaire (${total} au total, tous pays).`,
   inventoryExports: (to: string, total: number) => `Plus d’export ${to} dans l’inventaire (${total} au total).`,
@@ -387,6 +387,7 @@ export const UI = {
   undone: 'Dernière action annulée.',
   nothingToUndo: 'Rien à annuler.',
   resetDone: 'Grille remise à zéro. « Annuler » la rétablit.',
+  nothingToReset: 'Rien à recommencer.',
   stepPending: (col: string) => `Pompage à ${col} : touche un créneau plus tard pour le turbinage.`,
   stepAdded: (pump: string, turbine: string) => `STEP : pompage à ${pump}, turbinage à ${turbine}.`,
   stepRemoved: 'Paire STEP retirée.',

@@ -43,7 +43,7 @@ const TEACHES: Record<number, string[]> = {
 const INTRO_OVERRIDE: Record<number, string> = {
   1: 'Pose toutes les centrales de l’inventaire, ni plus ni moins, en remplissant exactement la silhouette. '
     + 'Quand tu sais combien de cases de chaque centrale vont dans une colonne, l’ordre ne compte pas.',
-  2: 'Nouveau : un prix publié par la bourse. Sous un prix publié, aucune case n’est plus chère que cette centrale.',
+  2: 'Nouveau : un prix publié par la bourse. Sous un prix publié, aucune case ne coûte plus cher que celles de cette centrale.',
   3: 'Nouveau : la ligne vers l’Allemagne. Touche une pastille sous un créneau pour exporter un bloc ; '
     + 'pose « Import » comme une centrale d’une case. '
     + 'S’il reste exactement autant de cases possibles que de cases à poser pour une centrale, toutes ces cases sont à elle.',
@@ -54,6 +54,8 @@ const INTRO_OVERRIDE: Record<number, string> = {
     + 'Les indices du marché suffisent à déduire la seule pose.',
   6: 'Un prix publié exige au moins une case de cette centrale dans la colonne : '
     + 's’il n’y a qu’une place possible, c’est elle.',
+  7: 'Nouveau : une STEP (pompage ▲ puis turbinage ▼), un relevé de production RTE et le programme publié d’une centrale. '
+    + 'Le pompage ▲ ajoute une case à couvrir, le turbinage ▼ en retire une.',
 };
 
 /** Player text uses the typographic apostrophe only. */
@@ -240,7 +242,7 @@ function convertGrid(g: ProtoGrid): Grid {
 
   const tutorial = g.section === 'Tutoriel';
   const intro = INTRO_OVERRIDE[g.id] ?? (g.intro ? typo(g.intro) : undefined);
-  if (INTRO_OVERRIDE[g.id]) note(g, 'intro rewritten (tutorial wording, price clue names a plant, grid 8 states its dam stock)');
+  if (INTRO_OVERRIDE[g.id]) note(g, 'intro rewritten (tutorial wording, price clue names a plant, grid 8 states its dam stock, grid 7 explains STEP)');
   const grid: Grid = {
     id: g.id,
     title: typo(g.title),
