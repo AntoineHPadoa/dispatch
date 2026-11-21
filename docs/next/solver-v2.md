@@ -307,3 +307,12 @@ Fonctions de bibliothèque correspondantes (`generate_lot`, `check_grid`, `deduc
 - **Jeu de référence** : les 11 grilles publiées sont lues directement dans `grids.json` (pas de copie) ; `fixtures/grids/` contient 11 grilles faites pour l'occasion, les 8 mini-grilles de la rampe, 18 grilles invalides et 3 non publiables. `solver/scripts/build_fixtures.py` les reconstruit.
 - **Résultat sur les 11 grilles** : même note qu'avant pour les 11 ; techniques identiques à 2 près (grille 9 : `room` en plus ; grille 10 : le total d'imports publié passe de `exhausted` à `record`, choix C3).
 - **Coût** : 1 à 15 ms par déduction sur les grilles publiées ; le pire cas mesuré (12 créneaux, 2 voisins, grille bloquée) prend 23 s, presque tout en « Hypothèse réfutée ».
+
+## 15. Écarts constatés à l'implémentation (S4.3)
+
+- **Créneaux** : le générateur ne tire que 6, 8 ou 12 colonnes (créneaux de 4, 3 ou 2 h, §2) ; 9 ou 10 colonnes donnaient des heures fractionnaires.
+- **Quota de plus** : `min_per_mix` (au moins une grille par configuration du mélange, 1 par défaut), avec un tirage cinq fois plus fréquent des configurations encore sans grille. Sans lui, les configurations lentes (plusieurs voisins) étaient évincées par les rapides.
+- **Famille libre** : une configuration `family: "any"` tire parmi les familles encore sous quota ; une famille imposée entre en conflit avec le quota par famille, à éviter dans un lot.
+- **Pose de référence** : une configuration avec rampe ou pièce haute exige au moins une telle pose ; un plafond CO₂ automatique nul est rejeté (`trivial`).
+- **Bulletin** : les pays prennent leur article (« l'Allemagne », « le Royaume-Uni »).
+- **Lot de démonstration** `lab/lots/demo-01.json` : 20 grilles en 11 min (6 processus), 468 tirages ; 7 familles ; notes 3 / 13 / 2 / 2 ; 7 rampes (5 trapèzes, 2 escaliers) ; toutes revérifiées (valides, uniques, référence, déduction). Aucune grille à rampe « unique mais bloquée » sur ce lot (`blocked_ramp: 0`).

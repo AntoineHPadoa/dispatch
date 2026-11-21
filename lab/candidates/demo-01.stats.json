@@ -1,0 +1,74 @@
+{
+ "lot": "demo-01",
+ "kept": 20,
+ "size": 20,
+ "attempts": 468,
+ "rejects": {
+  "trivial": 56,
+  "quota:family": 17,
+  "quota:mix": 18,
+  "too_many_clues": 65,
+  "quota:rating": 291,
+  "duplicate": 1
+ },
+ "ratings": {
+  "Facile": 3,
+  "Moyen": 13,
+  "Difficile": 2,
+  "Expert": 2
+ },
+ "families": {
+  "deux_bosses": 3,
+  "pointe_soir": 3,
+  "midi_solaire": 3,
+  "surplus_midi": 3,
+  "vent_nocturne": 3,
+  "nuit_plate": 2,
+  "plateau_hiver": 3
+ },
+ "per_mix": {
+  "0": 3,
+  "1": 1,
+  "2": 2,
+  "3": 3,
+  "4": 2,
+  "5": 2,
+  "6": 1,
+  "7": 1,
+  "8": 3,
+  "9": 1,
+  "10": 1
+ },
+ "mechanics": {
+  "neighbors:1 step inventory:none": 2,
+  "neighbors:1 ramp:trap inventory:none": 2,
+  "ramp:trap inventory:none": 3,
+  "neighbors:1 surplus inventory:none": 1,
+  "neighbors:1 inventory:none": 2,
+  "neighbors:1 inventory:exact": 3,
+  "neighbors:1 surplus ramp:stair inventory:none": 1,
+  "stock inventory:none": 1,
+  "inventory:none": 1,
+  "neighbors:2 co2 inventory:none": 1,
+  "ramp:stair inventory:none": 1,
+  "neighbors:3 inventory:none": 1,
+  "neighbors:1 surplus tall inventory:none": 1
+ },
+ "clue_profiles": {
+  "bar column exchanges flow length": 1,
+  "column exchanges flow price": 2,
+  "bar column price": 3,
+  "bar column exchanges flow price": 2,
+  "exchanges": 1,
+  "bar column length price": 2,
+  "bar column exchanges price": 3,
+  "column": 1,
+  "column exchanges flow": 1,
+  "column price": 1,
+  "bar column exchanges": 1,
+  "": 2
+ },
+ "seconds": 682.2,
+ "generator": "dispatch-solver 2.0.0",
+ "blocked_ramp": 0
+}

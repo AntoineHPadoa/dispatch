@@ -213,6 +213,22 @@
     "ribbon",
     "swap"
    ]
+  },
+  "bulletin": {
+   "number": 212,
+   "title": "Plateau de midi",
+   "text": "Le froid s’installe et la demande reste haute toute la journée, sans vraie vallée. Le ruban nucléaire porte l’essentiel, le reste se joue sur les marges.",
+   "weather": [
+    "moon",
+    "cloud",
+    "cloud",
+    "sun",
+    "sun",
+    "cloud",
+    "wind",
+    "moon"
+   ],
+   "published": "2026-11-19"
   }
  },
  "expect": {

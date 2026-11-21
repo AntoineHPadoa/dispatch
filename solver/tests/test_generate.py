@@ -46,7 +46,13 @@ def test_ramp_candidate_uses_the_ramp():
 
 
 def test_bulletin_only_uses_visible_traits():
-    g, _, _ = make_candidate({"cols": 12, "neighbors": 2, "co2_cap": "auto"}, 5)
+    g = next(
+        g
+        for seed in range(20)
+        for g, _, _ in [make_candidate({"cols": 12, "neighbors": 2, "co2_cap": "auto"}, seed)]
+        if g is not None
+    )
+    assert g["co2_cap"] > 0
     b = make_bulletin(g, g["lab"]["family"], random.Random(1))
     assert b["title"] in TEMPLATES["titles"][g["lab"]["family"]]
     assert all(nb["name"] in b["text"] for nb in g["neighbors"]) or str(g["co2_cap"]) in b["text"]

@@ -131,6 +131,8 @@ def make_candidate(cfg: dict[str, Any], seed: int) -> tuple[dict[str, Any] | Non
         comp = reference_composition(d)
         co2 = {**{k: v["co2"] for k, v in d["pieces"].items()}, **{f"I:{nb['id']}": nb["co2"] for nb in d["neighbors"]}}
         d["co2_cap"] = sum(co2[k] * v for col in comp["cells"] for k, v in col.items())
+        if d["co2_cap"] == 0:
+            return None, "trivial", info  # a cap of 0 says nothing the player cannot see at once
     elif cfg["co2_cap"] is not None:
         d["co2_cap"] = cfg["co2_cap"]
     d["solution"] = sol
@@ -260,7 +262,10 @@ def run_lot(lot: dict[str, Any], workers: int = 6, log: Any = None) -> tuple[lis
         while len(kept) < size and attempts < max_attempts:
             batch = []
             for _ in range(workers * 2):
-                i = rng.choices(range(len(mix)), weights)[0]
+                # Entries still under their minimum are drawn five times more often.
+                need = quotas.q["min_per_mix"]
+                boosted = [w * (5 if quotas.mix.get(j, 0) < need else 1) for j, w in enumerate(weights)]
+                i = rng.choices(range(len(mix)), boosted)[0]
                 cfg = {k: v for k, v in mix[i].items() if k != "weight"}
                 if cfg.get("family", "any") == "any" and not cfg.get("surplus"):
                     # Draw among the families still under their quota, the least used first.

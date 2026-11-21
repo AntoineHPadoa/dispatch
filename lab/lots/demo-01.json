@@ -13,8 +13,8 @@
   {"weight": 1, "cols": 12, "pieces": "NBCGT", "tall": true, "surplus": true, "neighbors": 1},
   {"weight": 1, "cols": 8, "pieces": "NBGT", "stock": 2},
   {"weight": 1, "cols": 6, "inventory": "exact", "neighbors": 1},
-  {"weight": 1, "cols": 8, "family": "midi_solaire", "neighbors": 3},
-  {"weight": 1, "cols": 8, "family": "pointe_soir", "clue_types": ["length", "column", "price"]}
+  {"weight": 1, "cols": 8, "neighbors": 3},
+  {"weight": 1, "cols": 8, "clue_types": ["length", "column", "price"]}
  ],
  "quotas": {"max_same_family": 3, "max_same_mechanics": 4, "max_same_clue_profile": 4, "min_per_rating": 2}
 }
