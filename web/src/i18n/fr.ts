@@ -27,6 +27,13 @@ export const PIECE_WORDS: Record<PieceId, PieceWords> = {
 /** Stands for the country in exchange messages when totals cover all countries. */
 export const ALL_COUNTRIES = 'tous pays confondus';
 
+/** French typography for free text (bulletins): no break between a number and its unit, thin no-break space before « : ». */
+export function frenchSpaces(text: string): string {
+  return text
+    .replace(/(\d) (?=(GW|h|min|s|cases?|créneaux?|blocs?|paires?)\b)/g, '$1\u00a0')
+    .replace(/ ([:;!?])/g, '\u202f$1');
+}
+
 interface CountryWords { to: string; from: string }
 
 /** Prepositions per country id; unknown ids fall back to the neighbor name. */

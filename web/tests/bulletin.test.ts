@@ -9,6 +9,7 @@ import gridsJson from '../src/data/grids.json';
 import { currentBulletin, isPublished, localIsoDate, previousBulletins, publishedBulletins, weekdayIndex } from '../src/model/bulletin';
 import { dossierNext, dossierProgress, dossiers } from '../src/model/dossiers';
 import { renderDossier, renderHome } from '../src/ui/home';
+import { frenchSpaces } from '../src/i18n/fr';
 import { sheetSilhouette } from '../src/ui/home-art';
 import { emptyProgress, nextGrid, playOrder } from '../src/ui/progress';
 import { isIsoDate, validateGrid, type Grid } from '../src/model/grid';
@@ -226,5 +227,12 @@ describe('home rendering', () => {
     const root = stub();
     renderDossier(root, dossiers(grids)[0]!, emptyProgress());
     expect(root.innerHTML.match(/class="fiche /g)).toHaveLength(grids.filter((g) => g.section === 'tutorial').length);
+  });
+});
+
+describe('bulletin typography (review S8 A8)', () => {
+  it('keeps a number with its unit and puts a thin no-break space before a colon', () => {
+    expect(frenchSpaces('jusqu’à 6 GW dès midi : la France')).toBe('jusqu’à 6\u00a0GW dès midi\u202f: la France');
+    expect(frenchSpaces('2 blocs, 12h')).toBe('2\u00a0blocs, 12h');
   });
 });

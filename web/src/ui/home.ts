@@ -6,7 +6,7 @@
  * - Accent: one pink (stamp, price cell, progress, finished items); the finished sheet of the day
  *   shows its solution in the plant colours.
  */
-import { UI, PIECE_WORDS, TECHNIQUES } from '../i18n/fr';
+import { UI, PIECE_WORDS, TECHNIQUES, frenchSpaces } from '../i18n/fr';
 import { currentBulletin, localIsoDate, previousBulletins, type BulletinGrid } from '../model/bulletin';
 import { dossierNext, dossierProgress, dossiers, type Dossier } from '../model/dossiers';
 import type { Grid, PieceId } from '../model/grid';
@@ -41,7 +41,7 @@ function sheetCard(g: BulletinGrid, st: GridStatus): string {
   return `<article class="sheet">
     <div class="band"><div><span class="eyebrow">${esc(dayTag(g))}</span><h2>${esc(b.title)}</h2></div>${stamp(st === 'done' ? UI.bulletin.stampDone : UI.bulletin.stampTodo)}</div>
     <div class="sbody">
-      <p>${esc(b.text)}</p>
+      <p>${esc(frenchSpaces(b.text))}</p>
       <div class="sil-wrap">${sheetSilhouette(g, b.weather, (k) => UI.bulletin.weather[k], UI.bulletin.silhouetteLabel(Math.min(...g.demand), Math.max(...g.demand), g.demand.length), st === 'done')}</div>
       <ul class="plant-chips">${plantChips(g)}</ul>
       <div class="sact">${dots(g)}<a class="btn${st === 'done' ? ' secondary' : ''}" href="#/grille/${g.id}">${icon('next')}${esc(goLabel(st))}</a></div>
