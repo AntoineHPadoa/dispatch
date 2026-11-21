@@ -27,14 +27,14 @@ export const BULLETINS: Record<number, Bulletin> = {
     title: 'Creux de midi',
     text: 'Le soleil de midi soulage le réseau : la demande s’effondre au milieu de la journée, '
       + 'puis repart de plus belle matin et soir. Les rubans longs vont devoir se couper.',
-    weather: ['moon', 'cloud', 'cloud', 'sun', 'sun', 'cloud', 'wind', 'moon'],
+    weather: ['moon', 'cloud', 'sun', 'sun', 'sun', 'sun', 'cloud', 'moon'],
     published: '2026-11-20',
   },
   11: {
     number: 214,
-    title: 'Pointe du soir',
+    title: 'Plateau d’après-midi',
     text: 'Le froid monte et la demande grimpe jusqu’à 6 GW dès midi, sans redescendre avant la nuit. '
-      + 'Seul le nucléaire répond à l’appel : l’Allemagne ouvre sa ligne, mais chaque bloc compte.',
+      + 'Seul le nucléaire répond à l’appel : la France exporte vers l’Allemagne, qui attend deux blocs, et chaque bloc compte.',
     weather: ['moon', 'moon', 'cloud', 'sun', 'sun', 'wind', 'wind', 'moon'],
     published: '2026-11-21',
   },

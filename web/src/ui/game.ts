@@ -247,7 +247,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
 
   function drawMessage(pv: ReturnType<typeof preview> = preview()) {
     if (ev.solved) {
-      const next = nextGrid(ctx.grids, grid.id);
+      const next = nextGrid(ctx.grids, grid.id, localIsoDate());
       const html = `<div class="banner" role="status"><b>${esc(UI.doneTitle)}</b>`
         + `<span>${esc(UI.doneText(grid.clues.length, durationText(elapsed())))}</span></div>`
         + `<div class="tools done-tools">${next ? `<a class="tool on" href="#/grille/${next.id}">${esc(UI.next)}${icon('next')}</a>` : `<a class="tool on" href="#/">${esc(UI.home)}</a>`}`

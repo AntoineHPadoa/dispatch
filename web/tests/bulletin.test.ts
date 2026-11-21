@@ -8,6 +8,8 @@ import { describe, expect, it } from 'vitest';
 import gridsJson from '../src/data/grids.json';
 import { currentBulletin, localIsoDate, previousBulletins, publishedBulletins, weekdayIndex } from '../src/model/bulletin';
 import { dossierNext, dossierProgress, dossiers } from '../src/model/dossiers';
+import { renderDossier, renderHome } from '../src/ui/home';
+import { emptyProgress, nextGrid, playOrder } from '../src/ui/progress';
 import { isIsoDate, validateGrid, type Grid } from '../src/model/grid';
 
 const grids = gridsJson as unknown as Grid[];
@@ -20,16 +22,16 @@ const withBulletin = (patch: (b: Record<string, unknown>) => void) => {
 };
 
 describe('bulletin data', () => {
-  it('gives a bulletin to each of the 4 rated grids, none to the tutorial', () => {
-    expect(rated).toHaveLength(4);
+  it('gives a bulletin to every rated grid, none to the tutorial', () => {
+    expect(rated.length).toBeGreaterThan(0);
     expect(rated.every((g) => g.bulletin)).toBe(true);
     expect(grids.filter((g) => g.section === 'tutorial').some((g) => g.bulletin)).toBe(false);
   });
 
   it('has unique numbers and unique publication days', () => {
     const b = rated.map((g) => g.bulletin!);
-    expect(new Set(b.map((x) => x.number)).size).toBe(4);
-    expect(new Set(b.map((x) => x.published)).size).toBe(4);
+    expect(new Set(b.map((x) => x.number)).size).toBe(rated.length);
+    expect(new Set(b.map((x) => x.published)).size).toBe(rated.length);
   });
 
   it('weather has one sky per column', () => {
@@ -140,5 +142,55 @@ describe('home lists', () => {
     expect(dossierProgress(d, (id) => done.has(id))).toEqual({ done: 3, total: 7 });
     expect(dossierNext(d, (id) => done.has(id))?.id).toBe(3);
     expect(dossierNext(d, () => true)?.id).toBe(1);
+  });
+});
+
+describe('publication gate', () => {
+  const tomorrow = structuredClone(grids);
+  const last = tomorrow.filter((g) => g.bulletin).sort((x, y) => x.bulletin!.published.localeCompare(y.bulletin!.published)).at(-1)!;
+  const today = '2026-11-20';
+  last.bulletin!.published = '2026-11-21';
+
+  it('a grid published tomorrow is neither next nor printed', () => {
+    const prev = playOrder(tomorrow, today).at(-1)!;
+    expect(playOrder(tomorrow, today).some((g) => g.id === last.id)).toBe(false);
+    expect(nextGrid(tomorrow, prev.id, today)).toBeNull();
+    expect(playOrder(tomorrow, '2026-11-21').some((g) => g.id === last.id)).toBe(true);
+  });
+});
+
+describe('home rendering', () => {
+  const stub = () => {
+    const root = { innerHTML: '', querySelector: () => null } as unknown as HTMLElement;
+    return root;
+  };
+
+  it('shows the sheet of the day and the previous sheets', () => {
+    const root = stub();
+    renderHome(root, grids, emptyProgress(), '2026-11-21');
+    expect(root.innerHTML).toContain('n° 214');
+    expect(root.innerHTML).toContain('n° 213');
+    expect(root.innerHTML).not.toContain('Bouclé');
+  });
+
+  it('stamps a finished sheet', () => {
+    const root = stub();
+    const done = rated.at(-1)!;
+    const p = { grids: { [done.id]: { status: 'done' } } } as unknown as ReturnType<typeof emptyProgress>;
+    renderHome(root, grids, p, '2026-11-21');
+    expect(root.innerHTML).toContain('Bouclé');
+  });
+
+  it('before the first publication: no sheet, a line with the first date', () => {
+    const root = stub();
+    renderHome(root, grids, emptyProgress(), '2026-01-01');
+    expect(root.innerHTML).not.toContain('class="sheet"');
+    expect(root.innerHTML).toContain('Premier bulletin le 18 novembre 2026');
+  });
+
+  it('dossier page lists the 7 tutorial grids', () => {
+    const root = stub();
+    renderDossier(root, dossiers(grids)[0]!, emptyProgress());
+    expect(root.innerHTML.match(/class="gcard/g)).toHaveLength(7);
   });
 });

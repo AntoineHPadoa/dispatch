@@ -9,6 +9,7 @@
 import type { Grid } from '../model/grid';
 import { UI } from '../i18n/fr';
 import { displayTitle, mountGame } from './game';
+import { localIsoDate } from '../model/bulletin';
 import { dossiers } from '../model/dossiers';
 import { renderDossier, renderHome } from './home';
 import { esc, icon } from './palette';
@@ -43,7 +44,7 @@ export function startApp(app: HTMLElement, printRoot: HTMLElement, grids: readon
       printRoot.innerHTML = '';
       renderDossier(app, d, store.get());
     } else if (page === 'imprimer' && (grid || arg === 'tout')) {
-      const list = grid ? [grid] : playOrder(grids);
+      const list = grid ? [grid] : playOrder(grids, localIsoDate());
       document.title = `${UI.printTitle} · ${UI.appName}`;
       document.body.classList.add('print-preview');
       printRoot.setAttribute('aria-hidden', 'false');

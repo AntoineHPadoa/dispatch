@@ -3,6 +3,7 @@
  * - Per grid: status (started, done), the saved board and the time spent.
  * - Every storage access is wrapped in try/catch: the game works without storage.
  */
+import { localIsoDate } from '../model/bulletin';
 import type { Grid } from '../model/grid';
 import type { PlacedBar, PlayState } from '../engine';
 
@@ -119,15 +120,15 @@ export const browserStore = () => {
   return store;
 };
 
-/** Play order: tutorials, then rated grids, each by id. */
-export function playOrder(grids: readonly Grid[]): Grid[] {
+/** Play order: tutorials, then rated grids, each by id; bulletins not yet published on `today` are left out. */
+export function playOrder(grids: readonly Grid[], today: string = localIsoDate()): Grid[] {
   const rank = (g: Grid) => (g.section === 'tutorial' ? 0 : 1);
-  return [...grids].sort((a, b) => rank(a) - rank(b) || a.id - b.id);
+  return grids.filter((g) => !g.bulletin || g.bulletin.published <= today).sort((a, b) => rank(a) - rank(b) || a.id - b.id);
 }
 
 /** Next grid after `id` in play order, or null after the last one. */
-export function nextGrid(grids: readonly Grid[], id: number): Grid | null {
-  const order = playOrder(grids);
+export function nextGrid(grids: readonly Grid[], id: number, today: string = localIsoDate()): Grid | null {
+  const order = playOrder(grids, today);
   const i = order.findIndex((g) => g.id === id);
   return i >= 0 ? order[i + 1] ?? null : null;
 }

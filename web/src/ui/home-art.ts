@@ -2,15 +2,12 @@
  * Drawings of the home screen (inline SVG strings).
  * - logoSvg(): the Dispatch mark, a D of four stacked plant bars in their original colours.
  * - sheetSilhouette(): the demand silhouette of the sheet of the day with the sky of each slot
- *   and the cell that sets the price in the accent colour.
+ *   and the cell that sets the price; colours come from app.css (`.sil-cell`, `.mini-sil`).
  * - miniSilhouette(): the small demand outline of a previous sheet or a dossier.
  */
 import type { Grid, WeatherKind } from '../model/grid';
 import { PIECE_COLORS, esc } from './palette';
 
-/** Accent of the home screen (the only one) and its tints. */
-export const HOME_ACCENT = '#c45c7c';
-const GRID_STROKE = '#eadfe6';
 const SKY_STROKE = '#9a929c';
 
 /** Four rounded bars, top to bottom: TAC, gas, gas, nuclear. */
@@ -37,11 +34,11 @@ function priceCell(grid: Grid): [number, number] | null {
 }
 
 /** Demand silhouette, cell by cell, one sky icon per slot above, slot labels below. */
-export function sheetSilhouette(grid: Grid, weather: readonly WeatherKind[], labelFor: (k: WeatherKind) => string): string {
+export function sheetSilhouette(grid: Grid, weather: readonly WeatherKind[], labelFor: (k: WeatherKind) => string, label: string): string {
   const cell = 40, top = 30, rows = Math.max(...grid.demand), n = grid.demand.length;
   const w = n * cell, hBars = rows * cell, h = top + hBars + 18;
   const hi = priceCell(grid);
-  let s = `<svg class="sil" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(grid.demand.join(' '))}">`;
+  let s = `<svg class="sil" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(label)}">`;
   weather.forEach((k, i) => {
     s += `<g transform="translate(${i * cell + cell / 2 - 9} 6)" fill="none" stroke="${SKY_STROKE}" stroke-width="1.7" stroke-linecap="round"><title>${esc(labelFor(k))}</title>${SKY_PATHS[k]}</g>`;
   });
@@ -49,7 +46,7 @@ export function sheetSilhouette(grid: Grid, weather: readonly WeatherKind[], lab
     for (let r = 0; r < d; r++) {
       const on = hi !== null && hi[0] === c && hi[1] === r;
       s += `<rect x="${c * cell + 1.5}" y="${top + (rows - 1 - r) * cell + 1.5}" width="${cell - 3}" height="${cell - 3}" rx="5" `
-        + (on ? `fill="${HOME_ACCENT}" fill-opacity=".8"` : `fill="#fff" stroke="${GRID_STROKE}"`) + '/>';
+        + `class="sil-cell${on ? ' price' : ''}"/>`;
     }
   });
   grid.columns.forEach((t, i) => {
@@ -59,9 +56,9 @@ export function sheetSilhouette(grid: Grid, weather: readonly WeatherKind[], lab
 }
 
 /** Small stepped outline of a demand curve. */
-export function miniSilhouette(demand: readonly number[], w: number, h: number, fill: string): string {
+export function miniSilhouette(demand: readonly number[], w: number, h: number, done: boolean): string {
   const cw = w / demand.length, ch = h / Math.max(8, ...demand);
   let d = `M0 ${h}`;
   demand.forEach((v, i) => { d += ` L${i * cw} ${h - v * ch} L${(i + 1) * cw} ${h - v * ch}`; });
-  return `<svg class="mini-sil" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true"><path d="${d} L${w} ${h} Z" fill="${fill}"/></svg>`;
+  return `<svg class="mini-sil" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true"><path d="${d} L${w} ${h} Z" class="${done ? 'done' : ''}"/></svg>`;
 }

@@ -314,6 +314,9 @@ export const UI = {
     weekdayShort: ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'],
     weather: { sun: 'Soleil', moon: 'Nuit', cloud: 'Nuageux', wind: 'Vent' } as const,
     logoLabel: 'Logo Dispatch',
+    silhouetteLabel: (min: number, max: number, slots: number) => `Demande de ${min} à ${max} GW sur ${slots} créneaux`,
+    firstOn: (date: string) => `Premier bulletin le ${date}`,
+    months: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
   },
   dossier: {
     'premiers-pas': { title: 'Premiers pas', lead: 'Sept grilles guidées, une technique chacune, avec l’inventaire exact.' },

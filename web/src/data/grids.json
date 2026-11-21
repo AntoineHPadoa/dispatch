@@ -1825,11 +1825,11 @@
       "weather": [
         "moon",
         "cloud",
-        "cloud",
+        "sun",
+        "sun",
         "sun",
         "sun",
         "cloud",
-        "wind",
         "moon"
       ],
       "published": "2026-11-20"
@@ -2021,8 +2021,8 @@
     },
     "bulletin": {
       "number": 214,
-      "title": "Pointe du soir",
-      "text": "Le froid monte et la demande grimpe jusqu’à 6 GW dès midi, sans redescendre avant la nuit. Seul le nucléaire répond à l’appel : l’Allemagne ouvre sa ligne, mais chaque bloc compte.",
+      "title": "Plateau d’après-midi",
+      "text": "Le froid monte et la demande grimpe jusqu’à 6 GW dès midi, sans redescendre avant la nuit. Seul le nucléaire répond à l’appel : la France exporte vers l’Allemagne, qui attend deux blocs, et chaque bloc compte.",
       "weather": [
         "moon",
         "moon",

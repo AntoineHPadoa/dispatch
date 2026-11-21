@@ -152,31 +152,36 @@ body:has(.home) { background-color: #faf8f9; background-image: radial-gradient(#
 .rules ol { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; font-size: .84rem; }
 .hgrid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 22px; align-items: start; }
 .hgrid > .sheet:only-child { grid-column: 1 / -1; }
-.sheet { background: #fff; border-radius: 20px; border: 1px solid #ece6ea; box-shadow: 0 10px 30px -20px rgba(59, 51, 64, .35); overflow: hidden; min-width: 0; }
-.band { background: var(--rose-band); padding: 16px 22px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.band .eyebrow { color: var(--rose); }
-.band h2 { font-family: var(--f-title); font-weight: 400; font-size: 1.9rem; letter-spacing: -.02em; margin: 2px 0 0; line-height: 1.1; text-wrap: balance; }
+.home .sheet { background: #fff; border-radius: 20px; border: 1px solid #ece6ea; box-shadow: 0 10px 30px -20px rgba(59, 51, 64, .35); overflow: hidden; min-width: 0; }
+.home .band { background: var(--rose-band); padding: 16px 22px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.home .band .eyebrow { color: var(--rose); }
+.home .band h2 { font-family: var(--f-title); font-weight: 400; font-size: 1.9rem; letter-spacing: -.02em; margin: 2px 0 0; line-height: 1.1; text-wrap: balance; }
 .stamp { border: 1.5px solid var(--rose); color: var(--rose); background: #fff; border-radius: 9px; padding: 3px 9px; font-weight: 800; font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; transform: rotate(-4deg); display: inline-block; white-space: nowrap; flex: none; }
 .sbody { padding: 16px 22px 20px; display: grid; gap: 14px; }
 .sbody p { margin: 0; color: #5d5463; font-size: .9rem; max-width: 62ch; }
 .sil-wrap { display: grid; place-items: center; }
 .sil { width: 100%; max-width: 380px; height: auto; display: block; }
 .chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
-.chip { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: .76rem; padding: 4px 10px 4px 6px; border-radius: 999px; background: #fff; border: 1px solid #ece6ea; }
+.home .chip { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: .76rem; padding: 4px 10px 4px 6px; border-radius: 999px; background: #fff; border: 1px solid #ece6ea; }
 .sq { display: inline-flex; gap: 2px; }
 .sq i { width: 7px; height: 7px; border-radius: 2px; background: #cfc6cc; display: block; }
 .sact { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .dots { display: inline-flex; gap: 3px; flex: none; }
 .dots i { width: 7px; height: 7px; border-radius: 2px; background: #e6e0e4; display: block; }
 .dots i.on { background: var(--ink); }
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: 1; font-weight: 800; font-size: .86rem; padding: 11px 20px; border-radius: 999px; background: var(--ink); color: #fff; text-decoration: none; min-height: 40px; }
-.btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.btn:hover { background: #2a2330; }
+.home .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: 1; font-weight: 800; font-size: .86rem; padding: 11px 20px; border-radius: 999px; background: var(--ink); color: #fff; text-decoration: none; min-height: 40px; }
+.home .btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.home .btn:hover { background: #2a2330; }
 .prevs { display: grid; gap: 10px; align-content: start; min-width: 0; }
 .prevs ul, .dgrid { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-.prev { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px; border-radius: 14px; background: #fff; border: 1px solid #ece6ea; text-decoration: none; }
-.prev:hover, .dcard:hover { border-color: #d9cbd3; }
+.home .prev { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px; border-radius: 14px; background: #fff; border: 1px solid #ece6ea; text-decoration: none; }
+.home .prev:hover, .dcard:hover { border-color: #d9cbd3; }
 .mini-sil { display: block; }
+.mini-sil path { fill: #ece7ea; }
+.mini-sil path.done { fill: var(--rose-soft); }
+.sil-cell { fill: #fff; stroke: #eadfe6; }
+.sil-cell.price { fill: var(--rose); fill-opacity: .8; stroke: none; }
+.first-note { margin: 0; color: var(--soft); font-size: .9rem; font-weight: 700; }
 .ptxt { display: grid; line-height: 1.25; min-width: 0; }
 .ptxt b { font-family: var(--f-title); font-weight: 500; font-size: .92rem; }
 .ptxt span { font-size: .68rem; color: var(--soft); font-weight: 700; overflow-wrap: anywhere; }
@@ -187,8 +192,8 @@ body:has(.home) { background-color: #faf8f9; background-image: radial-gradient(#
 .dtxt { padding: 9px 12px 11px; display: grid; gap: 5px; }
 .dtxt b { font-family: var(--f-title); font-weight: 500; font-size: .95rem; }
 .dtxt > span:not(.bar):not(.pcount) { font-size: .68rem; color: var(--soft); font-weight: 700; }
-.bar { height: 5px; border-radius: 9px; background: #f0ebee; display: block; overflow: hidden; }
-.bar i { display: block; height: 100%; background: var(--rose); }
+.home .bar { height: 5px; border-radius: 9px; background: #f0ebee; display: block; overflow: hidden; }
+.home .bar i { display: block; height: 100%; background: var(--rose); }
 .pcount { font-size: .66rem; font-weight: 800; color: var(--soft); font-variant-numeric: tabular-nums; }
 .pcount.on { color: var(--rose); }
 .glist { display: grid; gap: 14px; }
@@ -226,8 +231,8 @@ body.print-preview #print-root .a4 { box-shadow: 0 2px 18px rgba(59, 51, 64, .12
 @media (max-width: 600px) {
   .m { padding-top: 16px; }
   .home { gap: 22px; }
-  .band { padding: 14px 16px; }
-  .band h2 { font-size: 1.6rem; }
+  .home .band { padding: 14px 16px; }
+  .home .band h2 { font-size: 1.6rem; }
   .sbody { padding: 14px 16px 18px; }
   .dgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .game h1 { font-size: 1.4rem; }

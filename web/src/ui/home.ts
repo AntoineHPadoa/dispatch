@@ -14,9 +14,6 @@ import { logoSvg, miniSilhouette, sheetSilhouette } from './home-art';
 import { esc, icon } from './palette';
 import { statusOf, type GridStatus, type Progress } from './progress';
 
-const SOFT_ROSE = '#f6dbe5';
-const SOFT_GREY = '#ece7ea';
-
 const stamp = (text: string) => `<span class="stamp">${esc(text)}</span>`;
 const dayTag = (g: BulletinGrid) =>
   UI.bulletin.sheetTag(g.bulletin.number, UI.bulletin.weekdayShort[weekdayIndex(g.bulletin.published)] ?? '');
@@ -45,7 +42,7 @@ function sheetCard(g: BulletinGrid, st: GridStatus): string {
     <div class="band"><div><span class="eyebrow">${esc(dayTag(g))}</span><h2>${esc(b.title)}</h2></div>${stamp(st === 'done' ? UI.bulletin.stampDone : UI.bulletin.stampTodo)}</div>
     <div class="sbody">
       <p>${esc(b.text)}</p>
-      <div class="sil-wrap">${sheetSilhouette(g, b.weather, (k) => UI.bulletin.weather[k])}</div>
+      <div class="sil-wrap">${sheetSilhouette(g, b.weather, (k) => UI.bulletin.weather[k], UI.bulletin.silhouetteLabel(Math.min(...g.demand), Math.max(...g.demand), g.demand.length))}</div>
       <ul class="chips">${plantChips(g)}</ul>
       <div class="sact">${dots(g)}<a class="btn" href="#/grille/${g.id}">${icon('next')}${esc(goLabel(st))}</a></div>
     </div></article>`;
@@ -54,7 +51,7 @@ function sheetCard(g: BulletinGrid, st: GridStatus): string {
 function previousRow(g: BulletinGrid, st: GridStatus): string {
   const done = st === 'done';
   return `<li><a class="prev" href="#/grille/${g.id}">
-    ${miniSilhouette(g.demand, 64, 30, done ? SOFT_ROSE : SOFT_GREY)}
+    ${miniSilhouette(g.demand, 64, 30, done)}
     <span class="ptxt"><b>${esc(dayTag(g))}</b><span>${esc(g.bulletin.title)}</span></span>
     ${done ? stamp(UI.bulletin.stampDone) : dots(g)}
   </a></li>`;
@@ -66,10 +63,19 @@ function dossierCard(d: Dossier, progress: Progress): string {
   const words = UI.dossier[d.id] ?? { title: d.id, lead: '' };
   const demand = d.grids.map((g) => Math.max(...g.demand));
   return `<a class="dcard" href="#/dossier/${d.id}">
-    <span class="dsil">${miniSilhouette(demand, 120, 48, done ? SOFT_ROSE : SOFT_GREY)}</span>
+    <span class="dsil">${miniSilhouette(demand, 120, 48, done > 0)}</span>
     <span class="dtxt"><b>${esc(words.title)}</b><span>${esc(UI.dossierCount(total))}</span>
       <span class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${total ? (done / total) * 100 : 0}%"></i></span>
       <span class="pcount${done ? ' on' : ''}">${esc(UI.dossierProgress(done, total))}</span></span></a>`;
+}
+
+/** Line shown before the first publication: the date of the first bulletin, if any. */
+function firstBulletinNote(grids: readonly Grid[]): string {
+  const days = grids.flatMap((g) => (g.bulletin ? [g.bulletin.published] : [])).sort();
+  const first = days[0];
+  if (!first) return '';
+  const [y, m, d] = first.split('-').map(Number) as [number, number, number];
+  return `<p class="first-note">${esc(UI.bulletin.firstOn(`${d} ${UI.bulletin.months[m - 1] ?? ''} ${y}`))}</p>`;
 }
 
 export function renderHome(root: HTMLElement, grids: readonly Grid[], progress: Progress, today: string = localIsoDate()): void {
@@ -83,7 +89,7 @@ export function renderHome(root: HTMLElement, grids: readonly Grid[], progress: 
     </header>
     <section class="card rules" id="rules" hidden><h2 class="ct">${esc(UI.rulesTitle)}</h2><p class="rtag">${esc(UI.tagline)}</p><ol>${UI.rules.map((r) => `<li>${esc(r)}</li>`).join('')}</ol></section>
     <div class="hgrid">
-      ${sheet ? sheetCard(sheet, statusOf(progress, sheet.id)) : ''}
+      ${sheet ? sheetCard(sheet, statusOf(progress, sheet.id)) : firstBulletinNote(grids)}
       ${prev.length ? `<aside class="prevs"><span class="eyebrow">${esc(UI.bulletin.previous)}</span><ul>${prev.map((g) => previousRow(g, statusOf(progress, g.id))).join('')}</ul></aside>` : ''}
     </div>
     ${list.length ? `<section class="dossiers"><span class="eyebrow">${esc(UI.bulletin.dossiers)}</span><div class="dgrid">${list.map((d) => dossierCard(d, progress)).join('')}</div></section>` : ''}
