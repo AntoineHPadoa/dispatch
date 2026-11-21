@@ -1,0 +1,297 @@
+# Solveur et générateur v2 — conception (S4.1)
+
+Document à valider avant tout code. Base : `GAME-DESIGN.md` (§8, §9, §10, §14), brief v2 §1 et §2, plan rev-3 (S4). Les choix ouverts sont regroupés à la fin (§12), chacun avec ma recommandation.
+
+## 1. Ce qui change, en bref
+
+- **Package neuf** dans `solver/`, au format §14 natif : plus de traduction « pose » dans `check_unique.py`.
+- **Pièces décrites case par case** : rectangle, pièce haute, rampe (derrière un drapeau). Le solveur ne connaît plus de « barre » : il connaît des formes posées.
+- **Deux solveurs** : exact (CP-SAT, unicité sur la composition §8.1) et de déduction (toutes les techniques du §9, échanges inconnus compris), avec des traces exploitables.
+- **Générateur par lots** : diversité imposée, indices minimaux, note provisoire, bulletin par gabarits, sortie au format §14 plus des mesures pour le labo.
+- **Jeu de grilles de référence** partagé, joué par Vitest et pytest.
+
+## 2. L'existant et son sort
+
+| Élément | Constat | Sort |
+|---|---|---|
+| `solver/src/spot_solver/` (2 585 lignes) | format « pose » du prototype ; modes à score v1, v2, cible ; `deduce.py` ignore les totaux d'échanges inconnus ; barres d'une case de haut seulement | archivé dans `docs/archive/solver-v1/` (code, tests, README avec ses mesures), puis supprimé du package |
+| `web/scripts/check_unique.py` | traduit §14 → pose (prix = rang, import à 100), lance la CLI en sous-processus | réécrit : importe le nouveau package, lit §14 directement |
+| `.github/workflows/deploy.yml` | job solveur : `pytest` + `check_unique.py` | mêmes étapes, nouveau package |
+| Idées gardées | variables « ligne r < h[c] » monotones pour la silhouette variable ; comptage par coupes sur la composition ; boucle « règle la plus facile d'abord » ; ajout glouton puis élagage des indices | reprises, réécrites |
+
+## 3. Architecture du package
+
+Nom proposé : `dispatch_solver`, CLI `dispatch-solver` (choix ouvert C2). Python ≥ 3.11, OR-Tools, pytest ; `uv` comme aujourd'hui.
+
+```
+solver/src/dispatch_solver/
+  grid.py         §14 : dataclasses, lecture/écriture JSON, validate() (port de validateGrid, mêmes messages)
+  shapes.py       formes des pièces case par case, énumération des poses
+  board.py        silhouette, scénarios d'échanges (exports, imports, STEP), composition §8.1
+  clues.py        sémantique des indices, partagée par les deux solveurs
+  exact.py        modèle CP-SAT, comptage des compositions, solution
+  deduce/
+    state.py      état : poses candidates, domaines d'échanges, comptes
+    rules.py      une fonction par technique, registre (id, niveau, phrase)
+    trace.py      étapes, résumé, export JSON
+    rate.py       note provisoire et mesures
+  generate/
+    silhouettes.py  familles de silhouettes et météo
+    reference.py    pose de référence (ordre d'appel)
+    cluesel.py      réserve d'indices, ajout glouton, élagage
+    lot.py          lots, quotas de diversité, rejets
+    bulletin.py     titre, texte, météo par gabarits
+  cli.py
+solver/tests/     pytest ; lit aussi fixtures/grids/
+fixtures/grids/   jeu de référence partagé (§8)
+```
+
+Règle : `exact.py` et `deduce/` ne dépendent que de `grid`, `shapes`, `board`, `clues`. Le générateur les appelle ; il ne contient aucune règle de jeu.
+
+## 4. Pièces case par case
+
+### 4.1 Représentation
+
+- Une **forme** est un ensemble de cases relatives à son coin bas-gauche : une liste de colonnes `(dc, bas, hauteur)`. Une pose = (pièce, forme, ligne, colonne) ; ses cases sont calculées une fois.
+- Le format §14 ne change pas pour les rectangles : `len` × `height` donnent les formes `w × h` (colonnes `(dc, 0, h)`).
+- **Pièce haute** : `height: [2]` ou `[1, 2]` ; déjà prévue par §14 et `validateGrid`, jamais générée jusqu'ici. Rien de neuf dans le solveur : c'est une forme de plus.
+- **Import** : forme 1 × 1, pièce `I`, pays en attribut.
+
+### 4.2 Rampe (drapeau `ramp`)
+
+La rampe est étudiée en parallèle par s1 (`docs/next/rampe.md`, branche `v2-rampe`). Le solveur prévoit les deux profils, paramétrés, sans préjuger du choix :
+
+| Profil | Hauteurs par colonne | Paramètres | Largeur |
+|---|---|---|---|
+| Trapèze 1 → 2 → 1 | `[1, 2, …, 2, 1]` | plateau `p` (≥ 1) | `p + 2` |
+| Escalier 2 → 1 | `[2, …, 2, 1, …, 1]` | marche haute `a`, marche basse `b` | `a + b` |
+
+- Toutes les colonnes partent de la même ligne (forme « en escalier posé au sol ») ; une épaule est la case unique d'une colonne de bord.
+- **Format proposé** (provisoire, à aligner sur `rampe.md`) : `"G": {"len": [3, 4], "height": [2], "ramp": {"profile": "trapezoid"}, ...}` ; `len` = largeur totale, `height` = hauteur du plateau ; une pose garde `{piece, row, col, len, height}` et sa forme se déduit de la pièce. Pour l'escalier, `"ramp": {"profile": "stair", "low": [1, 2]}` donne les longueurs permises de la marche basse.
+- **Drapeau** : le validateur Python n'accepte `ramp` qu'avec `allow_ramp=True` (CLI `--ramp`). Le validateur TS ne connaît pas `ramp` avant S6 : aucune grille à rampe n'entre dans `grids.json` d'ici là.
+- **Indices** : `bar` = la pose couvre exactement ces créneaux ; `length` = largeur totale ; `column` compte les cases (2 au plateau, 1 à l'épaule) ; `price` inchangé (rang de la pièce).
+
+### 4.3 Ce qui reste « rectangle » ailleurs
+
+- Le moteur web (`web/src/engine/`) ne change pas en S4 : il ne connaît que les rectangles, et les grilles publiées n'ont que des rectangles. La généralisation côté web est S6.
+
+## 5. Solveur exact (CP-SAT)
+
+- **Variables** : un booléen par pose possible ; par colonne et par voisin, exports et imports entiers (bornés par `cap`) ; par paire STEP, colonnes de pompage et de turbinage (paires indistinctes, ordonnées pour casser la symétrie) ; hauteur à couvrir `h[c] = résiduel + exports + pompage − turbinage`, encodée par des booléens « ligne r < h[c] » monotones.
+- **Contraintes** : chaque case couverte exactement une fois si `r < h[c]`, jamais sinon ; formes permises ; inventaire (exact : barres par largeur, cases ; `max_cells`) ; `exports + imports ≤ cap` par voisin et colonne ; plafond CO₂ ; chaque indice (`clues.py`).
+- **Totaux d'échanges** : un total publié (inventaire exact ou indice `exchanges`) est une égalité ; un total non publié est libre. Cas « tous pays » (`"*"`) : somme sur les pays.
+- **Composition** (§8.1) : par colonne, cases de chaque pièce (imports par pays) ; exports par voisin et colonne ; pompages et turbinages par colonne. Ce sont des expressions linéaires des variables de pose.
+- **Comptage** : énumération avec coupes « au moins une valeur de composition diffère », plafond configurable (2 suffit pour l'unicité, 10 pour le diagnostic). Rend aussi une solution au format `solution` §14.
+- **Coût attendu** : 10 à 30 ms par comptage sur l'ancien solveur (mesuré, §7). Pas d'inquiétude.
+
+## 6. Solveur de déduction
+
+### 6.1 État
+
+- **Poses candidates** : ensemble de poses non exclues ; poses acquises.
+- **Échanges** : domaine par colonne de `(exports par pays, imports par pays, pompage, turbinage)`, plus les totaux publiés. Les scénarios complets (silhouettes) ne sont énumérés que si leur nombre reste sous un seuil (20 000 comme aujourd'hui) ; au-delà, on raisonne colonne par colonne avec des bornes. C'est ce qui lève la dette « totaux inconnus » : l'ancien `deduce.py` énumérait des vecteurs à total fixé et ne savait pas faire sans total.
+- **Comptes** : bornes basse et haute de cases par (pièce, colonne), par pièce sur la journée (inventaire), par voisin.
+- Représentation interne en bitsets (entiers Python) pour les cases : intersection et couverture rapides.
+
+### 6.2 Boucle et note
+
+- Comme aujourd'hui : à chaque tour, la technique la plus facile qui s'applique, sur toutes ses occurrences, puis retour au niveau 1. Une technique n'exclut que ce qu'aucune solution n'utilise et n'acquiert que ce que toutes utilisent.
+- **Résolue** quand la composition est connue (silhouette fixée, compte connu par pièce et par colonne). **Bloquée** sinon : non publiable.
+- **Note provisoire** = niveau de la technique la plus avancée (1 Facile … 4 Expert), plus des mesures brutes pour S5.3 (§6.4). Le calibrage humain remplacera cette note.
+
+### 6.3 Techniques
+
+Toutes celles du §9, réécrites sur des cases et des formes ; les ids restent ceux d'aujourd'hui (les grilles et `fr.ts` les utilisent).
+
+| Niveau | Id | Technique | Ce qui change en v2 |
+|---|---|---|---|
+| 1 | `room` | Pas de place | aussi en hauteur (pièce haute, plateau de rampe) |
+| 1 | `exhausted` | Inventaire épuisé | compte en cases, toutes formes |
+| 1 | `price_cap` | Le prix plafonne la colonne | inchangé |
+| 1 | `record` | Le relevé compte les cases | clés `I:<pays>` ; **couvre aussi les totaux du jour** (indice `exchanges`, inventaire exact) : total atteint → plus d'échange de ce type ; autant de créneaux possibles que le reste → tous (choix C3) |
+| 1 | `flow` | Flux publié | plusieurs voisins |
+| 1 | `single_cover` | Une seule pièce pour cette case | « barre » → « pose » |
+| 1 | `single_spot` | La pièce qui ne tient qu'à un endroit | idem |
+| 1 | `program` | Programme publié | idem |
+| 1 | `length` | **Durée de marche** (nouveau id pour l'indice `length`, absent de l'ancien solveur) | une pose de cette largeur existe : si une seule place, elle y va |
+| 1 | `silhouette` | La silhouette suit les pièces | domaines d'échanges par colonne |
+| 1 | `swap` | Cases interchangeables | inchangé |
+| 2 | `top_price` | La case la plus chère | inchangé |
+| 2 | `ribbon` | Le creux coupe le ruban | découpage de ligne généralisé aux formes (une rampe occupe deux lignes) |
+| 2 | `just_enough` | Inventaire juste | inchangé |
+| 2 | `column_sum` | Compter la colonne | inclut exports, imports par pays, STEP |
+| 2 | `carbon` | Plafond carbone | imports par pays |
+| 3 | `share_out` | Répartition de l'inventaire | inchangé, mêmes plafonds de calcul |
+| 4 | `refuted` | Hypothèse réfutée | une seule hypothèse, règles 1-2 |
+
+Plusieurs voisins : chaque règle qui parle d'import ou d'export porte un pays ; `column_sum` et `silhouette` raisonnent sur la somme et sur chaque ligne.
+
+### 6.4 Traces
+
+Chaque étape est un objet JSON :
+
+```json
+{"i": 12, "rule": "ribbon", "level": 2,
+ "removed": [["N", 0, 3, 4, 1]], "placed": [], "exchanges": {"DE": {"export": [[5, 0]]}},
+ "cells": [[0, 3], [0, 4]], "clues": [2], "shapes": ["rect"]}
+```
+
+- `cells` : où la technique a porté ; `clues` : indices utilisés ; `shapes` : formes en jeu (`rect`, `tall`, `ramp_trapezoid`, `ramp_stair`).
+- **Résumé** (dans la sortie du générateur et pour le labo) : techniques et nombre d'emplois, nombre d'étapes, étapes de niveau ≥ 2, ordre de première apparition, nombre de « goulots » (tours où une seule occurrence d'une seule technique s'appliquait).
+- **Repérer une technique due à la rampe** (S1.2) : deux signaux. (1) une étape dont `shapes` contient une rampe et que la même grille, rampe remplacée par un rectangle de même aire, ne produit pas ; (2) une grille unique (CP-SAT) mais **bloquée** avec les règles du §9 : le générateur la garde à part (`blocked_unique`) avec l'état au blocage, pour lecture humaine. C'est là qu'une technique nouvelle se voit.
+
+## 7. Python seul ou déduction en TS ? — Python seul (choix C1)
+
+Mesures (Apple Silicon, ancien solveur instrumenté, 10 grilles par configuration, graine 1, indices sans `given`) :
+
+| Mesure | Valeur |
+|---|---|
+| Déduction sur les 11 grilles publiées | 0 à 9 ms par grille |
+| Générateur, 8 créneaux N,G,T + voisin, sans inventaire | 0,6 s par grille gardée ; 69 ms par déduction |
+| idem + 1 STEP | 1,4 s par grille ; 124 ms par déduction |
+| 12 créneaux N,B,C,G,T + voisin | 5,8 s par grille ; 442 ms par déduction |
+| Comptage CP-SAT | 10 à 30 ms par appel, < 5 % du temps |
+
+Arguments :
+- **CP-SAT n'existe qu'en Python** (pas de binding JS officiel). Avec une déduction en TS, le générateur Python lancerait Node à chaque essai d'indice (des centaines par grille) ou serait porté en TS en gardant Python pour CP-SAT : deux langages dans la boucle chaude.
+- **Le jeu n'a pas besoin de la déduction en S4-S6** : le labo joue à l'aveugle, la note est montrée après la partie (calculée hors ligne). Le seul besoin côté jeu, l'indice « prochaine déduction », est en v3.
+- **Le temps est acceptable** : un lot de 20 grilles de 12 créneaux ≈ 2 min en Python, hors ligne. Les bitsets du §6.1 doivent diviser l'ancien temps par 2 à 5 (objectif : ≤ 200 ms par déduction à 12 créneaux).
+- **Le risque de divergence** entre le moteur TS (règles, composition) et Python est couvert par le jeu de référence partagé (§8), pas par un code commun.
+- **Pour la v3** : la trace peut être stockée dans la grille et lue par le jeu ; si l'indice doit partir de l'état du joueur, on reposera la question avec ces chiffres.
+
+## 8. Jeu de grilles de référence partagé
+
+- **Où** : `fixtures/grids/` à la racine (hors `web/` et `solver/`, lu par les deux). Un fichier JSON par grille : la grille §14 plus un bloc `expect`.
+
+```json
+{"grid": { ... §14 ... },
+ "expect": {"valid": true, "errors": [], "compositions": 1, "deduction": "solved",
+            "rating": 2, "techniques": ["record", "ribbon"], "requires": []}}
+```
+
+- **Valides** (environ 20) : les 11 grilles publiées ; plus des grilles faites à la main pour ce que les 11 ne couvrent pas : deux et trois voisins, pièce haute, `max_cells`, plafond CO₂ par pays, surplus, indice `length`, `exchanges` partiel (exports seuls, imports `"*"`), STEP sans inventaire, rampe trapèze, rampe escalier.
+- **Invalides** : une par contrôle du validateur (environ 15, message attendu) ; plus trois grilles bien formées mais fausses : deux compositions, solution de référence qui viole un indice, unique mais bloquée (`deduction: "blocked"`).
+- **Vitest** (`web/tests/reference.test.ts`) : `validateGrid` rend `valid` et les erreurs attendues ; pour une grille valide, `evaluate()` sur la solution de référence est `solved`, et la composition est celle attendue. Les fixtures `requires: ["ramp"]` sont sautées jusqu'à S6.
+- **pytest** : `validate()` donne le même verdict (même liste d'erreurs, à la formulation près, via des codes d'erreur communs), `compositions` et `deduction` / `rating` / `techniques` attendus.
+- Toute nouvelle règle de format se teste d'abord par une fixture : c'est le contrat entre les deux langages.
+
+## 9. Générateur
+
+### 9.1 Paramètres (une configuration)
+
+| Paramètre | Valeurs | Défaut |
+|---|---|---|
+| `cols` | 6 à 12 (libellés tirés des pas de 4 h, 3 h, 2 h) | 8 |
+| `silhouette` | famille (§9.2) ou `any` | `any` |
+| `height` | hauteur max de la demande | 6 |
+| `pieces` | sous-ensemble de N,B,C,G,T, formes autorisées par pièce | N,G,T |
+| `tall` | pièces hautes (ex. `C:1-2`) | aucune |
+| `ramp` | `G:trapezoid`, `C:stair`… (drapeau) | aucune |
+| `neighbors` | 0 à 3, avec `cap` et CO₂ | 0 |
+| `step` | nombre de paires | 0 |
+| `surplus`, `co2_cap`, `max_cells` | mécaniques optionnelles §5 | non |
+| `inventory` | `exact` ou `none` | `none` |
+| `clue_types` | sous-ensemble de price, bar, length, column, flow, exchanges | tous sauf `engaged` |
+| `rating` | note visée (1 à 4) ou libre | libre |
+| `max_clues` | rejet au-delà | nombre de créneaux |
+| `seed` | graine | 1 |
+
+### 9.2 Silhouettes et météo
+
+Familles nommées, chacune avec une demande et une météo cohérentes : `pointe_soir` (montée vers 18-20 h), `deux_bosses` (matin et soir), `midi_solaire` (creux de midi par R fort, la « courbe en canard »), `nuit_plate` (base haute, peu de relief), `surplus_midi` (résiduel négatif à midi, exige un export), `plateau_hiver` (haut et plat), `vent_nocturne` (R la nuit). Le bruit est tiré dans des bornes ; le résiduel est la demande moins R et F.
+
+### 9.3 Étapes pour une grille
+
+1. Tirer silhouette, météo, parc et mécaniques.
+2. **Pose de référence** : CP-SAT minimise la somme des rangs des cases (ordre d'appel), départage aléatoire (graine) entre poses de même coût pour varier.
+3. Inventaire au niveau voulu ; totaux d'échanges dans l'inventaire (exact) ou dans la réserve d'indices (`exchanges`, sinon).
+4. **Réserve d'indices** : tout ce que la référence permet de publier pour les types demandés (prix, relevé par pièce, flux par pays, programme, durée de marche, bilan partiel ou total).
+5. **Ajout glouton** : tant que la déduction bloque, ajouter l'indice qui laisse le moins de cases indécises après les règles 1-2 ; départage par type le moins représenté dans la grille (diversité des indices).
+6. **Élagage** : retirer un à un ce dont la grille peut se passer. Vérifier §8.3 : retirer n'importe quel indice restant casse l'unicité ou la déduction (testé).
+7. **Contrôles** : CP-SAT compte 1 composition ; la déduction aboutit ; note et techniques ; mesures.
+8. **Bulletin** (§10).
+
+### 9.4 Rejets (nommés, comptés par lot)
+
+`infeasible`, `trivial` (une seule sorte de pièce, rien à déduire), `not_unique` (plusieurs compositions même avec toute la réserve), `blocked` (unique mais pas déductible : gardée à part si `ramp`, §6.4), `too_many_clues`, `rating_mismatch`, `duplicate` (même silhouette à un décalage près, ou même composition), `quota` (§9.5).
+
+### 9.5 Lots et diversité imposée
+
+Un **lot** est un fichier JSON : taille visée, liste pondérée de configurations, quotas. Exemple :
+
+```json
+{"lot": "demo-01", "size": 20, "seed": 7,
+ "mix": [{"weight": 3, "cols": 8, "neighbors": 1},
+         {"weight": 2, "cols": 10, "neighbors": 2, "co2_cap": "auto"},
+         {"weight": 2, "cols": 8, "step": 1, "neighbors": 1},
+         {"weight": 2, "cols": 8, "ramp": "G:trapezoid"},
+         {"weight": 1, "cols": 8, "ramp": "C:stair", "pieces": "N,C,G,T"},
+         {"weight": 1, "cols": 12, "pieces": "N,B,C,G,T", "tall": "C:1-2", "surplus": true}],
+ "quotas": {"max_same_silhouette": 3, "max_same_mechanics": 4, "min_per_rating": 2,
+            "max_same_clue_profile": 4}}
+```
+
+- Le lot tire jusqu'à remplir la taille ; une candidate qui ferait dépasser un quota est rejetée (`quota`).
+- **Mécaniques** d'une grille = l'ensemble {voisins (nombre), STEP, surplus, CO₂, pièce haute, rampe, inventaire} ; **profil d'indices** = l'ensemble des types utilisés.
+- Les quotas par défaut sont un choix ouvert (C4).
+
+### 9.6 Sortie
+
+- Une grille §14 complète (`id` provisoire, `section: "rated"`, `difficulty`, `bulletin`) plus un bloc `lab` ignoré par le jeu :
+
+```json
+"lab": {"lot": "demo-01", "seed": 7, "index": 12, "family": "pointe_soir",
+        "mechanics": ["neighbors:1", "step"], "clue_profile": ["column", "exchanges", "flow"],
+        "trace_summary": {"steps": 18, "level2_steps": 4, "bottlenecks": 2, "techniques": {"ribbon": 2}},
+        "generator": "dispatch-solver 2.0.0"}
+```
+
+- Le bloc `lab` est retiré à la promotion par le labo (s5) : `grids.json` reste propre.
+
+## 10. Bulletin par gabarits
+
+- **Champs** que le générateur remplit : `title`, `text`, `weather` (une valeur par créneau). Le numéro et la date de publication sont donnés à la promotion par le labo, pas par le générateur.
+- **Format** : celui de s2 (S2.1, commit `f45381d` sur `v2-menu`) : `bulletin: {number, title, text, weather, published}`, `weather` parmi `sun`, `moon`, `cloud`, `wind`, un par colonne ; `number` et `published` obligatoires.
+- Le générateur ne connaît ni le numéro ni la date : il écrit un **brouillon** dans `lab.bulletin` (`{title, text, weather}`) ; à la promotion, le labo le complète (`number`, `published`) et le place dans `bulletin`. La grille candidate reste valide pour `validateGrid`.
+
+```json
+"lab": {"bulletin": {"title": "Pointe du soir",
+                     "text": "Le froid tient la soirée. L'Allemagne a de la marge à 21 h.",
+                     "weather": ["moon", "moon", "sun", "sun", "cloud", "sun", "moon", "moon"]}}
+```
+
+- **Ciel par créneau** : déduit de R et de l'heure : `moon` (créneau de nuit sans R), `wind` (R > 0 la nuit), `sun` (jour, R ≥ 2), `cloud` (jour, R ≤ 1).
+- **Traits** calculés sur la grille : famille de silhouette, créneau de la pointe, surplus, voisins actifs dans la solution, STEP, plafond CO₂, pièce dominante, rampe.
+- **Titre** : table trait → titres (3 à 5 variantes par trait, choisies par la graine) : « Pointe du soir », « Deux bosses », « Midi au soleil », « Trop de soleil », « Nuit calme », « Le lac remonte » (STEP), « Ligne chargée » (voisins)…
+- **Texte** : 2 phrases, chacune un gabarit à trous (`{pays}`, `{heure}`, `{centrale}`) choisi selon les traits ; jamais de chiffre que le joueur doit déduire (pas de fuite de solution : un trait tiré de la solution ne cite que ce qui est déjà publié par un indice).
+- Les gabarits sont des données (`generate/bulletin_fr.json`), en français ; ce sont des textes de grille comme `title` et `intro`, pas des textes d'interface : ils ne vont pas dans `fr.ts`.
+
+## 11. Interface pour le labo (S5)
+
+Le serveur Python local du labo importe le package ; la CLI fait la même chose en ligne de commande. Données dans `lab/`, versionnées.
+
+| Commande | Sortie |
+|---|---|
+| `dispatch-solver generate --lot lab/lots/demo-01.json` | `lab/candidates/demo-01.json` (liste de grilles §14 + `lab`) et `lab/candidates/demo-01.stats.json` (tirages, rejets par raison, temps) |
+| `dispatch-solver check <fichier> [--id N]` | JSON par grille : `valid`, `errors`, `compositions`, `deduction`, `rating`, `techniques` |
+| `dispatch-solver deduce <fichier> --id N [--max-level k]` | trace complète (§6.4), puis résumé |
+| `dispatch-solver bulletin <fichier> --id N` | bulletin régénéré (après retouche de la grille) |
+| `dispatch-solver check-published` | ce que fait `check_unique.py` : toutes les grilles de `grids.json` uniques et déductibles, solution = référence |
+
+Fonctions de bibliothèque correspondantes (`generate_lot`, `check_grid`, `deduce_grid`, `make_bulletin`), qui rendent des dicts JSON. Les parties jouées, notes et préférées (`lab/plays.jsonl`, `lab/notes.json`) et la promotion vers `grids.json` sont à S5.
+
+## 12. Choix ouverts
+
+| | Choix | Recommandation |
+|---|---|---|
+| C1 | Déduction en Python seul, ou en TS partagée avec le moteur du jeu | **Tranché : Python seul** (§7) |
+| C2 | Nom du package | **Tranché : `dispatch_solver` / CLI `dispatch-solver`** ; l'ancien nom `spot-solver` part avec l'archive |
+| C3 | Totaux d'échanges : technique nommée à part ou fondue dans « Le relevé compte les cases » | **Tranché : fondue dans `record`** (la trace note `scope: "day"` pour distinguer) |
+| C4 | Quotas de diversité par défaut d'un lot de 20 | **Tranché : ≤ 3 par famille de silhouette, ≤ 4 par ensemble de mécaniques, ≤ 4 par profil d'indices, ≥ 2 par note** |
+| C5 | Bloc `lab` dans la grille promue | **Tranché (orchestrateur) : retiré à la promotion par le labo** |
+| C6 | Format `ramp` et `bulletin` | **`bulletin` : aligné sur s2 (`f45381d`)** ; `ramp` provisoire, aligné sur s1 dès `rampe.md` |
+
+## 13. Découpage des tâches suivantes
+
+- **S4.2** : `grid`, `shapes`, `board`, `clues`, `exact`, `deduce` ; fixtures `fixtures/grids/` et `reference.test.ts` ; `check_unique.py` et CI rebranchés ; archive de l'ancien solveur. Critère : les 11 grilles uniques, déduites, même note qu'aujourd'hui ou écart expliqué.
+- **S4.3** : `generate/` et CLI ; lot de démonstration ≥ 20 candidates dans `lab/` (dont rampes trapèze et escalier) ; `CLAUDE.md` (section `solver/`), `GAME-DESIGN.md` §10 et §15.
