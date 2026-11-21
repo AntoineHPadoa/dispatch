@@ -192,6 +192,14 @@ describe('home rendering', () => {
     const p = { grids: { [done.id]: { status: 'done' } } } as unknown as ReturnType<typeof emptyProgress>;
     renderHome(root, grids, p, '2026-11-21');
     expect(root.innerHTML).toContain('Bouclé');
+    // The finished sheet shows its solution: one rectangle per placement, in plant colours.
+    expect(root.innerHTML.match(/class="sil-piece"/g)).toHaveLength(done.solution.placements.length);
+  });
+
+  it('an open sheet shows no solution', () => {
+    const root = stub();
+    renderHome(root, grids, emptyProgress(), '2026-11-21');
+    expect(root.innerHTML).not.toContain('sil-piece');
   });
 
   it('before the first publication: no sheet, a line with the first date', () => {

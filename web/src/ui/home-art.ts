@@ -6,7 +6,7 @@
  * - miniSilhouette(): the small demand outline of a previous sheet or a dossier.
  */
 import type { Grid, WeatherKind } from '../model/grid';
-import { PIECE_COLORS, esc } from './palette';
+import { PIECE_COLORS, colorKey, esc } from './palette';
 
 const SKY_STROKE = '#9a929c';
 
@@ -33,22 +33,34 @@ function priceCell(grid: Grid): [number, number] | null {
   return h > 0 ? [clue.col, h - 1] : null;
 }
 
-/** Demand silhouette, cell by cell, one sky icon per slot above, slot labels below. */
+/**
+ * Silhouette of the sheet of the day, one sky icon per slot above, slot labels below.
+ * Open sheet: the demand cell by cell, the price cell in pink. Finished sheet: the solution, every laid
+ * rectangle in its plant colour (imports and exports included in the rectangles).
+ */
 export function sheetSilhouette(grid: Grid, weather: readonly WeatherKind[], labelFor: (k: WeatherKind) => string, label: string, done = false): string {
-  const cell = 40, top = 30, rows = Math.max(...grid.demand), n = grid.demand.length;
+  const solved = done && grid.solution ? grid.solution : null;
+  const cell = 40, top = 30, n = grid.demand.length;
+  const heights = grid.demand.map((d, c) => d + Object.values(solved?.exports ?? {}).reduce((a, e) => a + (e[c] ?? 0), 0));
+  const rows = Math.max(1, ...heights, ...(solved?.placements ?? []).map((p) => p.row + (p.height ?? 1)));
   const w = n * cell, hBars = rows * cell, h = top + hBars + 18;
-  const hi = priceCell(grid);
+  const hi = solved ? null : priceCell(grid);
   let s = `<svg class="sil" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(label)}">`;
   weather.forEach((k, i) => {
     s += `<g transform="translate(${i * cell + cell / 2 - 9} 6)" fill="none" stroke="${SKY_STROKE}" stroke-width="1.7" stroke-linecap="round"><title>${esc(labelFor(k))}</title>${SKY_PATHS[k]}</g>`;
   });
-  grid.demand.forEach((d, c) => {
+  heights.forEach((d, c) => {
     for (let r = 0; r < d; r++) {
       const on = hi !== null && hi[0] === c && hi[1] === r;
       s += `<rect x="${c * cell + 1.5}" y="${top + (rows - 1 - r) * cell + 1.5}" width="${cell - 3}" height="${cell - 3}" rx="5" `
-        + `class="sil-cell${on ? ' price' : ''}${done && !on ? ' done' : ''}"/>`;
+        + `class="sil-cell${on ? ' price' : ''}"/>`;
     }
   });
+  for (const p of solved?.placements ?? []) {
+    const hh = p.height ?? 1;
+    const col = PIECE_COLORS[colorKey(p.piece)];
+    s += `<rect class="sil-piece" x="${p.col * cell + 1.5}" y="${top + (rows - p.row - hh) * cell + 1.5}" width="${p.len * cell - 3}" height="${hh * cell - 3}" rx="8" fill="${col.a}" stroke="${col.ink}" stroke-width="1.5"/>`;
+  }
   grid.columns.forEach((t, i) => {
     s += `<text x="${(i + 0.5) * cell}" y="${top + hBars + 14}" text-anchor="middle" font-family="Manrope, sans-serif" font-size="12" font-weight="700" fill="#8f8593">${esc(t)}</text>`;
   });
