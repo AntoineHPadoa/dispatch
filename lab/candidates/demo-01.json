@@ -624,13 +624,14 @@
    ]
   },
   "difficulty": {
-   "rating": 2,
-   "label": "Moyen",
+   "rating": 1,
+   "label": "Facile",
    "techniques": [
     "exhausted",
-    "ribbon",
     "room",
-    "silhouette"
+    "silhouette",
+    "single_cover",
+    "single_spot"
    ]
   },
   "lab": {
@@ -645,24 +646,27 @@
    ],
    "clue_profile": [],
    "trace_summary": {
-    "steps": 8,
-    "level2_steps": 3,
+    "steps": 10,
+    "level2_steps": 0,
     "single_effect_steps": 1,
     "order": [
-     "silhouette",
-     "ribbon",
+     "room",
      "exhausted",
-     "room"
+     "single_cover",
+     "single_spot",
+     "silhouette"
     ],
     "techniques": {
-     "silhouette": 1,
-     "ribbon": 3,
-     "exhausted": 3,
-     "room": 1
+     "room": 2,
+     "exhausted": 5,
+     "single_cover": 1,
+     "single_spot": 1,
+     "silhouette": 1
     },
     "shape_steps": {
-     "ribbon:ramp_trap": 3,
-     "room:ramp_trap": 1
+     "room:ramp_trap": 1,
+     "exhausted:ramp_trap": 1,
+     "single_cover:ramp_trap": 1
     }
    },
    "ramp_techniques": {},
@@ -1129,27 +1133,27 @@
    ],
    "clue_profile": [],
    "trace_summary": {
-    "steps": 11,
+    "steps": 12,
     "level2_steps": 2,
     "single_effect_steps": 3,
     "order": [
-     "exhausted",
      "room",
+     "exhausted",
      "single_spot",
      "ramp_plateau",
      "column_sum",
      "ramp_shoulder"
     ],
     "techniques": {
+     "room": 4,
      "exhausted": 1,
-     "room": 3,
      "single_spot": 2,
      "ramp_plateau": 2,
      "column_sum": 2,
      "ramp_shoulder": 1
     },
     "shape_steps": {
-     "room:ramp_trap": 1,
+     "room:ramp_trap": 2,
      "single_spot:ramp_trap": 2,
      "ramp_plateau:ramp_trap": 1
     }
@@ -2214,18 +2218,18 @@
    ],
    "clue_profile": [],
    "trace_summary": {
-    "steps": 8,
+    "steps": 9,
     "level2_steps": 0,
     "single_effect_steps": 1,
     "order": [
-     "exhausted",
      "room",
+     "exhausted",
      "single_cover",
      "silhouette"
     ],
     "techniques": {
+     "room": 2,
      "exhausted": 4,
-     "room": 1,
      "single_cover": 2,
      "silhouette": 1
     },
@@ -2496,9 +2500,9 @@
     "column"
    ],
    "trace_summary": {
-    "steps": 14,
-    "level2_steps": 2,
-    "single_effect_steps": 2,
+    "steps": 15,
+    "level2_steps": 1,
+    "single_effect_steps": 1,
     "order": [
      "record",
      "single_cover",
@@ -2512,9 +2516,9 @@
     "techniques": {
      "record": 1,
      "single_cover": 2,
-     "room": 4,
-     "silhouette": 1,
-     "ribbon": 2,
+     "room": 5,
+     "silhouette": 2,
+     "ribbon": 1,
      "single_spot": 1,
      "ramp_plateau": 1,
      "exhausted": 2
@@ -2773,23 +2777,23 @@
     "column"
    ],
    "trace_summary": {
-    "steps": 14,
+    "steps": 15,
     "level2_steps": 3,
     "single_effect_steps": 2,
     "order": [
+     "room",
      "record",
      "single_cover",
-     "room",
      "silhouette",
      "exhausted",
      "ribbon"
     ],
     "techniques": {
+     "room": 4,
      "record": 1,
      "single_cover": 2,
-     "room": 2,
      "silhouette": 2,
-     "exhausted": 4,
+     "exhausted": 3,
      "ribbon": 3
     },
     "shape_steps": {}
@@ -3057,13 +3061,13 @@
     "single_effect_steps": 0,
     "order": [
      "flow",
-     "exhausted",
-     "room"
+     "room",
+     "exhausted"
     ],
     "techniques": {
      "flow": 1,
-     "exhausted": 2,
-     "room": 1
+     "room": 1,
+     "exhausted": 2
     },
     "shape_steps": {}
    },
@@ -3662,16 +3666,14 @@
    ]
   },
   "difficulty": {
-   "rating": 3,
-   "label": "Difficile",
+   "rating": 1,
+   "label": "Facile",
    "techniques": [
     "exhausted",
     "record",
-    "ribbon",
     "room",
-    "share_out",
-    "single_cover",
-    "single_spot"
+    "silhouette",
+    "single_cover"
    ]
   },
   "lab": {
@@ -3686,26 +3688,22 @@
     "column"
    ],
    "trace_summary": {
-    "steps": 13,
-    "level2_steps": 7,
-    "single_effect_steps": 0,
+    "steps": 7,
+    "level2_steps": 0,
+    "single_effect_steps": 1,
     "order": [
      "record",
-     "single_cover",
-     "ribbon",
-     "share_out",
-     "single_spot",
      "room",
-     "exhausted"
+     "exhausted",
+     "single_cover",
+     "silhouette"
     ],
     "techniques": {
      "record": 1,
-     "single_cover": 1,
-     "ribbon": 2,
-     "share_out": 5,
-     "single_spot": 1,
      "room": 1,
-     "exhausted": 2
+     "exhausted": 3,
+     "single_cover": 1,
+     "silhouette": 1
     },
     "shape_steps": {}
    },
@@ -4017,35 +4015,35 @@
     "column"
    ],
    "trace_summary": {
-    "steps": 16,
-    "level2_steps": 12,
-    "single_effect_steps": 2,
+    "steps": 17,
+    "level2_steps": 9,
+    "single_effect_steps": 0,
     "order": [
+     "room",
      "record",
+     "silhouette",
      "ramp_lone",
      "ribbon",
      "refuted",
-     "silhouette",
      "exhausted",
-     "room",
      "column_sum"
     ],
     "techniques": {
+     "room": 2,
      "record": 1,
+     "silhouette": 4,
      "ramp_lone": 1,
-     "ribbon": 8,
-     "refuted": 2,
-     "silhouette": 1,
+     "ribbon": 6,
+     "refuted": 1,
      "exhausted": 1,
-     "room": 1,
      "column_sum": 1
     },
     "shape_steps": {
+     "room:ramp_trap": 1,
      "record:ramp_trap": 1,
      "ramp_lone:ramp_trap": 1,
-     "ribbon:ramp_trap": 7,
-     "refuted:ramp_trap": 2,
-     "room:ramp_trap": 1
+     "ribbon:ramp_trap": 6,
+     "refuted:ramp_trap": 1
     }
    },
    "ramp_techniques": {
@@ -4341,12 +4339,11 @@
    ]
   },
   "difficulty": {
-   "rating": 4,
-   "label": "Expert",
+   "rating": 1,
+   "label": "Facile",
    "techniques": [
     "exhausted",
     "flow",
-    "refuted",
     "room",
     "silhouette",
     "single_cover"
@@ -4365,22 +4362,20 @@
     "flow"
    ],
    "trace_summary": {
-    "steps": 8,
-    "level2_steps": 1,
-    "single_effect_steps": 3,
+    "steps": 7,
+    "level2_steps": 0,
+    "single_effect_steps": 2,
     "order": [
      "flow",
-     "exhausted",
      "room",
-     "refuted",
+     "exhausted",
      "single_cover",
      "silhouette"
     ],
     "techniques": {
      "flow": 1,
-     "exhausted": 3,
      "room": 1,
-     "refuted": 1,
+     "exhausted": 3,
      "single_cover": 1,
      "silhouette": 1
     },
@@ -4616,14 +4611,14 @@
    ]
   },
   "difficulty": {
-   "rating": 3,
-   "label": "Difficile",
+   "rating": 2,
+   "label": "Moyen",
    "techniques": [
     "exhausted",
+    "just_enough",
     "program",
     "ribbon",
     "room",
-    "share_out",
     "silhouette"
    ]
   },
@@ -4639,23 +4634,23 @@
     "bar"
    ],
    "trace_summary": {
-    "steps": 15,
-    "level2_steps": 10,
+    "steps": 11,
+    "level2_steps": 6,
     "single_effect_steps": 1,
     "order": [
-     "ribbon",
-     "share_out",
-     "exhausted",
-     "program",
      "room",
+     "ribbon",
+     "just_enough",
+     "program",
+     "exhausted",
      "silhouette"
     ],
     "techniques": {
+     "room": 2,
      "ribbon": 5,
-     "share_out": 5,
-     "exhausted": 2,
+     "just_enough": 1,
      "program": 1,
-     "room": 1,
+     "exhausted": 1,
      "silhouette": 1
     },
     "shape_steps": {}
@@ -5159,6 +5154,7 @@
    "label": "Facile",
    "techniques": [
     "exhausted",
+    "room",
     "silhouette",
     "single_cover"
    ]
@@ -5173,15 +5169,17 @@
    ],
    "clue_profile": [],
    "trace_summary": {
-    "steps": 5,
+    "steps": 7,
     "level2_steps": 0,
     "single_effect_steps": 0,
     "order": [
+     "room",
      "exhausted",
      "single_cover",
      "silhouette"
     ],
     "techniques": {
+     "room": 2,
      "exhausted": 3,
      "single_cover": 1,
      "silhouette": 1
@@ -5481,35 +5479,35 @@
     "price"
    ],
    "trace_summary": {
-    "steps": 20,
+    "steps": 22,
     "level2_steps": 4,
-    "single_effect_steps": 5,
+    "single_effect_steps": 4,
     "order": [
+     "room",
      "price_cap",
      "flow",
      "single_cover",
      "silhouette",
      "ribbon",
      "record",
-     "room",
      "program",
      "length"
     ],
     "techniques": {
+     "room": 6,
      "price_cap": 1,
      "flow": 1,
-     "single_cover": 4,
-     "silhouette": 1,
+     "single_cover": 3,
+     "silhouette": 2,
      "ribbon": 4,
      "record": 3,
-     "room": 4,
      "program": 1,
      "length": 1
     },
     "shape_steps": {
+     "room:tall": 3,
      "price_cap:tall": 1,
-     "ribbon:tall": 2,
-     "room:tall": 1
+     "ribbon:tall": 2
     }
    },
    "ramp_techniques": {},

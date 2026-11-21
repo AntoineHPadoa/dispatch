@@ -2,6 +2,22 @@
 
 Générateur : `dispatch-solver 2.0.0`, commit `13b5a2a` (v2-solver), branche `v2-gen`. Un lot à la fois, 6 processus.
 
+## Notes recalculées (S8.3)
+
+La déduction a été corrigée après la génération (review S8 tour 1, partie B, C1 à C5) : « Pas de place » vérifie aussi qu'une pose qui monte plusieurs colonnes tient dans les totaux d'échanges du jour. Les grilles n'ont pas été retirées ; leurs notes, techniques et mesures ont été recalculées par `solver/scripts/rerate_lots.py` (une composition, déduction complète, chaque indice retiré à tour de rôle). Les tableaux plus bas gardent les chiffres de la nuit.
+
+| Note | jouer-a | jouer-b | jouer-c | rampe | rejeu | Total | Jouables |
+|---|---|---|---|---|---|---|---|
+| Facile | 6 | 9 | 7 | 7 | 2 | 31 | 24 |
+| Moyen | 8 | 4 | 10 | 8 | 1 | 31 | 23 |
+| Difficile | 4 | 3 | 0 | 1 | 1 | 9 | 8 |
+| Expert | 2 | 4 | 3 | 4 | 0 | 13 | 9 |
+
+- **13 notes changent** (14 avec `demo-01`), toutes à la baisse : jouer-a n° 1 (Expert → Difficile), 3 et 12 (Difficile → Facile) ; jouer-b n° 7 (Moyen → Facile), 19 (Expert → Moyen) ; jouer-c n° 5 (Moyen → Facile), 8, 18 et 19 (Difficile → Moyen) ; rampe n° 8 (Expert → Moyen) ; rejeu n° 3, la grille publiée 11 (Expert → Facile, décision en attente).
+- **Toutes restent publiables** : une composition, déduites, aucun indice devenu inutile. Exception, sans lien avec la correction : la grille publiée 8 (rejeu n° 0) a un indice inutile, le flux de 6h (déjà le cas avant).
+- **Grilles sans indice notées Difficile ou Expert** : 4 au lieu de 5 (jouer-a n° 1 et 18, jouer-b n° 0, rampe n° 2) ; jouer-a n° 3 passe en Facile.
+- **Techniques de rampe** : « Le plateau barre la ligne du dessus » et « L'épaule appelle une case » sont « Pas de place » et « Une seule barre pour cette case » sur une rampe : des étiquettes pour le joueur, pas un apport de la rampe. Seule « Une case seule est une épaule » est propre à la rampe : **1 grille sur 20** du lot rampe l'emploie (`ramp_grids_with_own_technique`), et non 12 comme écrit plus bas.
+
 ## Bilan
 
 - **5 lots, 84 grilles** : 3 lots à jouer (60), 1 lot à rampe (20), 1 lot de rejeu des grilles notées publiées (4).
@@ -39,7 +55,7 @@ Générateur : `dispatch-solver 2.0.0`, commit `13b5a2a` (v2-solver), branche `v
 ### nuit-rampe — rampe (trapèze seul), 20 grilles, 33 s
 - Graine 404, 71 tirages. Rejets : 11 `quota:family`, 10 `quota:clue_profile`, 9 `too_many_clues`, 9 `quota:mechanics`, 1 `not_unique`. Aucune grille « unique mais bloquée » (`blocked_ramp: 0`).
 - Créneaux : 12 × 8, 7 × 12, 1 × 6. 12 grilles avec 1 voisin ; 11 inventaires exacts ; 4 surplus ; 1 CO₂ ; 1 STEP.
-- **Techniques de rampe : 12 grilles sur 20 en demandent au moins une.**
+- **Techniques de rampe : 12 grilles sur 20 en emploient au moins une, mais seule 1 emploie une technique propre à la rampe** (voir « Notes recalculées » : plateau et épaule sont des étiquettes).
 
 | Technique | Grilles | Emplois |
 |---|---|---|
@@ -49,7 +65,7 @@ Générateur : `dispatch-solver 2.0.0`, commit `13b5a2a` (v2-solver), branche `v
 | `ramp_relay` (niveau 3) | 0 | 0 |
 
 - Le relais n'apparaît toujours pas, alors que 11 grilles ont 2 à 5 morceaux de charbon dans la solution : quand les rampes se relaient, la déduction ne passe pas par la technique « relais ».
-- Ces grilles ne sont pas jouables dans le labo tant que la rampe n'est pas dans le jeu.
+- Le trapèze se joue dans le jeu et dans le labo depuis le commit `93de017`.
 
 ### nuit-rejeu-notees — calibrage, 4 grilles
 - Les 4 grilles `rated` publiées (ids 8 à 11), avec un bloc `lab` (famille `publiee`, `published_id`), pour les rejouer à l'aveugle et les renoter.
@@ -63,11 +79,7 @@ Générateur : `dispatch-solver 2.0.0`, commit `13b5a2a` (v2-solver), branche `v
 
 ## Ouvrir le labo
 
-Le serveur du labo est sur la branche `v2-lab`. Une fois `v2-gen` fusionnée dans `v2-lab` (ou dans `main` après la fusion de `v2-lab`) :
-
 ```bash
-cd ~/Programs/spot-elec-wt/v2-lab
-git merge v2-gen
 lab/run.sh        # puis ouvrir http://localhost:5173/dispatch/lab.html
 ```
 

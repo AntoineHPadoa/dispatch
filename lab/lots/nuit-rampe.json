@@ -3,7 +3,7 @@
  "size": 20,
  "seed": 404,
  "max_attempts": 900,
- "comment": "Ramp lot: trapezoid ramp only (no stair), to measure how often a ramp technique is needed. Not playable in the lab until the game supports the ramp.",
+ "comment": "Ramp lot: trapezoid ramp only (no stair), to measure how often a ramp technique is needed. Playable in the lab (the game plays trapezoids).",
  "mix": [
   {"weight": 3, "cols": 8, "ramp": "trap"},
   {"weight": 3, "cols": 12, "ramp": "trap"},
