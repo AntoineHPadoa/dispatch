@@ -20,7 +20,7 @@ import {
   poseMessage, techniqueLine,
 } from '../src/ui/game';
 import { MSG, durationText } from '../src/i18n/fr';
-import { STEP_KEY, bookEntries, isDayClue, publishedStepPairs, renderBook, renderCo2, richClueText } from '../src/ui/panels';
+import { STEP_KEY, bookEntries, isDayClue, publishedStepPairs, renderBook, renderChips, renderCo2, richClueText } from '../src/ui/panels';
 import { renderSheet, slotLegend } from '../src/ui/print';
 import { stepArrowAction, stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from '../src/ui/step';
 import { UI } from '../src/i18n/fr';
@@ -614,5 +614,31 @@ describe('STEP pump without its turbine (pending pump, not in the undo history)'
     expect(stepEraseResult(3, 3)).toEqual({ pending: null, dropped: true });
     expect(stepEraseResult(3, 4)).toEqual({ pending: 3, dropped: false });
     expect(stepEraseResult(null, 3)).toEqual({ pending: null, dropped: false });
+  });
+});
+
+describe('renderChips (phone row)', () => {
+  const g = byId(7);
+  const chipSel = (html: string) => [...html.matchAll(/<button[^>]*class="chip sel"[^>]*data-piece="([^"]+)"/g)].map((m) => m[1]);
+  it('marks the chosen plant and shows its counter', () => {
+    const html = renderChips(g, newGame(g), 'N', false);
+    expect(chipSel(html)).toEqual(['N']);
+    expect(html).toContain('0/');
+  });
+  it('shows the STEP pair counter 0/1 on a grid that publishes one pair', () => {
+    const html = renderChips(g, newGame(g), STEP_KEY, false);
+    expect(html).toMatch(/data-piece="STEP"[^>]*>.*?<small>0\/1<\/small>/);
+  });
+  it('highlights no plant while the eraser is on', () => {
+    const html = renderChips(g, newGame(g), null, true);
+    expect(chipSel(html)).toEqual([]);
+    expect(html).toContain('erase-chip sel');
+  });
+});
+
+describe('phone hint', () => {
+  it('points to the row under the board below 860 px', () => {
+    expect(UI.hintChoose(false, false, true)).toContain('la rangée sous la grille');
+    expect(UI.hintChoose(false, false)).toContain('le carnet');
   });
 });

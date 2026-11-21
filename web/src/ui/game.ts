@@ -275,7 +275,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     } else {
       m = boardMessage(ev, m) ?? {
         text: erase ? UI.hintErase : selected?.piece === STEP_KEY ? (stepPending !== null ? UI.stepPending(columnLabel(grid, stepPending)) : UI.hintStep)
-          : UI.hintChoose(grid.inventory.level !== 'exact', grid.neighbors.length > 0),
+          : UI.hintChoose(grid.inventory.level !== 'exact', grid.neighbors.length > 0, window.matchMedia('(max-width: 860px)').matches),
         tone: 'info',
       };
     }
@@ -289,8 +289,14 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   }
 
   function drawChips() {
-    chipsEl.innerHTML = renderChips(grid, history.present, selected?.key ?? null, erase);
-    chipsEl.querySelector('.chips-row .sel')?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+    chipsEl.innerHTML = renderChips(grid, history.present, erase ? null : selected?.key ?? null, erase);
+    // Scroll the row itself, horizontally only: scrollIntoView would also move the page.
+    const row = chipsEl.querySelector<HTMLElement>('.chips-row');
+    const sel = row?.querySelector<HTMLElement>('.sel');
+    if (row && sel) {
+      const left = sel.offsetLeft - row.offsetLeft;
+      if (left < row.scrollLeft || left + sel.offsetWidth > row.scrollLeft + row.clientWidth) row.scrollLeft = Math.max(0, left - 8);
+    }
   }
 
   function drawSide() {
@@ -514,7 +520,9 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       else stepTap(col);
     }
     else if (el.getAttribute('data-act') === 'locked') say(UI.lockedTap(columnLabel(grid, col)), 'info');
-    const again = scroll.querySelector<SVGElement>(`[data-act="${el.getAttribute('data-act')}"][data-col="${col}"]${el.getAttribute('data-country') ? `[data-country="${el.getAttribute('data-country')}"]` : ''}`);
+    let again: HTMLElement | SVGElement | null = scroll.querySelector<SVGElement>(`[data-act="${el.getAttribute('data-act')}"][data-col="${col}"]${el.getAttribute('data-country') ? `[data-country="${el.getAttribute('data-country')}"]` : ''}`);
+    // The arrows vanish once the pair is laid: keep the keyboard focus on the new ▼ tag, else on the board.
+    if (!again && el.getAttribute('data-act') === 'step-arrow') again = scroll.querySelector<SVGElement>(`[data-act="step-tag"][data-col="${col}"]`) ?? wrap;
     if (again && document.activeElement !== again && el === document.activeElement) again.focus();
   }
 

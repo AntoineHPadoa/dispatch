@@ -367,8 +367,8 @@ export const UI = {
   lockedTap: (col: string) => `Flux publié à ${col} : verrouillé.`,
   stepCellLabel: (col: string) => `STEP à ${col}`,
   /** Idle hint: `list` when the grid has no order book, `exports` when it has a neighbor line. */
-  hintChoose: (list: boolean, exports: boolean) => 'Glisse sur la grille pour poser la centrale choisie'
-    + ` (ou touche la case de départ puis celle d’arrivée). Change de centrale dans ${list ? 'la liste' : 'le carnet'}.`
+  hintChoose: (list: boolean, exports: boolean, phone = false) => 'Glisse sur la grille pour poser la centrale choisie'
+    + ` (ou touche la case de départ puis celle d’arrivée). Change de centrale dans ${phone ? 'la rangée sous la grille' : list ? 'la liste' : 'le carnet'}.`
     + `${exports ? ' Exporte en touchant les pastilles sous la grille.' : ''}`,
   hintSecondTap: (label: string) => `${label} : touche maintenant la case d’arrivée.`,
   hintErase: 'Gomme : touche une centrale pour la retirer.',

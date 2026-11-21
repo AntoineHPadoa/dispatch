@@ -197,6 +197,7 @@ body.print-preview #print-root .a4 { box-shadow: 0 2px 18px rgba(59, 51, 64, .12
   .chips { display: flex; gap: 8px; width: 0; min-width: 100%; align-items: center; }
   .chips-row { display: flex; gap: 6px; overflow-x: auto; flex: 1; min-width: 0; padding: 2px 0 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
   .chips-row::-webkit-scrollbar { display: none; }
+  .chips-row { -webkit-mask-image: linear-gradient(to right, transparent, #000 12px, #000 calc(100% - 12px), transparent); mask-image: linear-gradient(to right, transparent, #000 12px, #000 calc(100% - 12px), transparent); }
   .erase-tool { display: none; }
   .game:not(:has(> .intro)) { grid-template-areas: none; }
   .home-top { grid-template-columns: minmax(0, 1fr); }
@@ -213,3 +214,5 @@ body.print-preview #print-root .a4 { box-shadow: 0 2px 18px rgba(59, 51, 64, .12
 /* 210 mm at .36 is 286 px: the sheet keeps a 16 px margin on a 320 px screen. */
 @media screen and (max-width: 380px) { body.print-preview #print-root .a4 { zoom: .36; } }
 @media (max-width: 360px) { .tool { padding: 6px 8px; gap: 4px; font-size: .74rem; } }
+
+.board-svg [data-act] { -webkit-tap-highlight-color: transparent; }
