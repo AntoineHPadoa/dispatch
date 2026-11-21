@@ -1,0 +1,281 @@
+{
+ "name": "stock-dam",
+ "grid": {
+  "id": 109,
+  "title": "stock-dam",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   3,
+   4,
+   5,
+   6,
+   5,
+   6,
+   7,
+   5
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 2,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "B": {
+     "max_cells": 2
+    },
+    "G": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "price",
+    "col": 7,
+    "piece": "N"
+   },
+   {
+    "type": "column",
+    "col": 1,
+    "counts": {
+     "N": 4
+    }
+   },
+   {
+    "type": "price",
+    "col": 3,
+    "piece": "B"
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 1,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 2,
+     "len": 3
+    },
+    {
+     "piece": "B",
+     "row": 5,
+     "col": 3,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 5,
+     "col": 5,
+     "len": 2
+    },
+    {
+     "piece": "B",
+     "row": 6,
+     "col": 6,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "exhausted",
+    "price_cap",
+    "record",
+    "ribbon",
+    "single_cover"
+   ]
+  }
+ },
+ "expect": {
+  "valid": true,
+  "errors": [],
+  "compositions": 1,
+  "deduction": "solved",
+  "rating": 2,
+  "techniques": [
+   "exhausted",
+   "price_cap",
+   "record",
+   "ribbon",
+   "single_cover"
+  ],
+  "composition": {
+   "cells": [
+    {
+     "N": 3
+    },
+    {
+     "N": 4
+    },
+    {
+     "N": 5
+    },
+    {
+     "B": 1,
+     "N": 5
+    },
+    {
+     "N": 5
+    },
+    {
+     "G": 1,
+     "N": 5
+    },
+    {
+     "B": 1,
+     "G": 1,
+     "N": 5
+    },
+    {
+     "N": 5
+    }
+   ],
+   "exports": {},
+   "pumps": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "turbines": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "requires": []
+ }
+}

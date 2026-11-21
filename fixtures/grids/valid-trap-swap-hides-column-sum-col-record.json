@@ -1,0 +1,229 @@
+{
+ "name": "trap-swap-hides-column-sum-col-record",
+ "grid": {
+  "id": 1,
+  "title": "trap",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "demand": [
+   1,
+   1,
+   1,
+   2,
+   1,
+   1
+  ],
+  "pieces": {
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "DE",
+    "name": "Allemagne",
+    "cap": 1,
+    "co2": 1
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "T": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "price",
+    "piece": "T",
+    "col": 0
+   },
+   {
+    "type": "price",
+    "piece": "T",
+    "col": 1
+   },
+   {
+    "type": "price",
+    "piece": "T",
+    "col": 2
+   },
+   {
+    "type": "price",
+    "piece": "T",
+    "col": 4
+   },
+   {
+    "type": "price",
+    "piece": "T",
+    "col": 5
+   },
+   {
+    "type": "exchanges",
+    "exports": {
+     "DE": 0
+    }
+   },
+   {
+    "type": "column",
+    "col": 3,
+    "counts": {
+     "I:DE": 1
+    }
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "T",
+     "row": 0,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 0,
+     "col": 1,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 0,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 0,
+     "col": 3,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "row": 1,
+     "col": 3,
+     "len": 1,
+     "country": "DE"
+    },
+    {
+     "piece": "T",
+     "row": 0,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 0,
+     "col": 5,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": []
+  }
+ },
+ "expect": {
+  "valid": true,
+  "errors": [],
+  "compositions": 1,
+  "deduction": "solved",
+  "requires": [],
+  "note": "column_sum, not swap: the count needs the column height",
+  "rating": 2,
+  "techniques": [
+   "column_sum",
+   "price_cap",
+   "record",
+   "room",
+   "single_cover"
+  ],
+  "composition": {
+   "cells": [
+    {
+     "T": 1
+    },
+    {
+     "T": 1
+    },
+    {
+     "T": 1
+    },
+    {
+     "I:DE": 1,
+     "T": 1
+    },
+    {
+     "T": 1
+    },
+    {
+     "T": 1
+    }
+   ],
+   "exports": {
+    "DE": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ]
+   },
+   "pumps": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "turbines": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  }
+ }
+}

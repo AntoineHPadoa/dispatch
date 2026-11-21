@@ -1,0 +1,93 @@
+{
+ "name": "trap-tall-vs-two-bars",
+ "grid": {
+  "id": 1,
+  "title": "trap",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "demand": [
+   0,
+   2,
+   2,
+   0,
+   0,
+   0
+  ],
+  "pieces": {
+   "C": {
+    "len": [
+     2
+    ],
+    "height": [
+     2
+    ],
+    "rank": 3,
+    "co2": 3
+   },
+   "G": {
+    "len": [
+     2
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "C": {},
+    "G": {}
+   }
+  },
+  "clues": [],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": []
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": []
+  }
+ },
+ "expect": {
+  "valid": true,
+  "errors": [],
+  "compositions": 2,
+  "deduction": "stuck",
+  "requires": [],
+  "note": "same drawing, two compositions (tall coal or two gas bars)"
+ }
+}
