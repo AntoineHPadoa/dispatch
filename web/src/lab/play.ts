@@ -3,7 +3,7 @@
  * - The grid comes without solver rating or techniques; progress stays in memory (no localStorage).
  * - Errors, undos, erasures and active time are counted by a PlayRecorder; a solved game is saved at the solve.
  * - Leaving the screen, reloading or closing the tab before the solve records an abandoned game
- *   (route change: POST; reload or close: sendBeacon on pagehide).
+ *   (route change: POST; reload or close: keepalive fetch on pagehide).
  * - After the solve, any way out of the game leads to the end screen (see Playing.pending).
  */
 import { api } from './api';

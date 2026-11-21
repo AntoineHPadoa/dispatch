@@ -38,9 +38,15 @@ def _load(path: str) -> list[dict]:
     try:
         return load_grids(path)
     except OSError as exc:
-        sys.exit(f"cannot read {path}: {exc.strerror}")
+        _fail(f"cannot read {path}: {exc.strerror}")
     except json.JSONDecodeError as exc:
-        sys.exit(f"{path} is not valid JSON: {exc}")
+        _fail(f"{path} is not valid JSON: {exc}")
+
+
+def _fail(message: str) -> None:
+    """Unreadable input: message on stderr, exit code 2 (as documented above)."""
+    print(message, file=sys.stderr)
+    sys.exit(2)
 
 
 def _select(path: str, gid: int | None, index: int | None = None) -> list[dict]:

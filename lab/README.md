@@ -6,7 +6,7 @@ Local tool to generate, play, rate and promote candidate grids. Launch: `lab/run
 
 - `candidates/<lot>.json`: grids written by `dispatch-solver generate`, with a `lab` block (index from 0, family, mechanics, trace summary, bulletin draft). A lot name is never reused: the server refuses an existing one, so `lot:index` always points to the same grid.
 - `plays.jsonl`: one JSON line per game (below).
-- `notes.json`: per `lot:index`: `kept`, `comment`, `felt` (first rating of each player), `bulletin` edits, `promoted`.
+- `notes.json`: per `lot:index`: `kept`, `comment` (`{player: text}`, one per player; `""` for an older comment whose author is unknown), `felt` (first rating of each player), `bulletin` edits, `promoted`.
 
 ## `plays.jsonl` format (schema 1)
 

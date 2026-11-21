@@ -80,12 +80,15 @@ export function sheetSilhouette(grid: Grid, weather: readonly WeatherKind[], lab
     }
     s += `<rect class="sil-piece" x="${p.col * cell + 1.5}" y="${top + (rows - p.row - hh) * cell + 1.5}" width="${p.len * cell - 3}" height="${hh * cell - 3}" rx="8" fill="${col.a}" stroke="${col.ink}" stroke-width="1.5"/>`;
   }
-  // Exports raise the silhouette above the demand: their cells get the dashed outline of the board's export cells.
+  // Exports and pumping raise the silhouette above the demand, stacked as on the board: pumped cells on top
+  // (blue dashed outline), exported cells under them (violet dashed outline).
+  const dashed = (c: number, r: number, cls: string, ink: string) =>
+    `<rect class="${cls}" x="${c * cell + 4}" y="${top + (rows - 1 - r) * cell + 4}" width="${cell - 8}" height="${cell - 8}" rx="5" fill="none" stroke="${ink}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
   heights.forEach((h, c) => {
     const out = Object.values(solved?.exports ?? {}).reduce((a, e) => a + (e[c] ?? 0), 0);
-    for (let r = h - out; r < h; r++) {
-      s += `<rect class="sil-export" x="${c * cell + 4}" y="${top + (rows - 1 - r) * cell + 4}" width="${cell - 8}" height="${cell - 8}" rx="5" fill="none" stroke="${PIECE_COLORS.I.ink}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
-    }
+    const pumped = (solved?.step ?? []).filter((q) => q.pump === c).length;
+    for (let r = h - pumped - out; r < h - pumped; r++) s += dashed(c, r, 'sil-export', PIECE_COLORS.I.ink);
+    for (let r = h - pumped; r < h; r++) s += dashed(c, r, 'sil-pump', PIECE_COLORS.B.ink);
   });
   grid.columns.forEach((t, i) => {
     s += `<text x="${(i + 0.5) * cell}" y="${top + hBars + 14}" text-anchor="middle" font-family="Manrope, sans-serif" font-size="12" font-weight="700" fill="#8f8593">${esc(t)}</text>`;

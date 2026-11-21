@@ -113,3 +113,35 @@ Aucun.
 ## Captures
 
 - `S8-tour2/g7-chips-375.png` : G7 bouclée à 375 px, « les 7 indices » (A1 vérifié) et la puce STEP coupée (N4).
+
+## Corrections
+
+Branche `v2-fix-1`, après fusion de `v2-review-2`. Les 5 points du §4 ne sont pas tranchés : `grids.json` et la politique des captures sont inchangés.
+
+| Constat | Corrigé | Comment |
+|---|---|---|
+| N1 commentaire écrasé | Oui | `comment` devient `{joueur: texte}` dans `notes.json`, comme `felt`. Un texte vide n'efface que le commentaire de son auteur. Masquage : avant sa note, un joueur ne voit que son propre commentaire. Reprise des anciennes notes à la lecture : la chaîne va au seul joueur qui a noté, sinon à la clé `""` (auteur inconnu, affichée « Avant »). `PUT /api/notes` exige `player` avec `comment`. Écran de fin : la zone reprend le commentaire du joueur courant ; ceux des autres s'affichent sous la révélation. |
+| N2 code de sortie | Oui | `_load` écrit sur stderr et sort en 2, comme l'annonce l'en-tête de `cli.py`. |
+| N3 en-tête de `play.ts` | Oui | « keepalive fetch on pagehide ». |
+| N4 puces coupées | Oui | Sous 400 px, `.chips-row` passe à la ligne (`flex-wrap`), sans défilement ni fondu. Capture `S8-tour2/g7-chips-375-after.png` : STEP entière sur une 2e ligne (vérifié aussi à 320 px). |
+| N5 pointillés export / STEP | Oui | Même empilement que le plateau : cases pompées en haut (pointillé bleu, `sil-pump`), exports dessous (pointillé violet). |
+
+**Tests ajoutés**
+- `lab/tests` : `test_each_player_keeps_their_own_comment` (le cas mesuré du rapport : 4 « trop dur » puis 2 sans commentaire), `test_a_comment_before_the_rating_shows_only_to_its_author`, `test_older_single_comments_are_kept` (3 cas de reprise) ; 3 tests existants passés au format par joueur.
+- `solver/tests/test_generate.py` : fichier absent et JSON invalide sortent en 2, message sur stderr.
+- `web/tests/bulletin.test.ts` : colonne pompée et exportée, case pompée au-dessus de l'export.
+
+**Vérifications**
+
+| Commande | Résultat |
+|---|---|
+| `solver/.venv/bin/pytest -q` | 172 verts |
+| `pytest lab/tests -q` | 54 verts (49 + 5) |
+| `npm test` | 380 verts |
+| `npm run typecheck`, `npm run build` | OK |
+| `check_unique.py` | `OK` |
+| `web/scripts/check-ui.mjs` (1280/375/320) | 205/205 |
+| `S8-tour1-A/scripts/lab.mjs` | 24/24 |
+| `S8-tour2/scripts/lab-two-players.mjs` (Chrome, `lab/run.sh`) | 8/8 : Joueur 1 note 4 « trop dur », Joueur 2 note 2 sans commentaire ; `notes.json` garde les deux notes et le commentaire ; Joueur 2 voit « Joueur 1 : trop dur » sous la révélation, sa zone reste vide ; Joueur 1 rejoue, retrouve son texte et le modifie, sa première note reste. |
+
+Données du labo effacées après les deux scripts.

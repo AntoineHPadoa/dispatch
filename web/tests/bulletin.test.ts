@@ -210,6 +210,20 @@ describe('home rendering', () => {
     expect(svg.match(/class="sil-cell/g)).toHaveLength(covered);
   });
 
+  it('a column both pumped and exported: the pumped cell on top, the export under it (review S8 tour 2 N5)', () => {
+    const g7 = grids.find((g) => g.id === 7)!;
+    const c = g7.solution!.step[0]!.pump;
+    const exports = { XX: g7.demand.map((_, i) => (i === c ? 1 : 0)) };
+    const sheet = { ...g7, solution: { ...g7.solution!, exports } } as Grid;
+    const svg = sheetSilhouette(sheet, g7.demand.map(() => 'sun' as const), () => '', '', true);
+    const x = c * 40 + 4;
+    const yOf = (cls: string) => [...svg.matchAll(new RegExp(`class="${cls}" x="${x}" y="([\\d.]+)"`, 'g'))].map((m) => Number(m[1]));
+    const pumped = g7.solution!.step.filter((q) => q.pump === c).length;
+    expect(yOf('sil-pump')).toHaveLength(pumped);
+    expect(yOf('sil-export')).toHaveLength(1);
+    expect(Math.max(...yOf('sil-pump'))).toBeLessThan(yOf('sil-export')[0]!);
+  });
+
   it('an open sheet shows no solution', () => {
     const root = stub();
     renderHome(root, grids, emptyProgress(), '2026-11-21');

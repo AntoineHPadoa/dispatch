@@ -277,6 +277,10 @@ body.print-preview #print-root .a4 { box-shadow: 0 2px 18px rgba(59, 51, 64, .12
 @media screen and (max-width: 520px) { body.print-preview #print-root .a4 { zoom: .43; } }
 /* 210 mm at .36 is 286 px: the sheet keeps a 16 px margin on a 320 px screen. */
 @media screen and (max-width: 380px) { body.print-preview #print-root .a4 { zoom: .36; } }
+/* Phones: the plant chips wrap instead of scrolling, so the last one is never cut off. */
+@media (max-width: 400px) {
+  .chips-row { flex-wrap: wrap; overflow-x: visible; -webkit-mask-image: none; mask-image: none; }
+}
 @media (max-width: 360px) { .tool { padding: 6px 8px; gap: 4px; font-size: .74rem; } }
 
 .board-svg [data-act] { -webkit-tap-highlight-color: transparent; }

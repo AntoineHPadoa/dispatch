@@ -200,12 +200,12 @@ def test_cli_errors_and_strict(tmp_path, capsys):
     """Review B M2: clean errors, --strict exit code, deduce validates, check-published takes ramps."""
     with pytest.raises(SystemExit) as exc:
         cli.main(["check", str(tmp_path / "missing.json")])
-    assert "cannot read" in str(exc.value.code)
+    assert exc.value.code == 2 and "cannot read" in capsys.readouterr().err
     bad = tmp_path / "bad.json"
     bad.write_text("{")
     with pytest.raises(SystemExit) as exc:
         cli.main(["deduce", str(bad), "--id", "1"])
-    assert "not valid JSON" in str(exc.value.code)
+    assert exc.value.code == 2 and "not valid JSON" in capsys.readouterr().err
     g = _fixture("valid-ramp-trap.json")
     path = tmp_path / "grids.json"
     path.write_text(json.dumps([g, {**g, "id": 9}]))
