@@ -8,8 +8,9 @@
  *   reach of every column, so the room above the demand is reserved from the start but drawn empty:
  *   a dashed cell shows only where an export or a pumping has been laid.
  * - Slot clues (price, record, programme name) share one band under the slot hours, aligned on the
- *   columns; a programme's range is a thin bar right under the grid. Each neighbor has a row of cells under the band, headed by its id in a left gutter, and
- *   a tap on a cell exports a block in that slot.
+ *   columns; a programme's range is a thin bar right under the grid. Each neighbor has a row of
+ *   cells under the band, headed by its id in a left gutter, and a tap on a cell exports a block
+ *   in that slot.
  */
 import type { Grid, PieceId } from '../model/grid';
 import {
@@ -110,9 +111,11 @@ function tagsPerColumn(grid: Grid, style: BoardStyle): number[] {
   return t;
 }
 
-
 // ---- slot-clue band under the hours
 const BAND_PITCH = 26;
+/** Gap under the grid for the programme bar: on paper it clears the thick demand contour (3.2 wide). */
+export const barTop = (style: BoardStyle): number => (style === 'B' ? 4 : 1);
+const barDrop = (style: BoardStyle): number => barTop(style) + 3;
 /** Width a pill takes once verified: it grows by 10 for its tick, unless that overflows its slot (tick on the corner). */
 const tickedWidth = (w: number, cell: number): number => (w + 10 > cell - 2 ? w : w + 10);
 
@@ -144,7 +147,7 @@ export interface BandPlan { items: BandItem[]; height: number; /** Shift of the 
  * the next lane, so nothing overlaps whatever the play state. Programmes draw their range as a thin
  * bar under the grid, which pushes the hours and the band down by 4.
  */
-export function bandPlan(grid: Grid, cell: number): BandPlan {
+export function bandPlan(grid: Grid, cell: number, style: BoardStyle = 'A'): BandPlan {
   const X0 = boardLead(grid);
   const xs = (c: number) => X0 + c * cell;
   const minX = X0;
@@ -165,7 +168,9 @@ export function bandPlan(grid: Grid, cell: number): BandPlan {
       raw.push({ kind: 'price', index, label, w, mid, x1, x2 });
     } else if (cl.type === 'column') {
       const narrow = cell < 44;
-      const w = (narrow ? 12 : 16) + Object.keys(cl.counts).length * 20;
+      const count = Object.keys(cl.counts).length;
+      // A single record never outgrows its slot: it keeps 4 units of gap with its neighbours.
+      const w = Math.min((narrow ? 12 : 16) + count * 20, count === 1 ? cell - 4 : Infinity);
       const mid = xs(cl.col) + cell / 2;
       const [x1, x2] = extent(mid, w);
       raw.push({ kind: 'column', index, label: '', w, mid, x1, x2 });
@@ -180,7 +185,7 @@ export function bandPlan(grid: Grid, cell: number): BandPlan {
     }
   });
   const items: BandItem[] = [];
-  const offset = raw.some((r) => r.kind === 'bar') ? 4 : 0;
+  const offset = raw.some((r) => r.kind === 'bar') ? barDrop(style) : 0;
   const ends: number[] = [];
   for (const m of [...raw].sort((a, b) => a.x1 - b.x1 || a.index - b.index)) {
     let lane = ends.findIndex((e) => e + 4 <= m.x1);
@@ -215,7 +220,7 @@ export function boardGeometry(grid: Grid, style: BoardStyle, cell: number): Boar
   const tops = style === 'B' ? res.map(() => rows) : colMax;
   const need = Math.max(0, ...tags.map((k, c) => (k ? k * 22 + 6 - (rows - tops[c]!) * cell : 0)));
   const topPad = Math.max(8, need);
-  const bandHeight = bandPlan(grid, cell).height;
+  const bandHeight = bandPlan(grid, cell, style).height;
   // Export rows (one per neighbor); STEP: chosen from the order book on screen, a row of boxes on paper.
   const bottomRows = grid.neighbors.length + (grid.step && style === 'B' ? 1 : 0);
   const lead = boardLead(grid);
@@ -254,7 +259,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   const { grid, state, ev, style, cell } = input;
   const A = style === 'A';
   const geo = boardGeometry(grid, style, cell);
-  const plan = bandPlan(grid, cell);
+  const plan = bandPlan(grid, cell, style);
   const { n, rows: H, weather } = geo;
   const ink = A ? INK_A : INK_B;
   const soft = A ? SOFT_A : SOFT_B;
@@ -508,7 +513,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       const stroke = st === 'broken' ? BAD : color;
       const [r1, r2] = it.range;
       // A thin bar right under the grid on the programme's range; its name sits in the band.
-      s += `<rect x="${r1}" y="${H * cell + 1}" width="${r2 - r1}" height="4" rx="2" fill="${stroke}"/>`;
+      s += `<rect x="${r1}" y="${H * cell + barTop(style)}" width="${r2 - r1}" height="4" rx="2" fill="${stroke}"/>`;
       const py = bandY + it.top + 3;
       s += pill(it.mid, py, it.w, A ? fill(cl.piece as PieceId) : '#fff', A ? null : ink, (tc) => T(tc, py + 12.5, it.label), st);
     }

@@ -19,9 +19,13 @@ export function printCell(grid: Grid): number {
   // Printable width is about 680 CSS px; keep the board within about 620 px of height.
   const n = grid.columns.length;
   const rows = boardGeometry(grid, 'B', 1).rows;
-  // Under the rectangle: hours, the slot-clue band (about its height at a 48 px cell), the rows of boxes.
-  const below = 3 + grid.neighbors.length + (grid.step ? 1 : 0) + bandPlan(grid, 48).height / 48;
-  return Math.max(26, Math.min(64, Math.floor(660 / n), Math.floor(620 / (rows + below))));
+  // Under the rectangle: hours, the slot-clue band (its height depends on the cell, so two passes), the rows of boxes.
+  const fit = (band: number) => {
+    const below = 3 + grid.neighbors.length + (grid.step ? 1 : 0) + band / 48;
+    return Math.max(26, Math.min(64, Math.floor(660 / n), Math.floor(620 / (rows + below))));
+  };
+  // Second pass: the band height depends on the cell size, so re-estimate it with the first result.
+  return fit(bandPlan(grid, fit(bandPlan(grid, 48, 'B').height), 'B').height);
 }
 
 export function renderSheet(grid: Grid, tutorialIndex: number | null): string {

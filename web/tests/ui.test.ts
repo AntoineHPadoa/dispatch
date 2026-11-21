@@ -818,6 +818,30 @@ describe('board card: fixed layout, price row, export rows', () => {
     expect(laneAt('column', 3)).toBe(laneAt('price', 4));
   });
 
+  it('G7: the 9h record and the 12h price share one line from 30 to 60 px cells', () => {
+    const g7 = byId(7);
+    const item = (type: string, col: number, cell: number) => bandPlan(g7, cell).items.find((it) => {
+      const cl = g7.clues[it.index]!;
+      return cl.type === type && 'col' in cl && cl.col === col;
+    })!;
+    for (let cell = 30; cell <= 60; cell += 2) {
+      const col9 = g7.clues.find((c) => c.type === 'column');
+      expect(col9).toBeTruthy();
+      const rec = item('column', (col9 as { col: number }).col, cell);
+      expect(rec.x2 - rec.x1).toBeLessThanOrEqual(cell - 2);
+      const prices = bandPlan(g7, cell).items.filter((it) => it.kind === 'price');
+      for (const p of prices) if (Math.abs(p.mid - rec.mid) < cell * 4) expect(p.lane).toBe(rec.lane);
+    }
+  });
+
+  it('paper: the programme bar sits clear of the thick demand contour', () => {
+    const g = grids.find((x) => x.clues.some((c) => c.type === 'bar'))!;
+    const svg = renderBoard({ grid: g, state: initialState(g), ev: null, style: 'B', cell: 40 }).svg;
+    const geo = boardGeometry(g, 'B', 40);
+    const m = svg.match(new RegExp(`<rect x="[\\d.]+" y="([\\d.]+)" width="[\\d.]+" height="4" rx="2"`));
+    expect(Number(m![1])).toBeGreaterThanOrEqual(geo.rows * 40 + 3.2 / 2 + 1);
+  });
+
   it('no two clues overlap on any published grid, verified or not, from 30 to 60 px', () => {
     const pills = (svg: string, from: number) => [...svg.matchAll(/<rect x="([\d.-]+)" y="([\d.-]+)" width="([\d.]+)" height="18" rx="9"/g)]
       .map((m) => ({ x1: Number(m[1]), y: Number(m[2]), x2: Number(m[1]) + Number(m[3]) }))
