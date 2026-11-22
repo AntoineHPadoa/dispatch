@@ -1,0 +1,102 @@
+{
+ "lot": "v3-rampe",
+ "kept": 20,
+ "size": 20,
+ "attempts": 67,
+ "rejects": {
+  "too_many_clues": 7,
+  "quota:clue_profile": 6,
+  "quota:family": 22,
+  "quota:mechanics": 1
+ },
+ "rejects_by_family": {
+  "deux_bosses": {
+   "attempts": 4,
+   "too_many_clues": 1
+  },
+  "midi_solaire": {
+   "attempts": 4,
+   "too_many_clues": 1
+  },
+  "nuit_plate": {
+   "attempts": 13,
+   "too_many_clues": 3
+  },
+  "plateau_hiver": {
+   "attempts": 5,
+   "too_many_clues": 1
+  },
+  "pointe_soir": {
+   "attempts": 4
+  },
+  "surplus_midi": {
+   "attempts": 19,
+   "too_many_clues": 1
+  },
+  "vent_nocturne": {
+   "attempts": 7
+  }
+ },
+ "ratings": {
+  "Facile": 3,
+  "Moyen": 11,
+  "Difficile": 2,
+  "Expert": 4
+ },
+ "families": {
+  "deux_bosses": 3,
+  "plateau_hiver": 4,
+  "midi_solaire": 2,
+  "nuit_plate": 3,
+  "pointe_soir": 2,
+  "vent_nocturne": 3,
+  "surplus_midi": 3
+ },
+ "per_mix": {
+  "0": 4,
+  "1": 2,
+  "2": 4,
+  "3": 2,
+  "4": 2,
+  "5": 2,
+  "6": 1,
+  "7": 2,
+  "8": 1
+ },
+ "mechanics": {
+  "ramp:trap inventory:none": 3,
+  "ramp:trap inventory:exact": 4,
+  "neighbors:1 step ramp:trap inventory:none": 1,
+  "neighbors:1 ramp:trap inventory:none": 4,
+  "neighbors:1 ramp:trap inventory:exact": 3,
+  "neighbors:1 step ramp:trap inventory:exact": 1,
+  "neighbors:1 surplus ramp:trap inventory:none": 2,
+  "neighbors:1 surplus ramp:trap inventory:exact": 1,
+  "neighbors:1 co2 ramp:trap inventory:exact": 1
+ },
+ "clue_profiles": {
+  "bar column price": 2,
+  "": 6,
+  "column": 4,
+  "column exchanges price": 3,
+  "column exchanges flow price": 2,
+  "bar column exchanges price": 1,
+  "bar column length price": 1,
+  "bar column exchanges length price": 1
+ },
+ "ramp_grids": 20,
+ "ramp_grids_with_technique": 9,
+ "ramp_grids_with_own_technique": 1,
+ "ramp_techniques": {
+  "ramp_lone": 1,
+  "ramp_plateau": 19,
+  "ramp_relay": 0,
+  "ramp_shoulder": 4
+ },
+ "seconds": 124.4,
+ "seconds_per_kept_grid": 6.2,
+ "workers": 6,
+ "generator": "dispatch-solver 2.0.0",
+ "blocked_ramp": 0,
+ "errors": []
+}

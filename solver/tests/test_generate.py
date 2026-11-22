@@ -273,6 +273,19 @@ def test_duplicates_up_to_a_shift():
     assert q.check(_qgrid("b", 1, [4, 4])) is None
 
 
+def test_duplicate_key_includes_the_weather():
+    """Weather cells are fixed bricks: same residual, different weather steps is a different puzzle."""
+    q = Quotas(4, {"min_per_rating": 0})
+    q.add(_qgrid("a", 1, [3, 4]))
+    sunny = {**_qgrid("b", 1, [5, 4]), "weather": {"R": [2, 0], "F": [0, 0]}}  # residual [3, 4] again
+    assert q.check(sunny) is None
+    q.add(sunny)
+    river = {**_qgrid("c", 1, [6, 5]), "weather": {"R": [2, 0], "F": [1, 1]}}  # residual [3, 4], weather [3, 1]
+    assert q.check(river) is None
+    same = {**_qgrid("d", 1, [6, 5]), "weather": {"R": [2, 0], "F": [0, 0]}}  # sunny shifted up by one
+    assert q.check(same) == "duplicate"
+
+
 def test_small_lot():
     lot = {
         "lot": "t",

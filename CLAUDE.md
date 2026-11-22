@@ -12,7 +12,7 @@ Printable logic puzzle on the power grid: fill the day's demand curve with power
   - `src/data/grids.json` — the published grids: tutorials (coal ramp ones included), then rated grids with a daily bulletin. Never write a grid count anywhere: the lab promotes new ones.
   - `scripts/check_unique.py` (every grid unique, equal to its reference and deducible, with `dispatch_solver`), `scripts/check-ui.mjs` (every grid played in Chrome at 1280/375/320 px, print pages), `scripts/convert-grids.ts` (one-off prototype → §14 converter; refuses to overwrite `grids.json` when ids would be lost).
   - `tests/` — Vitest: grids, engine, place-over, convert, UI logic, lab logic, shared reference grids. Tests select grids by property or id and derive counts: a promotion must not break them.
-- `lab/` — grid lab (the human's creation tool): `lab_server.py` (local JSON API, standard library only), `run.sh` (one launch command), `lots/<lot>.json` (generator configs and quotas), `candidates/<lot>.json` (§14 grids + `lab` block: measures, bulletin draft) and `.stats.json`, `plays.jsonl`, `notes.json`, `players.json`; tests in `lab/tests/`. Page: `web/lab.html` + `web/src/lab/` (dev server only, never in the published build).
+- `lab/` — grid lab (the human's creation tool): `lab_server.py` (local JSON API, standard library only), `run.sh` (one launch command), `lots/<lot>.json` (generator configs and quotas), `candidates/<lot>.json` (§14 grids + `lab` block: measures, bulletin draft) and `.stats.json` (`candidates/archive/`: old lots, hidden and read-only), `plays.jsonl`, `notes.json`, `players.json`; tests in `lab/tests/`. Page: `web/lab.html` + `web/src/lab/` (dev server only, never in the published build).
 - `solver/` — Python package `dispatch_solver` (OR-Tools CP-SAT), §14 native: validator (port of `validateGrid`, same messages), cell-by-cell shapes (rectangles, tall pieces, coal ramps `trap`/`stair` behind a flag), exact solver (uniqueness on the composition), human-deduction solver (§9 techniques, traces, provisional rating), generator (lots with imposed diversity, minimal clues, bulletin drafts), CLI `dispatch-solver`. Design: `docs/next/solver-v2.md`. The old pose-format solver is in `docs/archive/solver-v1/`.
 - `fixtures/grids/` — shared reference grids (valid, invalid, unpublishable, each with `expect`), played by pytest and by `web/tests/reference.test.ts`; rebuilt by `solver/scripts/build_fixtures.py`.
 - `docs/next/` — current designs: `brief.md` (v2 brief), `solver-v2.md` (solver and generator), `rampe.md` + `rampe/` (coal ramp study and its grids).
@@ -38,8 +38,8 @@ uv sync                   # creates .venv
 .venv/bin/dispatch-solver check ../web/src/data/grids.json --id 7   # validity, compositions, deduction, rating (--strict: exit 1 unless publishable)
 .venv/bin/dispatch-solver deduce ../web/src/data/grids.json --id 11 # deduction trace (--index N for a lab candidate)
 .venv/bin/dispatch-solver check-published                           # every published grid, like check_unique.py
-.venv/bin/dispatch-solver generate ../lab/lots/demo-01.json         # fill a lot into lab/candidates/ (--out another folder)
-.venv/bin/python scripts/rerate_lots.py ../lab/candidates/demo-01.json   # re-rate a lot after a deduction change
+.venv/bin/dispatch-solver generate ../lab/lots/v3-jouer-a.json --out /tmp/lot-try   # fill a lot (default lab/candidates/; refuses an archived name)
+.venv/bin/python scripts/rerate_lots.py ../lab/candidates/v3-jouer-a.json   # re-rate a lot after a deduction change
 .venv/bin/python scripts/build_fixtures.py                          # rebuild fixtures/grids/ after a solver change, review the diff
 ```
 

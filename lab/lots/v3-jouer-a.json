@@ -1,0 +1,73 @@
+{
+ "lot": "v3-jouer-a",
+ "size": 20,
+ "seed": 1101,
+ "max_attempts": 1800,
+ "comment": "Play lot A: no ramp (playable in the lab), mixed mechanics and silhouettes, at least 3 grids per rating. Weather cells are fixed bricks (v3 rule).",
+ "mix": [
+  {
+   "weight": 3,
+   "cols": 8,
+   "neighbors": 1
+  },
+  {
+   "weight": 2,
+   "cols": 8,
+   "step": 1,
+   "neighbors": 1
+  },
+  {
+   "weight": 2,
+   "cols": 12,
+   "neighbors": 2,
+   "co2_cap": "auto"
+  },
+  {
+   "weight": 2,
+   "cols": 8,
+   "pieces": "NCGT",
+   "tall": true,
+   "neighbors": 1
+  },
+  {
+   "weight": 1,
+   "cols": 12,
+   "pieces": "NBCGT",
+   "surplus": true,
+   "neighbors": 1
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "pieces": "NBGT",
+   "stock": 2
+  },
+  {
+   "weight": 1,
+   "cols": 6,
+   "inventory": "exact",
+   "neighbors": 1
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "clue_types": [
+    "length",
+    "column",
+    "price"
+   ]
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "neighbors": 3
+  }
+ ],
+ "quotas": {
+  "max_same_family": 3,
+  "max_same_mechanics": 3,
+  "max_same_clue_profile": 4,
+  "min_per_rating": 3,
+  "min_per_mix": 1
+ }
+}

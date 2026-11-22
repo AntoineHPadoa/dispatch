@@ -1,0 +1,76 @@
+{
+ "lot": "v3-jouer-b",
+ "size": 20,
+ "seed": 1202,
+ "max_attempts": 1800,
+ "comment": "Play lot B: no ramp, more neighbours, STEP and CO2 cap, at least 3 grids per rating. Weather cells are fixed bricks (v3 rule).",
+ "mix": [
+  {
+   "weight": 2,
+   "cols": 8,
+   "neighbors": 2
+  },
+  {
+   "weight": 2,
+   "cols": 12,
+   "step": 1,
+   "neighbors": 1
+  },
+  {
+   "weight": 2,
+   "cols": 8,
+   "co2_cap": "auto",
+   "neighbors": 1
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "step": 2,
+   "neighbors": 2
+  },
+  {
+   "weight": 2,
+   "cols": 12,
+   "pieces": "NCGT",
+   "tall": true
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "pieces": "NBCGT",
+   "surplus": true,
+   "neighbors": 2
+  },
+  {
+   "weight": 1,
+   "cols": 6,
+   "neighbors": 1,
+   "clue_types": [
+    "flow",
+    "bar",
+    "column",
+    "exchanges"
+   ]
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "inventory": "exact",
+   "pieces": "NCGT"
+  },
+  {
+   "weight": 1,
+   "cols": 12,
+   "pieces": "NBGT",
+   "stock": 3,
+   "neighbors": 1
+  }
+ ],
+ "quotas": {
+  "max_same_family": 3,
+  "max_same_mechanics": 3,
+  "max_same_clue_profile": 4,
+  "min_per_rating": 3,
+  "min_per_mix": 1
+ }
+}

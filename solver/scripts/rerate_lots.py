@@ -6,7 +6,7 @@
 - Prints one line per grid whose rating changed and every grid that is no longer publishable
   (not unique, blocked, or a clue became useless). Such grids are kept and flagged in `lab.recheck`.
 
-Usage (from solver/): .venv/bin/python scripts/rerate_lots.py ../lab/candidates/nuit-jouer-a.json [...]
+Usage (from solver/): .venv/bin/python scripts/rerate_lots.py ../lab/candidates/v3-jouer-a.json [...]
 """
 
 from __future__ import annotations

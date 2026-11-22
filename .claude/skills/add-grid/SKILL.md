@@ -13,8 +13,8 @@ The game reads `web/src/data/grids.json`: a list of grids in the §14 format (`G
 
    ```bash
    cd ../solver
-   .venv/bin/dispatch-solver generate ../lab/lots/demo-01.json            # lab/candidates/demo-01.json + .stats.json
-   .venv/bin/dispatch-solver check ../lab/candidates/demo-01.json --index 3 --strict   # one candidate (index from 0 = lab.index)
+   .venv/bin/dispatch-solver generate ../lab/lots/<new-lot>.json         # lab/candidates/<new-lot>.json + .stats.json (a lot name is never reused)
+   .venv/bin/dispatch-solver check ../lab/candidates/v3-jouer-a.json --index 3 --strict   # one candidate (index from 0 = lab.index)
    ```
 
    A lot (`lab/lots/*.json`) mixes configurations (`cols` 6, 8 or 12, `neighbors`, `step`, `ramp`, `tall`, `surplus`, `co2_cap`, `stock`, `inventory`, `clue_types`, `rating`) under diversity quotas; see `solver/src/dispatch_solver/generate/lot.py`. After a change to the deduction, re-rate existing lots with `solver/scripts/rerate_lots.py`.

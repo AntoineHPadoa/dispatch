@@ -1,0 +1,120 @@
+{
+ "lot": "v3-jouer-c",
+ "kept": 20,
+ "size": 20,
+ "attempts": 224,
+ "rejects": {
+  "one_plant": 60,
+  "trivial": 20,
+  "quota:family": 17,
+  "too_many_clues": 13,
+  "quota:mechanics": 43,
+  "quota:mix": 6,
+  "quota:clue_profile": 26,
+  "quota:rating": 8
+ },
+ "rejects_by_family": {
+  "deux_bosses": {
+   "attempts": 8,
+   "one_plant": 1
+  },
+  "midi_solaire": {
+   "attempts": 4
+  },
+  "nuit_plate": {
+   "attempts": 12,
+   "too_many_clues": 2,
+   "one_plant": 2
+  },
+  "plateau_hiver": {
+   "attempts": 88,
+   "one_plant": 33,
+   "trivial": 20,
+   "too_many_clues": 3
+  },
+  "pointe_soir": {
+   "attempts": 15,
+   "one_plant": 4,
+   "too_many_clues": 1
+  },
+  "surplus_midi": {
+   "attempts": 30,
+   "one_plant": 15,
+   "too_many_clues": 2
+  },
+  "vent_nocturne": {
+   "attempts": 56,
+   "one_plant": 5,
+   "too_many_clues": 5
+  }
+ },
+ "ratings": {
+  "Facile": 9,
+  "Moyen": 5,
+  "Difficile": 3,
+  "Expert": 3
+ },
+ "families": {
+  "vent_nocturne": 3,
+  "pointe_soir": 3,
+  "midi_solaire": 3,
+  "surplus_midi": 3,
+  "deux_bosses": 3,
+  "nuit_plate": 3,
+  "plateau_hiver": 2
+ },
+ "per_mix": {
+  "0": 1,
+  "1": 1,
+  "2": 3,
+  "3": 6,
+  "4": 1,
+  "5": 1,
+  "6": 3,
+  "7": 2,
+  "8": 2
+ },
+ "mechanics": {
+  "neighbors:1 inventory:exact": 3,
+  "inventory:none": 2,
+  "step tall inventory:none": 1,
+  "step co2 inventory:none": 3,
+  "neighbors:1 inventory:none": 2,
+  "neighbors:1 surplus inventory:none": 1,
+  "neighbors:1 step surplus co2 inventory:none": 1,
+  "neighbors:1 stock inventory:none": 1,
+  "neighbors:1 stock inventory:exact": 1,
+  "step co2 inventory:exact": 2,
+  "neighbors:2 surplus inventory:exact": 1,
+  "neighbors:4 inventory:exact": 2
+ },
+ "clue_profiles": {
+  "": 4,
+  "bar column": 1,
+  "column": 5,
+  "bar column exchanges": 1,
+  "bar exchanges price": 1,
+  "bar column exchanges price": 1,
+  "exchanges": 2,
+  "column exchanges flow": 1,
+  "bar price": 1,
+  "bar column exchanges flow price": 1,
+  "flow": 1,
+  "column flow": 1
+ },
+ "ramp_grids": 0,
+ "ramp_grids_with_technique": 0,
+ "ramp_grids_with_own_technique": 0,
+ "ramp_techniques": {
+  "ramp_lone": 0,
+  "ramp_plateau": 0,
+  "ramp_relay": 0,
+  "ramp_shoulder": 0
+ },
+ "seconds": 77.4,
+ "seconds_per_kept_grid": 3.9,
+ "workers": 6,
+ "generator": "dispatch-solver 2.0.0",
+ "blocked_ramp": 0,
+ "errors": []
+}

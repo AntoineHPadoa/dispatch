@@ -9,11 +9,11 @@
 
 Examples (from solver/):
   .venv/bin/dispatch-solver check ../web/src/data/grids.json --id 7
-  .venv/bin/dispatch-solver check ../lab/candidates/demo-01.json --index 0 --strict
+  .venv/bin/dispatch-solver check ../lab/candidates/v3-jouer-a.json --index 0 --strict
   .venv/bin/dispatch-solver deduce ../web/src/data/grids.json --id 11 --max-level 2
   .venv/bin/dispatch-solver check-published
-  .venv/bin/dispatch-solver generate ../lab/lots/demo-01.json --workers 6
-  .venv/bin/dispatch-solver bulletin ../lab/candidates/demo-01.json --index 2
+  .venv/bin/dispatch-solver generate ../lab/lots/demo-01.json --out /tmp/lot-try --workers 6
+  .venv/bin/dispatch-solver bulletin ../lab/candidates/v3-jouer-a.json --index 2
 """
 
 from __future__ import annotations
@@ -150,6 +150,9 @@ def _generate(a: argparse.Namespace) -> int:
         print("invalid lot:\n" + "\n".join(f"- {e}" for e in errors), file=sys.stderr)
         return 2
     out = Path(a.out)
+    if (out / "archive" / f"{lot['lot']}.json").exists():
+        print(f"invalid lot: {lot['lot']} is archived in {out / 'archive'}: a lot name is never reused", file=sys.stderr)
+        return 2
     out.mkdir(parents=True, exist_ok=True)
     grids, extra = run_lot(lot, workers=a.workers, log=lambda m: print(m, file=sys.stderr, flush=True))
     name = lot["lot"]
