@@ -21,7 +21,8 @@
   missing Difficile or Expert aims at the entries able to give a coupled global mechanic) and at the mix
   entries able to give a type under its floor; while max_demand_price is not reached, half the draws seed
   a demand price;
-  finished grids refused by a reservation (rating, mix, type floor) wait in a reserve.
+  finished grids refused by a reservation (rating, mix, type floor) wait in a reserve; a draw longer than
+  ATTEMPT_SECONDS is the reject `timeout` (config and seed in stats.errors).
 
 Example: grids, stats = run_lot(json.load(open("lab/lots/demo-01.json")))
 """
@@ -29,12 +30,15 @@ Example: grids, stats = run_lot(json.load(open("lab/lots/demo-01.json")))
 from __future__ import annotations
 
 import copy
+import faulthandler
 import json
 import random
 import re
+import signal
 import time
 from collections import deque
 from concurrent.futures import Future, ProcessPoolExecutor
+from concurrent.futures import TimeoutError as FutureTimeout
 from typing import Any
 
 from .. import __version__, exact
@@ -96,6 +100,11 @@ TYPE_QUOTAS = ("max_with_type", "min_with_type")
 QUOTA_ALIASES = {"max_same_silhouette": "max_same_family"}
 LOT_KEYS = ("lot", "size", "seed", "mix", "quotas", "max_attempts", "comment")
 CLUE_TYPES = ("price", "column", "flow", "bar", "length", "exchanges")
+# A draw past ATTEMPT_SECONDS is the reject `timeout`: the worker raises it (Python code), or, when the draw is stuck
+# in native code, the lot stops waiting for it after HEAD_SECONDS at the head of the ordered queue, and the
+# worker dumps its stack to stderr. A stuck worker is terminated at the end of the lot.
+ATTEMPT_SECONDS = 300
+HEAD_SECONDS = 2 * ATTEMPT_SECONDS
 RAMP_WIDTHS = {("trap", 6): [3], ("trap", 8): [3, 4, 5], ("trap", 12): [3, 4, 5, 6], "stair": [2, 3, 4]}
 
 
@@ -441,11 +450,26 @@ def _attempt(
     """One draw in a worker process; any error is a named reject, it never stops the lot."""
     cfg, seed, aim = args
     exact.NUM_WORKERS = 1
+
+    def expire(_signum: int, _frame: Any) -> None:
+        raise TimeoutError(f"draw longer than {ATTEMPT_SECONDS} s")
+
+    timed = ATTEMPT_SECONDS and hasattr(signal, "SIGALRM")
+    if timed:
+        signal.signal(signal.SIGALRM, expire)
+        signal.alarm(ATTEMPT_SECONDS)
+        faulthandler.dump_traceback_later(ATTEMPT_SECONDS + 30)
     try:
         return make_candidate(cfg, seed, aim)
+    except TimeoutError as exc:
+        return None, "timeout", {"seed": seed, "family": cfg.get("family", "any"), "error": str(exc)}
     except Exception as exc:  # noqa: BLE001 - one bad draw must not lose the lot
         family = "surplus_midi" if cfg.get("surplus") else cfg.get("family", "any")  # as drawn, before draw_day
         return None, f"error:{type(exc).__name__}", {"seed": seed, "family": family, "error": str(exc)[:200]}
+    finally:
+        if timed:
+            signal.alarm(0)
+            faulthandler.cancel_dump_traceback_later()
 
 
 def _signatures(g: dict[str, Any]) -> set[tuple[Any, ...]]:
@@ -719,41 +743,52 @@ def run_lot(lot: dict[str, Any], workers: int = 6, log: Any = None) -> tuple[lis
             )
 
     pending: deque[tuple[Future, dict[str, Any], int, int]] = deque()
-    with ProcessPoolExecutor(max_workers=workers) as pool:
-        try:
-            while len(kept) < size and (pending or attempts < max_attempts):
-                while len(pending) < workers * 2 and attempts < max_attempts:
-                    cfg, seed, mi, aim = _draw(rng, mix, weights, quotas)
-                    pending.append((pool.submit(_attempt, (cfg, seed, aim)), cfg, seed, mi))
-                    attempts += 1
-                fut, cfg, seed, mi = pending.popleft()  # accepted in draw order: same lot for the same seed
-                g, reason, info = fut.result()
-                fam = by_family.setdefault(info.get("family", "?"), {"attempts": 0})
-                fam["attempts"] += 1
-                if reason is not None:
-                    fkey = reason.split(":")[0] if reason.startswith(("invalid", "error")) else reason
-                    fam[fkey] = fam.get(fkey, 0) + 1
-                if g is not None:
-                    g["lab"]["mix"] = mi
-                    reason = quotas.check(g)
-                    if reason in ("quota:rating", "quota:mix", "quota:type_floor"):
-                        reserve.append(g)
-                if reason is None and len(kept) < size:
-                    accept(g)
-                    for h in list(reserve):  # a slot reserved for a rating may have been filled
-                        if len(kept) < size and quotas.check(h) is None:
-                            reserve.remove(h)
-                            accept(h)
-                elif reason is not None:
-                    key = reason.split(":")[0] if reason.startswith(("invalid", "error")) else reason
-                    rejects[key] = rejects.get(key, 0) + 1
-                    if reason.startswith("error") and len(errors_seen) < 20:
-                        errors_seen.append({"config": cfg, "seed": seed, "error": f"{reason}: {info.get('error')}"})
-                    if reason == "blocked" and info.get("grid") is not None:
-                        blocked.append({"config": cfg, "seed": seed, "grid": info["grid"]})
-        finally:
-            for fut, *_ in pending:
-                fut.cancel()
+    stuck = 0
+    pool = ProcessPoolExecutor(max_workers=workers)
+    try:
+        while len(kept) < size and (pending or attempts < max_attempts):
+            while len(pending) < workers * 2 and attempts < max_attempts:
+                cfg, seed, mi, aim = _draw(rng, mix, weights, quotas)
+                pending.append((pool.submit(_attempt, (cfg, seed, aim)), cfg, seed, mi))
+                attempts += 1
+            fut, cfg, seed, mi = pending.popleft()  # accepted in draw order: same lot for the same seed
+            try:
+                g, reason, info = fut.result(timeout=HEAD_SECONDS if ATTEMPT_SECONDS else None)
+            except FutureTimeout:
+                stuck += 1
+                g, reason = None, "timeout"
+                info = {"seed": seed, "family": cfg.get("family", "any"), "error": f"no result after {HEAD_SECONDS} s"}
+            fam = by_family.setdefault(info.get("family", "?"), {"attempts": 0})
+            fam["attempts"] += 1
+            if reason is not None:
+                fkey = reason.split(":")[0] if reason.startswith(("invalid", "error")) else reason
+                fam[fkey] = fam.get(fkey, 0) + 1
+            if g is not None:
+                g["lab"]["mix"] = mi
+                reason = quotas.check(g)
+                if reason in ("quota:rating", "quota:mix", "quota:type_floor"):
+                    reserve.append(g)
+            if reason is None and len(kept) < size:
+                accept(g)
+                for h in list(reserve):  # a slot reserved for a rating may have been filled
+                    if len(kept) < size and quotas.check(h) is None:
+                        reserve.remove(h)
+                        accept(h)
+            elif reason is not None:
+                key = reason.split(":")[0] if reason.startswith(("invalid", "error")) else reason
+                rejects[key] = rejects.get(key, 0) + 1
+                if reason.startswith(("error", "timeout")) and len(errors_seen) < 20:
+                    errors_seen.append({"config": cfg, "seed": seed, "error": f"{reason}: {info.get('error')}"})
+                if reason == "blocked" and info.get("grid") is not None:
+                    blocked.append({"config": cfg, "seed": seed, "grid": info["grid"]})
+    finally:
+        for fut, *_ in pending:
+            fut.cancel()
+        procs = list((pool._processes or {}).values())  # no public way to stop a stuck worker
+        pool.shutdown(wait=not stuck, cancel_futures=True)
+        if stuck:
+            for proc in procs:
+                proc.terminate()
     ramp = [g for g in kept if any(m.startswith("ramp:") for m in g["lab"]["mechanics"])]
     stats = {
         "lot": lot["lot"],

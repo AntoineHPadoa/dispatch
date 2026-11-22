@@ -3,7 +3,7 @@
  "size": 20,
  "seed": 5202,
  "max_attempts": 4000,
- "comment": "Play lot B, generator v3-gen-4: mix and quotas of v3g3-jouer-b (more STEP, longer days), plus the two fixes of the v3g3 review: an entry with neighbors keeps one; at most 2 grids per mix entry, at most 5 grids (1/4) on 12 slots.",
+ "comment": "Play lot B, generator v3-gen-4: mix and quotas of v3g3-jouer-b (more STEP, longer days), plus the two fixes of the v3g3 review: an entry with neighbors keeps one; at most 2 grids per mix entry, at most 5 grids (1/4) on 12 slots. Exchange ceiling raised from 10 to 12: with at most 2 grids per entry, the last slots only had entries giving an exchange or a coupled global, both at their ceiling (lot stalled at 18/20 for 30 min).",
  "mix": [
   {
    "weight": 2,
@@ -90,7 +90,7 @@
   "max_same_clue_profile": 4,
   "max_same_single_decision": 6,
   "max_with_type": {
-   "exchange": 10,
+   "exchange": 12,
    "coupled": 6
   },
   "min_with_type": {

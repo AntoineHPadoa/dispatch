@@ -525,3 +525,17 @@ def test_a_ramp_given_by_a_clue_is_no_decision():
         h = {**g, "clues": g["clues"] + [clue]}
         r = deduce(h)
         assert r.solved and decisions(h, r.steps).get("ramp", 0) == n - 1
+
+
+def test_a_long_draw_is_a_timeout_reject(monkeypatch):
+    """A draw past ATTEMPT_SECONDS is the named reject `timeout`, never a lot stuck behind it."""
+    import time
+
+    from dispatch_solver.generate import lot as lot_module
+
+    monkeypatch.setattr(lot_module, "ATTEMPT_SECONDS", 1)
+    monkeypatch.setattr(lot_module, "make_candidate", lambda *a: time.sleep(5))
+    t0 = time.perf_counter()
+    g, why, info = _attempt(({"cols": 8}, 1, None))
+    assert g is None and why == "timeout" and "1 s" in info["error"]
+    assert time.perf_counter() - t0 < 4
