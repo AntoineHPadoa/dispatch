@@ -312,3 +312,10 @@ body.print-preview #print-root .a4 { box-shadow: 0 2px 18px rgba(59, 51, 64, .12
 @media (max-width: 360px) { .tool { padding: 6px 8px; gap: 4px; font-size: .74rem; } }
 
 .board-svg [data-act] { -webkit-tap-highlight-color: transparent; }
+/* Record marker (phones): a button that jumps to its publication, which flashes once reached. */
+.board-svg .record-marker.act { cursor: pointer; outline: none; }
+.board-svg .record-marker:focus-visible rect:nth-child(2) { stroke: var(--accent); stroke-width: 2; }
+.clue:focus { outline: none; }
+.clue.flash { animation: clue-flash 1.8s ease-out; border-radius: 10px; }
+@keyframes clue-flash { 0%, 55% { background: #ece3f5; box-shadow: 0 0 0 6px #ece3f5; } 100% { background: transparent; box-shadow: 0 0 0 6px transparent; } }
+@media (prefers-reduced-motion: reduce) { .clue.flash { animation-duration: .01s; } }

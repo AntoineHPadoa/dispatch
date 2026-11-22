@@ -545,10 +545,26 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       else stepTap(col);
     }
     else if (el.getAttribute('data-act') === 'locked') say(UI.lockedTap(columnLabel(grid, col)), 'info');
+    else if (el.getAttribute('data-act') === 'record-jump') { jumpToClue(el.getAttribute('data-clue') ?? ''); return; }
     let again: HTMLElement | SVGElement | null = scroll.querySelector<SVGElement>(`[data-act="${el.getAttribute('data-act')}"][data-col="${col}"]${el.getAttribute('data-country') ? `[data-country="${el.getAttribute('data-country')}"]` : ''}`);
     // The arrows vanish once the pair is laid: keep the keyboard focus on the new ▼ tag, else on the board.
     if (!again && el.getAttribute('data-act') === 'step-arrow') again = scroll.querySelector<SVGElement>(`[data-act="step-tag"][data-col="${col}"]`) ?? wrap;
     if (again && document.activeElement !== again && el === document.activeElement) again.focus();
+  }
+
+  /** Scroll to a publication of the clue card, focus it (keyboard and screen readers follow) and flash it. */
+  function jumpToClue(index: string) {
+    const li = root.querySelector<HTMLElement>(`li.clue[data-clue="${index}"]`);
+    if (!li) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    li.tabIndex = -1;
+    li.focus({ preventScroll: true });
+    // A touch tap focuses the marker after pointerup (compatibility mouse events): focus again next frame.
+    requestAnimationFrame(() => li.focus({ preventScroll: true }));
+    li.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+    li.classList.remove('flash');
+    void li.offsetWidth;
+    li.classList.add('flash');
   }
 
   // ---- keyboard
@@ -560,8 +576,9 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       const country = act.getAttribute('data-country');
       const key = `[data-act="${act.getAttribute('data-act')}"][data-col="${act.getAttribute('data-col')}"]${country ? `[data-country="${country}"]` : ''}`;
       activate(act);
-      // The board is redrawn: focus the same control again (same neighbor for an export pill).
-      scroll.querySelector<SVGElement>(key)?.focus();
+      // A record marker moved the focus to its publication; anything else: the board is redrawn,
+      // focus the same control again (same neighbor for an export pill).
+      if (act.getAttribute('data-act') !== 'record-jump') scroll.querySelector<SVGElement>(key)?.focus();
       return;
     }
     if (e.target !== wrap) return;

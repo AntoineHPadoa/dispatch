@@ -1003,6 +1003,39 @@ describe('board card: fixed layout, price row, export rows', () => {
     expect(svg).not.toMatch(/height="21" rx="10.5"/);
   });
 
+  it('phone records: several plants fold to a marker under 48 px cells that jumps to its publication; one plant stays in clear', () => {
+    const g = structuredClone(byId(7));
+    const col = g.columns.length - 2;
+    g.clues = [...g.clues, { type: 'column', col, counts: { N: 1, G: 2 } }, { type: 'column', col: 1, counts: { N: 1 } }];
+    const many = g.clues.length - 2;
+    const one = g.clues.length - 1;
+    for (const cell of [30, 36, 44, 47]) {
+      const plan = bandPlan(g, cell);
+      expect(plan.items.find((it) => it.index === many)!.marker).toBe(true);
+      expect(plan.items.find((it) => it.index === one)!.marker).toBeFalsy();
+      const s0 = initialState(g);
+      const { svg } = renderBoard({ grid: g, state: s0, ev: evaluate(g, s0), style: 'A', cell, interactive: true });
+      const marker = svg.match(/<g class="tag record-marker act"[^>]*>/g) ?? [];
+      expect(marker.length).toBe(1);
+      expect(marker[0]).toContain(`data-act="record-jump"`);
+      expect(marker[0]).toContain(`data-clue="${many}"`);
+      expect(marker[0]).toContain('role="button"');
+      expect(marker[0]).toContain('tabindex="0"');
+      expect(marker[0]).toContain(`aria-label="${UI.recordJump(g.columns[col]!)}"`);
+    }
+    // 48 px and more, desktop chips and paper keep the record drawn in full.
+    expect(bandPlan(g, 48).items.some((it) => it.marker)).toBe(false);
+    expect(bandPlan(g, 30, 'A', true).items.some((it) => it.marker)).toBe(false);
+    expect(bandPlan(g, 30, 'B').items.some((it) => it.marker)).toBe(false);
+    // The marker's hit area stays in the band, under the hours: a press on the grid never reaches it.
+    const { svg, geo } = renderBoard({ grid: g, state: initialState(g), ev: null, style: 'A', cell: 36, interactive: true });
+    const hit = svg.match(/<rect class="hit" x="[\d.-]+" y="([\d.-]+)"/)!;
+    expect(Number(hit[1])).toBeGreaterThan(geo.rows * 36 + 14);
+    // The publication carries the clue index the marker points to.
+    const cards = renderClues(g, evaluate(g, initialState(g)).clues, initialState(g));
+    expect(cards).toContain(`<li class="clue" data-clue="${many}">`);
+  });
+
   it('desktop records: bare chips centred on the slot, wrapped past their slot, apart from every other clue', () => {
     const rec = recordLayout({ N: 2, G: 1, T: 1 }, 60);
     expect(new Set(rec.chips.map((c) => c.dy))).toEqual(new Set([0]));
