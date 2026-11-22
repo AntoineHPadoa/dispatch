@@ -266,6 +266,14 @@ function isIntArray(v: unknown, n: number): v is number[] {
   return Array.isArray(v) && v.length === n && v.every(isInt);
 }
 
+/** STEP pairs published by the grid (exact inventory or exchanges clue), or null when to deduce. */
+export function publishedStepPairs(grid: Grid): number | null {
+  if (!grid.step) return null;
+  if (grid.inventory.step !== undefined) return grid.inventory.step;
+  for (const c of grid.clues) if (c.type === 'exchanges' && c.step !== undefined) return c.step;
+  return null;
+}
+
 /** Validate the structure of a grid (§14). Error messages are developer-facing (English). */
 export function validateGrid(raw: unknown): ValidationResult {
   const errors: string[] = [];

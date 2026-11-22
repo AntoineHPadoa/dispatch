@@ -1,6 +1,7 @@
 /*
  * Player progress, kept in localStorage when it is available (pure logic + a guarded store).
- * - Per grid: status (started, done), the saved board and the time spent.
+ * - Per grid: status (started, done), the saved board, the time spent and a fingerprint of the grid:
+ *   a board saved for another version of a grid (same id) is not replayed (savedBoard).
  * - Every storage access is wrapped in try/catch: the game works without storage.
  */
 import { currentBulletin, localIsoDate } from '../model/bulletin';
@@ -14,6 +15,22 @@ export interface GridProgress {
   state?: PlayState;
   /** Time spent on the grid, in milliseconds. */
   elapsedMs?: number;
+  /** gridFingerprint() of the grid the board was saved on (absent in older saves). */
+  fp?: string;
+}
+
+/** Hash of what a board depends on (slots, demand, pieces, weather, neighbors, inventory, clues). */
+export function gridFingerprint(grid: Grid): string {
+  const key = JSON.stringify([grid.columns, grid.demand, grid.pieces, grid.weather, grid.neighbors, grid.step, grid.inventory, grid.clues]);
+  let h = 5381;
+  for (let i = 0; i < key.length; i++) h = ((h * 33) ^ key.charCodeAt(i)) >>> 0;
+  return h.toString(36);
+}
+
+/** The saved board of a grid, unless it was saved on another version of that grid. */
+export function savedBoard(entry: GridProgress | undefined, grid: Grid): PlayState | undefined {
+  if (!entry?.state) return undefined;
+  return entry.fp === undefined || entry.fp === gridFingerprint(grid) ? entry.state : undefined;
 }
 
 export interface Progress {
@@ -57,6 +74,7 @@ export function parseProgress(raw: string | null): Progress {
     const entry: GridProgress = { status: g.status };
     if (isPlayState(g.state)) entry.state = g.state;
     if (typeof g.elapsedMs === 'number' && Number.isFinite(g.elapsedMs) && g.elapsedMs >= 0) entry.elapsedMs = g.elapsedMs;
+    if (typeof g.fp === 'string') entry.fp = g.fp;
     grids[id] = entry;
   }
   return { grids };
@@ -67,10 +85,10 @@ export function statusOf(p: Progress, gridId: number): GridStatus {
 }
 
 /** Record a board change. A finished grid stays finished. */
-export function recordState(p: Progress, gridId: number, state: PlayState, elapsedMs: number, solved: boolean): Progress {
+export function recordState(p: Progress, gridId: number, state: PlayState, elapsedMs: number, solved: boolean, fp?: string): Progress {
   const prev = p.grids[String(gridId)];
   const status = solved || prev?.status === 'done' ? 'done' : 'started';
-  return { grids: { ...p.grids, [String(gridId)]: { status, state, elapsedMs } } };
+  return { grids: { ...p.grids, [String(gridId)]: { status, state, elapsedMs, ...(fp ? { fp } : {}) } } };
 }
 
 /** Guarded access to a store: reads and writes never throw. */

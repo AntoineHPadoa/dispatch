@@ -53,7 +53,7 @@ export async function renderList(root: HTMLElement, ctx: LabCtx): Promise<() => 
     const felt = feltAverage(c.felt);
     return `<tr class="lab-row${c.index === sel ? ' sel' : ''}" data-i="${c.index}"><td>${displayNumber(c.index)}</td><td class="lab-sil">${silhouetteSvg(c.silhouette)}</td>`
       + `<td>${esc(c.family ?? '')}</td><td class="num">${c.cols}</td><td class="num">${c.revealed ? `<b>${c.rating ?? '?'}</b>` : HIDDEN}</td><td class="num">${c.clues}</td>`
-      + `<td class="num">${c.revealed ? (c.trace_summary.steps ?? '') : HIDDEN}</td><td>${c.mechanics.map((m) => chip(m)).join(' ')}</td>`
+      + `<td class="num">${c.revealed ? (c.trace_summary.steps ?? '') : HIDDEN}</td><td class="lab-wrap">${c.mechanics.map((m) => chip(m)).join(' ')}</td>`
       + `<td class="lab-wrap">${c.revealed ? c.techniques.map(techChip).join(' ') : HIDDEN}</td>`
       + `<td>${c.plays ? chip(`${c.plays}`, 'ok') : '<span class="lab-note">non jouée</span>'}</td>`
       + `<td class="num">${c.revealed ? (felt === null ? '' : felt.toFixed(1)) : HIDDEN}</td>`
@@ -66,13 +66,13 @@ export async function renderList(root: HTMLElement, ctx: LabCtx): Promise<() => 
     const mine = plays.filter((p) => p.index === c.index);
     const byPlayer = ctx.players.map((p) => {
       const s = playStats(mine.filter((x) => x.player === p));
-      const games = `${s.games} partie${s.games > 1 ? 's' : ''}`;
-      return `<dt>${esc(p)}</dt><dd>${!s.games ? 'aucune' : s.masked ? `${games} (détails après ta note)` : `${games}, ${s.solved} résolue${s.solved > 1 ? 's' : ''}${s.medianMs !== null ? `, ${formatDuration(s.medianMs)}` : ''}${c.felt[p] ? `, perçue ${c.felt[p]}` : ''}`}</dd>`;
+      const games = `${s.games} partie${s.games > 1 ? 's' : ''}${s.replays ? ` (+ ${s.replays} rejeu${s.replays > 1 ? 'x' : ''})` : ''}`;
+      return `<dt>${esc(p)}</dt><dd>${!s.games && !s.replays ? 'aucune' : s.masked ? `${games} (détails après ta note)` : `${games}, ${s.solved} résolue${s.solved > 1 ? 's' : ''}${s.medianMs !== null ? `, ${formatDuration(s.medianMs)}` : ''}${c.felt[p] ? `, perçue ${c.felt[p]}` : ''}`}</dd>`;
     }).join('');
     return `<h3>Candidate ${displayNumber(c.index)}</h3><div class="lab-big">${silhouetteSvg(c.silhouette, 10, 10)}</div>`
       + `<dl class="lab-kv"><dt>Famille</dt><dd>${esc(c.family ?? '')}</dd><dt>Créneaux</dt><dd>${c.cols}</dd><dt>Note solveur</dt><dd>${c.revealed ? (c.rating ?? '?') : '🔒 après ta note'}</dd>`
-      + `<dt>Indices</dt><dd>${c.clues} (${esc(c.clue_profile.join(', '))})</dd>${byPlayer}</dl>`
-      + `<div class="lab-actions">${c.playable ? `<button type="button" class="lab-btn pri" data-play="${c.index}">Jouer à l'aveugle</button>` : '<span class="lab-note">Rampe : pas encore jouable dans le jeu.</span>'}`
+      + `<dt>Indices</dt><dd>${c.clues}${c.clue_profile.length ? ` (${esc(c.clue_profile.join(', '))})` : ''}</dd>${byPlayer}</dl>`
+      + `<div class="lab-actions">${c.playable ? `<button type="button" class="lab-btn pri" data-play="${c.index}">Jouer à l'aveugle</button>` : '<span class="lab-note">Escalier : pas encore jouable dans le jeu.</span>'}`
       + `<button type="button" class="lab-btn" data-star="${c.index}">${c.kept ? '★ Gardée' : '☆ Garder'}</button></div>`
       + (c.promoted ? `<p class="lab-note">Promue : grille ${c.promoted.id}, bulletin n° ${c.promoted.number}.</p>` : '');
   }

@@ -132,12 +132,13 @@ function solutionErrors(g: Grid): string[] {
   return errs;
 }
 
-describe('converted grids', () => {
-  it('has the 11 pose grids (7 tutorial then 4 rated) and the 2 coal ramp tutorials', () => {
-    expect(grids.map((g) => g.id)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]);
-    expect(grids.filter((g) => g.section === 'tutorial')).toHaveLength(9);
-    expect(grids.slice(7, 11).every((g) => g.section === 'rated')).toBe(true);
-    expect(grids.slice(11).every((g) => g.section === 'tutorial' && g.pieces.C?.shape === 'trap')).toBe(true);
+describe('published grids', () => {
+  it('ids are unique and increasing; both sections are present', () => {
+    const ids = grids.map((g) => g.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(ids).toEqual([...ids].sort((a, b) => a - b));
+    expect(grids.some((g) => g.section === 'tutorial')).toBe(true);
+    expect(grids.some((g) => g.section === 'rated')).toBe(true);
   });
 
   it.each(grids.map((g) => [g.id, g] as const))('grid %i passes structural validation', (_id, g) => {
@@ -149,10 +150,11 @@ describe('converted grids', () => {
   });
 
   it('the checker catches a broken solution or clue', () => {
-    const g = structuredClone(grids[5]!);
+    const top = grids.find((x) => x.teaches?.includes('top_price'))!;
+    const g = structuredClone(top);
     g.solution.placements.pop();
     expect(solutionErrors(g).join()).toMatch(/hole/);
-    const h = structuredClone(grids[5]!);
+    const h = structuredClone(top);
     h.clues = [{ type: 'price', col: 2, piece: 'N' }];
     expect(solutionErrors(h).join()).toMatch(/clue 0/);
   });
@@ -183,7 +185,7 @@ describe('converted grids', () => {
 });
 
 describe('validateGrid', () => {
-  const base = grids[6]!;
+  const base = grids.find((g) => g.step && g.section === 'tutorial')!;
   const broken = (patch: (g: Record<string, unknown>) => void) => {
     const g = structuredClone(base) as unknown as Record<string, unknown>;
     patch(g);

@@ -5,7 +5,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { convertGrid } from '../scripts/convert-grids';
+import { convertGrid, lostIds } from '../scripts/convert-grids';
 
 type Proto = Parameters<typeof convertGrid>[0];
 const proto = JSON.parse(readFileSync(resolve(__dirname, '../../docs/archive/demo/grids-pose.json'), 'utf8')) as Proto[];
@@ -52,5 +52,15 @@ describe('convertGrid bulletins', () => {
   it('gives no bulletin to a tutorial or to a generated grid', () => {
     expect(convertGrid(find(1)).bulletin).toBeUndefined();
     expect(convertGrid(generated(9)).bulletin).toBeUndefined();
+  });
+});
+
+describe('lostIds', () => {
+  it('lists the ids an overwrite of grids.json would drop (ramp tutorials, promoted grids)', () => {
+    const published = JSON.parse(readFileSync(resolve(__dirname, '../src/data/grids.json'), 'utf8')) as { id: number }[];
+    const converted = proto.filter((g) => g.mode === 'pose').map(convertGrid);
+    const lost = lostIds(published, converted);
+    expect(lost.length).toBe(published.length - converted.length);
+    expect(lostIds(converted, converted)).toEqual([]);
   });
 });

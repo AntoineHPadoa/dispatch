@@ -94,7 +94,8 @@ class _Judge:
     """Runs the deduction on one board with several clue sets (placements built once)."""
 
     def __init__(self, g: dict[str, Any]) -> None:
-        self.pz = Puzzle(g)
+        # Built with the mandatory clues: the STEP pairs they publish shape the silhouette options.
+        self.pz = Puzzle({**g, "clues": mandatory_clues(g)})
         self.ref = reference_composition(g)
 
     def run(self, clues: list[dict[str, Any]], level: int) -> Any:

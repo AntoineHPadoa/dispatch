@@ -166,12 +166,12 @@
    "rating": 1,
    "label": "Facile",
    "techniques": [
-    "flow",
-    "room",
     "exhausted",
+    "flow",
     "record",
-    "single_cover",
-    "silhouette"
+    "room",
+    "silhouette",
+    "single_cover"
    ]
   },
   "bulletin": {
@@ -209,9 +209,9 @@
     "flow"
    ],
    "trace_summary": {
-    "steps": 7,
+    "steps": 8,
     "level2_steps": 0,
-    "single_effect_steps": 0,
+    "single_effect_steps": 1,
     "order": [
      "flow",
      "room",
@@ -222,7 +222,7 @@
     ],
     "techniques": {
      "flow": 1,
-     "room": 1,
+     "room": 2,
      "exhausted": 1,
      "record": 2,
      "single_cover": 1,
@@ -246,7 +246,10 @@
     ]
    },
    "generator": "dispatch-solver 2.0.0 (published grid 8)",
-   "solver_rating_now": 1
+   "solver_rating_now": 1,
+   "recheck": [
+    "useless_clue:1"
+   ]
   }
  },
  {
@@ -456,11 +459,11 @@
    "rating": 2,
    "label": "Moyen",
    "techniques": [
-    "record",
-    "single_cover",
     "column_sum",
+    "record",
     "ribbon",
-    "swap"
+    "room",
+    "single_cover"
    ]
   },
   "bulletin": {
@@ -496,19 +499,19 @@
     "exchanges"
    ],
    "trace_summary": {
-    "steps": 14,
+    "steps": 15,
     "level2_steps": 9,
     "single_effect_steps": 3,
     "order": [
-     "record",
      "room",
+     "record",
      "single_cover",
      "column_sum",
      "ribbon"
     ],
     "techniques": {
+     "room": 2,
      "record": 2,
-     "room": 1,
      "single_cover": 2,
      "column_sum": 3,
      "ribbon": 6
@@ -714,11 +717,10 @@
    "rating": 3,
    "label": "Difficile",
    "techniques": [
-    "silhouette",
+    "record",
     "room",
     "share_out",
-    "record",
-    "exhausted",
+    "silhouette",
     "single_cover"
    ]
   },
@@ -968,13 +970,12 @@
    ]
   },
   "difficulty": {
-   "rating": 4,
-   "label": "Expert",
+   "rating": 1,
+   "label": "Facile",
    "techniques": [
     "record",
-    "silhouette",
-    "ribbon",
-    "refuted"
+    "room",
+    "silhouette"
    ]
   },
   "bulletin": {
@@ -1010,20 +1011,18 @@
     "exchanges"
    ],
    "trace_summary": {
-    "steps": 11,
-    "level2_steps": 7,
+    "steps": 4,
+    "level2_steps": 0,
     "single_effect_steps": 1,
     "order": [
+     "room",
      "record",
-     "silhouette",
-     "ribbon",
-     "refuted"
+     "silhouette"
     ],
     "techniques": {
+     "room": 1,
      "record": 2,
-     "silhouette": 2,
-     "ribbon": 6,
-     "refuted": 1
+     "silhouette": 1
     },
     "shape_steps": {}
    },

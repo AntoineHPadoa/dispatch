@@ -220,7 +220,8 @@
     "record",
     "ribbon",
     "room",
-    "silhouette"
+    "silhouette",
+    "single_cover"
    ]
   }
  },
@@ -236,7 +237,8 @@
    "record",
    "ribbon",
    "room",
-   "silhouette"
+   "silhouette",
+   "single_cover"
   ],
   "composition": {
    "cells": [

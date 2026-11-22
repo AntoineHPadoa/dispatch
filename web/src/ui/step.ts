@@ -9,7 +9,7 @@
 import type { Grid } from '../model/grid';
 import { addStep, type PlayState } from '../engine';
 import { MSG, UI, columnLabel } from '../i18n/fr';
-import { publishedStepPairs } from './panels';
+import { publishedStepPairs } from '../model/grid';
 
 export type StepTone = 'ok' | 'bad' | 'info';
 

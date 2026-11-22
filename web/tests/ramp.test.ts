@@ -201,7 +201,7 @@ describe('book, texts and gesture', () => {
   });
 });
 
-describe('review fixes', () => {
+describe('ramp details: gauge, validator, sheet, messages', () => {
   it('the CO2 gauge counts a ramp by its cells, like the engine', () => {
     const g = t1({ co2_cap: 20 });
     const s = solutionState(g);

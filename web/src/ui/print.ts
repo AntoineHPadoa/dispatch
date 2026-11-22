@@ -29,7 +29,7 @@ export function printCell(grid: Grid): number {
 }
 
 export function renderSheet(grid: Grid, tutorialIndex: number | null): string {
-  // Paper shows the imposed plants only: engaged bars and no exports drawn on the grid.
+  // Paper shows what the statement imposes: engaged bars and published exports, no STEP pair.
   const state = { ...initialState(grid), step: [] };
   const board = renderBoard({ grid, state, ev: null, style: 'B', cell: printCell(grid) }).svg;
   const techniques = (grid.teaches ?? []).map((t) => TECHNIQUES[t]).filter(Boolean);
@@ -43,7 +43,7 @@ export function renderSheet(grid: Grid, tutorialIndex: number | null): string {
   const co2 = co2RuleText(grid);
   if (co2) day.push(`<li class="clue"><span><span class="kind">${esc(UI.co2Kind)}</span><span class="txt">${esc(co2)}</span></span></li>`);
   const bookTitle = grid.inventory.level === 'exact' ? UI.book : UI.available;
-  const dayTitle = grid.clues.some((c) => c.type === 'length' || c.type === 'exchanges') || exchanges || co2 ? UI.dayClues : UI.engagedTitle;
+  const dayTitle = grid.clues.some((c) => c.type === 'length' || c.type === 'exchanges') || exchanges || co2 ? UI.printDayTitle : UI.engagedTitle;
   const foot = grid.step && grid.neighbors.length ? UI.printFootBoth
     : grid.step ? UI.printFootStep : grid.neighbors.length ? UI.printFootExports : UI.printFoot;
   return `<article class="a4">

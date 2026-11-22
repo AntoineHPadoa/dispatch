@@ -1,8 +1,9 @@
 // Lab logic: filters, sort, play recorder, aggregates, bulletin helpers.
 import { describe, expect, it } from 'vitest';
+import { TECHNIQUES } from '../src/i18n/fr';
 import {
   PlayRecorder, displayNumber, feltAverage, filterCandidates, formatDuration, lotTemplate, nextLotName, nextWeather, noFilters,
-  playStats, sortCandidates, techniqueLabel, TECHNIQUE_LABELS, type Candidate, type Play,
+  playStats, sortCandidates, techniqueLabel, type Candidate, type Play,
 } from '../src/lab/logic';
 
 const cand = (index: number, over: Partial<Candidate> = {}): Candidate => ({
@@ -56,13 +57,13 @@ describe('PlayRecorder', () => {
   };
   it('counts events and stops the clock at the solve', () => {
     const { r, tick } = make();
-    r.event('error'); r.event('error'); r.event('undo'); r.event('erase'); r.event('reset');
+    r.event('move'); r.event('error'); r.event('error'); r.event('undo'); r.event('erase'); r.event('reset');
     tick(65_000);
     r.event('solved');
     tick(30_000);
     r.event('error'); // after the solve: ignored
     expect(r.finish('Joueur 1', 't', 4)).toEqual({
-      player: 'Joueur 1', lot: 't', index: 4, outcome: 'solved', ms: 65_000, wall_ms: 65_000, started: 1, errors: 2, undos: 1, erasers: 1, resets: 1,
+      player: 'Joueur 1', lot: 't', index: 4, outcome: 'solved', ms: 65_000, wall_ms: 65_000, started: 1, errors: 2, undos: 1, erasers: 1, resets: 1, moves: 1,
     });
     expect(r.elapsed()).toBe(65_000);
   });
@@ -127,16 +128,16 @@ describe('PlayRecorder: hidden tab, solve, unload', () => {
 describe('blind lists and labels', () => {
   it('counts masked plays without any measure', () => {
     const masked = { player: 'b', lot: 't', index: 1, masked: true } as unknown as Play;
-    expect(playStats([masked, masked])).toEqual({ masked: true, games: 2, solved: 0, medianMs: null, meanErrors: null });
+    expect(playStats([masked, masked])).toEqual({ masked: true, games: 2, solved: 0, replays: 0, medianMs: null, meanErrors: null });
   });
   it('numbers candidates from 1', () => expect(displayNumber(0)).toBe('1'));
   it('translates techniques and falls back on the id', () => {
-    expect(techniqueLabel('single_cover')).toBe('Couverture unique');
+    expect(techniqueLabel('single_cover')).toBe('Une seule barre pour cette case');
+    expect(techniqueLabel('record')).toBe('Le relevé compte les cases');
+    expect(techniqueLabel('ramp_relay')).toBe('Deux épaules se relaient');
+    expect(techniqueLabel('given')).toBe('Centrale engagée');
     expect(techniqueLabel('new_tech')).toBe('new tech');
-    for (const id of ['given', 'room', 'exhausted', 'price_cap', 'record', 'flow', 'single_cover', 'single_spot', 'program', 'length', 'silhouette',
-      'swap', 'top_price', 'ribbon', 'just_enough', 'column_sum', 'carbon', 'share_out', 'refuted']) {
-      expect(TECHNIQUE_LABELS[id], id).toBeTruthy();
-    }
+    for (const id of Object.keys(TECHNIQUES)) expect(techniqueLabel(id)).toBe(TECHNIQUES[id]!.name);
   });
 });
 
@@ -144,9 +145,17 @@ describe('aggregates', () => {
   const play = (o: Partial<Play>): Play => ({ player: 'a', lot: 't', index: 1, outcome: 'solved', ms: 1000, errors: 0, undos: 0, erasers: 0, resets: 0, ts: 0, ...o });
   it('summarises plays', () => {
     const s = playStats([play({ ms: 60_000, errors: 2 }), play({ ms: 120_000, errors: 4 }), play({ outcome: 'abandoned', ms: 5 })]);
-    expect(s).toEqual({ masked: false, games: 3, solved: 2, medianMs: 90_000, meanErrors: 3 });
-    expect(playStats([])).toEqual({ masked: false, games: 0, solved: 0, medianMs: null, meanErrors: null });
+    expect(s).toEqual({ masked: false, games: 3, solved: 2, replays: 0, medianMs: 90_000, meanErrors: 3 });
+    expect(playStats([])).toEqual({ masked: false, games: 0, solved: 0, replays: 0, medianMs: null, meanErrors: null });
     expect(playStats([play({ outcome: 'abandoned' })]).medianMs).toBeNull();
+  });
+  it('keeps first plays only: replays and stray opens are left out (review S8 B C9, C10)', () => {
+    const s = playStats([
+      play({ ms: 300_000, attempt: 1 }),
+      play({ ms: 40_000, attempt: 2 }),
+      play({ outcome: 'abandoned', ms: 3_000, phantom: true, attempt: 1 }),
+    ]);
+    expect(s).toMatchObject({ games: 1, solved: 1, replays: 1, medianMs: 300_000 });
   });
   it('averages felt ratings', () => {
     expect(feltAverage({})).toBeNull();

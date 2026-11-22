@@ -5,8 +5,12 @@
 - Solved when the silhouette is fixed and the cells of each key in each column are known (the composition):
   by cells with a single possible key, or by counting (Cases interchangeables) from the sure cells and the
   records of the column only. When the counts need the column height, the step is Compter la colonne.
-- Coal ramps (trapezoid, docs/next/rampe.md §2) have four techniques of their own: the plateau bars the
-  row above, the shoulder calls a cell, a lone cell is a shoulder, two shoulders relay each other.
+- Coal ramps (trapezoid, docs/next/rampe.md §2) have four named techniques. The plateau bars the row
+  above and the shoulder calls a cell are room and single_cover on a ramp, named for the player (tried
+  first, same level). A lone cell is a shoulder and two shoulders relay each other are deductions of
+  their own.
+- Room also checks a piece against the silhouette as a whole: raising several columns at once must fit
+  one STEP option and the published day totals of exports.
 - Published exchange totals (inventory or `exchanges` clue) are applied by steps (exhausted / record).
 - Stuck: not solvable without guessing; the grid is not publishable. Hypothèse réfutée has a work budget.
 
@@ -73,8 +77,8 @@ class Solver:
             (2, self.r_column_sum),
             (2, self.r_column_count),
             (2, self.r_carbon),
-            (3, self.r_share_out),
             (3, self.r_ramp_relay),
+            (3, self.r_share_out),
             (4, self.r_refuted),
         ]
 
@@ -367,7 +371,60 @@ class Solver:
         bad = v.occ | ((1 << (self.pz.n * (max(v.maxh) + 4))) - 1) & ~v.under
         masks = self.pz.masks
         self.remove([i for i in self.free() if masks[i] & bad])
+        if not self._cur.effects:
+            self._room_together(v)
         return self._end()
+
+    def _room_together(self, v: View) -> None:
+        """Pas de place, across columns: a piece raising several columns at once needs one silhouette doing it.
+
+        Each column alone may reach the height (an export, a pumping), yet the published day totals or the
+        STEP pairs may not allow every column at once. Inventory totals are part of the board; totals of an
+        `exchanges` clue are cited.
+        """
+        pz = self.pz
+        if len(self.st.sil) == 1 and not (self.inv_totals or self.clue_totals):
+            return
+        all_totals = {**self.inv_totals, **{k: t for k, (t, _) in self.clue_totals.items()}}
+        memo: dict[tuple[tuple[int, int], ...], int] = {}  # need -> 0 fits, 1 needs the clue, 2 never fits
+        rm: list[int] = []
+        cited = False
+        for i in self.free():
+            need: dict[int, int] = {}
+            for r, c in pz.placements[i].cells:
+                if r >= v.minh[c]:
+                    need[c] = max(need.get(c, 0), r + 1)
+            if len(need) < 2:
+                continue
+            key = tuple(sorted(need.items()))
+            got = memo.get(key)
+            if got is None:
+                got = memo[key] = 0 if self._fits(need, all_totals) else 1 if self._fits(need, self.inv_totals) else 2
+            if got:
+                rm.append(i)
+                cited |= got == 1
+        self.remove(rm)
+        if cited and self._cur.effects:
+            self._cur.clues += [c for _, c in self.clue_totals.values()]
+            self._cur.scope = "day"
+
+    def _fits(self, need: dict[int, int], totals: dict[int, int]) -> bool:
+        """Some silhouette option reaches the heights `need` in all its columns at once, within the totals."""
+        pz = self.pz
+        for si, cols in self.st.sil.items():
+            d = pz.deltas[si]
+            new = []
+            for c, es in enumerate(cols):
+                h = need.get(c)
+                if h is not None:
+                    es = frozenset(e for e in es if pz.residual[c] + d[c] + sum(e) >= h)
+                    if not es:
+                        break
+                new.append(es)
+            else:
+                if apply_totals(pz, {si: new}, totals):
+                    return True
+        return False
 
     def _count_hi(self, v: View, kinds: tuple[str, ...]) -> None:
         pz = self.pz
@@ -639,15 +696,16 @@ class Solver:
             if g.rule != "record" or g.cols is None or len(g.cols) != 1 or g.hi is None:
                 continue
             (c,) = g.cols
-            sure_in = sum(1 for x in v.column(c) if v.sure(x) and v.dom[x] and v.dom[x] <= g.keys)
-            if g.hi - sure_in != 1:
+            sure_in = {x for x in v.column(c) if v.sure(x) and v.dom[x] and v.dom[x] <= g.keys}
+            if g.hi - len(sure_in) != 1:
                 continue
+            # Same count as _count_hi: only the plateau cells not already counted as sure coal.
             hits = {
                 i
                 for i in self.free()
-                if self._lone_case(g, i) and sum(1 for x in pz.placements[i].cells if x[1] == c) == 2
+                if self._lone_case(g, i)
+                and sum(1 for x in pz.placements[i].cells if x[1] == c and x not in sure_in) == 2
             }
-            hits = {i for i in hits if not any(x in v.occupied for x in pz.placements[i].cells if x[1] == c)}
             if hits:
                 rm |= hits
                 if g.clue is not None:
@@ -657,7 +715,12 @@ class Solver:
         return self._end()
 
     def r_ramp_relay(self, v: View) -> bool:
-        """Deux épaules se relaient: two coal cells and no plateau over a slot, one ramp ends, one starts."""
+        """Deux épaules se relaient: two coal cells and no plateau over a slot, one ramp ends, one starts.
+
+        Every coal cell of the slot is then a shoulder: the end of a ramp or the start of another. A side
+        with a single candidate is placed only when the other side cannot give every coal cell alone (its
+        candidates on distinct rows bound how many shoulders it holds).
+        """
         pz = self.pz
         if not self.ramps:
             return False
@@ -667,15 +730,17 @@ class Solver:
         add: set[int] = set()
         for c in range(pz.n):
             for k in keys:
-                if lo.get((k, c), 0) < 2:
+                need = lo.get((k, c), 0)
+                if need < 2:
                     continue
                 here = [i for i in self.ramps if i in self.st.cands and pz.placements[i].cells_in(c)]
                 if not here or any(pz.placements[i].cells_in(c) == 2 for i in here):
                     continue
                 ends = [i for i in here if pz.placements[i].col + pz.placements[i].width - 1 == c]
                 starts = [i for i in here if pz.placements[i].col == c]
-                for side in (ends, starts):
-                    if len(side) == 1 and side[0] not in self.st.placed:
+                for side, other in ((ends, starts), (starts, ends)):
+                    most = len({pz.placements[i].row for i in other})
+                    if len(side) == 1 and side[0] not in self.st.placed and most < need:
                         add.add(side[0])
                         self._cur.columns.append(c)
         self.place(add)

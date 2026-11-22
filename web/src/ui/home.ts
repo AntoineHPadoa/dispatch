@@ -6,7 +6,7 @@
  * - Accent: one pink (stamp, price cell, progress, finished items); the finished sheet of the day
  *   shows its solution in the plant colours.
  */
-import { UI, PIECE_WORDS, TECHNIQUES } from '../i18n/fr';
+import { UI, PIECE_WORDS, TECHNIQUES, frenchSpaces } from '../i18n/fr';
 import { currentBulletin, localIsoDate, previousBulletins, type BulletinGrid } from '../model/bulletin';
 import { dossierNext, dossierProgress, dossiers, type Dossier } from '../model/dossiers';
 import type { Grid, PieceId } from '../model/grid';
@@ -41,9 +41,9 @@ function sheetCard(g: BulletinGrid, st: GridStatus): string {
   return `<article class="sheet">
     <div class="band"><div><span class="eyebrow">${esc(dayTag(g))}</span><h2>${esc(b.title)}</h2></div>${stamp(st === 'done' ? UI.bulletin.stampDone : UI.bulletin.stampTodo)}</div>
     <div class="sbody">
-      <p>${esc(b.text)}</p>
+      <p>${esc(frenchSpaces(b.text))}</p>
       <div class="sil-wrap">${sheetSilhouette(g, b.weather, (k) => UI.bulletin.weather[k], UI.bulletin.silhouetteLabel(Math.min(...g.demand), Math.max(...g.demand), g.demand.length), st === 'done')}</div>
-      <ul class="chips">${plantChips(g)}</ul>
+      <ul class="plant-chips">${plantChips(g)}</ul>
       <div class="sact">${dots(g)}<a class="btn${st === 'done' ? ' secondary' : ''}" href="#/grille/${g.id}">${icon('next')}${esc(goLabel(st))}</a></div>
     </div></article>`;
 }
@@ -65,7 +65,7 @@ function dossierCard(d: Dossier, progress: Progress): string {
   return `<a class="dcard" href="#/dossier/${d.id}">
     <span class="dsil">${miniSilhouette(demand, 120, 48, done > 0)}</span>
     <span class="dtxt"><b>${esc(words.title)}</b><span>${esc(UI.dossierCount(total))}</span>
-      <span class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${total ? (done / total) * 100 : 0}%"></i></span>
+      <span class="bar" role="progressbar" aria-label="${esc(UI.dossierDone(done, total))}" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${total ? (done / total) * 100 : 0}%"></i></span>
       <span class="pcount${done ? ' on' : ''}">${esc(UI.dossierProgress(done, total))}</span></span></a>`;
 }
 
@@ -125,7 +125,7 @@ export function renderDossier(root: HTMLElement, d: Dossier, progress: Progress)
   root.innerHTML = `<div class="m home">
     ${siteHead()}
     <section class="glist"><div class="sh"><h1>${esc(words.title)}</h1><p>${esc(words.lead)}</p></div>
-      <div class="prog"><span>${esc(UI.dossierDone(done, total))}</span><span class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${total ? (done / total) * 100 : 0}%"></i></span></div>
+      <div class="prog"><span>${esc(UI.dossierDone(done, total))}</span><span class="bar" role="progressbar" aria-label="${esc(UI.dossierDone(done, total))}" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${total ? (done / total) * 100 : 0}%"></i></span></div>
       <ol class="fiches">${cards}</ol></section>
   </div>`;
 }

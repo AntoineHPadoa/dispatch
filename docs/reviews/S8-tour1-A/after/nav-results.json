@@ -1,0 +1,412 @@
+[
+ {
+  "name": "home@1280 no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "home@1280 no overlapping text",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "home@1280 sheet of the day is G11 (2026-11-21)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "home@1280 3 previous sheets",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "home@1280 \"Comment jouer\" opens the rules",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dossier@1280 opens (#/dossier/premiers-pas)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dossier@1280 no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dossier@1280 no overlapping text",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dossier@1280 9 tutorial sheets",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "back@1280 dossier -> home",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "back@1280 previous sheet #/grille/10 -> home",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "home@1280 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "logo@1280 same place home/grid",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "logo@1280 click returns home",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "url@1280 #/grille/99 falls back to home",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "url@1280 #/grille/4 direct (reload)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "url@1280 unknown dossier falls back to home",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "nav@1280 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "unpublished@1280 on 11-19 the sheet of the day is G9",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "unpublished@1280 #/grille/11 not reachable on 11-19",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "unpublished@1280 #/imprimer/tout on 11-19 (11 sheets)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "home@375 no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "home@375 no overlapping text",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "home@375 sheet of the day is G11 (2026-11-21)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "home@375 3 previous sheets",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "home@375 \"Comment jouer\" opens the rules",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dossier@375 opens (#/dossier/premiers-pas)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dossier@375 no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dossier@375 no overlapping text",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dossier@375 9 tutorial sheets",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "back@375 dossier -> home",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "back@375 previous sheet #/grille/10 -> home",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "home@375 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "logo@375 same place home/grid",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "logo@375 click returns home",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "url@375 #/grille/99 falls back to home",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "url@375 #/grille/4 direct (reload)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "url@375 unknown dossier falls back to home",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "nav@375 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "unpublished@375 on 11-19 the sheet of the day is G9",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "unpublished@375 #/grille/11 not reachable on 11-19",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "unpublished@375 #/imprimer/tout on 11-19 (11 sheets)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "home@320 no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "home@320 no overlapping text",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "home@320 sheet of the day is G11 (2026-11-21)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "home@320 3 previous sheets",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "home@320 \"Comment jouer\" opens the rules",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dossier@320 opens (#/dossier/premiers-pas)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dossier@320 no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dossier@320 no overlapping text",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "dossier@320 9 tutorial sheets",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "back@320 dossier -> home",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "back@320 previous sheet #/grille/10 -> home",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "home@320 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "logo@320 same place home/grid",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "logo@320 click returns home",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "url@320 #/grille/99 falls back to home",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "url@320 #/grille/4 direct (reload)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "url@320 unknown dossier falls back to home",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "nav@320 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "unpublished@320 on 11-19 the sheet of the day is G9",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "unpublished@320 #/grille/11 not reachable on 11-19",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "unpublished@320 #/imprimer/tout on 11-19 (11 sheets)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "solved@1280 G11 verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "solved@1280 next link \"Accueil\" -> #/",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "solved@1280 home sheet stamp \"Bouclé\"",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "solved@1280 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "solved@375 G11 verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "solved@375 next link \"Accueil\" -> #/",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "solved@375 home sheet stamp \"Bouclé\"",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "solved@375 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "solved@320 G11 verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "solved@320 next link \"Accueil\" -> #/",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "solved@320 home sheet stamp \"Bouclé\"",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "solved@320 no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "keyboard home: every focused element shows a ring",
+  "ok": false,
+  "detail": "body:DispatchComment jouer\n   [NO RING]"
+ },
+ {
+  "name": "keyboard G1: a bar laid with arrows + Enter",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "keyboard no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "print 7: 1 A4 page(s)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "print 11: 1 A4 page(s)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "print 13: 1 A4 page(s)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "print tout: 13 A4 page(s)",
+  "ok": true,
+  "detail": ""
+ }
+]

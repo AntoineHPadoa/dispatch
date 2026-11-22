@@ -3,6 +3,8 @@
 - RULES: id, French name, level and the sentence shown to the player, identical to TECHNIQUES in
   web/src/i18n/fr.ts and to GAME-DESIGN.md §9 (tested). `given` is level 0 and not shown.
 - RAMP_RULES: the four trapezoid techniques (docs/next/rampe.md §2), counted per grid in lab.ramp_techniques.
+  RAMP_LABELS (plateau, shoulder) are room and single_cover named for a ramp: they teach, they do not
+  measure what the ramp adds. RAMP_OWN (lone, relay) are the deductions only a ramp allows.
 - Step: one application of a technique, with what it changed (placements, silhouette), where (cells,
   columns), why (clue indices), which shapes were involved (rect, tall, ramp_trap, ramp_stair), the
   exchanges it fixed ({country: {"export": [[col, value]]}, "step": [[pump, turbine]]}) and `scope: "day"`
@@ -141,7 +143,9 @@ RULE_LIST = [
     ),
 ]
 RULES = {r.id: r for r in RULE_LIST}
-RAMP_RULES = ("ramp_plateau", "ramp_shoulder", "ramp_lone", "ramp_relay")
+RAMP_LABELS = ("ramp_plateau", "ramp_shoulder")
+RAMP_OWN = ("ramp_lone", "ramp_relay")
+RAMP_RULES = RAMP_LABELS + RAMP_OWN
 
 
 @dataclass

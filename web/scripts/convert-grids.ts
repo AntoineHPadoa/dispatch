@@ -1,6 +1,9 @@
 /*
- * Convert the prototype "pose" grids (docs/archive/demo/grids-pose.json) to the §14 format (src/data/grids.json).
- * - Keeps the 11 pose grids (7 tutorial, 4 rated), drops the target-score grids.
+ * Convert the prototype "pose" grids (docs/archive/demo/grids-pose.json) to the §14 format.
+ * - One-off tool: src/data/grids.json was built by it, then grew (ramp tutorials, lab promotions).
+ *   It refuses to overwrite an output holding grids it does not produce (ids would be lost), unless
+ *   --force; write to another file to compare.
+ * - Keeps the pose grids (7 tutorial, 4 rated), drops the target-score grids.
  * - Price clues: the prototype publishes a value (N 0, B 1, C 1, G 2, T 5, import = neighbor price);
  *   §14 names the plant that sets the price. The plant is read from the reference solution; every
  *   ambiguous value and every clued column holding an import is reported.
@@ -8,9 +11,10 @@
  * - Level "none": exchange totals move from the inventory to an `exchanges` clue.
  * - Prints a conversion report on stdout; exits non-zero when a grid fails validation.
  *
- * Usage: npm run convert   (or: npx tsx scripts/convert-grids.ts [input] [output])
+ * Usage: npx tsx scripts/convert-grids.ts [input] [output] [--force]
+ *   e.g. npx tsx scripts/convert-grids.ts ../docs/archive/demo/grids-pose.json /tmp/grids.json
  */
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BULLETINS } from './bulletins';
@@ -284,13 +288,28 @@ export function convertGrid(g: ProtoGrid): Grid {
   return assertGrid(grid);
 }
 
+/** Ids of `existing` that `produced` would drop: an overwrite must not lose them. */
+export function lostIds(existing: { id: number }[], produced: { id: number }[]): number[] {
+  const kept = new Set(produced.map((g) => g.id));
+  return existing.map((g) => g.id).filter((id) => !kept.has(id));
+}
+
 function main() {
-  const input = resolve(process.argv[2] ?? resolve(here, '../../docs/archive/demo/grids-pose.json'));
-  const output = resolve(process.argv[3] ?? resolve(here, '../src/data/grids.json'));
+  const args = process.argv.slice(2).filter((a) => a !== '--force');
+  const force = process.argv.includes('--force');
+  const input = resolve(args[0] ?? resolve(here, '../../docs/archive/demo/grids-pose.json'));
+  const output = resolve(args[1] ?? resolve(here, '../src/data/grids.json'));
   const proto = JSON.parse(readFileSync(input, 'utf8')) as ProtoGrid[];
   const kept = proto.filter((g) => g.mode === 'pose');
   const skipped = proto.filter((g) => g.mode !== 'pose').map((g) => `${g.id} (${g.title})`);
   const grids = kept.map(convertGrid);
+  if (existsSync(output) && !force) {
+    const lost = lostIds(JSON.parse(readFileSync(output, 'utf8')) as Grid[], grids);
+    if (lost.length) {
+      console.error(`Refusing to overwrite ${output}: grids ${lost.join(', ')} would be lost (--force to do it anyway).`);
+      process.exit(1);
+    }
+  }
   writeFileSync(output, `${JSON.stringify(grids, null, 2)}\n`);
 
   console.log(`Converted ${grids.length} grids -> ${output}`);

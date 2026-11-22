@@ -2,7 +2,7 @@
 
 Étude sur papier de la rampe (brief §2) : une centrale thermique qui démarre et s'arrête par paliers, posée d'un bloc. Deux profils sont traités à fond : le **trapèze 1 → 2 → 1** et l'**escalier 2 → 1**. Aucun code de jeu n'est écrit ici.
 
-- **Planche visuelle** des 8 mini-grilles (style papier B, énoncé, solution, déductions) : https://claude.ai/artifact/HN1VS9hZ5ngGY141CKAzLg (source : `docs/next/rampe-grilles.html`).
+- **Planche visuelle** des 8 mini-grilles (style papier B, énoncé, solution, déductions) : https://claude.ai/artifact/HN1VS9hZ5ngGY141CKAzLg (source : `docs/archive/maquettes/rampe-grilles.html`).
 - **Vérification** : `docs/next/rampe/check_ramp.py` (CP-SAT, jetable, hors du package) sur `docs/next/rampe/grids.json`.
 - **Recommandation** : traiter le **trapèze** en premier (§5).
 
@@ -113,6 +113,11 @@ Limites :
 | 3 | Deux épaules se relaient | Deux cases de rampe sans plateau autour : une rampe s'arrête et une autre démarre sur son épaule. |
 
 Les niveaux suivent le barème actuel et seront recalés par le calibrage humain (S5.3).
+
+**Ce que mesure chaque technique, dans le solveur** :
+- « Le plateau barre la ligne du dessus » et « L'épaule appelle une case » sont « Pas de place » et « Une seule barre pour cette case » appliquées à une rampe posée. Ce sont des **étiquettes** : elles nomment le geste pour le joueur (tutoriels 8 et 9), mais une grille qui les emploie ne demande rien de plus qu'une grille sans rampe.
+- « Une case seule est une épaule » et « Deux épaules se relaient » sont les seules déductions propres à la rampe. Le relais ne se déclenche qu'avec un relevé de 2 cases de charbon sur la colonne (sinon « Répartition de l'inventaire » trouve le relais, comme sur T4) ; il est essayé avant elle, au même niveau.
+- Les stats d'un lot comptent les deux : `ramp_grids_with_technique` (étiquettes comprises) et `ramp_grids_with_own_technique` (case seule ou relais).
 
 ## 3. Escalier 2 → 1
 

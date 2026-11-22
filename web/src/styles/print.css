@@ -9,6 +9,7 @@
 .a4 .lead { font-size: 10pt; color: #3d4a46; margin: 0; }
 .a4 .sheet-grid { display: grid; place-items: center; }
 .a4 .sheet-grid svg { max-width: 100%; height: auto; }
+.a4 .slot { border-bottom: 0; }
 .a4 .sec { font-size: 7.5pt; text-transform: uppercase; letter-spacing: .1em; font-weight: 800; color: #6c7d78; margin-bottom: 2mm; }
 .a4 .cols2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; }
 .a4 .book { gap: 2mm; }

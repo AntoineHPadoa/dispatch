@@ -166,6 +166,57 @@ def test_play_lines_carry_hash_attempt_start_and_schema(api, lab):
     assert lab_server.Lab.grid_hash(g) != first["grid_hash"]
 
 
+def test_a_stray_open_is_not_an_attempt(api):
+    """Review S8 B C10: an abandon without any move, or within 10 s, leaves the real first game at attempt 1."""
+    stray = api("POST", "/api/plays", {**PLAY, "outcome": "abandoned", "ms": 3000, "moves": 0, "reason": "unload"})[1]
+    idle = api("POST", "/api/plays", {**PLAY, "outcome": "abandoned", "ms": 90000, "moves": 0})[1]
+    real = api("POST", "/api/plays", {**PLAY, "moves": 12})[1]
+    replay = api("POST", "/api/plays", {**PLAY, "moves": 9})[1]
+    assert stray["phantom"] and idle["phantom"] and not real["phantom"]
+    assert (real["attempt"], replay["attempt"]) == (1, 2)
+    quick = api("POST", "/api/plays", {**PLAY, "player": "Joueur 2", "outcome": "abandoned", "ms": 4000})[1]
+    assert quick["phantom"]  # a legacy record without moves: only the time decides
+
+
+def test_comments_are_masked_like_felt_ratings(api):
+    """Review S8 B M6: another player's comment ("trop dur") stays hidden until the player has rated."""
+    play = api("POST", "/api/plays", {**PLAY, "player": "Joueur 2"})[1]
+    assert api("POST", f"/api/plays/{play['id']}/rate", {"felt": 4, "comment": "trop dur"})[0] == 200
+    assert "comment" not in api("GET", "/api/notes?player=Joueur%201")[1]["t:0"]
+    assert api("GET", "/api/notes?player=Joueur%202")[1]["t:0"]["comment"] == {"Joueur 2": "trop dur"}
+
+
+def test_each_player_keeps_their_own_comment(api, lab):
+    """Review S8 tour 2 N1: a second player's rating, even without a comment, keeps the first player's comment."""
+    first = api("POST", "/api/plays", PLAY)[1]
+    api("POST", f"/api/plays/{first['id']}/rate", {"felt": 4, "comment": "trop dur"})
+    second = api("POST", "/api/plays", {**PLAY, "player": "Joueur 2"})[1]
+    api("POST", f"/api/plays/{second['id']}/rate", {"felt": 2, "comment": ""})
+    assert lab.notes()["t:0"] == {"felt": {"Joueur 1": 4, "Joueur 2": 2}, "comment": {"Joueur 1": "trop dur"}}
+    third = api("POST", "/api/plays", {**PLAY, "player": "Joueur 2"})[1]
+    api("POST", f"/api/plays/{third['id']}/rate", {"felt": 3, "comment": "plus simple"})
+    both = {"Joueur 1": "trop dur", "Joueur 2": "plus simple"}
+    assert api("GET", "/api/notes?player=Joueur%201")[1]["t:0"]["comment"] == both
+    assert api("GET", "/api/notes?player=Joueur%202")[1]["t:0"]["comment"] == both
+
+
+def test_a_comment_before_the_rating_shows_only_to_its_author(api):
+    assert api("PUT", "/api/notes/t/0", {"comment": "à revoir", "player": "Joueur 1"})[0] == 200
+    assert api("GET", "/api/notes?player=Joueur%201")[1]["t:0"]["comment"] == {"Joueur 1": "à revoir"}
+    assert "comment" not in api("GET", "/api/notes?player=Joueur%202")[1]["t:0"]
+    assert api("PUT", "/api/notes/t/0", {"comment": "x"})[0] == 400
+
+
+@pytest.mark.parametrize("felt, owner", [({"Joueur 2": 3}, "Joueur 2"), ({"Joueur 1": 4, "Joueur 2": 3}, ""), ({}, "")])
+def test_older_single_comments_are_kept(api, lab, felt, owner):
+    """A comment stored as one string goes to its author when only one player has rated, else to the unknown author."""
+    (lab.dir / "notes.json").write_text(json.dumps({"t:0": {"felt": felt, "comment": "ancien"}}))
+    assert lab.notes()["t:0"]["comment"] == {owner: "ancien"}
+    play = api("POST", "/api/plays", PLAY)[1]
+    api("POST", f"/api/plays/{play['id']}/rate", {"felt": 1, "comment": "neuf"})
+    assert lab.notes()["t:0"]["comment"] == {owner: "ancien", "Joueur 1": "neuf"}
+
+
 def test_wall_time_cannot_be_below_active_time(api):
     assert api("POST", "/api/plays", {**PLAY, "ms": 5000, "wall_ms": 100})[0] == 400
 
@@ -184,7 +235,7 @@ def test_felt_is_stored_with_the_play_and_locked(api, lab):
     assert code == 200 and done["felt"] == 3
     assert json.loads((lab.dir / "plays.jsonl").read_text().splitlines()[0])["felt"] == 3
     assert api("POST", f"/api/plays/{play['id']}/rate", {"felt": 1})[0] == 409
-    assert lab.notes()["t:0"] == {"felt": {"Joueur 1": 3}, "comment": "ok"}
+    assert lab.notes()["t:0"] == {"felt": {"Joueur 1": 3}, "comment": {"Joueur 1": "ok"}}
     # a later play of the same candidate keeps its own rating, the notes keep the first
     again = api("POST", "/api/plays", PLAY)[1]
     api("POST", f"/api/plays/{again['id']}/rate", {"felt": 4})
@@ -195,8 +246,8 @@ def test_felt_is_stored_with_the_play_and_locked(api, lab):
 
 
 def test_notes_keep_and_comment(api):
-    code, note = api("PUT", "/api/notes/t/0", {"kept": True, "comment": "ok"})
-    assert code == 200 and note == {"kept": True, "comment": "ok"}
+    code, note = api("PUT", "/api/notes/t/0", {"kept": True, "comment": "ok", "player": "Joueur 1"})
+    assert code == 200 and note == {"kept": True, "comment": {"Joueur 1": "ok"}}
     cand = api("GET", "/api/candidates?lot=t")[1][0]
     assert cand["kept"]
     assert api("PUT", "/api/notes/t/0", {"bulletin": {"weather": ["rain"]}})[0] == 400

@@ -452,19 +452,19 @@
    ],
    "clue_profile": [],
    "trace_summary": {
-    "steps": 5,
+    "steps": 6,
     "level2_steps": 0,
     "single_effect_steps": 1,
     "order": [
-     "exhausted",
-     "room"
+     "room",
+     "exhausted"
     ],
     "techniques": {
-     "exhausted": 4,
-     "room": 1
+     "room": 2,
+     "exhausted": 4
     },
     "shape_steps": {
-     "room:ramp_trap": 1,
+     "room:ramp_trap": 2,
      "exhausted:ramp_trap": 1
     }
    },
@@ -965,7 +965,6 @@
     "program",
     "ramp_plateau",
     "record",
-    "ribbon",
     "room",
     "silhouette",
     "single_cover"
@@ -990,36 +989,34 @@
     "price"
    ],
    "trace_summary": {
-    "steps": 17,
-    "level2_steps": 4,
-    "single_effect_steps": 5,
+    "steps": 16,
+    "level2_steps": 1,
+    "single_effect_steps": 4,
     "order": [
      "price_cap",
      "record",
      "single_cover",
      "room",
      "silhouette",
-     "column_sum",
-     "ribbon",
+     "length",
      "program",
      "ramp_plateau",
-     "length"
+     "column_sum"
     ],
     "techniques": {
      "price_cap": 1,
      "record": 2,
      "single_cover": 1,
-     "room": 5,
-     "silhouette": 1,
-     "column_sum": 2,
-     "ribbon": 2,
+     "room": 6,
+     "silhouette": 2,
+     "length": 1,
      "program": 1,
      "ramp_plateau": 1,
-     "length": 1
+     "column_sum": 1
     },
     "shape_steps": {
      "price_cap:ramp_trap": 1,
-     "ribbon:ramp_trap": 2,
+     "room:ramp_trap": 1,
      "program:ramp_trap": 1
     }
    },
@@ -1249,27 +1246,27 @@
    ],
    "clue_profile": [],
    "trace_summary": {
-    "steps": 11,
+    "steps": 12,
     "level2_steps": 0,
     "single_effect_steps": 4,
     "order": [
-     "exhausted",
      "room",
+     "exhausted",
      "single_cover",
      "single_spot",
      "ramp_plateau",
      "ramp_shoulder"
     ],
     "techniques": {
+     "room": 4,
      "exhausted": 3,
-     "room": 3,
      "single_cover": 2,
      "single_spot": 1,
      "ramp_plateau": 1,
      "ramp_shoulder": 1
     },
     "shape_steps": {
-     "room:ramp_trap": 2,
+     "room:ramp_trap": 3,
      "single_spot:ramp_trap": 1,
      "ramp_plateau:ramp_trap": 1,
      "single_cover:ramp_trap": 1,
@@ -1846,32 +1843,32 @@
     "price"
    ],
    "trace_summary": {
-    "steps": 16,
+    "steps": 17,
     "level2_steps": 3,
-    "single_effect_steps": 1,
+    "single_effect_steps": 2,
     "order": [
+     "room",
      "price_cap",
      "record",
      "single_cover",
-     "room",
-     "silhouette",
      "program",
+     "silhouette",
      "ribbon"
     ],
     "techniques": {
+     "room": 5,
      "price_cap": 1,
      "record": 4,
      "single_cover": 2,
-     "room": 4,
-     "silhouette": 1,
      "program": 1,
+     "silhouette": 1,
      "ribbon": 3
     },
     "shape_steps": {
+     "room:ramp_trap": 5,
      "price_cap:ramp_trap": 1,
      "single_cover:ramp_trap": 2,
-     "room:ramp_trap": 3,
-     "record:ramp_trap": 2
+     "record:ramp_trap": 1
     }
    },
    "ramp_techniques": {},
@@ -2418,15 +2415,13 @@
    ]
   },
   "difficulty": {
-   "rating": 4,
-   "label": "Expert",
+   "rating": 2,
+   "label": "Moyen",
    "techniques": [
-    "column_sum",
     "price_cap",
-    "refuted",
+    "record",
     "ribbon",
     "room",
-    "share_out",
     "silhouette",
     "single_cover"
    ]
@@ -2446,35 +2441,30 @@
     "price"
    ],
    "trace_summary": {
-    "steps": 19,
-    "level2_steps": 12,
-    "single_effect_steps": 3,
+    "steps": 14,
+    "level2_steps": 3,
+    "single_effect_steps": 2,
     "order": [
+     "room",
      "price_cap",
+     "record",
      "single_cover",
      "silhouette",
-     "room",
-     "ribbon",
-     "column_sum",
-     "share_out",
-     "refuted"
+     "ribbon"
     ],
     "techniques": {
+     "room": 4,
      "price_cap": 1,
-     "single_cover": 2,
-     "silhouette": 2,
-     "room": 2,
-     "ribbon": 5,
-     "column_sum": 1,
-     "share_out": 5,
-     "refuted": 1
+     "record": 2,
+     "single_cover": 3,
+     "silhouette": 1,
+     "ribbon": 3
     },
     "shape_steps": {
+     "room:ramp_trap": 4,
      "price_cap:ramp_trap": 1,
-     "ribbon:ramp_trap": 4,
-     "share_out:ramp_trap": 4,
-     "refuted:ramp_trap": 1,
-     "single_cover:ramp_trap": 1
+     "single_cover:ramp_trap": 1,
+     "ribbon:ramp_trap": 3
     }
    },
    "ramp_techniques": {},
@@ -3597,20 +3587,20 @@
     "column"
    ],
    "trace_summary": {
-    "steps": 9,
+    "steps": 10,
     "level2_steps": 0,
     "single_effect_steps": 1,
     "order": [
+     "room",
      "record",
      "single_cover",
-     "room",
      "silhouette",
      "exhausted"
     ],
     "techniques": {
+     "room": 3,
      "record": 1,
      "single_cover": 1,
-     "room": 2,
      "silhouette": 1,
      "exhausted": 4
     },
@@ -4098,7 +4088,7 @@
     "price"
    ],
    "trace_summary": {
-    "steps": 10,
+    "steps": 11,
     "level2_steps": 4,
     "single_effect_steps": 0,
     "order": [
@@ -4113,7 +4103,7 @@
     "techniques": {
      "price_cap": 1,
      "single_cover": 1,
-     "room": 1,
+     "room": 2,
      "silhouette": 2,
      "carbon": 1,
      "ribbon": 3,
@@ -4121,7 +4111,7 @@
     },
     "shape_steps": {
      "single_cover:ramp_trap": 1,
-     "room:ramp_trap": 1,
+     "room:ramp_trap": 2,
      "carbon:ramp_trap": 1
     }
    },
@@ -4393,8 +4383,8 @@
     "level2_steps": 9,
     "single_effect_steps": 6,
     "order": [
-     "exhausted",
      "room",
+     "exhausted",
      "record",
      "refuted",
      "silhouette",
@@ -4404,19 +4394,20 @@
      "ramp_plateau"
     ],
     "techniques": {
-     "exhausted": 1,
      "room": 4,
+     "exhausted": 1,
      "record": 1,
      "refuted": 2,
-     "silhouette": 2,
+     "silhouette": 3,
      "ribbon": 2,
      "share_out": 5,
-     "single_cover": 3,
+     "single_cover": 2,
      "ramp_plateau": 1
     },
     "shape_steps": {
      "room:ramp_trap": 3,
      "refuted:ramp_trap": 2,
+     "ribbon:ramp_trap": 1,
      "single_cover:ramp_trap": 2
     }
    },
@@ -4999,13 +4990,13 @@
     "price"
    ],
    "trace_summary": {
-    "steps": 22,
+    "steps": 23,
     "level2_steps": 0,
     "single_effect_steps": 8,
     "order": [
+     "room",
      "price_cap",
      "record",
-     "room",
      "single_cover",
      "program",
      "ramp_plateau",
@@ -5013,9 +5004,9 @@
      "length"
     ],
     "techniques": {
+     "room": 8,
      "price_cap": 1,
      "record": 2,
-     "room": 7,
      "single_cover": 2,
      "program": 1,
      "ramp_plateau": 4,
@@ -5023,8 +5014,8 @@
      "length": 1
     },
     "shape_steps": {
+     "room:ramp_trap": 3,
      "price_cap:ramp_trap": 1,
-     "room:ramp_trap": 2,
      "program:ramp_trap": 1,
      "ramp_plateau:ramp_trap": 2,
      "ramp_shoulder:ramp_trap": 3
@@ -5515,9 +5506,10 @@
    "rating": 4,
    "label": "Expert",
    "techniques": [
-    "exhausted",
     "ramp_lone",
     "refuted",
+    "ribbon",
+    "room",
     "share_out",
     "silhouette",
     "single_cover"
@@ -5537,23 +5529,25 @@
     "column"
    ],
    "trace_summary": {
-    "steps": 13,
-    "level2_steps": 8,
-    "single_effect_steps": 4,
+    "steps": 16,
+    "level2_steps": 10,
+    "single_effect_steps": 5,
     "order": [
+     "room",
      "single_cover",
      "ramp_lone",
      "share_out",
+     "ribbon",
      "refuted",
-     "exhausted",
      "silhouette"
     ],
     "techniques": {
+     "room": 2,
      "single_cover": 3,
      "ramp_lone": 1,
      "share_out": 6,
+     "ribbon": 2,
      "refuted": 1,
-     "exhausted": 1,
      "silhouette": 1
     },
     "shape_steps": {

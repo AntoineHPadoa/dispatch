@@ -21,7 +21,6 @@ button { font: inherit; color: inherit; }
 
 .m { max-width: 1180px; margin: 0 auto; padding: 24px max(16px, env(safe-area-inset-right, 0px)) 48px max(16px, env(safe-area-inset-left, 0px)); }
 .eyebrow { font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; color: var(--soft); font-weight: 800; }
-.kicker { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 800; }
 .diff { font-size: .7rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
 .diff.d1 { background: #e5f2e9; color: #3f7656; }
 .diff.d2 { background: #f6efcf; color: #866a1f; }
@@ -35,7 +34,7 @@ button { font: inherit; color: inherit; }
 
 /* ---- tools (pills) ---- */
 .tools { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
-.tool { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; color: var(--soft); background: transparent; border: 1px solid var(--hair); border-radius: 999px; padding: 6px 10px; cursor: pointer; text-decoration: none; min-height: 32px; }
+.tool { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; color: var(--soft); background: transparent; border: 1px solid var(--hair); border-radius: 999px; padding: 6px 8px; cursor: pointer; text-decoration: none; min-height: 32px; }
 .tool:hover { color: var(--ink); border-color: #d9cbd3; }
 .tool.on { color: var(--ink); border-color: var(--ink); }
 .tool:disabled { opacity: .45; cursor: default; }
@@ -160,8 +159,8 @@ body:has(.home), body:has(.game) { background-color: #faf8f9; background-image: 
 .sbody p { margin: 0; color: #5d5463; font-size: .9rem; max-width: 62ch; }
 .sil-wrap { display: grid; place-items: center; }
 .sil { width: 100%; max-width: 380px; height: auto; display: block; }
-.chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
-.home .chip { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: .76rem; padding: 4px 10px 4px 6px; border-radius: 999px; background: #fff; border: 1px solid #ece6ea; }
+.plant-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.home .chip { cursor: default; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: .76rem; padding: 4px 10px 4px 6px; border-radius: 999px; background: #fff; border: 1px solid #ece6ea; }
 .sq { display: inline-flex; gap: 2px; }
 .sq i { width: 7px; height: 7px; border-radius: 2px; background: #cfc6cc; display: block; }
 .sact { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
@@ -278,6 +277,10 @@ body.print-preview #print-root .a4 { box-shadow: 0 2px 18px rgba(59, 51, 64, .12
 @media screen and (max-width: 520px) { body.print-preview #print-root .a4 { zoom: .43; } }
 /* 210 mm at .36 is 286 px: the sheet keeps a 16 px margin on a 320 px screen. */
 @media screen and (max-width: 380px) { body.print-preview #print-root .a4 { zoom: .36; } }
+/* Phones: the plant chips wrap instead of scrolling, so the last one is never cut off. */
+@media (max-width: 400px) {
+  .chips-row { flex-wrap: wrap; overflow-x: visible; -webkit-mask-image: none; mask-image: none; }
+}
 @media (max-width: 360px) { .tool { padding: 6px 8px; gap: 4px; font-size: .74rem; } }
 
 .board-svg [data-act] { -webkit-tap-highlight-color: transparent; }

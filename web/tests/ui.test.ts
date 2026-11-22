@@ -12,7 +12,7 @@ import {
 import { canUndo, MAX_PAST, push, reset, start, undo } from '../src/ui/history';
 import {
   ProgressStore, STORAGE_KEY, emptyProgress, isPlayState, nextGrid, parseProgress,
-  playOrder, recordState, statusOf, type KeyValueStore,
+  playOrder, recordState, statusOf, gridFingerprint, savedBoard, type KeyValueStore,
 } from '../src/ui/progress';
 import { bandPlan, boardLead, boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard, stepTagLabels } from '../src/ui/board';
 import {
@@ -20,10 +20,11 @@ import {
   poseMessage, techniqueLine,
 } from '../src/ui/game';
 import { MSG, durationText } from '../src/i18n/fr';
-import { STEP_KEY, bookEntries, inventoryExchanges, isDayClue, orderClues, withInventoryExchanges, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, richClueText } from '../src/ui/panels';
+import { STEP_KEY, bookEntries, inventoryExchanges, isDayClue, orderClues, withInventoryExchanges, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, richClueText, shownClueCount } from '../src/ui/panels';
 import { renderSheet, slotLegend } from '../src/ui/print';
 import { stepArrowAction, stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from '../src/ui/step';
 import { UI } from '../src/i18n/fr';
+import { currentBulletin } from '../src/model/bulletin';
 
 const grids = gridsJson as unknown as Grid[];
 const byId = (id: number) => structuredClone(grids.find((g) => g.id === id)!);
@@ -255,11 +256,14 @@ describe('progress', () => {
   });
 
   it('play order: tutorials then rated grids; next grid follows it', () => {
-    const order = playOrder(grids).map((g) => g.section);
-    expect(order.lastIndexOf('tutorial')).toBeLessThan(order.indexOf('rated'));
-    expect(nextGrid(grids, 7)?.id).toBe(12);
-    expect(nextGrid(grids, 13)?.section).toBe('rated');
-    expect(nextGrid(grids, playOrder(grids).slice(-1)[0]!.id)).toBeNull();
+    const today = '2026-11-21';
+    const order = playOrder(grids, today);
+    const sections = order.map((g) => g.section);
+    expect(sections.lastIndexOf('tutorial')).toBeLessThan(sections.indexOf('rated'));
+    const tutorials = order.filter((g) => g.section === 'tutorial');
+    for (let i = 0; i + 1 < tutorials.length; i++) expect(nextGrid(grids, tutorials[i]!.id, today)?.id).toBe(tutorials[i + 1]!.id);
+    expect(nextGrid(grids, tutorials.at(-1)!.id, today)?.id).toBe(currentBulletin(grids, today)!.id);
+    expect(nextGrid(grids, order.at(-1)!.id, today)).toBeNull();
   });
 });
 
@@ -488,16 +492,16 @@ describe('review S6.3 round 1', () => {
     expect(free.state?.exports.DE?.[6]).toBe(1);
   });
 
-  it('a full but wrong board says why, and its unmet clue is contradicted', () => {
+  it('a full but wrong board says why, and its unmet cell clue is contradicted', () => {
     const g = byId(8);
-    g.clues.push({ type: 'exchanges', imports: { '*': 1 } });
+    g.clues.push({ type: 'column', col: 0, counts: { N: 0 } });
     const ev = evaluate(g, solutionState(g));
     expect(ev.missing).toBe(0);
     expect(ev.solved).toBe(false);
     expect(ev.clues[ev.clues.length - 1]!.status).toBe('broken');
     const m = boardMessage(ev, { text: 'Nucléaire à 0h, ligne 1 : la pose tient.', tone: 'ok' });
     expect(m?.tone).toBe('bad');
-    expect(m?.text).toMatch(/^Indice non respecté : Aujourd’hui/);
+    expect(m?.text).toMatch(/^Indice non respecté : Relevé/);
     // A refusal from the last action stays on screen.
     expect(boardMessage(ev, { text: 'refus', tone: 'bad' })).toEqual({ text: 'refus', tone: 'bad' });
     // Cells left to cover: no verdict yet, the idle hint shows.
@@ -971,9 +975,36 @@ describe('order book without exchanges line; exchanges in the clue card', () => 
   it('the paper day list carries the exchanges line, and the card has one name', () => {
     const sheet = renderSheet(byId(6), 6);
     expect(sheet).toContain('Aujourd’hui');
-    expect(sheet).toContain(UI.dayClues);
-    expect(UI.dayClues).toBe('Publications du marché');
-    expect(UI.gridClues).toBe(UI.dayClues);
+    expect(sheet).toContain(UI.printDayTitle);
     expect(renderClues(byId(10), evaluate(byId(10), newGame(byId(10))).clues, newGame(byId(10)))).toContain('Publications du marché');
+  });
+});
+
+describe('verdict clue count (review S8 A1)', () => {
+  it('counts the clues the card lists, the exchanges line of an exact inventory included', () => {
+    const withLine = grids.filter((g) => inventoryExchanges(g));
+    expect(withLine.length).toBeGreaterThan(0);
+    for (const g of grids) {
+      const listed = withInventoryExchanges(g, solutionState(g), evaluate(g, solutionState(g)).clues).length;
+      expect(shownClueCount(g)).toBe(listed);
+    }
+    for (const g of withLine) {
+      const k = shownClueCount(g);
+      expect(UI.doneText(k, '1 min')).not.toBe(UI.doneText(g.clues.length, '1 min'));
+    }
+  });
+});
+
+describe('saved board and grid version (review S8 B M14)', () => {
+  it('replays a board only on the grid it was saved on', () => {
+    const g = byId(7);
+    const s = solutionState(g);
+    const saved = parseProgress(JSON.stringify(recordState(emptyProgress(), g.id, s, 5, false, gridFingerprint(g)))).grids[String(g.id)];
+    expect(savedBoard(saved, g)).toEqual(s);
+    const changed = { ...g, demand: g.demand.map((d, i) => (i === 0 ? d + 1 : d)) };
+    expect(gridFingerprint(changed)).not.toBe(gridFingerprint(g));
+    expect(savedBoard(saved, changed)).toBeUndefined();
+    // an older save without fingerprint is kept
+    expect(savedBoard({ status: 'started', state: s }, changed)).toEqual(s);
   });
 });

@@ -2,8 +2,9 @@
 
 - validate() is a port of web/src/model/grid.ts validateGrid(): same checks, same English messages, so
   the shared reference grids (fixtures/grids/) compare both implementations error by error.
-- Extra, behind a flag: `pieces.C.shape` = "trap" or "stair" (coal ramps, docs/next/rampe.md; no `height`,
-  `len` = total width), refused unless allow_ramp=True because the web engine does not know ramps yet.
+- Behind a flag: `pieces.C.shape` = "trap" or "stair" (coal ramps, docs/next/rampe.md; no `height`,
+  `len` = total width), refused unless allow_ramp=True. The web game plays trapezoids; the published
+  grid checks (check_published, check_unique.py) and the lab pass the flag.
 - load_grids() reads one grid, a list of grids, or a fixture ({"grid": ..., "expect": ...}).
 
 Example: errors = validate(json.load(open("grid.json")))

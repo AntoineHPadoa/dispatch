@@ -9,6 +9,7 @@ import gridsJson from '../src/data/grids.json';
 import { currentBulletin, isPublished, localIsoDate, previousBulletins, publishedBulletins, weekdayIndex } from '../src/model/bulletin';
 import { dossierNext, dossierProgress, dossiers } from '../src/model/dossiers';
 import { renderDossier, renderHome } from '../src/ui/home';
+import { frenchSpaces } from '../src/i18n/fr';
 import { sheetSilhouette } from '../src/ui/home-art';
 import { emptyProgress, nextGrid, playOrder } from '../src/ui/progress';
 import { isIsoDate, validateGrid, type Grid } from '../src/model/grid';
@@ -87,7 +88,8 @@ describe('sheet of the day', () => {
   });
 
   it('keeps the last published one when the stock runs out', () => {
-    expect(currentBulletin(grids, '2031-01-01')?.id).toBe(d!.id);
+    const latest = [...rated].sort((x, y) => x.bulletin!.published.localeCompare(y.bulletin!.published)).at(-1)!;
+    expect(currentBulletin(grids, '2999-01-01')?.id).toBe(latest.id);
   });
 
   it('is null before the first publication', () => {
@@ -189,12 +191,15 @@ describe('home rendering', () => {
 
   it('stamps a finished sheet', () => {
     const root = stub();
-    const done = rated.at(-1)!;
+    const done = currentBulletin(grids, '2026-11-21')!;
     const p = { grids: { [done.id]: { status: 'done' } } } as unknown as ReturnType<typeof emptyProgress>;
     renderHome(root, grids, p, '2026-11-21');
     expect(root.innerHTML).toContain('Bouclé');
     // The finished sheet shows its solution: one rectangle per placement, in plant colours.
     expect(root.innerHTML.match(/class="sil-piece"/g)).toHaveLength(done.solution.placements.length);
+    // Review S8 A6: every exported cell keeps a dashed outline above the demand.
+    const exported = Object.values(done.solution.exports).flat().reduce((x, y) => x + y, 0);
+    expect(root.innerHTML.match(/class="sil-export"/g) ?? []).toHaveLength(exported);
   });
 
   it('a finished STEP sheet: one silhouette cell per cell of the laid pieces', () => {
@@ -203,6 +208,20 @@ describe('home rendering', () => {
     const svg = sheetSilhouette(g7, g7.demand.map(() => 'sun' as const), () => '', '', true);
     const covered = g7.solution!.placements.reduce((a, p) => a + p.len * (p.height ?? 1), 0);
     expect(svg.match(/class="sil-cell/g)).toHaveLength(covered);
+  });
+
+  it('a column both pumped and exported: the pumped cell on top, the export under it (review S8 tour 2 N5)', () => {
+    const g7 = grids.find((g) => g.id === 7)!;
+    const c = g7.solution!.step[0]!.pump;
+    const exports = { XX: g7.demand.map((_, i) => (i === c ? 1 : 0)) };
+    const sheet = { ...g7, solution: { ...g7.solution!, exports } } as Grid;
+    const svg = sheetSilhouette(sheet, g7.demand.map(() => 'sun' as const), () => '', '', true);
+    const x = c * 40 + 4;
+    const yOf = (cls: string) => [...svg.matchAll(new RegExp(`class="${cls}" x="${x}" y="([\\d.]+)"`, 'g'))].map((m) => Number(m[1]));
+    const pumped = g7.solution!.step.filter((q) => q.pump === c).length;
+    expect(yOf('sil-pump')).toHaveLength(pumped);
+    expect(yOf('sil-export')).toHaveLength(1);
+    expect(Math.max(...yOf('sil-pump'))).toBeLessThan(yOf('sil-export')[0]!);
   });
 
   it('an open sheet shows no solution', () => {
@@ -218,9 +237,16 @@ describe('home rendering', () => {
     expect(root.innerHTML).toContain('Premier bulletin le 18 novembre 2026');
   });
 
-  it('dossier page lists the 9 tutorial grids', () => {
+  it('dossier page lists every tutorial grid', () => {
     const root = stub();
     renderDossier(root, dossiers(grids)[0]!, emptyProgress());
-    expect(root.innerHTML.match(/class="fiche /g)).toHaveLength(9);
+    expect(root.innerHTML.match(/class="fiche /g)).toHaveLength(grids.filter((g) => g.section === 'tutorial').length);
+  });
+});
+
+describe('bulletin typography (review S8 A8)', () => {
+  it('keeps a number with its unit and puts a thin no-break space before a colon', () => {
+    expect(frenchSpaces('jusqu’à 6 GW dès midi : la France')).toBe('jusqu’à 6\u00a0GW dès midi\u202f: la France');
+    expect(frenchSpaces('2 blocs, 12h')).toBe('2\u00a0blocs, 12h');
   });
 });

@@ -15,9 +15,9 @@
   "duplicate": 2
  },
  "ratings": {
-  "Facile": 6,
-  "Moyen": 8,
-  "Difficile": 3,
+  "Facile": 7,
+  "Moyen": 10,
+  "Difficile": 0,
   "Expert": 3
  },
  "families": {
@@ -68,15 +68,17 @@
  "ramp_grids": 0,
  "ramp_grids_with_technique": 0,
  "ramp_techniques": {
-  "ramp_lone": 0,
   "ramp_plateau": 0,
-  "ramp_relay": 0,
-  "ramp_shoulder": 0
+  "ramp_shoulder": 0,
+  "ramp_lone": 0,
+  "ramp_relay": 0
  },
  "seconds": 125.8,
  "seconds_per_kept_grid": 6.3,
  "workers": 6,
  "generator": "dispatch-solver 2.0.0",
  "blocked_ramp": 0,
- "errors": []
+ "errors": [],
+ "ramp_grids_with_own_technique": 0,
+ "rerated": "scripts/rerate_lots.py (deduction review S8, C1-C5)"
 }

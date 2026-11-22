@@ -1,6 +1,6 @@
 # Dispatch
 
-Printable logic puzzle on the power grid: fill the day's demand curve with power plants (rectangles: width = running time, height = power), following the market clues. One solution per grid, no score. Static web game (French) published on GitHub Pages. Game rules and grid format: `GAME-DESIGN.md`.
+Printable logic puzzle on the power grid: fill the day's demand curve with power plants (fixed shapes: width = running time, height = power; coal may ramp), following the market clues. One solution per grid, no score. Static web game (French) published on GitHub Pages. Game rules and grid format: `GAME-DESIGN.md`.
 
 ## Map
 
@@ -9,14 +9,13 @@ Printable logic puzzle on the power grid: fill the day's demand curve with power
   - `src/engine/` — pure engine, no DOM, immutable state: actions, rules, clue status, verdict on the composition (§8.1).
   - `src/ui/` — hash router, home, game screen (SVG board, gestures, undo, progress in `localStorage`), print sheets; `src/styles/` screen and print CSS.
   - `src/i18n/fr.ts` — every text shown to the player.
-  - `src/data/grids.json` — the 11 grids (7 tutorial, 4 rated).
-  - `scripts/convert-grids.ts` (prototype format → §14), `scripts/check_unique.py` (every grid unique, equal to its reference and deducible, with `dispatch_solver`).
-  - `tests/` — Vitest: grids, engine, place-over, convert, UI logic, shared reference grids.
-- `lab/` — grid lab (the human's creation tool): `lab_server.py` (local JSON API, standard library only), `run.sh` (one launch command), `candidates/` (lots written by `dispatch-solver generate`), `lots/`, `plays.jsonl`, `notes.json`, `players.json`; tests in `lab/tests/`. Page: `web/lab.html` + `web/src/lab/` (dev server only, never in the published build).
+  - `src/data/grids.json` — the published grids: tutorials (coal ramp ones included), then rated grids with a daily bulletin. Never write a grid count anywhere: the lab promotes new ones.
+  - `scripts/check_unique.py` (every grid unique, equal to its reference and deducible, with `dispatch_solver`), `scripts/check-ui.mjs` (every grid played in Chrome at 1280/375/320 px, print pages), `scripts/convert-grids.ts` (one-off prototype → §14 converter; refuses to overwrite `grids.json` when ids would be lost).
+  - `tests/` — Vitest: grids, engine, place-over, convert, UI logic, lab logic, shared reference grids. Tests select grids by property or id and derive counts: a promotion must not break them.
+- `lab/` — grid lab (the human's creation tool): `lab_server.py` (local JSON API, standard library only), `run.sh` (one launch command), `lots/<lot>.json` (generator configs and quotas), `candidates/<lot>.json` (§14 grids + `lab` block: measures, bulletin draft) and `.stats.json`, `plays.jsonl`, `notes.json`, `players.json`; tests in `lab/tests/`. Page: `web/lab.html` + `web/src/lab/` (dev server only, never in the published build).
 - `solver/` — Python package `dispatch_solver` (OR-Tools CP-SAT), §14 native: validator (port of `validateGrid`, same messages), cell-by-cell shapes (rectangles, tall pieces, coal ramps `trap`/`stair` behind a flag), exact solver (uniqueness on the composition), human-deduction solver (§9 techniques, traces, provisional rating), generator (lots with imposed diversity, minimal clues, bulletin drafts), CLI `dispatch-solver`. Design: `docs/next/solver-v2.md`. The old pose-format solver is in `docs/archive/solver-v1/`.
 - `fixtures/grids/` — shared reference grids (valid, invalid, unpublishable, each with `expect`), played by pytest and by `web/tests/reference.test.ts`; rebuilt by `solver/scripts/build_fixtures.py`.
-- `lab/` — grid lab data: `lots/<lot>.json` (generator configs and quotas), `candidates/<lot>.json` (§14 grids + `lab` block: measures, bulletin draft) and `.stats.json`.
-- `docs/next/` — next iteration brief, `docs/next/brief.md` (local, untracked).
+- `docs/next/` — current designs: `brief.md` (v2 brief), `solver-v2.md` (solver and generator), `rampe.md` + `rampe/` (coal ramp study and its grids).
 - `docs/style-reference.html` — visual reference (screen style A, paper style B); `docs/reviews/` reviews and captures; `docs/archive/` prototype and superseded notes (read-only).
 - `.github/workflows/deploy.yml` — solver tests + uniqueness check, web tests, build and publish on every push to `main`.
 
@@ -30,15 +29,18 @@ npm test                  # Vitest
 npm run typecheck         # tsc --noEmit
 npm run build             # typecheck + build to web/dist
 npm run preview           # production build at http://localhost:4173/dispatch/
-npm run convert           # regenerate src/data/grids.json from docs/archive/demo/grids-pose.json
 ../solver/.venv/bin/python scripts/check_unique.py   # every grid has exactly one composition; run after any change to grids.json (CI runs it too)
+node scripts/check-ui.mjs --base http://127.0.0.1:4173/dispatch/   # against npm run preview: every grid in Chrome, 3 widths
 
 cd solver
 uv sync                   # creates .venv
-.venv/bin/pytest -q       # solver tests (~1 min)
-.venv/bin/dispatch-solver check ../web/src/data/grids.json --id 7   # validity, compositions, deduction, rating
-.venv/bin/dispatch-solver deduce ../web/src/data/grids.json --id 11 # deduction trace
-.venv/bin/dispatch-solver generate ../lab/lots/demo-01.json         # fill a lot into lab/candidates/
+.venv/bin/pytest -q       # solver tests (~3 min)
+.venv/bin/dispatch-solver check ../web/src/data/grids.json --id 7   # validity, compositions, deduction, rating (--strict: exit 1 unless publishable)
+.venv/bin/dispatch-solver deduce ../web/src/data/grids.json --id 11 # deduction trace (--index N for a lab candidate)
+.venv/bin/dispatch-solver check-published                           # every published grid, like check_unique.py
+.venv/bin/dispatch-solver generate ../lab/lots/demo-01.json         # fill a lot into lab/candidates/ (--out another folder)
+.venv/bin/python scripts/rerate_lots.py ../lab/candidates/demo-01.json   # re-rate a lot after a deduction change
+.venv/bin/python scripts/build_fixtures.py                          # rebuild fixtures/grids/ after a solver change, review the diff
 ```
 
 ```bash
@@ -46,11 +48,11 @@ lab/run.sh                # lab server (8765) + Vite; open http://localhost:5173
 solver/.venv/bin/python -m pytest lab/tests -q   # lab server tests
 ```
 
-Skills in `.claude/skills/`: `add-grid` (create, convert, check, play a grid), `run-app` (servers, headless Chrome captures, print PDF), `deploy` (workflow, checking the live site).
+Skills in `.claude/skills/`: `add-grid` (promote from the lab or write a grid, check, play it), `run-app` (servers, headless Chrome captures, print PDF), `deploy` (workflow, checking the live site).
 
 ## Conventions
 
-- Code, identifiers, comments, logs and developer errors in English; player-facing text in French, only in `web/src/i18n/fr.ts`.
+- Code, identifiers, comments, logs and developer errors in English; player-facing text in French, only in `web/src/i18n/fr.ts`. Exception: the lab (`web/src/lab/`, `lab/lab_server.py`), an internal tool, keeps its French labels in its own files.
 - File headers: short English bullets on what the file does, current state only.
 - Grids follow §14 and must pass `validateGrid()`; change the format in `grid.ts`, the validator and `GAME-DESIGN.md` §14 together.
 - A piece's legal shapes are its allowed widths × allowed heights. A STEP grid publishes its number of pairs (`inventory.step`, or `step` in an `exchanges` clue). A price clue names a plant, never a value, and never sits on a column with an import.

@@ -1,0 +1,122 @@
+[
+ {
+  "name": "lab nuit-jouer-a@1280: table lists 20 candidates (file 20)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "lab nuit-jouer-a@1280: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "lab nuit-jouer-a@1280: candidate 0 playable",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "lab nuit-jouer-a@1280: blind (no rating or technique shown)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "lab nuit-jouer-a@1280: solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "lab nuit-jouer-a@1280: reveal after the felt rating",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "lab nuit-jouer-a@1280: kept (★ Gardée)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "lab nuit-jouer-a@1280: no console/JS error",
+  "ok": false,
+  "detail": "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+ },
+ {
+  "name": "lab nuit-rampe@1280: table lists 20 candidates (file 20)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "lab nuit-rampe@1280: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "lab nuit-rampe@1280: candidate 0 playable",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "lab nuit-rampe@1280: blind (no rating or technique shown)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "lab nuit-rampe@1280: solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "lab nuit-rampe@1280: reveal after the felt rating",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "lab nuit-rampe@1280: kept (★ Gardée)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "lab nuit-rampe@1280: no console/JS error",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "lab nuit-jouer-b@375: table lists 20 candidates (file 20)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "lab nuit-jouer-b@375: no horizontal scroll",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "lab nuit-jouer-b@375: candidate 0 playable",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "lab nuit-jouer-b@375: blind (no rating or technique shown)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "lab nuit-jouer-b@375: solution -> verdict",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "lab nuit-jouer-b@375: reveal after the felt rating",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "lab nuit-jouer-b@375: kept (★ Gardée)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "lab nuit-jouer-b@375: no console/JS error",
+  "ok": true,
+  "detail": ""
+ }
+]

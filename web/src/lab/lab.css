@@ -18,6 +18,7 @@ body.lab .diff { display: none; }
 .lab-btn { border: 1px solid var(--hair); background: var(--card); border-radius: 8px; padding: 6px 12px; font-weight: 700; cursor: pointer; text-decoration: none; color: var(--ink); font-size: .85rem; }
 .lab-btn.pri { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .lab-btn.acc { background: var(--accent); color: #fff; border-color: var(--accent); }
+.lab-btn:disabled { opacity: .45; cursor: default; }
 .lab-card { background: var(--card); border: 1px solid var(--hair); border-radius: 12px; padding: 12px; min-width: 0; }
 .lab-note { color: var(--soft); font-size: .78rem; }
 .lab-chip { display: inline-block; padding: 1px 7px; border-radius: 99px; background: var(--wash); font-size: .74rem; font-weight: 700; white-space: nowrap; }
@@ -34,7 +35,7 @@ body.lab .diff { display: none; }
 .lab-tbl { overflow-x: auto; border: 1px solid var(--hair); border-radius: 12px; background: var(--card); }
 .lab-tbl table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: .8rem; }
 .lab-tbl.compact table { min-width: 0; }
-.lab-tbl td.lab-wrap { white-space: normal; min-width: 130px; }
+.lab-tbl td.lab-wrap { white-space: normal; min-width: 110px; }
 .lab-tbl th, .lab-tbl td { padding: 5px 8px; text-align: left; border-bottom: 1px solid var(--hair); white-space: nowrap; vertical-align: middle; }
 .lab-tbl th { font-size: .66rem; text-transform: uppercase; letter-spacing: .06em; color: var(--soft); user-select: none; }
 .lab-tbl th[data-k] { cursor: pointer; }
