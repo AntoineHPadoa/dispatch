@@ -3,11 +3,14 @@
  * - Types describe one puzzle: silhouette (demand - weather), pieces, neighbors, STEP, CO2 cap,
  *   inventory, market clues, reference solution, difficulty and the optional market bulletin.
  * - validateGrid() checks structure, cross-references (columns, pieces, countries) and geometry of the
- *   laid pieces (allowed width, height and ramp shape, inside the grid, off the weather cells, STEP order, line capacity); it does not
- *   check that the solution satisfies the rules (that is the engine's job).
+ *   laid pieces (allowed width, height and ramp shape, inside the grid, off the weather cells, STEP order, line capacity).
+ * - On an otherwise valid grid, it checks the reference drawing: no two placements share a cell, and weather +
+ *   placements cover exactly the silhouette (demand + exports + pumps - turbines) in every column (unless the
+ *   grid has no placement at all).
+ * - It does not check clues, inventory or uniqueness (the engine and the solvers do).
  */
 
-import { RAMP_MIN_WIDTH, RAMP_PIECE, SHAPE_KINDS, type ShapeKind } from './shapes';
+import { RAMP_MIN_WIDTH, RAMP_PIECE, SHAPE_KINDS, profile, type ShapeKind } from './shapes';
 
 /** Dispatchable plants, from cheapest to most expensive (merit order). */
 export const PIECE_IDS = ['N', 'B', 'C', 'G', 'T'] as const;
@@ -579,7 +582,51 @@ export function validateGrid(raw: unknown): ValidationResult {
     }
   }
 
+  if (errors.length === 0) checkDrawing(raw as unknown as Grid, err);
   return { ok: errors.length === 0, errors };
+}
+
+/**
+ * Reference drawing of a structurally valid grid (§4, §14): no two placements share a cell, and in each column the
+ * weather bricks plus the placements fill rows 0 .. top - 1 exactly, top = demand + exports + pumps - turbines.
+ * One message per overlapping pair (first shared column) and per badly covered column (lowest faulty row).
+ * An empty `placements` list means no reference drawing (a grid with several compositions): coverage is not checked.
+ */
+function checkDrawing(g: Grid, err: (m: string) => void): void {
+  const n = g.columns.length;
+  const top = [...g.demand];
+  for (const v of Object.values(g.solution.exports)) v.forEach((x, c) => { top[c] = (top[c] as number) + x; });
+  for (const s of g.solution.step) {
+    top[s.pump] = (top[s.pump] as number) + 1;
+    top[s.turbine] = (top[s.turbine] as number) - 1;
+  }
+  const owner = new Map<string, number>(); // "row,col" -> placement index (-1 for weather)
+  for (let c = 0; c < n; c++) {
+    for (let r = 0; r < (g.weather.R[c] as number) + (g.weather.F[c] as number); r++) owner.set(`${r},${c}`, -1);
+  }
+  g.solution.placements.forEach((p, i) => {
+    const kind: ShapeKind = p.piece === IMPORT_PIECE ? 'rect' : (g.pieces[p.piece]?.shape ?? 'rect');
+    const hit = new Map<number, number>(); // earlier placement -> first shared column
+    profile(kind, p.len, p.height ?? 1).forEach(([bottom, h], dc) => {
+      for (let k = 0; k < h; k++) {
+        const key = `${p.row + bottom + k},${p.col + dc}`;
+        const j = owner.get(key);
+        if (j !== undefined && j >= 0 && !hit.has(j)) hit.set(j, p.col + dc);
+        owner.set(key, i);
+      }
+    });
+    [...hit.entries()].sort((a, b) => a[0] - b[0])
+      .forEach(([j, c]) => err(`solution.placements[${i}]: overlaps solution.placements[${j}] at ${g.columns[c]}`));
+  });
+  if (g.solution.placements.length === 0) return;
+  const height = Math.max(0, ...[...owner.keys()].map((k) => Number(k.split(',')[0]) + 1), ...top);
+  for (let c = 0; c < n; c++) {
+    for (let r = 0; r < height; r++) {
+      const filled = owner.has(`${r},${c}`);
+      if (r < (top[c] as number) && !filled) { err(`solution: hole at ${g.columns[c]}, row ${r}`); break; }
+      if (r >= (top[c] as number) && filled) { err(`solution: cell above the silhouette at ${g.columns[c]}, row ${r}`); break; }
+    }
+  }
 }
 
 /** Validate and narrow; throws with every error when the grid is malformed. */

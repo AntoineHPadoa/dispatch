@@ -7,6 +7,8 @@
   grid checks (check_published, check_unique.py) and the lab pass the flag.
 - Rows are absolute (0 = bottom of the grid, weather included): a placement or an `engaged` clue never
   starts under the weather bricks F + R of a column it covers.
+- On an otherwise valid grid, the reference drawing: no two placements share a cell, and weather + placements
+  cover exactly demand + exports + pumps - turbines in each column (not checked when `placements` is empty).
 - load_grids() reads one grid, a list of grids, or a fixture ({"grid": ..., "expect": ...}).
 
 Example: errors = validate(json.load(open("grid.json")))
@@ -379,7 +381,59 @@ def validate(g: Any, allow_ramp: bool = False) -> list[str]:
 
     if "bulletin" in g:
         _check_bulletin(g["bulletin"], n, err)
+    if not errors:
+        _check_drawing(g, err)
     return errors
+
+
+def _profile(kind: str, length: int, height: int) -> list[int]:
+    """Cells per column of a laid shape, all from its base row (same profiles as web/src/model/shapes.ts)."""
+    if kind == "trap":
+        return [1 if i in (0, length - 1) else 2 for i in range(length)]
+    if kind == "stair":
+        return [1 if i == length - 1 else 2 for i in range(length)]
+    return [height] * length
+
+
+def _check_drawing(g: dict[str, Any], err: Any) -> None:
+    """Reference drawing of a structurally valid grid (§4, §14), as validateGrid(): no two placements share a cell,
+    and weather + placements fill rows 0 .. top - 1 of each column, top = demand + exports + pumps - turbines.
+    One message per overlapping pair (first shared column) and per badly covered column (lowest faulty row);
+    an empty `placements` list means no reference drawing, so coverage is not checked."""
+    cols, sol = g["columns"], g["solution"]
+    n = len(cols)
+    top = list(g["demand"])
+    for v in sol["exports"].values():
+        for c in range(n):
+            top[c] += v[c]
+    for s in sol["step"]:
+        top[s["pump"]] += 1
+        top[s["turbine"]] -= 1
+    owner = {(r, c): -1 for c in range(n) for r in range(g["weather"]["R"][c] + g["weather"]["F"][c])}
+    for i, p in enumerate(sol["placements"]):
+        kind = "rect" if p["piece"] == IMPORT_PIECE else g["pieces"][p["piece"]].get("shape", "rect")
+        hit: dict[int, int] = {}  # earlier placement -> first shared column
+        for dc, h in enumerate(_profile(kind, p["len"], p.get("height", 1))):
+            for k in range(h):
+                cell = (p["row"] + k, p["col"] + dc)
+                j = owner.get(cell)
+                if j is not None and j >= 0 and j not in hit:
+                    hit[j] = p["col"] + dc
+                owner[cell] = i
+        for j in sorted(hit):
+            err(f"solution.placements[{i}]: overlaps solution.placements[{j}] at {cols[hit[j]]}")
+    if not sol["placements"]:
+        return
+    height = max([0, *top, *(r + 1 for r, _ in owner)])
+    for c in range(n):
+        for r in range(height):
+            filled = (r, c) in owner
+            if r < top[c] and not filled:
+                err(f"solution: hole at {cols[c]}, row {r}")
+                break
+            if r >= top[c] and filled:
+                err(f"solution: cell above the silhouette at {cols[c]}, row {r}")
+                break
 
 
 def _check_shape(pid: str, d: dict[str, Any], allow_ramp: bool, err: Any) -> None:

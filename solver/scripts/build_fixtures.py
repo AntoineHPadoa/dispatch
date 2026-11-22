@@ -4,7 +4,8 @@
   pieces, stock, surplus, CO2 cap, length clues, partial day totals, STEP without inventory, ramps),
   completed by the reference solution and the clue selection, then checked (one composition, deducible).
 - Weather bricks: a bar above a weather step and a surplus brick over the demand (checked on the reference);
-  the invalid cases include a bar and an engaged clue on a weather cell.
+  the invalid cases include a bar and an engaged clue on a weather cell, overlapping placements, a hole
+  and a cell above the silhouette in the reference drawing.
 - Invalid grids: one per validator check, with the expected messages written by hand (the contract with
   the TS validator), and well-formed grids that are not publishable (two compositions, reference
   breaking a clue, unique but not deducible).
@@ -418,6 +419,21 @@ INVALID: dict[str, tuple[Any, list[str], bool]] = {
             "bulletin.weather: 6 values among sun, moon, cloud, wind expected",
             "bulletin.published: ISO date YYYY-MM-DD expected",
         ],
+        False,
+    ),
+    "placements-overlap": (
+        lambda g: g["solution"]["placements"].append({"piece": "N", "row": 0, "col": 0, "len": 3}),
+        ["solution.placements[6]: overlaps solution.placements[0] at 0h"],
+        False,
+    ),
+    "drawing-hole": (
+        lambda g: g["solution"]["placements"].pop(5),
+        ["solution: hole at 8h, row 2"],
+        False,
+    ),
+    "drawing-above-silhouette": (
+        lambda g: g["solution"]["placements"].append({"piece": "I", "country": "DE", "row": 1, "col": 0, "len": 1}),
+        ["solution: cell above the silhouette at 0h, row 1"],
         False,
     ),
     "ramp-disabled": (
