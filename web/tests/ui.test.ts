@@ -20,7 +20,7 @@ import {
   poseMessage,
 } from '../src/ui/game';
 import { MSG, TUTORIAL_LORE, durationText } from '../src/i18n/fr';
-import { STEP_KEY, bookEntries, inventoryExchanges, isDayClue, orderClues, withInventoryExchanges, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, richClueText, shownClueCount, co2Costs } from '../src/ui/panels';
+import { STEP_KEY, bookEntries, inventoryExchanges, isDayClue, orderClues, withInventoryExchanges, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, richClueText, shownClueCount, splitExchanges, exchangeLines, co2Costs } from '../src/ui/panels';
 import { esc } from '../src/ui/palette';
 import { renderSheet, slotLegend } from '../src/ui/print';
 import { OK, PIECE_COLORS } from '../src/ui/palette';
@@ -432,7 +432,8 @@ describe('print sheet', () => {
     const open = renderClues(g, evaluate(g, s).clues, s);
     expect(open).toContain('Limite CO₂');
     // The publication keeps the limit only; the points per cell are the gauge's legend.
-    expect(open).toContain('Aujourd’hui : <span class="slot">9</span> points de CO₂ au plus.</span>');
+    expect(open).toContain('<span class="txt"><span class="slot">9</span> points de CO₂ au plus.</span>');
+    expect(open).not.toContain('Aujourd’hui');
     expect(open).not.toContain('Par case');
     expect(open).toMatch(/Limite CO₂.*?class="state "/s);
     expect(renderClues(g, evaluate(g, s).clues, s, true)).toMatch(/Limite CO₂.*?class="state ok"/s);
@@ -818,7 +819,7 @@ describe('clue card (every clue in text, time order)', () => {
       if (!grid.clues.length) continue;
       const ev = evaluate(grid, newGame(grid));
       const html = renderClues(grid, ev.clues, newGame(grid));
-      expect(html.match(/<li class="clue"/g)?.length ?? 0).toBe(grid.clues.length + (inventoryExchanges(grid) ? 1 : 0));
+      expect(html.match(/<li class="clue"/g)?.length ?? 0).toBe(shownClueCount(grid));
       expect(html).not.toContain('<details');
     }
   });
@@ -1183,9 +1184,10 @@ describe('order book without exchanges line; exchanges in the clue card', () => 
     }
     const g6 = byId(6);
     const html = renderClues(g6, evaluate(g6, newGame(g6)).clues, newGame(g6));
-    expect(html).toContain('Aujourd’hui');
+    expect(html).not.toContain('Aujourd’hui');
     expect(html).toContain('exporté');
-    expect(html.indexOf('Aujourd’hui')).toBeLessThan(html.indexOf('class="clue"', html.indexOf('Aujourd’hui') + 20));
+    // The exchanges line is the first publication.
+    expect(html.indexOf('exporté')).toBeLessThan(html.indexOf('class="clue"', html.indexOf('class="clue"') + 1));
   });
 
   it('G7 exchanges line also tells the STEP pair; grids without inventory or exports have none', () => {
@@ -1203,9 +1205,41 @@ describe('order book without exchanges line; exchanges in the clue card', () => 
   });
   it('the paper day list carries the exchanges line, and the card has one name', () => {
     const sheet = renderSheet(byId(6), 6);
-    expect(sheet).toContain('Aujourd’hui');
+    expect(sheet).toContain('blocs exportés');
+    expect(sheet).not.toContain('Aujourd’hui');
     expect(sheet).toContain(UI.printDayTitle);
     expect(renderClues(byId(10), evaluate(byId(10), newGame(byId(10))).clues, newGame(byId(10)))).toContain('Publications du marché');
+  });
+});
+
+describe('exchanges: one line per country, each checked on its own', () => {
+  it('splits by country, the all-country import total and the STEP; grid 10 keeps one line', () => {
+    expect(exchangeLines({ type: 'exchanges', exports: { DE: 2 }, imports: { DE: 2 } })).toHaveLength(1);
+    expect(exchangeLines({ type: 'exchanges', exports: { DE: 0, GB: 1 }, imports: { '*': 2, GB: 0 }, step: 1 })).toEqual([
+      { type: 'exchanges', exports: { DE: 0 } },
+      { type: 'exchanges', exports: { GB: 1 }, imports: { GB: 0 } },
+      { type: 'exchanges', imports: { '*': 2 } },
+      { type: 'exchanges', step: 1 },
+    ]);
+    const g10 = byId(10);
+    const html = renderClues(g10, evaluate(g10, newGame(g10)).clues, newGame(g10));
+    expect(html.match(/Échanges du jour/g)).toHaveLength(1);
+  });
+
+  it('a country line is checked as soon as its own count is met', () => {
+    const g = byId(10);
+    g.neighbors = [...g.neighbors, { id: 'GB', name: 'Royaume-Uni', cap: 1, co2: 0 }];
+    g.clues = [...g.clues.filter((c) => c.type !== 'exchanges'), { type: 'exchanges', exports: { DE: 2, GB: 1 }, imports: { '*': 2 } }];
+    const s = initialState(g);
+    const st = { ...s, exports: { ...s.exports, GB: g.columns.map((_, c) => (c === 0 ? 1 : 0)) } };
+    const lines = splitExchanges(g, st, evaluate(g, st).clues).filter((r) => r.clue.type === 'exchanges');
+    expect(lines.map((r) => [r.text, r.status])).toEqual([
+      ['2 blocs exportés vers l’Allemagne.', 'open'],
+      ['1 bloc exporté vers le Royaume-Uni.', 'ok'],
+      ['2 blocs importés, tous pays confondus.', 'open'],
+    ]);
+    expect(shownClueCount(g)).toBe(g.clues.length + 2);
+    expect(renderClues(g, evaluate(g, st).clues, st)).toMatch(/Royaume-Uni\.<\/span><\/span><span class="state ok"/);
   });
 });
 
@@ -1214,8 +1248,11 @@ describe('verdict clue count (review S8 A1)', () => {
     const withLine = grids.filter((g) => inventoryExchanges(g));
     expect(withLine.length).toBeGreaterThan(0);
     for (const g of grids) {
-      const listed = withInventoryExchanges(g, solutionState(g), evaluate(g, solutionState(g)).clues).length;
-      expect(shownClueCount(g)).toBe(listed);
+      const s = solutionState(g);
+      const listed = splitExchanges(g, s, withInventoryExchanges(g, s, evaluate(g, s).clues));
+      expect(shownClueCount(g) - (g.co2_cap !== null ? 1 : 0)).toBe(listed.length);
+      // Solved: every line, exchanges lines included, is checked.
+      expect(listed.every((r) => r.status === 'ok')).toBe(true);
     }
     for (const g of withLine) {
       const k = shownClueCount(g);

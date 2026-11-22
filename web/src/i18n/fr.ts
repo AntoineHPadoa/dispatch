@@ -107,11 +107,12 @@ export function clueText(grid: Grid, clue: Clue): string {
         parts.push(k ? `${plural(k, 'bloc exporté', 'blocs exportés')}${where}` : `aucun bloc exporté${where}`);
       }
       for (const [id, k] of Object.entries(clue.imports ?? {})) {
-        const where = multi && id !== '*' ? ` ${countryFrom(grid, id)}` : '';
+        const where = !multi ? '' : id === '*' ? ', tous pays confondus' : ` ${countryFrom(grid, id)}`;
         parts.push(k ? `${plural(k, 'bloc importé', 'blocs importés')}${where}` : `aucun bloc importé${where}`);
       }
       if (clue.step !== undefined) parts.push(clue.step ? plural(clue.step, 'pompage') : 'aucun pompage');
-      return `Aujourd’hui : ${parts.join(', ')}.`;
+      const text = parts.join(', ');
+      return `${text.charAt(0).toUpperCase()}${text.slice(1)}.`;
     }
     case 'engaged':
       return `Déjà engagé : ${PIECE_WORDS[clue.piece].a} de ${at(clue.col)} à ${at(clue.col + clue.len)}, `
@@ -405,7 +406,7 @@ export const UI = {
   co2Kind: 'Plafond CO₂',
   /** CO2 publication generated from `co2_cap`, listed with the market publications. */
   co2ClueKind: 'Limite CO₂',
-  co2Clue: (cap: number) => `Aujourd’hui : ${cap} points de CO₂ au plus.`,
+  co2Clue: (cap: number) => `${cap} points de CO₂ au plus.`,
   neighborLine: (name: string, cap: number) => `${name} · ${cap} ${cap > 1 ? 'blocs' : 'bloc'} par créneau`,
   /** Day's exchanges under a neighbor row: "→ 1/2", or "→ 0" when none is allowed. */
   exchangeCount: (arrow: string, got: number, want: number) => (want === 0 && got === 0 ? `${arrow} 0` : `${arrow} ${got}/${want}`),

@@ -422,7 +422,9 @@ describe('clues (one broken case per type)', () => {
     expect(clueText(g, { type: 'column', col: 4, counts: { G: 2, T: 0 } })).toBe('Relevé de 16h : 2 cases de gaz, aucune case de TAC.');
     expect(clueText(g, { type: 'flow', col: 5, country: 'DE', dir: 'export', value: 1 })).toBe("À 20h, 1 bloc part vers l’Allemagne.");
     expect(clueText(g, { type: 'flow', col: 5, country: 'UK', dir: 'import', value: 0 })).toBe("À 20h, aucun bloc n’arrive du Royaume-Uni.");
-    expect(clueText(g, { type: 'exchanges', exports: { DE: 2 }, step: 1 })).toBe("Aujourd’hui : 2 blocs exportés vers l’Allemagne, 1 pompage.");
+    expect(clueText(g, { type: 'exchanges', exports: { DE: 2 }, step: 1 })).toBe("2 blocs exportés vers l’Allemagne, 1 pompage.");
+    expect(clueText(g, { type: 'exchanges', imports: { '*': 2 } })).toBe('2 blocs importés, tous pays confondus.');
+    expect(clueText(g, { type: 'exchanges', exports: { DE: 0 } })).toBe('Aucun bloc exporté vers l’Allemagne.');
     expect(clueText(g, { type: 'engaged', piece: 'T', row: 4, col: 4, len: 1 })).toBe('Déjà engagé : une TAC de 16h à 20h, ligne 5.');
   });
 });
