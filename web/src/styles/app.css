@@ -56,6 +56,7 @@ button { font: inherit; color: inherit; }
 .intro .eyebrow { color: #7a64a3; }
 .intro b { font-family: var(--f-title); font-weight: 500; font-size: 1rem; }
 .intro span:last-child { font-size: .82rem; }
+.intro.lore { background: none; border: 0; padding: 0; margin: 0; font-style: italic; font-size: .88rem; color: var(--soft); line-height: 1.45; }
 
 .board-card { padding: 12px 14px; display: grid; gap: 6px; }
 .board-wrap { border-radius: 16px; min-width: 0; }
@@ -106,7 +107,9 @@ button.prow:hover { background: #faf4f7; }
 .mb.used::after { content: ""; position: absolute; left: -2px; right: -2px; top: 50%; border-top: 1.5px solid var(--soft); }
 .count { font-size: .7rem; color: var(--soft); font-variant-numeric: tabular-nums; margin-left: 2px; }
 .count.over { color: var(--bad); font-weight: 800; }
-.step-glyph { font-size: .66rem; font-weight: 800; letter-spacing: .05em; color: #4f7fb8; background: #e3eefa; border: 1px solid #bfd7f1; border-radius: 6px; padding: 1px 6px; }
+.step-glyph { font-size: .66rem; font-weight: 800; letter-spacing: .05em; color: #4f7fb8; background: #e3eefa; border: 1px solid #bfd7f1; border-radius: 6px; padding: 1px 6px; position: relative; }
+.step-glyph.used { opacity: .45; }
+.step-glyph.used::after { content: ""; position: absolute; left: -2px; right: -2px; top: 50%; border-top: 1.5px solid var(--soft); }
 .board-svg .step-tag.act, .board-svg .step-arrow.act { cursor: pointer; }
 .board-svg .step-arrow:focus { outline: none; }
 .board-svg .step-arrow:focus-visible circle { stroke: var(--accent); stroke-width: 2.5; }

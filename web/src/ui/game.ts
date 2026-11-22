@@ -16,7 +16,7 @@ import {
   barIndexAt, checkPlaceOver, evaluate, newGame, placeOver, remove, removeStep, setExport, exportsAt,
   importsAt, type ClueReport, type Evaluation, type PlayState,
 } from '../engine';
-import { MSG, TECHNIQUES, UI, columnLabel, countryTo, durationText, placementLabel, slotClueShort } from '../i18n/fr';
+import { MSG, TUTORIAL_LORE, UI, columnLabel, countryTo, durationText, placementLabel, slotClueShort } from '../i18n/fr';
 import { siteHead } from './home-art';
 import { boardLead, lockedExports, renderBoard, cellAt, type BoardGeometry } from './board';
 import {
@@ -67,13 +67,6 @@ export function isInitialState(grid: Grid, state: PlayState): boolean {
   if (state.bars.length || state.step.length) return false;
   const start = initialState(grid);
   return grid.neighbors.every((nb) => grid.columns.every((_, col) => exportsAt(state, nb.id, col) === exportsAt(start, nb.id, col)));
-}
-
-/** Bold technique line under "Technique du jour": empty when the title already names every technique. */
-export function techniqueLine(grid: Grid): string {
-  const names = (grid.teaches ?? []).map((t) => TECHNIQUES[t]?.name).filter(Boolean) as string[];
-  const title = displayTitle(grid).toLocaleLowerCase('fr');
-  return names.every((n) => title.includes(n.toLocaleLowerCase('fr'))) ? '' : names.join(' · ');
 }
 
 /** Force the exports fixed by flow clues (a saved board may predate them). */
@@ -183,12 +176,12 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
 
   const eyebrow = gameEyebrow(grid, ctx.grids, ctx.ratedEyebrow);
 
-  const tech = techniqueLine(grid);
-  const intro = grid.intro
-    ? `<div class="intro"><span class="eyebrow">${esc(grid.teaches?.length ? UI.techniqueOfDay : UI.instructions)}</span>`
-      + (tech ? `<b>${esc(tech)}</b>` : '')
-      + `<span>${esc(grid.intro)}</span></div>`
-    : '';
+  // A tutorial gets a lore line instead of an instructions card.
+  const lore = grid.teaches?.length ? TUTORIAL_LORE[grid.id] : undefined;
+  const intro = lore ? `<p class="intro lore">${esc(lore)}</p>`
+    : grid.intro && !grid.teaches?.length
+      ? `<div class="intro"><span class="eyebrow">${esc(UI.instructions)}</span><span>${esc(grid.intro)}</span></div>`
+      : '';
 
   root.innerHTML = `<div class="m game">
     ${siteHead()}
@@ -327,10 +320,10 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
 
   function drawSide() {
     const bookTitle = grid.inventory.level === 'exact' ? UI.book : UI.available;
-    const bookHint = grid.inventory.level === 'exact' ? UI.bookHint : UI.availableHint;
-    side.innerHTML = `<section class="card" aria-label="${esc(bookTitle)}"><h2 class="ct">${esc(bookTitle)} <small>${esc(bookHint)}</small></h2>`
+    const bookHint = grid.inventory.level === 'exact' ? '' : ` <small>${esc(UI.availableHint)}</small>`;
+    side.innerHTML = `<section class="card" aria-label="${esc(bookTitle)}"><h2 class="ct">${esc(bookTitle)}${bookHint}</h2>`
       + `${renderBook(grid, history.present, erase ? null : selected?.key ?? null)}</section>`
-      + renderClues(grid, ev.clues, history.present) + renderCo2(grid, history.present);
+      + renderClues(grid, ev.clues, history.present, ev.missing === 0) + renderCo2(grid, history.present);
   }
 
   function drawTools() {

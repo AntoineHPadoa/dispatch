@@ -17,9 +17,9 @@ import {
 import { bandPlan, boardLead, boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard, stepTagLabels } from '../src/ui/board';
 import {
   applyLockedExports, boardMessage, bulletinTag, displayTitle, exportTap, initialState, isInitialState, newlyBroken, nextExportValue,
-  poseMessage, techniqueLine,
+  poseMessage,
 } from '../src/ui/game';
-import { MSG, durationText } from '../src/i18n/fr';
+import { MSG, TUTORIAL_LORE, durationText } from '../src/i18n/fr';
 import { STEP_KEY, bookEntries, inventoryExchanges, isDayClue, orderClues, withInventoryExchanges, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, richClueText, shownClueCount } from '../src/ui/panels';
 import { renderSheet, slotLegend } from '../src/ui/print';
 import { PIECE_COLORS } from '../src/ui/palette';
@@ -340,9 +340,19 @@ describe('board and game helpers', () => {
     expect(renderBook(g1, s, 'N')).toContain('mb used');
     expect(renderBook(g1, newGame(g1), 'N')).not.toContain('mb used');
     const g8 = byId(8);
-    expect(bookEntries(g8).map((e) => e.key)).toEqual(['N', 'B', 'I:DE']);
-    expect(renderBook(g8, newGame(g8), null)).toContain('stock : 2 cases');
-    expect(renderBook(g8, newGame(g8), null, true)).not.toContain('posée');
+    // Zero imports published: no import line (R13); a grid with imports keeps it, named after the country.
+    expect(bookEntries(g8).map((e) => e.key)).toEqual(['N', 'B']);
+    expect(bookEntries(byId(9)).map((e) => e.key)).toContain('I:DE');
+    expect(renderBook(byId(9), newGame(byId(9)), null)).toContain('Import d’Allemagne');
+    // Screen: no hint under the names, the stock is drawn and counted; free plants count to ∞.
+    const screen = renderBook(g8, newGame(g8), null);
+    expect(screen).not.toContain('stock : 2 cases');
+    expect(screen).toContain('0 / 2');
+    expect(screen).toContain('0 / ∞');
+    expect(screen).not.toMatch(/posée|créneaux|ruban/);
+    // Paper keeps the hints and shows no usage.
+    expect(renderBook(g8, newGame(g8), null, true)).toContain('stock : 2 cases');
+    expect(renderBook(g8, newGame(g8), null, true)).not.toContain('∞');
   });
 
   it('clue texts get plant chips and slot values; day clues are the unslotted ones', () => {
@@ -413,6 +423,23 @@ describe('print sheet', () => {
     expect(html).toContain('4 points sur 9');
     expect(html).not.toContain('gauge over');
   });
+
+  it('the CO2 limit is a market publication: open, checked when full under the cap, contradicted above it', () => {
+    const g = rich();
+    const s = initialState(g);
+    expect(renderCo2(g, s)).not.toContain('plafond');
+    const open = renderClues(g, evaluate(g, s).clues, s);
+    expect(open).toContain('Limite CO₂');
+    expect(open).toContain('points de CO₂ au plus');
+    expect(open).toContain('Par case :');
+    expect(open).toMatch(/Limite CO₂.*?class="state "/s);
+    expect(renderClues(g, evaluate(g, s).clues, s, true)).toMatch(/Limite CO₂.*?class="state ok"/s);
+    const over = { ...g, co2_cap: 0 };
+    const r = place(over, s, { piece: 'T', row: 1, col: 0, len: 1 });
+    const st = r.ok ? r.state : s;
+    expect(renderClues(over, evaluate(over, st).clues, st)).toMatch(/Limite CO₂.*?class="state bad"/s);
+    expect(shownClueCount(g)).toBe(shownClueCount({ ...g, co2_cap: null }) + 1);
+  });
 });
 
 describe('STEP in the order book', () => {
@@ -424,11 +451,15 @@ describe('STEP in the order book', () => {
     expect(publishedStepPairs(g7)).toBe(1);
     const html = renderBook(g7, initialState(g7), STEP_KEY);
     expect(html).toContain('data-piece="STEP"');
-    expect(html).toContain('1 paire');
     expect(html).toContain('0 / 1');
+    expect(html).not.toContain('step-glyph used');
+    // Struck once its pair is laid (R14).
+    const laid = renderBook(g7, { ...initialState(g7), step: [{ pump: 3, turbine: 4 }] }, STEP_KEY);
+    expect(laid).toContain('step-glyph used');
+    expect(laid).toContain('1 / 1');
     const free = { ...structuredClone(g7), inventory: { level: 'none' as const, pieces: { N: {} } } };
     expect(publishedStepPairs(free)).toBeNull();
-    expect(renderBook(free, newGame(free), null)).toContain('paires à déduire');
+    expect(renderBook(free, newGame(free), null)).toContain('0 / ∞');
   });
 
   it('screen: no STEP row; tags removable by a tap, no link line; pending pump drawn', () => {
@@ -574,12 +605,13 @@ describe('review S6.3 round 3', () => {
     expect(isInitialState(g7, { ...initialState(g7), step: [{ pump: 2, turbine: 4 }] })).toBe(false);
   });
 
-  it('the technique line is left out when the title already names every technique', () => {
-    expect(techniqueLine(byId(2))).toBe('');
-    expect(techniqueLine(byId(5))).toBe('');
-    expect(techniqueLine(byId(1))).toBe('Cases interchangeables');
-    expect(techniqueLine(byId(7))).toContain('Programme publié');
-    expect(techniqueLine(byId(10))).toBe('');
+  it('every tutorial has a lore line, free of shape vocabulary', () => {
+    const tutorials = grids.filter((g) => g.teaches?.length);
+    expect(tutorials.length).toBeGreaterThan(0);
+    for (const g of tutorials) {
+      expect(TUTORIAL_LORE[g.id], `grid ${g.id}`).toBeTruthy();
+      expect(TUTORIAL_LORE[g.id]).not.toMatch(/rampe|épaule|inventaire/i);
+    }
   });
 
   it('the stock refusal has one colon only', () => {

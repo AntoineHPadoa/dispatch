@@ -493,12 +493,10 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     for (let c = 0; c < n; c++) {
       if (!pumps[c] && !turbines[c]) continue;
       const ty = tagY(c);
-      const pump = pumps[c]! > 0;
       const full = cell >= 48;
       const labels = stepTagLabels(state.step, c, numbered);
-      // The word ("pompe" / "turbine") only goes on a lone icon; several icons in one tag are joined.
-      const word = pump ? UI.stepPumpWord : UI.stepTurbineWord;
-      const label = labels.length === 1 && full ? `${labels[0]} ${word}` : labels.join('');
+      // Arrows only (▲ pump, ▼ turbine); several in one tag are joined.
+      const label = labels.join('');
       const w = full ? Math.max(cell - 8, label.length * 5 + 12) : Math.max(cell - 8, label.length * 5.5 + 8);
       const mid = x(c) + cell / 2;
       const k = state.step.findIndex((q) => q.pump === c || q.turbine === c);
