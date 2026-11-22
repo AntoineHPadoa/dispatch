@@ -205,11 +205,11 @@ describe('placement rules (one invalid case per rule)', () => {
   });
 
   it('inventory: bar width not in the order book, bar already used, cells exhausted', () => {
-    expect(refused(place(g, s0, N(0, 0, 3))).message).toBe('Plus de barre de nucléaire de 3 créneaux dans l’inventaire.');
+    expect(refused(place(g, s0, N(0, 0, 3))).message).toBe('Plus de barre de nucléaire de 3 créneaux dans le carnet.');
     let s = ok(place(g, s0, { piece: 'G', row: 0, col: 0, len: 2 }));
     expect(refused(place(g, s, { piece: 'G', row: 1, col: 0, len: 2 })).code).toBe('inventory');
     s = ok(place(g, s, { piece: 'T', row: 0, col: 2, len: 1 }));
-    expect(refused(place(g, s, { piece: 'T', row: 0, col: 3, len: 1 })).message).toBe('Plus de case de TAC dans l’inventaire (1 au total).');
+    expect(refused(place(g, s, { piece: 'T', row: 0, col: 3, len: 1 })).message).toBe('Plus de case de TAC dans le carnet (1 au total).');
   });
 
   it('inventory: imports and exports', () => {
@@ -217,7 +217,7 @@ describe('placement rules (one invalid case per rule)', () => {
     expect(refused(place(g, s, { piece: 'I', country: 'DE', row: 0, col: 1, len: 1 })).code).toBe('inventory');
     expect(refused(place(g, s0, { piece: 'I', country: 'UK', row: 0, col: 1, len: 1 })).code).toBe('inventory');
     s = ok(setExport(g, s0, 'DE', 2, 1));
-    expect(refused(setExport(g, s, 'DE', 3, 1)).message).toBe('Plus d’export vers l’Allemagne dans l’inventaire (1 au total).');
+    expect(refused(setExport(g, s, 'DE', 3, 1)).message).toBe('Plus d’export vers l’Allemagne dans le carnet (1 au total).');
   });
 
   it('stock (level none)', () => {

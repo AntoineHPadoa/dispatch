@@ -6,7 +6,7 @@
  * - Accent: one pink (stamp, price cell, progress, finished items); the finished sheet of the day
  *   shows its solution in the plant colours.
  */
-import { UI, TECHNIQUES, frenchSpaces } from '../i18n/fr';
+import { UI, frenchSpaces } from '../i18n/fr';
 import { currentBulletin, localIsoDate, previousBulletins, type BulletinGrid } from '../model/bulletin';
 import { dossierNext, dossierProgress, dossiers, type Dossier } from '../model/dossiers';
 import type { Grid } from '../model/grid';
@@ -99,13 +99,13 @@ export function renderDossier(root: HTMLElement, d: Dossier, progress: Progress)
   const { done, total } = dossierProgress(d, (id) => statusOf(progress, id) === 'done');
   const cards = d.grids.map((g, i) => {
     const st = statusOf(progress, g.id);
-    const tech = (g.teaches ?? []).map((t) => TECHNIQUES[t]).find(Boolean);
+    const blurb = (g.teaches ?? []).map((t) => UI.briefing[t]).find(Boolean);
     const isNext = g.id === next?.id && st !== 'done';
     return `<li class="fiche ${st}${isNext ? ' next' : ''}"><a href="#/grille/${g.id}">
       <span class="fband">${cellSilhouette(g.demand, 11)}<span class="fnum" aria-hidden="true">${i + 1}</span></span>
       <span class="fbody"><span class="eyebrow">${esc(UI.tutorialShort(i + 1))} · ${esc(g.difficulty.label)}${isNext ? ` · ${esc(UI.dossierNext)}` : ''}</span>
         <b>${esc(displayTitle(g))}</b>
-        ${tech ? `<span class="ftxt">${esc(tech.text)}</span>` : ''}</span>
+        ${blurb ? `<span class="ftxt">${esc(blurb)}</span>` : ''}</span>
       <span class="ffoot"><span class="fmeta">${dots(g)}${statusChip(st)}</span><span class="fbtn">${esc(action(st))}</span></span>
     </a></li>`;
   }).join('');

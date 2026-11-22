@@ -130,7 +130,7 @@ describe('engine', () => {
   it('a ramp too short is refused with its own message', () => {
     const g = t1();
     const r = checkPlacement(g, newGame(g), C(1, 0, 2));
-    expect(r.ok ? null : r.error).toEqual({ code: 'length', message: 'Une rampe de charbon fait 3 à 5 créneaux.' });
+    expect(r.ok ? null : r.error).toEqual({ code: 'length', message: 'Une barre de charbon à paliers fait 3 à 5 créneaux.' });
     const h = checkPlacement(g, newGame(g), { ...C(1, 0, 3), height: 2 });
     expect(h.ok ? null : h.error.code).toBe('height');
   });
@@ -185,13 +185,13 @@ describe('book, texts and gesture', () => {
     const g = t1();
     expect(bookEntries(g).find((e) => e.key === 'C')?.shape).toBe('trap');
     const html = renderBook(g, newGame(g), 'C');
-    expect(html).toContain('rampe de 3 à 5 créneaux');
+    expect(html).toContain('à paliers, 3 à 5 créneaux');
     // A ramp of 3 on two rows: two blank shoulder slots on the top row.
     expect(html).toMatch(/<span class="mb" style="grid-template-columns:repeat\(3,auto\)"><i class="e"><\/i><i class=""[^>]*><\/i><i class="e"><\/i>/);
   });
 
   it('a laid ramp is named by its base row', () => {
-    expect(placementLabel(t1(), 'C', undefined, 1, 0, 3, 1, 'trap')).toBe('Charbon en rampe de 0h à 12h, base ligne 2');
+    expect(placementLabel(t1(), 'C', undefined, 1, 0, 3, 1, 'trap')).toBe('Charbon par paliers de 0h à 12h, base ligne 2');
   });
 
   it('a ramp is laid by its base row, like a bar', () => {
@@ -229,10 +229,10 @@ describe('ramp details: gauge, validator, sheet, messages', () => {
     const full = ok(place(g, newGame(g), C(1, 0, 3)));
     const r = place(g, full, C(0, 3, 3));
     expect(!r.ok && r.error.message).toBe(MSG.inventoryBar('de charbon', 3, true));
-    expect(MSG.inventoryBar('de charbon', 3, true)).toMatch(/^Plus de rampe /);
+    expect(MSG.inventoryBar('de charbon', 3, true)).toMatch(/^Plus de barre à paliers /);
     const out = place(g, newGame(g), C(1, 4, 3));
-    expect(!out.ok && out.error.message).toBe('La rampe dépasse de la grille.');
-    expect(UI.replaces(g, [{ piece: 'C' }])).toBe('Remplace 1 rampe de charbon');
+    expect(!out.ok && out.error.message).toBe('La barre à paliers dépasse de la grille.');
+    expect(UI.replaces(g, [{ piece: 'C' }])).toBe('Remplace 1 barre à paliers de charbon');
     expect(UI.replaces(g, [{ piece: 'N' }])).toBe('Remplace 1 barre de nucléaire');
   });
 

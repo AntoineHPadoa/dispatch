@@ -59,3 +59,6 @@ Les grilles notées (8 à 11) n'ont pas de carte de dossier ; l'accueil n'est pa
 
 ## R7 / dossier « Premiers pas »
 La phrase d'introduction est retirée de la page du dossier (R7). La carte d'accueil ne l'affiche pas non plus : la chaîne `lead` peut donc disparaître de `fr.ts`.
+
+## Décision (réponse q262)
+Vocabulaire « palier » retenu : rampe → barre à paliers / charbon par paliers, épaule → bord, inventaire → carnet (« sans carnet exact » pour les grilles sans liste). Phrases roleplay R8 intégrées, avec « paliers » et « bords » pour les grilles de charbon. Texte dans `web/src/i18n/fr.ts` (`UI.briefing`, `MSG`, `TECHNIQUES`) et `web/src/data/grids.json` (titres et intros des grilles 1, 3, 8 à 13).
