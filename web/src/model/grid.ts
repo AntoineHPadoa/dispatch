@@ -318,6 +318,8 @@ export function validateGrid(raw: unknown): ValidationResult {
       const kind = def.shape === undefined ? 'rect' : def.shape;
       if (!(SHAPE_KINDS as readonly unknown[]).includes(kind)) {
         err(`pieces.${id}.shape: one of ${SHAPE_KINDS.join(', ')} expected`);
+      } else if (kind === 'stair') {
+        err(`pieces.${id}.shape: ramps are not enabled`); // the game plays trapezoids only, as the solver without its flag
       } else if (kind !== 'rect') {
         if (id !== RAMP_PIECE) err(`pieces.${id}.shape: only coal (${RAMP_PIECE}) can be a ramp`);
         if (def.height !== undefined) err(`pieces.${id}.height: a ramp has no height`);

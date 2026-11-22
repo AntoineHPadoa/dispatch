@@ -32,10 +32,14 @@ const DIR = resolve(__dirname, '../../fixtures/grids');
 const SUPPORTED = new Set<string>(['ramp']);
 // Only about the Python allow_ramp flag: the game always accepts ramps.
 const PYTHON_ONLY = new Set(['invalid-ramp-disabled.json']);
-const fixtures = readdirSync(DIR)
+const all = readdirSync(DIR)
   .filter((f) => f.endsWith('.json') && !PYTHON_ONLY.has(f))
   .sort()
   .map((f) => ({ file: f, ...(JSON.parse(readFileSync(resolve(DIR, f), 'utf8')) as Fixture) }));
+// A stair is valid for Python with allow_ramp, but the game validator refuses it: checked apart below.
+const hasStair = (fx: Fixture) => JSON.stringify(fx.grid).includes('"shape":"stair"');
+const fixtures = all.filter((fx) => !hasStair(fx));
+const stairs = all.filter(hasStair);
 const playable = fixtures.filter((fx) => fx.expect.requires.every((r) => SUPPORTED.has(r)));
 
 describe('shared reference grids', () => {
@@ -49,6 +53,10 @@ describe('shared reference grids', () => {
     const res = validateGrid(fx.grid);
     expect(res.errors).toEqual(fx.expect.errors);
     expect(res.ok).toBe(fx.expect.valid);
+  });
+
+  it.each(stairs.map((fx) => [fx.file, fx] as const))('%s: stair refused by the game validator', (_f, fx) => {
+    expect(validateGrid(fx.grid).errors).toContain('pieces.C.shape: ramps are not enabled');
   });
 
   const solved = playable.filter((fx) => fx.expect.valid && fx.expect.composition !== undefined);
