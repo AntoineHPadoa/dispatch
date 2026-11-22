@@ -5,7 +5,7 @@
  * - Reads carry the viewer (player, creation mode): the server hides the solver measures from a player who has not rated the grid.
  */
 import type { Grid } from '../model/grid';
-import { labClueCount, type Candidate, Play, PlayRecord, Weather } from './logic';
+import { labClueCount, type Candidate, Play, PlayRecord, type SessionData, type SessionInfo, Weather } from './logic';
 
 export interface Bulletin { title?: string; text?: string; weather?: Weather[] }
 export interface Reveal {
@@ -51,6 +51,9 @@ export const api = {
   },
   /** Felt rating of a play, once (409 afterwards). */
   ratePlay: (id: string, felt: number, comment: string) => call<Play>('POST', `/plays/${id}/rate`, { felt, comment }),
+  sessions: () => call<SessionInfo[]>('GET', '/sessions'),
+  /** A session with the state of each item for the player (no solver data). */
+  session: (id: string, player?: string) => call<SessionData>('GET', `/session/${encodeURIComponent(id)}?${viewerQuery(player)}`),
   note: (lot: string, index: number, patch: Partial<Note>) => call<Note>('PUT', `/notes/${lot}/${index}`, patch),
   suggest: () => call<Suggestion>('GET', '/suggest'),
   promote: (lot: string, index: number, number: number, published: string) =>

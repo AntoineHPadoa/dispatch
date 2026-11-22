@@ -5,6 +5,7 @@
  * - playStats keeps first plays only (attempt 1, no stray open): a replay has a biased time; replays are counted apart.
  * - "error" = a pose refused by the engine or one that contradicts a clue (not an export or STEP pair against a clue).
  * - labClueCount reuses the game's shownClueCount.
+ * - Session helpers: progress, first unresolved item, next item to play, end of the session.
  * - playStats / feltAverage summarise the plays and the felt ratings of a candidate.
  */
 import { GIVEN_STEP, TECHNIQUES } from '../i18n/fr';
@@ -257,3 +258,38 @@ export function nextLotName(existing: readonly string[]): string {
   const n = Math.max(0, ...existing.map((l) => Number(/^lot-(\d+)$/.exec(l)?.[1] ?? 0)));
   return `lot-${String(n + 1).padStart(2, '0')}`;
 }
+
+// ---- sessions: an ordered list of candidates played in a row (lab/sessions/<id>.json)
+export type SessionState = 'solved' | 'abandoned' | 'todo';
+export interface SessionItem {
+  position: number;
+  lot: string;
+  index: number;
+  /** Number shown in the lot list (index + 1). */
+  number: number;
+  state: SessionState;
+  attempts: number;
+  playable: boolean;
+  /** Text shown instead of a play button: the item cannot be launched. */
+  hold?: string;
+}
+export interface SessionData { id: string; title: string; items: SessionItem[] }
+export interface SessionInfo { id: string; title: string; count: number }
+
+/** An item the player can launch now: not held and playable. */
+export const canPlay = (it: SessionItem): boolean => !it.hold && it.playable;
+/** Still to play: not solved and launchable (an abandoned grid is played again). */
+export const toPlay = (it: SessionItem): boolean => it.state !== 'solved' && canPlay(it);
+
+export function sessionProgress(items: SessionItem[]): { solved: number; total: number } {
+  return { solved: items.filter((i) => i.state === 'solved').length, total: items.length };
+}
+/** First item still to play, in session order. */
+export const firstToPlay = (items: SessionItem[]): SessionItem | undefined => items.find(toPlay);
+/** Next item to play after position `position` (1-based), without wrapping around. */
+export const nextToPlay = (items: SessionItem[], position: number): SessionItem | undefined =>
+  items.find((i) => i.position > position && toPlay(i));
+/** Nothing left to play: every item is solved, held or unplayable. */
+export const sessionDone = (items: SessionItem[]): boolean => !items.some(toPlay);
+/** Hash of the game screen for an item; the session id rides along so the end screen knows where to go next. */
+export const sessionPlayHash = (id: string, it: Pick<SessionItem, 'lot' | 'index'>): string => `#/partie/${it.lot}/${it.index}/${id}`;

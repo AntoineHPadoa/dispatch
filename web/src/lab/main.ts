@@ -1,6 +1,6 @@
 /*
  * Lab entry point (lab.html, dev server only): hash router and shared state.
- * - #/ lot table, #/partie/<lot>/<i> blind game, #/fin/<lot>/<i> end of game, #/gardees kept grids.
+ * - #/session[/<id>] session, #/ lot table, #/partie/<lot>/<i>[/<session>] blind game, #/fin/<lot>/<i>[/<session>] end of game (the session id makes the end screen offer the next grid), #/gardees kept grids.
  * - The player (two on one machine) and the creation mode are remembered in localStorage; plays and notes live on the server.
  * - The player cannot change during a game; the end screen needs a game of the current player.
  * - After a solve, leaving the game by any link goes to the end screen first.
@@ -12,6 +12,7 @@ import type { LabCtx } from './ctx';
 import { playToShow, renderEnd } from './end';
 import { renderKept } from './keep';
 import { renderList } from './list';
+import { renderSession } from './session';
 import { mountPlay, type Finished, type Playing } from './play';
 import { esc } from '../ui/palette';
 
@@ -52,7 +53,7 @@ function drawTop(page: string): void {
   const frozen = page === 'play' ? ' disabled title="Le joueur ne change pas pendant une partie"' : '';
   const tab = (hash: string, id: string, label: string) =>
     `<a class="lab-tab" href="${hash}" ${page === id ? 'aria-current="page"' : ''}>${label}</a>`;
-  top.innerHTML = `<div class="lab-bar"><b class="lab-brand">Labo</b>${tab('#/', 'list', 'Lot')}${tab('#/gardees', 'kept', 'Gardées')}`
+  top.innerHTML = `<div class="lab-bar"><b class="lab-brand">Labo</b>${tab('#/session', 'session', 'Session')}${tab('#/', 'list', 'Lot')}${tab('#/gardees', 'kept', 'Gardées')}`
     + `<span class="lab-sp"></span><span class="lab-seg" role="group" aria-label="Joueur">`
     + ctx.players.map((p) => `<button type="button" data-player="${esc(p)}" aria-pressed="${p === ctx.player}"${frozen}>${esc(p)}</button>`).join('')
     + `</span><button type="button" class="lab-btn${ctx.creation ? ' acc' : ''}" id="lab-creation" aria-pressed="${ctx.creation}"${frozen}`
@@ -66,7 +67,7 @@ top.addEventListener('click', (e) => {
 });
 
 async function route(): Promise<void> {
-  const [page, lot, idx] = location.hash.replace(/^#\/?/, '').split('/');
+  const [page, lot, idx, sess] = location.hash.replace(/^#\/?/, '').split('/');
   // A solved grid is saved at the solve: whichever link leaves the game, the end screen comes first.
   const solved = page === 'fin' ? null : playing?.pending();
   if (solved) {
@@ -75,7 +76,7 @@ async function route(): Promise<void> {
     cleanup?.();
     cleanup = null;
     playing = null;
-    location.replace(`#/fin/${rec.lot}/${rec.index}`);
+    location.replace(`#/fin/${rec.lot}/${rec.index}${sess ? `/${sess}` : ''}`);
     return;
   }
   cleanup?.();
@@ -85,13 +86,16 @@ async function route(): Promise<void> {
     if (page === 'partie' && lot && idx) {
       drawTop('play');
       ctx.lot = lot;
-      playing = await mountPlay(app, ctx, lot, Number(idx), (f: Finished) => { ctx.finished = f; ctx.navigate(`#/fin/${lot}/${idx}`); });
+      playing = await mountPlay(app, ctx, lot, Number(idx), (f: Finished) => { ctx.finished = f; ctx.navigate(`#/fin/${lot}/${idx}${sess ? `/${sess}` : ''}`); });
       cleanup = playing.stop;
     } else if (page === 'fin' && lot && idx) {
       drawTop('end');
       const rec = await playToShow(ctx, lot, Number(idx));
       if (!rec) { toast('Joue d\'abord cette candidate avec ce joueur.'); location.replace('#/'); return; }
-      await renderEnd(app, ctx, lot, Number(idx), rec);
+      await renderEnd(app, ctx, lot, Number(idx), rec, sess);
+    } else if (page === 'session') {
+      drawTop('session');
+      await renderSession(app, ctx, lot, idx === 'fin');
     } else if (page === 'gardees') {
       drawTop('kept');
       await renderKept(app, ctx);

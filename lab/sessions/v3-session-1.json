@@ -1,0 +1,70 @@
+{
+ "title": "Session 1",
+ "items": [
+  {
+   "lot": "nuit-jouer-a",
+   "index": 3,
+   "hold": "en attente de correctif"
+  },
+  {
+   "lot": "nuit-jouer-c",
+   "index": 17
+  },
+  {
+   "lot": "nuit-jouer-c",
+   "index": 14
+  },
+  {
+   "lot": "nuit-jouer-b",
+   "index": 17
+  },
+  {
+   "lot": "nuit-jouer-c",
+   "index": 1
+  },
+  {
+   "lot": "nuit-jouer-c",
+   "index": 11
+  },
+  {
+   "lot": "nuit-jouer-b",
+   "index": 4
+  },
+  {
+   "lot": "nuit-jouer-b",
+   "index": 0
+  },
+  {
+   "lot": "nuit-jouer-b",
+   "index": 19
+  },
+  {
+   "lot": "nuit-jouer-b",
+   "index": 2
+  },
+  {
+   "lot": "nuit-rampe",
+   "index": 2
+  },
+  {
+   "lot": "nuit-jouer-a",
+   "index": 0
+  },
+  {
+   "lot": "nuit-jouer-a",
+   "index": 2
+  },
+  {
+   "lot": "demo-01",
+   "index": 12
+  },
+  {
+   "lot": "nuit-jouer-b",
+   "index": 18
+  },
+  {
+   "lot": "nuit-rampe",
+   "index": 19
+  }
+ ]
+}

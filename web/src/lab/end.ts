@@ -3,11 +3,13 @@
  * techniques are revealed next to it. The grid can be kept from here.
  * - Everything is read for the player of the game (not the selector), from the game just played or the last one.
  * - The rating is stored with the play, once: after the reveal the buttons are locked.
+ * - Opened from a session (`sessionId`): a reminder next to the comment, then « Retour à la session » and « Grille suivante »
+ *   (the next one is enabled once the rating is validated; after the last, back to the session with its end banner).
  * - Comments are kept per player: the box holds the player's own; the others' show after the reveal.
  */
 import { api, type Note } from './api';
 import type { LabCtx } from './ctx';
-import { displayNumber, labClueCount, feltAverage, formatDuration, techniqueLabel, type Play } from './logic';
+import { displayNumber, labClueCount, feltAverage, formatDuration, nextToPlay, sessionPlayHash, techniqueLabel, type Play, type SessionItem } from './logic';
 import { esc } from '../ui/palette';
 
 const LEVELS = ['Facile', 'Moyen', 'Difficile', 'Expert'];
@@ -20,13 +22,32 @@ export async function playToShow(ctx: LabCtx, lot: string, index: number): Promi
   return mine.at(-1) ?? null;
 }
 
-export async function renderEnd(root: HTMLElement, ctx: LabCtx, lot: string, index: number, rec: Play): Promise<void> {
+export async function renderEnd(root: HTMLElement, ctx: LabCtx, lot: string, index: number, rec: Play, sessionId?: string): Promise<void> {
   const player = rec.player;
   const notes = await api.notes(player);
   const note: Note = notes[`${lot}:${index}`] ?? {};
   let felt = rec.felt ?? 0;
   let revealed = felt > 0;
   let kept = !!note.kept;
+  let items: SessionItem[] = [];
+  let current: SessionItem | undefined;
+  if (sessionId) {
+    try {
+      items = (await api.session(sessionId, player)).items;
+      current = items.find((i) => i.lot === lot && i.index === index);
+    } catch { /* unknown session: the end screen works without it */ }
+  }
+  const nextItem = current ? nextToPlay(items, current.position) : undefined;
+
+  /** « Retour à la session » and « Grille suivante » (the latter after the validation, so no rating is skipped by mistake). */
+  function sessionNavHtml(): string {
+    if (!sessionId) return '';
+    const next = nextItem
+      ? `<a class="lab-btn acc${revealed ? '' : ' off'}" id="lab-next-grid" href="${revealed ? sessionPlayHash(sessionId, nextItem) : '#'}" aria-disabled="${!revealed}"`
+        + `${revealed ? '' : ' title="Valide ta note avant de passer à la suivante"'}>Grille suivante</a>`
+      : `<a class="lab-btn acc${revealed ? '' : ' off'}" id="lab-next-grid" href="${revealed ? `#/session/${esc(sessionId)}/fin` : '#'}" aria-disabled="${!revealed}">Grille suivante : fin de la session</a>`;
+    return `<div class="lab-actions"><a class="lab-btn" id="lab-back-session" href="#/session/${esc(sessionId)}">Retour à la session</a>${next}</div>`;
+  }
 
   async function draw(): Promise<void> {
     const reveal = revealed ? await api.reveal(lot, index, player) : null;
@@ -40,9 +61,9 @@ export async function renderEnd(root: HTMLElement, ctx: LabCtx, lot: string, ind
       + `<dt>Erreurs</dt><dd>${rec.errors}</dd><dt>Annulations</dt><dd>${rec.undos}</dd><dt>Gommes</dt><dd>${rec.erasers}</dd></dl></div>`
       + `<div class="lab-card"><h3>Difficulté perçue</h3><p class="lab-note">${revealed ? 'Note enregistrée, elle ne change plus.' : 'À donner avant de voir la note du solveur.'}</p>`
       + `<div class="lab-seg" id="lab-felt" role="group" aria-label="Difficulté perçue">${LEVELS.map((l, i) => `<button type="button" data-felt="${i + 1}" aria-pressed="${felt === i + 1}"${locked}>${i + 1} ${l}</button>`).join('')}</div>`
-      + `<label class="lab-field">Commentaire (facultatif)<textarea id="lab-comment" rows="2"${locked}>${esc(note.comment?.[player] ?? '')}</textarea></label>`
+      + `${sessionId ? '<p class="lab-remind">Belle ou pas belle, et pourquoi ?</p>' : ''}<label class="lab-field">Commentaire (facultatif)<textarea id="lab-comment" rows="2"${locked}>${esc(note.comment?.[player] ?? '')}</textarea></label>`
       + `<div class="lab-actions"><button type="button" class="lab-btn pri" id="lab-reveal"${locked}>Valider et révéler</button>`
-      + `<button type="button" class="lab-btn" id="lab-keep">${kept ? '★ Gardée' : '☆ Garder cette grille'}</button></div></div></div>`
+      + `<button type="button" class="lab-btn" id="lab-keep">${kept ? '★ Gardée' : '☆ Garder cette grille'}</button></div>${sessionNavHtml()}</div></div>`
       + `<div class="lab-card lab-reveal">${reveal ? revealHtml(reveal, clueCount, felt, others.map((p) => `${p} : ${note.felt![p]}`)) : '<div class="lab-ph">🔒 Note du solveur et techniques cachées jusqu\'à ta note.</div>'}</div></div></div>`;
   }
 
@@ -70,6 +91,7 @@ export async function renderEnd(root: HTMLElement, ctx: LabCtx, lot: string, ind
 
   root.onclick = async (e) => {
     const t = e.target as HTMLElement;
+    if (t.closest('#lab-next-grid[aria-disabled="true"]')) { e.preventDefault(); ctx.toast('Valide d\'abord ta note (« Valider et révéler »).'); return; }
     const f = t.closest<HTMLButtonElement>('[data-felt]');
     if (f && !revealed) { felt = Number(f.dataset.felt); root.querySelectorAll('[data-felt]').forEach((b) => b.setAttribute('aria-pressed', String(b === f))); }
     else if (t.id === 'lab-reveal' && !revealed) {

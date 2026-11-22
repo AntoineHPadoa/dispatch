@@ -5,6 +5,7 @@ Local tool to generate, play, rate and promote candidate grids. Launch: `lab/run
 ## Files (all in `lab/`, versioned)
 
 - `candidates/<lot>.json`: grids written by `dispatch-solver generate`, with a `lab` block (index from 0, family, mechanics, trace summary, bulletin draft). A lot name is never reused: the server refuses an existing one, so `lot:index` always points to the same grid.
+- `sessions/<id>.json`: an ordered list of candidates to play in a row: `{"title": …, "items": [{"lot": …, "index": …, "hold"?: "text"}, …]}` (`index` from 0). An item with `hold` is shown with that text and cannot be launched. Page: `#/session` (opens the only session, else lists them), `#/session/<id>`.
 - `plays.jsonl`: one JSON line per game (below).
 - `notes.json`: per `lot:index`: `kept`, `comment` (`{player: text}`, one per player; `""` for an older comment whose author is unknown), `felt` (first rating of each player), `bulletin` edits, `promoted`.
 
@@ -41,3 +42,9 @@ An abandoned game is recorded when the player gives up, leaves the game screen, 
 ## Server safety
 
 Listens on 127.0.0.1. Every request must carry a local `Host`; a request with an `Origin` other than `localhost` or `127.0.0.1` on the Vite port (5173) or the server port (8765 by default) is refused; writes must be `Content-Type: application/json`.
+
+## Sessions
+
+- Server: `GET /api/sessions` (id, title, count) and `GET /api/session/<id>?player=…`: items in order with `position`, `lot`, `index`, `number` (index + 1), `state` for that player (`solved`, `abandoned`, `todo`; stray `phantom` plays ignored, a solve wins over an abandon), `attempts`, `playable` and `hold`. Nothing else is sent: no note, rating, technique or draft title, so the blind rules hold.
+- Page `#/session/<id>`: numbered list, progress « 7 / 16 », « Jouer la suivante » (first item not solved, not held, playable; an abandoned grid is played again).
+- A game started from the session has the id in its hash (`#/partie/<lot>/<i>/<session>`, then `#/fin/<lot>/<i>/<session>`). The end screen is the usual one, plus a reminder « Belle ou pas belle, et pourquoi ? », « Retour à la session » and « Grille suivante » (enabled once the rating is validated). After the last grid: `#/session/<id>/fin`, with « Session terminée » when nothing is left to play.
