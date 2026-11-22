@@ -272,3 +272,66 @@ La galerie les montre fidèlement ; ils sont à corriger dans le jeu, pas dans l
 
 - **Défauts du jeu** : la section « Défauts du jeu » plus haut reste valable (fiches 903 et 906 tronquées, récit du bulletin non imprimé, nombre de paires STEP absent du carnet papier, grille de 12 créneaux à 1280 px).
 - **`pdftoppm`** est toujours cassé sur cette machine. La galerie le dit honnêtement, mais les fiches ne sont pas des PDF rendus ; leur contenu est identique à celui du PDF (vérifié au premier passage).
+
+## Contrôle S2.4 (commit `128238e`)
+
+### Verdict
+
+- **81 vues contrôlées sur 81** (W-01…W-33, M-01…M-34, P-01…P-14) : 80 OK, 1 écart mineur de légende (W-29).
+- **Tableau du slider** : ses 65 cases (13 grilles × 5 largeurs) sont exactes. Le résumé qui l'accompagne, repris par la légende de W-29, est inexact sur deux points :
+  - les seuils hauts dépendent de la grille (ce n'est pas « 861 à 1116 px » pour toutes) ;
+  - le slider n'apparaît pas que « sur ordinateur ».
+- **Code du jeu inchangé** (`web/src`, tests, `vite.config.ts`, grilles). 384 tests verts, typecheck et build OK, `dist/` identique à `main`.
+
+### Nouvelles vues W-31, W-32, W-33
+
+- **Capture** : recapturées sur le build de prod avec mon script, à 1024 px (W-31, W-32 défilée au bout) et à 960 px (W-33). Elles sont identiques au pixel à la galerie (2048 et 1920 px de large en ×2).
+- **Légendes exactes** :
+  - W-31 : grille 11, slider au début ;
+  - W-32 : slider au bout, 0h masqué ;
+  - W-33 : grille 1 à 6 créneaux, slider au début.
+- **Largeur** : l'étiquette de chaque figure annonce 1024 px ou 960 px, et le chapeau de la page web mentionne les fenêtres de 1024 et 960 px. La page compte 33 figures pour 33 images.
+
+### Mesure du slider, refaite avec mon code
+
+- **Méthode** :
+  - `slider-survey.mjs`, un contexte neuf par largeur, sur le build de prod ;
+  - slider « vu » s'il n'est pas `hidden` et a une largeur non nulle ; débord mesuré par `scrollWidth − clientWidth` de `.board-scroll` ;
+  - balayage de 320 à 1440 px par pas de 40, puis au pixel près autour des seuils, en contexte bureau puis tactile.
+- **Les 5 largeurs du tableau** : mes valeurs sont identiques aux siennes, case par case (exemples à 1024 px : 94 px pour les grilles 7 à 11, 72 px pour la 13 ; à 960 px : 16, 38, 158 et 136 px).
+- **375 et 320 px** : aucune vraie grille n'affiche le slider, ni en contexte bureau ni en contexte tactile. Aucune non plus de 320 à 860 px.
+- **Plage réelle**, en largeur de fenêtre utile (viewport), identique en bureau et en tactile :
+
+| Grilles | Créneaux | Slider visible de … à … |
+|---|---|---|
+| 1, 2, 12 | 6 | 861 à 975 px |
+| 3, 4, 5, 6 | 6 | 861 à 997 px |
+| 13 | 8 | 861 à 1095 px |
+| 7, 8, 9, 10, 11 | 8 | 861 à 1117 px |
+
+- **Forme du débord** : le slider apparaît d'un coup à 861 px, quand le jeu passe à la mise en page en deux colonnes. Le débord baisse ensuite d'un pixel par pixel de largeur ; près du seuil haut, il ne reste qu'un ou deux pixels à défiler.
+- **Appareils courants** (contexte tactile, toutes les grilles publiées) :
+  - **slider sur les 13 vraies grilles** : téléphone grand format en paysage, Pixel 7 couché (915 × 412) et iPhone 15 Pro Max couché (932 × 430) ;
+  - **slider sur les grilles 7 à 11 et 13** : iPad mini en paysage (1024 × 768) ;
+  - **aucune grille** : tous les téléphones en portrait (375, 393, 412, 430 px), iPhone SE et iPhone 15 couchés (667 et 852 px), iPad en portrait (768, 820 px), iPad Air et iPad Pro 11 couchés (1180 et 1194 px).
+- **Où l'humain a pu le voir sur une grille publiée** :
+  - dans une fenêtre d'ordinateur large de 861 à 1117 px environ (fenêtre réduite, écran partagé en deux) ;
+  - sur un grand téléphone tenu en paysage (environ 900 à 950 px de large) ;
+  - sur une tablette en paysage autour de 1024 px.
+  - Jamais sur un téléphone tenu en portrait, ni sur un écran d'ordinateur en plein écran (1280 px et plus).
+- **Réserve** : avec une barre de défilement verticale visible (Windows, ou macOS réglé sur « toujours »), la fenêtre utile perd environ 15 px. Les seuils, exprimés en largeur de fenêtre, monteraient d'autant. Ce cas n'est pas mesuré : Chrome sans interface masque ces barres.
+
+### Légendes modifiées
+
+- **W-01, M-01** (« Prendre le quart », bouton plein) et **W-03, M-03** (« Revoir le quart », à contour, tampon « Bouclé ») : exactes. Ces quatre images n'ont pas bougé et restent identiques à mes captures.
+- **M-29** (« Aucune vraie grille ne l'affiche à 375 ni à 320 px »), **M-31** (slider poussé au bout) et **M-33** (slider à 320 px) : exactes.
+- **W-29 : écart mineur.** La légende dit que « les vraies grilles l'affichent dans une fenêtre de 861 à 1116 px » :
+  - le seuil haut va de 975 px (grilles 1, 2, 12) à 1117 px (grilles 7 à 11) ;
+  - et le slider apparaît aussi sur des téléphones et des tablettes en paysage.
+  - Le même résumé figure dans `docs/next/ui-gallery.md` (« Sur ordinateur, … toutes les vraies grilles l'affichent : les grilles de 8 créneaux jusqu'à 1116 px »), où la grille 13 s'arrête en fait à 1095 px.
+  - **Correction proposée** : « les vraies grilles l'affichent entre 861 px et 975 à 1117 px de large selon la grille (fenêtre d'ordinateur réduite, grand téléphone ou tablette en paysage) ».
+
+### Non-régression
+
+- **Images** : les 78 vues déjà contrôlées sont identiques au pixel à mes captures de la contre-vérification. Seule M-19 diffère, par les glyphes, comme avant ; contenu identique.
+- **Build** : `npm test` 384 tests verts, `npm run typecheck` et `npm run build` OK, `diff -r` du `dist/` contre `main` sans différence.
