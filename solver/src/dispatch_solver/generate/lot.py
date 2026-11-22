@@ -331,11 +331,17 @@ def _attempt(
 
 
 def _signatures(g: dict[str, Any]) -> set[tuple[Any, ...]]:
-    """Duplicate keys: residual up to a vertical shift with the same plants, and the composition."""
-    res = [g["demand"][c] - g["weather"]["R"][c] - g["weather"]["F"][c] for c in range(len(g["columns"]))]
+    """Duplicate keys: residual up to a vertical shift with the same plants and weather, and the composition.
+
+    The weather profile is part of the shape key: weather cells are fixed bricks, so two days with the same
+    residual but different weather steps are different puzzles.
+    """
+    n = len(g["columns"])
+    weather = tuple(g["weather"]["R"][c] + g["weather"]["F"][c] for c in range(n))
+    res = [g["demand"][c] - weather[c] for c in range(n)]
     low = min(res)
     comp = reference_composition(g) if g.get("solution", {}).get("placements") else None
-    out = {("shape", tuple(x - low for x in res), tuple(sorted(g["pieces"])))}
+    out = {("shape", tuple(x - low for x in res), weather, tuple(sorted(g["pieces"])))}
     if comp is not None:
         out.add(("comp", json.dumps(comp, sort_keys=True)))
     return out
@@ -443,6 +449,7 @@ def run_lot(lot: dict[str, Any], workers: int = 6, log: Any = None) -> tuple[lis
     reserve: list[dict[str, Any]] = []  # finished grids refused only by the rating / mix reservation
     blocked: list[dict[str, Any]] = []
     rejects: dict[str, int] = {}
+    by_family: dict[str, dict[str, int]] = {}  # family -> {"attempts": n, reject reason: n}
     errors_seen: list[dict[str, Any]] = []
     attempts = 0
 
@@ -471,6 +478,11 @@ def run_lot(lot: dict[str, Any], workers: int = 6, log: Any = None) -> tuple[lis
                     attempts += 1
                 fut, cfg, seed, mi = pending.popleft()  # accepted in draw order: same lot for the same seed
                 g, reason, info = fut.result()
+                fam = by_family.setdefault(info.get("family", "?"), {"attempts": 0})
+                fam["attempts"] += 1
+                if reason is not None:
+                    fkey = reason.split(":")[0] if reason.startswith(("invalid", "error")) else reason
+                    fam[fkey] = fam.get(fkey, 0) + 1
                 if g is not None:
                     g["lab"]["mix"] = mi
                     reason = quotas.check(g)
@@ -499,6 +511,7 @@ def run_lot(lot: dict[str, Any], workers: int = 6, log: Any = None) -> tuple[lis
         "size": size,
         "attempts": attempts,
         "rejects": rejects,
+        "rejects_by_family": dict(sorted(by_family.items())),
         "ratings": {LABELS[r]: quotas.rating.get(r, 0) for r in (1, 2, 3, 4)},
         "families": quotas.family,
         "per_mix": {str(k): v for k, v in sorted(quotas.mix.items())},
