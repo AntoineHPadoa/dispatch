@@ -44,7 +44,9 @@ PLAY_SCHEMA = 1
 PHANTOM_MS = 10_000  # an abandon shorter than this, or without any move, is a stray open, not an attempt
 # Solver measures hidden from a player who has not rated the candidate yet.
 HIDDEN_PLAY_KEYS = ("outcome", "ms", "wall_ms", "errors", "undos", "erasers", "resets", "moves", "felt")
-DEFAULT_SESSION_SIZE = 16
+DEFAULT_SESSION_SIZE = 6  # a casual player: about 25 min of play
+LEGACY_PLAYER = "Joueur 1"  # owner of a star written before stars were stored per player
+LONG_GRID = 12  # slots from which a grid counts as long for the order of a session
 COUNTERS_FILE = ".counters.json"  # last session number per lot, in lab/sessions/ (not a session)
 ARCHIVE = "archive"  # lab/candidates/archive/: lots no longer listed (read-only, names kept)
 UNKNOWN_AUTHOR = ""  # key of a comment written before comments were stored per player, whose author is unknown
@@ -115,14 +117,31 @@ def draw_session(pool: list[tuple[int, dict[str, Any]]], size: int, rng: random.
             for x in tags(best[1]):
                 seen[x] = seen.get(x, 0) + 1
             remaining -= 1
-    # Order: a random permutation (seeded), the only constraint being an easiest grid first. No rule on neighbours:
-    # any structure in the order would let the player guess the rating of the next grid.
-    pool_left = [i for r in picked for i in picked[r]]
-    lowest = min(r for r in picked if picked[r])
-    first = rng.choice(picked[lowest])
-    rest = [i for i in pool_left if i != first]
+    # Order: seeded and random, under two rules: a short grid first (the easiest of the short ones drawn), then never
+    # two long grids (12 slots) in a row when the drawn grids allow it. No rule on neighbouring ratings: any
+    # structure in the order would let the player guess the rating of the next grid.
+    def long(g: dict[str, Any]) -> bool:
+        return len(g["columns"]) >= LONG_GRID
+
+    by_index = dict(pool)
+    chosen = [i for r in picked for i in picked[r]]
+    shorts = [i for i in chosen if not long(by_index[i])] or chosen  # a short first grid: the rules are learnt on it
+    lowest = min(rating(by_index[i]) for i in shorts)
+    first = rng.choice([i for i in shorts if rating(by_index[i]) == lowest])
+    rest = [i for i in chosen if i != first]
     rng.shuffle(rest)
-    out = [first] + rest
+    out = [first]
+    while rest:
+        # A pick is feasible when the long grids left can still be separated by the short ones left.
+        def feasible(i: int) -> bool:
+            others = [j for j in rest if j != i]
+            longs = sum(long(by_index[j]) for j in others)
+            return longs <= len(others) - longs + (0 if long(by_index[i]) else 1)
+
+        ok = [i for i in rest if not (long(by_index[i]) and long(by_index[out[-1]])) and feasible(i)]
+        nxt = ok[0] if ok else rest[0]
+        rest.remove(nxt)
+        out.append(nxt)
     return out
 
 
@@ -216,7 +235,7 @@ class Lab:
 
     def candidates(self, lot: str, player: str | None = None, creation: bool = False) -> list[dict[str, Any]]:
         """Candidates for the list screen; rating, techniques, steps and felt ratings only once revealed to `player`."""
-        notes = self._read_json(self.dir / "notes.json", {})
+        notes = self.notes()
         plays = self.plays(lot)
         out = []
         for pos, g in enumerate(self._grids(lot)):
@@ -236,7 +255,10 @@ class Lab:
                 "family": lab.get("family"), "mechanics": lab.get("mechanics", []),
                 "clue_profile": lab.get("clue_profile", []), "trace_summary": trace if show else {},
                 "silhouette": g["demand"], "playable": not has_ramp(g), "plays": len(mine),
-                "kept": bool(note.get("kept")), "felt": note.get("felt", {}) if show else {},
+                # `kept`: the player's own star; `kept_any`: kept by someone (promotion), others' stars once revealed
+                "kept": bool(player and note.get("kept", {}).get(player)),
+                "kept_any": bool(note.get("kept")) if show else bool(player and note.get("kept", {}).get(player)),
+                "felt": note.get("felt", {}) if show else {},
                 "promoted": note.get("promoted"),
             })
         return out
@@ -301,7 +323,7 @@ class Lab:
 
         Deterministic (seed = lot name + n). Balanced by solver rating (same count per rating when possible), then by
         family and mechanics; candidates already played by `player` (non-phantom) are left out. The order starts with
-        the lowest rating and never repeats a rating twice in a row when possible. The solver rating is used here only:
+        an easiest grid (a short one when possible) and never puts two long grids in a row. The solver rating is used here only:
         the file and the answer carry lot and index, nothing else.
         """
         size = DEFAULT_SESSION_SIZE if size is None else size
@@ -448,6 +470,7 @@ class Lab:
         notes = self._read_json(self.dir / "notes.json", {})
         for note in notes.values():
             self._migrate_comment(note)
+            self._migrate_kept(note)
         return notes
 
     @staticmethod
@@ -461,6 +484,19 @@ class Lab:
             note["comment"] = {raters[0] if len(raters) == 1 else UNKNOWN_AUTHOR: text}
         else:
             note.pop("comment")
+
+    @staticmethod
+    def _migrate_kept(note: dict[str, Any]) -> None:
+        """A boolean star (older notes) becomes {player: True}, owned by LEGACY_PLAYER; false stars are dropped."""
+        kept = note.get("kept")
+        if isinstance(kept, dict):
+            kept = {p: True for p, v in kept.items() if v}
+        else:
+            kept = {LEGACY_PLAYER: True} if kept else {}
+        if kept:
+            note["kept"] = kept
+        else:
+            note.pop("kept", None)
 
     @staticmethod
     def _set_comment(note: dict[str, Any], player: str, text: Any) -> None:
@@ -483,23 +519,36 @@ class Lab:
         for key, note in notes.items():
             lot, _, index = key.rpartition(":")
             note = dict(note)
-            if ("felt" in note or "comment" in note) and not self.revealed(lot, int(index), player, plays, notes):
+            if ("felt" in note or "comment" in note or "kept" in note) and not self.revealed(lot, int(index), player, plays, notes):
                 note.pop("felt", None)
                 own = {p: c for p, c in note.pop("comment", {}).items() if p == player}
                 if own:
                     note["comment"] = own
+                mine = {p: v for p, v in note.pop("kept", {}).items() if p == player}  # another player's star stays hidden too
+                if mine:
+                    note["kept"] = mine
             out[key] = note
         return out
 
     def update_note(self, lot: str, index: int, patch: dict[str, Any]) -> dict[str, Any]:
-        """Kept flag, comment of `patch["player"]` and bulletin edits (felt ratings go through rate_play)."""
+        """Star and comment of `patch["player"]`, and bulletin edits (felt ratings go through rate_play)."""
         self._find(lot, index)
         key = f"{lot}:{index}"
         with self.lock:
             notes = self.notes()
             note = notes.setdefault(key, {})
             if "kept" in patch:
-                note["kept"] = bool(patch["kept"])
+                if patch.get("player") not in self.players():
+                    raise LabError("a star needs a known player")
+                stars = note.get("kept", {})
+                if patch["kept"]:
+                    stars[patch["player"]] = True
+                else:
+                    stars.pop(patch["player"], None)
+                if stars:
+                    note["kept"] = stars
+                else:
+                    note.pop("kept", None)
             if "comment" in patch:
                 if patch.get("player") not in self.players():
                     raise LabError("a comment needs a known player")

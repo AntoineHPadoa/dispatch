@@ -8,7 +8,7 @@ import {
 
 const cand = (index: number, over: Partial<Candidate> = {}): Candidate => ({
   lot: 't', index, title: 'x', cols: 8, clues: 6, rating: 2, techniques: ['record'], family: 'pointe_soir',
-  mechanics: ['neighbors:1'], clue_profile: [], trace_summary: { steps: 10 }, silhouette: [1], revealed: true, playable: true, plays: 0, kept: false,
+  mechanics: ['neighbors:1'], clue_profile: [], trace_summary: { steps: 10 }, silhouette: [1], revealed: true, playable: true, plays: 0, kept: false, kept_any: false,
   felt: {}, promoted: null, ...over,
 });
 
@@ -29,6 +29,10 @@ describe('filters', () => {
     expect(filterCandidates(list, { ...noFilters(), status: 'new' }).map((c) => c.index)).toEqual([2, 3]);
     expect(filterCandidates(list, { ...noFilters(), status: 'played' }).map((c) => c.index)).toEqual([1]);
     expect(filterCandidates(list, { ...noFilters(), status: 'kept' }).map((c) => c.index)).toEqual([2]);
+  });
+  it('the kept status is the current player\'s own star, not another player\'s', () => {
+    const other = [cand(1, { kept: false, kept_any: true }), cand(2, { kept: true, kept_any: true }), cand(3)];
+    expect(filterCandidates(other, { ...noFilters(), status: 'kept' }).map((c) => c.index)).toEqual([2]);
   });
   it('combines filters', () => {
     expect(filterCandidates(list, { ...noFilters(), rating: '3', mechanic: 'step' }).map((c) => c.index)).toEqual([2]);

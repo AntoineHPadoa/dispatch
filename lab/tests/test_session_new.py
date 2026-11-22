@@ -39,9 +39,16 @@ def draw(api, **body):
     return s
 
 
-def test_default_size_16_balanced_by_rating(api, lab):
-    grids = big_lot(lab)
+def test_default_size_is_6(api, lab):
+    big_lot(lab)
     s = draw(api)
+    assert len(s["items"]) == 6 and s["id"] == "big-1"
+    assert len({i["index"] for i in s["items"]}) == 6
+
+
+def test_size_16_balanced_by_rating(api, lab):
+    grids = big_lot(lab)
+    s = draw(api, size=16)
     assert len(s["items"]) == 16 and s["id"] == "big-1"
     ratings = [rating_of(grids, i["index"]) for i in s["items"]]
     assert sorted(set(ratings)) == [1, 2, 3, 4] and all(ratings.count(r) == 4 for r in (1, 2, 3, 4))
@@ -185,3 +192,45 @@ def test_post_keeps_the_safety_checks(api, lab):
     with pytest.raises(urllib.error.HTTPError) as e:
         urllib.request.urlopen(req)
     assert e.value.code == 415
+
+
+def sized_pool(longs, shorts):
+    """Candidates with 12 (long) or 8 slots; ratings cycle 1..4 so that every draw has an easiest grid."""
+    pool = []
+    for i in range(longs + shorts):
+        g = grid(i)
+        n = 12 if i < longs else 8
+        g["columns"] = [f"{k}h" for k in range(n)]
+        g["difficulty"]["rating"] = 1 + i % 4
+        g["lab"].update(family=FAMILIES[i % 3], mechanics=[MECHANICS[i % 4]])
+        pool.append((i, g))
+    return pool
+
+
+def test_order_never_puts_two_long_grids_in_a_row(lab):
+    import lab_server, random
+    pool = sized_pool(longs=6, shorts=10)
+    for seed in range(200):
+        order = lab_server.draw_session(pool, 8, random.Random(f"big:{seed}"))
+        long = [len(pool[i][1]["columns"]) == 12 for i in order]
+        assert len(set(order)) == 8
+        if sum(long) <= len(long) - sum(long) + 1:  # separable: the drawn grids hold enough short ones
+            assert not any(a and b for a, b in zip(long, long[1:])), (seed, long)
+
+
+def test_first_grid_is_a_short_easy_one(lab):
+    import lab_server, random
+    pool = sized_pool(longs=8, shorts=8)
+    for seed in range(100):
+        order = lab_server.draw_session(pool, 6, random.Random(f"big:{seed}"))
+        first = pool[order[0]][1]
+        shorts = [pool[i][1]["difficulty"]["rating"] for i in order if len(pool[i][1]["columns"]) == 8]
+        if shorts:
+            assert len(first["columns"]) == 8 and first["difficulty"]["rating"] == min(shorts)
+
+
+def test_long_grids_that_cannot_be_separated_do_not_block(lab):
+    """Only long candidates: the draw still returns the requested size."""
+    import lab_server, random
+    pool = sized_pool(longs=6, shorts=0)
+    assert len(lab_server.draw_session(pool, 6, random.Random("big:1"))) == 6

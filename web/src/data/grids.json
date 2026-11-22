@@ -2003,13 +2003,12 @@
       ]
     },
     "difficulty": {
-      "rating": 4,
-      "label": "Expert",
+      "rating": 1,
+      "label": "Facile",
       "techniques": [
         "record",
-        "silhouette",
-        "ribbon",
-        "refuted"
+        "room",
+        "silhouette"
       ]
     },
     "bulletin": {

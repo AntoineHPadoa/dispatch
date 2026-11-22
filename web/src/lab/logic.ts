@@ -44,7 +44,10 @@ export interface Candidate {
   /** False for staircase ramps, which the web game cannot play yet (trapezoids are played). */
   playable: boolean;
   plays: number;
+  /** The current player's own star. */
   kept: boolean;
+  /** Starred by some player (others' stars show once the grid is rated by the current player): a kept grid can be promoted. */
+  kept_any: boolean;
   felt: Record<string, number>;
   promoted: { id: number; number: number; published: string } | null;
 }
@@ -298,7 +301,7 @@ export const sessionDone = (items: SessionItem[]): boolean => !items.some(toPlay
 export const sessionPlayHash = (id: string, it: Pick<SessionItem, 'lot' | 'index'>): string => `#/partie/${it.lot}/${it.index}/${id}`;
 
 /** Default and parsing of the size of a new session: an integer from 1, at most the lot size; null when not a number. */
-export const DEFAULT_SESSION_SIZE = 16;
+export const DEFAULT_SESSION_SIZE = 6;
 export function sessionSize(raw: string, lotCount: number): number | null {
   if (raw.trim() === '') return Math.min(DEFAULT_SESSION_SIZE, Math.max(1, lotCount));
   const n = Number(raw);

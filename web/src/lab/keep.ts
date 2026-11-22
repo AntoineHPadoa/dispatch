@@ -10,7 +10,7 @@ import { esc } from '../ui/palette';
 export async function renderKept(root: HTMLElement, ctx: LabCtx): Promise<void> {
   const lots = await api.lots();
   const kept: Candidate[] = [];
-  for (const l of lots) kept.push(...(await api.candidates(l.lot)).filter((c) => c.kept || c.promoted));
+  for (const l of lots) kept.push(...(await api.candidates(l.lot)).filter((c) => c.kept_any || c.promoted));
   let sel: Candidate | null = kept[0] ?? null;
   let bulletin: Bulletin = {};
   let columns = 0;

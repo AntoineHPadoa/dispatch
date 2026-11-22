@@ -53,7 +53,7 @@ def test_state_per_player_and_phantom_ignored(api, lab):
 def test_session_never_leaks_solver_data(api, lab):
     write_session(lab)
     rated(api, "Joueur 1", 1, felt=4)
-    api("PUT", "/api/notes/t/1", {"kept": True})
+    api("PUT", "/api/notes/t/1", {"kept": True, "player": "Joueur 1"})
     raw = json.dumps(api("GET", "/api/session/s1?player=Joueur%202&creation=1")[1])
     for secret in ("Pointe", "pointe_soir", "ribbon", "rating", "difficulty", "techniques", "felt", "comment", "title\": \"Candidate"):
         assert secret not in raw
