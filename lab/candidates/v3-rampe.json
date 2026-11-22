@@ -239,7 +239,9 @@
      "price_cap:ramp_trap": 1,
      "single_cover:ramp_trap": 1,
      "room:ramp_trap": 1
-    }
+    },
+    "technique_level": 1,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "bulletin": {
@@ -260,7 +262,16 @@
    "seconds": 0.37,
    "mix": 0,
    "lot": "v3-rampe",
-   "index": 0
+   "index": 0,
+   "decisions": {
+    "ramp": 1
+   },
+   "live_mechanics": [
+    "ramp"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.22,
+   "demand_prices": 0
   }
  },
  {
@@ -434,8 +445,8 @@
    ]
   },
   "difficulty": {
-   "rating": 4,
-   "label": "Expert",
+   "rating": 2,
+   "label": "Moyen",
    "techniques": [
     "exhausted",
     "ramp_plateau",
@@ -479,7 +490,9 @@
      "refuted:ramp_trap": 1,
      "single_cover:ramp_trap": 1,
      "room:ramp_trap": 1
-    }
+    },
+    "technique_level": 4,
+    "coupled_globals": []
    },
    "ramp_techniques": {
     "ramp_plateau": 1
@@ -502,7 +515,16 @@
    "seconds": 0.59,
    "mix": 0,
    "lot": "v3-rampe",
-   "index": 1
+   "index": 1,
+   "decisions": {
+    "ramp": 3
+   },
+   "live_mechanics": [
+    "ramp"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.67,
+   "demand_prices": 0
   }
  },
  {
@@ -705,7 +727,9 @@
     },
     "shape_steps": {
      "exhausted:ramp_trap": 1
-    }
+    },
+    "technique_level": 1,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "bulletin": {
@@ -726,7 +750,16 @@
    "seconds": 0.01,
    "mix": 0,
    "lot": "v3-rampe",
-   "index": 2
+   "index": 2,
+   "decisions": {
+    "ramp": 1
+   },
+   "live_mechanics": [
+    "ramp"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.29,
+   "demand_prices": 0
   }
  },
  {
@@ -941,8 +974,8 @@
    ]
   },
   "difficulty": {
-   "rating": 4,
-   "label": "Expert",
+   "rating": 2,
+   "label": "Moyen",
    "techniques": [
     "column_sum",
     "ramp_lone",
@@ -994,7 +1027,9 @@
      "share_out:ramp_trap": 6,
      "room:ramp_trap": 2,
      "refuted:ramp_trap": 1
-    }
+    },
+    "technique_level": 4,
+    "coupled_globals": []
    },
    "ramp_techniques": {
     "ramp_lone": 1
@@ -1017,7 +1052,16 @@
    "seconds": 2.28,
    "mix": 0,
    "lot": "v3-rampe",
-   "index": 3
+   "index": 3,
+   "decisions": {
+    "ramp": 2
+   },
+   "live_mechanics": [
+    "ramp"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.31,
+   "demand_prices": 0
   }
  },
  {
@@ -1285,7 +1329,11 @@
      "record:ramp_trap": 1,
      "single_cover:ramp_trap": 1,
      "ribbon:ramp_trap": 4
-    }
+    },
+    "technique_level": 2,
+    "coupled_globals": [
+     "step"
+    ]
    },
    "ramp_techniques": {},
    "bulletin": {
@@ -1310,7 +1358,22 @@
    "seconds": 17.69,
    "mix": 5,
    "lot": "v3-rampe",
-   "index": 4
+   "index": 4,
+   "decisions": {
+    "exchange": 1,
+    "step": 1,
+    "ramp": 1
+   },
+   "live_mechanics": [
+    "exchange",
+    "step",
+    "ramp"
+   ],
+   "coupled_globals": [
+    "step"
+   ],
+   "compactness": 0.55,
+   "demand_prices": 0
   }
  },
  {
@@ -1540,8 +1603,8 @@
    ]
   },
   "difficulty": {
-   "rating": 2,
-   "label": "Moyen",
+   "rating": 1,
+   "label": "Facile",
    "techniques": [
     "flow",
     "price_cap",
@@ -1600,7 +1663,9 @@
      "ribbon:ramp_trap": 7,
      "single_cover:ramp_trap": 4,
      "ramp_plateau:ramp_trap": 4
-    }
+    },
+    "technique_level": 2,
+    "coupled_globals": []
    },
    "ramp_techniques": {
     "ramp_plateau": 4,
@@ -1624,7 +1689,18 @@
    "seconds": 3.9,
    "mix": 2,
    "lot": "v3-rampe",
-   "index": 5
+   "index": 5,
+   "decisions": {
+    "exchange": 2,
+    "ramp": 4
+   },
+   "live_mechanics": [
+    "exchange",
+    "ramp"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.91,
+   "demand_prices": 1
   }
  },
  {
@@ -1819,8 +1895,8 @@
    ]
   },
   "difficulty": {
-   "rating": 3,
-   "label": "Difficile",
+   "rating": 2,
+   "label": "Moyen",
    "techniques": [
     "exhausted",
     "ribbon",
@@ -1859,7 +1935,9 @@
     "shape_steps": {
      "share_out:ramp_trap": 2,
      "ribbon:ramp_trap": 2
-    }
+    },
+    "technique_level": 3,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "bulletin": {
@@ -1878,7 +1956,16 @@
    "seconds": 0.03,
    "mix": 7,
    "lot": "v3-rampe",
-   "index": 6
+   "index": 6,
+   "decisions": {
+    "ramp": 1
+   },
+   "live_mechanics": [
+    "ramp"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.17,
+   "demand_prices": 0
   }
  },
  {
@@ -2088,8 +2175,8 @@
    ]
   },
   "difficulty": {
-   "rating": 4,
-   "label": "Expert",
+   "rating": 2,
+   "label": "Moyen",
    "techniques": [
     "exhausted",
     "refuted",
@@ -2133,7 +2220,9 @@
      "ribbon:ramp_trap": 1,
      "refuted:ramp_trap": 1,
      "single_cover:ramp_trap": 1
-    }
+    },
+    "technique_level": 4,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "bulletin": {
@@ -2154,7 +2243,18 @@
    "seconds": 0.06,
    "mix": 2,
    "lot": "v3-rampe",
-   "index": 7
+   "index": 7,
+   "decisions": {
+    "exchange": 4,
+    "ramp": 2
+   },
+   "live_mechanics": [
+    "exchange",
+    "ramp"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.89,
+   "demand_prices": 0
   }
  },
  {
@@ -2367,8 +2467,8 @@
    ]
   },
   "difficulty": {
-   "rating": 2,
-   "label": "Moyen",
+   "rating": 1,
+   "label": "Facile",
    "techniques": [
     "flow",
     "price_cap",
@@ -2425,7 +2525,9 @@
      "program:ramp_trap": 1,
      "ramp_plateau:ramp_trap": 1,
      "ribbon:ramp_trap": 2
-    }
+    },
+    "technique_level": 2,
+    "coupled_globals": []
    },
    "ramp_techniques": {
     "ramp_plateau": 1
@@ -2448,7 +2550,18 @@
    "seconds": 1.63,
    "mix": 2,
    "lot": "v3-rampe",
-   "index": 8
+   "index": 8,
+   "decisions": {
+    "exchange": 1,
+    "ramp": 1
+   },
+   "live_mechanics": [
+    "exchange",
+    "ramp"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.38,
+   "demand_prices": 0
   }
  },
  {
@@ -2698,7 +2811,11 @@
      "single_cover:ramp_trap": 2,
      "exhausted:ramp_trap": 3,
      "ribbon:ramp_trap": 1
-    }
+    },
+    "technique_level": 2,
+    "coupled_globals": [
+     "step"
+    ]
    },
    "ramp_techniques": {},
    "bulletin": {
@@ -2723,7 +2840,22 @@
    "seconds": 0.09,
    "mix": 5,
    "lot": "v3-rampe",
-   "index": 9
+   "index": 9,
+   "decisions": {
+    "exchange": 2,
+    "step": 1,
+    "ramp": 2
+   },
+   "live_mechanics": [
+    "exchange",
+    "step",
+    "ramp"
+   ],
+   "coupled_globals": [
+    "step"
+   ],
+   "compactness": 1.5,
+   "demand_prices": 0
   }
  },
  {
@@ -2942,8 +3074,8 @@
    ]
   },
   "difficulty": {
-   "rating": 2,
-   "label": "Moyen",
+   "rating": 1,
+   "label": "Facile",
    "techniques": [
     "price_cap",
     "program",
@@ -2991,7 +3123,9 @@
      "room:ramp_trap": 2,
      "ribbon:ramp_trap": 4,
      "single_cover:ramp_trap": 1
-    }
+    },
+    "technique_level": 2,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "bulletin": {
@@ -3016,7 +3150,16 @@
    "seconds": 1.07,
    "mix": 1,
    "lot": "v3-rampe",
-   "index": 10
+   "index": 10,
+   "decisions": {
+    "ramp": 1
+   },
+   "live_mechanics": [
+    "ramp"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.17,
+   "demand_prices": 0
   }
  },
  {
@@ -3299,7 +3442,9 @@
      "program:ramp_trap": 1,
      "ramp_plateau:ramp_trap": 1,
      "ribbon:ramp_trap": 3
-    }
+    },
+    "technique_level": 2,
+    "coupled_globals": []
    },
    "ramp_techniques": {
     "ramp_plateau": 3,
@@ -3327,7 +3472,17 @@
    "seconds": 1.02,
    "mix": 1,
    "lot": "v3-rampe",
-   "index": 11
+   "index": 11,
+   "decisions": {
+    "ramp": 3,
+    "price": 1
+   },
+   "live_mechanics": [
+    "ramp"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.64,
+   "demand_prices": 0
   }
  },
  {
@@ -3578,7 +3733,9 @@
     },
     "shape_steps": {
      "single_cover:ramp_trap": 1
-    }
+    },
+    "technique_level": 1,
+    "coupled_globals": []
    },
    "ramp_techniques": {
     "ramp_plateau": 1
@@ -3599,7 +3756,18 @@
    "seconds": 0.34,
    "mix": 7,
    "lot": "v3-rampe",
-   "index": 12
+   "index": 12,
+   "decisions": {
+    "exchange": 1,
+    "ramp": 1
+   },
+   "live_mechanics": [
+    "exchange",
+    "ramp"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.27,
+   "demand_prices": 0
   }
  },
  {
@@ -3922,7 +4090,9 @@
      "program:ramp_trap": 1,
      "ramp_plateau:ramp_trap": 2,
      "length:ramp_trap": 1
-    }
+    },
+    "technique_level": 2,
+    "coupled_globals": []
    },
    "ramp_techniques": {
     "ramp_plateau": 3,
@@ -3950,7 +4120,17 @@
    "seconds": 2.96,
    "mix": 8,
    "lot": "v3-rampe",
-   "index": 13
+   "index": 13,
+   "decisions": {
+    "ramp": 5,
+    "price": 1
+   },
+   "live_mechanics": [
+    "ramp"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.85,
+   "demand_prices": 0
   }
  },
  {
@@ -4177,8 +4357,8 @@
    ]
   },
   "difficulty": {
-   "rating": 3,
-   "label": "Difficile",
+   "rating": 2,
+   "label": "Moyen",
    "techniques": [
     "exhausted",
     "record",
@@ -4225,7 +4405,9 @@
      "record:ramp_trap": 1,
      "share_out:ramp_trap": 1,
      "exhausted:ramp_trap": 1
-    }
+    },
+    "technique_level": 3,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "bulletin": {
@@ -4246,7 +4428,18 @@
    "seconds": 0.19,
    "mix": 2,
    "lot": "v3-rampe",
-   "index": 14
+   "index": 14,
+   "decisions": {
+    "exchange": 3,
+    "ramp": 1
+   },
+   "live_mechanics": [
+    "exchange",
+    "ramp"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.5,
+   "demand_prices": 0
   }
  },
  {
@@ -4639,7 +4832,9 @@
      "record:ramp_trap": 1,
      "single_cover:ramp_trap": 1,
      "ribbon:ramp_trap": 11
-    }
+    },
+    "technique_level": 2,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "bulletin": {
@@ -4664,7 +4859,18 @@
    "seconds": 17.63,
    "mix": 3,
    "lot": "v3-rampe",
-   "index": 15
+   "index": 15,
+   "decisions": {
+    "exchange": 6,
+    "ramp": 1
+   },
+   "live_mechanics": [
+    "exchange",
+    "ramp"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.31,
+   "demand_prices": 0
   }
  },
  {
@@ -4860,8 +5066,8 @@
    ]
   },
   "difficulty": {
-   "rating": 2,
-   "label": "Moyen",
+   "rating": 1,
+   "label": "Facile",
    "techniques": [
     "exhausted",
     "record",
@@ -4904,7 +5110,9 @@
      "room:ramp_trap": 1,
      "record:ramp_trap": 1,
      "ribbon:ramp_trap": 3
-    }
+    },
+    "technique_level": 2,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "bulletin": {
@@ -4925,7 +5133,16 @@
    "seconds": 0.26,
    "mix": 4,
    "lot": "v3-rampe",
-   "index": 16
+   "index": 16,
+   "decisions": {
+    "ramp": 1
+   },
+   "live_mechanics": [
+    "ramp"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.18,
+   "demand_prices": 0
   }
  },
  {
@@ -5221,8 +5438,8 @@
    ]
   },
   "difficulty": {
-   "rating": 2,
-   "label": "Moyen",
+   "rating": 1,
+   "label": "Facile",
    "techniques": [
     "price_cap",
     "record",
@@ -5272,7 +5489,9 @@
      "room:ramp_trap": 1,
      "record:ramp_trap": 1,
      "ribbon:ramp_trap": 3
-    }
+    },
+    "technique_level": 2,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "bulletin": {
@@ -5297,7 +5516,18 @@
    "seconds": 8.55,
    "mix": 3,
    "lot": "v3-rampe",
-   "index": 17
+   "index": 17,
+   "decisions": {
+    "exchange": 5,
+    "ramp": 1
+   },
+   "live_mechanics": [
+    "exchange",
+    "ramp"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.47,
+   "demand_prices": 0
   }
  },
  {
@@ -5504,8 +5734,8 @@
    ]
   },
   "difficulty": {
-   "rating": 2,
-   "label": "Moyen",
+   "rating": 1,
+   "label": "Facile",
    "techniques": [
     "exhausted",
     "ramp_plateau",
@@ -5559,7 +5789,9 @@
      "ribbon:ramp_trap": 4,
      "exhausted:ramp_trap": 1,
      "single_cover:ramp_trap": 1
-    }
+    },
+    "technique_level": 2,
+    "coupled_globals": []
    },
    "ramp_techniques": {
     "ramp_plateau": 1,
@@ -5583,7 +5815,18 @@
    "seconds": 0.26,
    "mix": 4,
    "lot": "v3-rampe",
-   "index": 18
+   "index": 18,
+   "decisions": {
+    "exchange": 2,
+    "ramp": 1
+   },
+   "live_mechanics": [
+    "exchange",
+    "ramp"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.36,
+   "demand_prices": 0
   }
  },
  {
@@ -5791,8 +6034,8 @@
    ]
   },
   "difficulty": {
-   "rating": 4,
-   "label": "Expert",
+   "rating": 2,
+   "label": "Moyen",
    "techniques": [
     "column_sum",
     "exhausted",
@@ -5852,7 +6095,9 @@
      "ramp_plateau:ramp_trap": 3,
      "single_cover:ramp_trap": 1,
      "single_spot:ramp_trap": 1
-    }
+    },
+    "technique_level": 4,
+    "coupled_globals": []
    },
    "ramp_techniques": {
     "ramp_plateau": 5
@@ -5875,7 +6120,18 @@
    "seconds": 1.42,
    "mix": 6,
    "lot": "v3-rampe",
-   "index": 19
+   "index": 19,
+   "decisions": {
+    "exchange": 1,
+    "ramp": 6
+   },
+   "live_mechanics": [
+    "exchange",
+    "ramp"
+   ],
+   "coupled_globals": [],
+   "compactness": 1.18,
+   "demand_prices": 0
   }
  }
 ]

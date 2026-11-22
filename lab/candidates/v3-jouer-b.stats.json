@@ -50,10 +50,10 @@
   }
  },
  "ratings": {
-  "Facile": 6,
-  "Moyen": 8,
-  "Difficile": 3,
-  "Expert": 3
+  "Facile": 11,
+  "Moyen": 7,
+  "Difficile": 2,
+  "Expert": 0
  },
  "families": {
   "nuit_plate": 2,
@@ -105,15 +105,16 @@
  "ramp_grids_with_technique": 0,
  "ramp_grids_with_own_technique": 0,
  "ramp_techniques": {
-  "ramp_lone": 0,
   "ramp_plateau": 0,
-  "ramp_relay": 0,
-  "ramp_shoulder": 0
+  "ramp_shoulder": 0,
+  "ramp_lone": 0,
+  "ramp_relay": 0
  },
  "seconds": 793.9,
  "seconds_per_kept_grid": 39.7,
  "workers": 6,
  "generator": "dispatch-solver 2.0.0",
  "blocked_ramp": 0,
- "errors": []
+ "errors": [],
+ "rerated": "scripts/rerate_lots.py (notation A, S4.16)"
 }

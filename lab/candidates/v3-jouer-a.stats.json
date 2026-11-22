@@ -47,10 +47,10 @@
   }
  },
  "ratings": {
-  "Facile": 5,
+  "Facile": 10,
   "Moyen": 9,
-  "Difficile": 3,
-  "Expert": 3
+  "Difficile": 1,
+  "Expert": 0
  },
  "families": {
   "midi_solaire": 3,
@@ -103,15 +103,16 @@
  "ramp_grids_with_technique": 0,
  "ramp_grids_with_own_technique": 0,
  "ramp_techniques": {
-  "ramp_lone": 0,
   "ramp_plateau": 0,
-  "ramp_relay": 0,
-  "ramp_shoulder": 0
+  "ramp_shoulder": 0,
+  "ramp_lone": 0,
+  "ramp_relay": 0
  },
  "seconds": 47.7,
  "seconds_per_kept_grid": 2.4,
  "workers": 6,
  "generator": "dispatch-solver 2.0.0",
  "blocked_ramp": 0,
- "errors": []
+ "errors": [],
+ "rerated": "scripts/rerate_lots.py (notation A, S4.16)"
 }

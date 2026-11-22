@@ -228,7 +228,9 @@
      "single_cover": 1,
      "silhouette": 1
     },
-    "shape_steps": {}
+    "shape_steps": {},
+    "technique_level": 1,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "bulletin": {
@@ -249,7 +251,18 @@
    "solver_rating_now": 1,
    "recheck": [
     "useless_clue:1"
-   ]
+   ],
+   "decisions": {
+    "exchange": 2,
+    "stock": 1
+   },
+   "live_mechanics": [
+    "exchange",
+    "stock"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.6,
+   "demand_prices": 0
   }
  },
  {
@@ -516,7 +529,9 @@
      "column_sum": 3,
      "ribbon": 6
     },
-    "shape_steps": {}
+    "shape_steps": {},
+    "technique_level": 2,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "bulletin": {
@@ -534,7 +549,16 @@
     ]
    },
    "generator": "dispatch-solver 2.0.0 (published grid 9)",
-   "solver_rating_now": 2
+   "solver_rating_now": 2,
+   "decisions": {
+    "exchange": 3
+   },
+   "live_mechanics": [
+    "exchange"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.21,
+   "demand_prices": 0
   }
  },
  {
@@ -714,8 +738,8 @@
    ]
   },
   "difficulty": {
-   "rating": 3,
-   "label": "Difficile",
+   "rating": 2,
+   "label": "Moyen",
    "techniques": [
     "record",
     "room",
@@ -774,7 +798,9 @@
      "record": 4,
      "single_cover": 1
     },
-    "shape_steps": {}
+    "shape_steps": {},
+    "technique_level": 3,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "bulletin": {
@@ -792,7 +818,16 @@
     ]
    },
    "generator": "dispatch-solver 2.0.0 (published grid 10)",
-   "solver_rating_now": 3
+   "solver_rating_now": 3,
+   "decisions": {
+    "exchange": 4
+   },
+   "live_mechanics": [
+    "exchange"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.44,
+   "demand_prices": 0
   }
  },
  {
@@ -1024,7 +1059,9 @@
      "record": 2,
      "silhouette": 1
     },
-    "shape_steps": {}
+    "shape_steps": {},
+    "technique_level": 1,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "bulletin": {
@@ -1042,7 +1079,16 @@
     ]
    },
    "generator": "dispatch-solver 2.0.0 (published grid 11)",
-   "solver_rating_now": 4
+   "solver_rating_now": 4,
+   "decisions": {
+    "exchange": 2
+   },
+   "live_mechanics": [
+    "exchange"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.22,
+   "demand_prices": 0
   }
  }
 ]

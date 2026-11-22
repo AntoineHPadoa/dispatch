@@ -5,10 +5,10 @@
  "attempts": 0,
  "rejects": {},
  "ratings": {
-  "Facile": 2,
-  "Moyen": 1,
+  "Facile": 3,
+  "Moyen": 3,
   "Difficile": 0,
-  "Expert": 3
+  "Expert": 0
  },
  "families": {
   "plateau_hiver": 4,
@@ -22,5 +22,14 @@
   "nuit-rampe:2",
   "nuit-jouer-a:14",
   "nuit-jouer-c:14"
- ]
+ ],
+ "ramp_grids_with_technique": 1,
+ "ramp_grids_with_own_technique": 0,
+ "ramp_techniques": {
+  "ramp_plateau": 2,
+  "ramp_shoulder": 1,
+  "ramp_lone": 0,
+  "ramp_relay": 0
+ },
+ "rerated": "scripts/rerate_lots.py (notation A, S4.16)"
 }
