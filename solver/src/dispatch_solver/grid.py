@@ -5,6 +5,8 @@
 - Behind a flag: `pieces.C.shape` = "trap" or "stair" (coal ramps, docs/next/rampe.md; no `height`,
   `len` = total width), refused unless allow_ramp=True. The web game plays trapezoids; the published
   grid checks (check_published, check_unique.py) and the lab pass the flag.
+- Rows are absolute (0 = bottom of the grid, weather included): a placement or an `engaged` clue never
+  starts under the weather bricks F + R of a column it covers.
 - load_grids() reads one grid, a list of grids, or a fixture ({"grid": ..., "expect": ...}).
 
 Example: errors = validate(json.load(open("grid.json")))
@@ -126,6 +128,7 @@ def validate(g: Any, allow_ramp: bool = False) -> list[str]:
         err(f"weather: R and F with {n} integers each expected")
     elif not all(v >= 0 for v in w["R"]) or not all(v >= 0 for v in w["F"]):
         err("weather: values must be >= 0")
+    weather_ok = n > 0 and _is_obj(w) and _is_int_array(w.get("R"), n) and _is_int_array(w.get("F"), n)
 
     # Pieces
     piece_ids: list[str] = []
@@ -178,6 +181,16 @@ def validate(g: Any, allow_ramp: bool = False) -> list[str]:
             err(f"{at}: goes past the last column")
         if not allows_height(pid, p.get("height", 1)):
             err(f"{at}.height: height not allowed for {pid}")
+        check_off_weather(at, p)
+
+    def check_off_weather(at: str, p: dict[str, Any]) -> None:
+        """Rows are absolute: a placement starts above the weather bricks (F + R) of every column it covers."""
+        if not weather_ok or not _is_nat(p.get("row")) or not _is_nat(p.get("col")) or not _is_pos(p.get("len")):
+            return
+        for c in range(p["col"], min(p["col"] + p["len"], n)):
+            if p["row"] < w["F"][c] + w["R"][c]:
+                err(f"{at}: covers a weather cell at {cols[c]}")
+                return
 
     neighbors = g.get("neighbors")
 
@@ -341,7 +354,15 @@ def validate(g: Any, allow_ramp: bool = False) -> list[str]:
         else:
             for i, p in enumerate(pl):
                 _check_placement(
-                    f"solution.placements[{i}]", p, piece_ids, countries, is_col, check_bar_geometry, n, err
+                    f"solution.placements[{i}]",
+                    p,
+                    piece_ids,
+                    countries,
+                    is_col,
+                    check_bar_geometry,
+                    check_off_weather,
+                    n,
+                    err,
                 )
 
     d = g.get("difficulty")
@@ -454,7 +475,15 @@ def _check_clue(
 
 
 def _check_placement(
-    at: str, p: Any, piece_ids: list[str], countries: list[str], is_col: Any, check_bar_geometry: Any, n: int, err: Any
+    at: str,
+    p: Any,
+    piece_ids: list[str],
+    countries: list[str],
+    is_col: Any,
+    check_bar_geometry: Any,
+    check_off_weather: Any,
+    n: int,
+    err: Any,
 ) -> None:
     if not _is_obj(p):
         err(f"{at}: object expected")
@@ -479,6 +508,7 @@ def _check_placement(
             err(f"{at}.height: an import is one cell")
         if _is_nat(p.get("col")) and _is_pos(p.get("len")) and p["col"] + p["len"] > n:
             err(f"{at}: goes past the last column")
+        check_off_weather(at, p)
     elif _is_piece_id(piece) and piece in piece_ids:
         check_bar_geometry(at, piece, p)
 

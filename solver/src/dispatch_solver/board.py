@@ -1,5 +1,7 @@
 """Static board of a §14 grid, shared by both solvers: placements, silhouette options, composition.
 
+- Rows are absolute, 0 at the bottom of the grid: the weather (F then R, `w[c]` cells) sits at the bottom of
+  each column as fixed bricks. Cell (r, c) can hold a plant only for w[c] <= r < w[c] + maxh[c].
 - Puzzle: residual demand, composition keys, rules (clues.py), every placement that may fit, and the
   silhouette options: STEP options (sets of pump/turbine pairs) x per-column export tuples (one value per
   neighbor). Height to fill: residual + exports + pumping - turbining, never negative (a surplus is
@@ -30,6 +32,7 @@ class Puzzle:
         self.n = n = len(g["columns"])
         self.columns: list[str] = g["columns"]
         self.residual = residual(g)
+        self.w: list[int] = [g["weather"]["F"][c] + g["weather"]["R"][c] for c in range(n)]  # weather bricks
         self.rules: Rules = read_rules(g)
         self.keys = self.rules.keys
         self.countries: list[str] = [nb["id"] for nb in g["neighbors"]]
@@ -90,8 +93,10 @@ class Puzzle:
     def _add_shapes(self, key: str, piece: str, country: str | None, shapes: list[Shape]) -> None:
         for sh in shapes:
             for c0 in range(self.n - sh.width + 1):
-                room = min(self.maxh[c0 + dc] - sh.top(dc) for dc in range(sh.width))
-                for r in range(room + 1):
+                # Every cell above the weather bricks and under the highest silhouette.
+                low = max(self.w[c0 + dc] - b for dc, (b, _h) in enumerate(sh.columns))
+                room = min(self.w[c0 + dc] + self.maxh[c0 + dc] - sh.top(dc) for dc in range(sh.width))
+                for r in range(low, room + 1):
                     pl = Placement(key, piece, country, sh, r, c0, sh.cells(r, c0))
                     self.index[key, r, c0, sh.width, 1 if sh.kind.startswith("ramp") else sh.height] = len(
                         self.placements

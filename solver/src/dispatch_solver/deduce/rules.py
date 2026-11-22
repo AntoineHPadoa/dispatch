@@ -368,7 +368,7 @@ class Solver:
 
     def r_room(self, v: View) -> bool:
         self._begin("room")
-        bad = v.occ | ((1 << (self.pz.n * (max(v.maxh) + 4))) - 1) & ~v.under
+        bad = v.occ | ((1 << (self.pz.n * (max(v.top_max) + 4))) - 1) & ~v.under
         masks = self.pz.masks
         self.remove([i for i in self.free() if masks[i] & bad])
         if not self._cur.effects:
@@ -392,7 +392,7 @@ class Solver:
         for i in self.free():
             need: dict[int, int] = {}
             for r, c in pz.placements[i].cells:
-                if r >= v.minh[c]:
+                if r >= v.top_min[c]:
                     need[c] = max(need.get(c, 0), r + 1)
             if len(need) < 2:
                 continue
@@ -409,7 +409,7 @@ class Solver:
             self._cur.scope = "day"
 
     def _fits(self, need: dict[int, int], totals: dict[int, int]) -> bool:
-        """Some silhouette option reaches the heights `need` in all its columns at once, within the totals."""
+        """Some silhouette option reaches the absolute tops `need` in all its columns at once, within the totals."""
         pz = self.pz
         for si, cols in self.st.sil.items():
             d = pz.deltas[si]
@@ -417,7 +417,7 @@ class Solver:
             for c, es in enumerate(cols):
                 h = need.get(c)
                 if h is not None:
-                    es = frozenset(e for e in es if pz.residual[c] + d[c] + sum(e) >= h)
+                    es = frozenset(e for e in es if pz.w[c] + pz.residual[c] + d[c] + sum(e) >= h)
                     if not es:
                         break
                 new.append(es)
@@ -479,13 +479,15 @@ class Solver:
                 self._cur.cells += possible
                 return
 
-    @staticmethod
-    def _at_least(need: dict[int, int]) -> SilPred:
-        return lambda c, h, e: h >= need.get(c, 0)
+    def _at_least(self, need: dict[int, int]) -> SilPred:
+        """Silhouettes whose top (absolute row, exclusive) reaches need[c]; h is a height above the weather."""
+        w = self.pz.w
+        return lambda c, h, e: w[c] + h >= need.get(c, 0)
 
-    @staticmethod
-    def _at_most(cap: dict[int, int]) -> SilPred:
-        return lambda c, h, e: h <= cap.get(c, BIG)
+    def _at_most(self, cap: dict[int, int]) -> SilPred:
+        """Silhouettes whose top (absolute row, exclusive) stays at or under cap[c]."""
+        w = self.pz.w
+        return lambda c, h, e: w[c] + h <= cap.get(c, BIG)
 
     def _day_totals(self, totals: dict[int, int], clues: list[int]) -> None:
         """Published day totals of exports (inventory or exchanges clue): counting over the columns."""
@@ -629,14 +631,15 @@ class Solver:
             if key not in pz.keys:
                 continue
             for c in range(pz.n):
-                rows = [r for r in range(v.maxh[c]) if v.dom[(r, c)] == frozenset([key])]
+                rows = [r for r in range(pz.w[c], v.top_max[c]) if v.dom[(r, c)] == frozenset([key])]
                 if rows:
                     lines.append((j, c, rows))
 
         def keep(c: int, h: int, e: Exports) -> bool:
-            if h < need.get(c, 0) or h > cap.get(c, BIG):
+            top = pz.w[c] + h  # absolute rows under the silhouette end here
+            if top < need.get(c, 0) or top > cap.get(c, BIG):
                 return False
-            return all(e[j] + sum(1 for r in rows if r < h) <= pz.caps[j] for j, cc, rows in lines if cc == c)
+            return all(e[j] + sum(1 for r in rows if r < top) <= pz.caps[j] for j, cc, rows in lines if cc == c)
 
         self.keep_sil(keep)
         return self._end()
@@ -768,7 +771,11 @@ class Solver:
         return False
 
     def _row_status(self, v: View, r: int) -> list[str]:
-        return ["absent" if r >= v.maxh[c] else "sure" if r < v.minh[c] else "maybe" for c in range(self.pz.n)]
+        # A weather brick is absent from the row: it cuts the ribbon like a hollow of the silhouette.
+        return [
+            "absent" if r < v.w[c] or r >= v.top_max[c] else "sure" if r < v.top_min[c] else "maybe"
+            for c in range(self.pz.n)
+        ]
 
     def _row_segments(self, r: int) -> dict[int, list[tuple[int, int]]]:
         """Candidates covering row r, by first column: (placement, end column)."""
@@ -802,7 +809,7 @@ class Solver:
 
     def r_ribbon(self, v: View) -> bool:
         n = self.pz.n
-        for r in range(max(v.maxh)):
+        for r in range(max(v.top_max)):
             status = self._row_status(v, r)
             segs = self._row_segments(r)
             f = [0] * (n + 1)
@@ -927,7 +934,7 @@ class Solver:
         dims, target = self._dims()
         if not dims:
             return False
-        rows = list(range(max(v.maxh)))
+        rows = list(range(max(v.top_max)))
         per_row = []
         for r in rows:
             t = self._tilings(v, r)
