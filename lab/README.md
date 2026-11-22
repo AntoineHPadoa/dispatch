@@ -5,6 +5,7 @@ Local tool to generate, play, rate and promote candidate grids. Launch: `lab/run
 ## Files (all in `lab/`, versioned)
 
 - `candidates/<lot>.json`: grids written by `dispatch-solver generate`, with a `lab` block (index from 0, family, mechanics, trace summary, bulletin draft). A lot name is never reused: the server refuses an existing one, so `lot:index` always points to the same grid.
+- `candidates/archive/<lot>.json`: lots set aside (a rule change made their grids invalid). Not listed by the lab and read-only: their `lot:index` keys still resolve for notes, plays and sessions (a session item there shows as not playable), but they cannot be played, drawn into a session or promoted, and their names are never reused (server and `dispatch-solver generate` both refuse them). `sessions/archive/` holds abandoned sessions, not listed.
 - `sessions/<id>.json`: an ordered list of candidates to play in a row: `{"title": …, "items": [{"lot": …, "index": …, "hold"?: "text"}, …]}` (`index` from 0). An item with `hold` is shown with that text and cannot be launched. Page: `#/session` (lists every session, newest first), `#/session/<id>`. A session is written by hand or drawn from a lot (below).
 - `plays.jsonl`: one JSON line per game (below).
 - `notes.json`: per `lot:index`: `kept`, `comment` (`{player: text}`, one per player; `""` for an older comment whose author is unknown), `felt` (first rating of each player), `bulletin` edits, `promoted`.

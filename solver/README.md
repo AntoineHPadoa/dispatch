@@ -16,7 +16,7 @@ uv sync                 # Python >= 3.11, OR-Tools, pytest
 .venv/bin/dispatch-solver check ../web/src/data/grids.json --id 7     # validité, compositions, déduction, note (JSON)
 .venv/bin/dispatch-solver deduce ../web/src/data/grids.json --id 11   # trace de déduction complète
 .venv/bin/dispatch-solver check-published                             # comme web/scripts/check_unique.py (rampes acceptées)
-.venv/bin/dispatch-solver check ../lab/candidates/demo-01.json --index 0 --strict  # code 1 si la grille n'est pas publiable
+.venv/bin/dispatch-solver check ../lab/candidates/v3-jouer-a.json --index 0 --strict  # code 1 si la grille n'est pas publiable
 .venv/bin/dispatch-solver generate ../lab/lots/demo-01.json --out /tmp/lot # remplit un lot (par défaut dans lab/candidates/)
 .venv/bin/python scripts/build_fixtures.py [rampe/grids.json]         # reconstruit fixtures/grids/
 ```

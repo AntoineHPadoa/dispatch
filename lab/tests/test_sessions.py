@@ -79,7 +79,7 @@ def test_session_routes_keep_the_host_check(api, lab):
 
 
 def test_shipped_session_matches_the_sheet():
-    path = Path(__file__).resolve().parents[1] / "sessions" / "v3-session-1.json"
+    path = Path(__file__).resolve().parents[1] / "sessions" / "archive" / "v3-session-1.json"
     data = json.loads(path.read_text())
     assert data["title"] == "Session 1" and len(data["items"]) == 16
     sheet = Path(__file__).resolve().parents[2] / "docs" / "next" / "v3-session-1.md"
