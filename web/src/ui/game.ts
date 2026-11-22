@@ -210,7 +210,6 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
         <button type="button" class="tool erase-tool" data-tool="erase" aria-pressed="false">${icon('erase')}${esc(UI.tools.erase)}</button>
         <button type="button" class="tool" data-tool="undo">${icon('undo')}${esc(UI.tools.undo)}</button>
         <button type="button" class="tool" data-tool="reset">${icon('reset')}${esc(UI.tools.reset)}</button>
-        <button type="button" class="tool print-tool" data-tool="print">${icon('print')}${esc(UI.tools.print)}</button>
       </div>
       <div class="msg-slot" aria-live="polite"></div>
     </div>
@@ -338,8 +337,6 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     er.classList.toggle('on', erase);
     er.setAttribute('aria-pressed', String(erase));
     tools.querySelector<HTMLButtonElement>('[data-tool="undo"]')!.disabled = !canUndo(history);
-    // A solved grid shows Print in its banner: one Print button only.
-    tools.querySelector<HTMLButtonElement>('[data-tool="print"]')!.hidden = ev.solved;
   }
 
   function drawAll() {

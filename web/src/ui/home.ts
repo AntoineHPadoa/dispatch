@@ -6,10 +6,10 @@
  * - Accent: one pink (stamp, price cell, progress, finished items); the finished sheet of the day
  *   shows its solution in the plant colours.
  */
-import { UI, PIECE_WORDS, TECHNIQUES, frenchSpaces } from '../i18n/fr';
+import { UI, TECHNIQUES, frenchSpaces } from '../i18n/fr';
 import { currentBulletin, localIsoDate, previousBulletins, type BulletinGrid } from '../model/bulletin';
 import { dossierNext, dossierProgress, dossiers, type Dossier } from '../model/dossiers';
-import type { Grid, PieceId } from '../model/grid';
+import type { Grid } from '../model/grid';
 import { bulletinTag, displayTitle } from './game';
 import { cellSilhouette, miniSilhouette, sheetSilhouette, siteHead } from './home-art';
 import { esc, icon } from './palette';
@@ -23,17 +23,6 @@ const dots = (g: Grid) =>
   `<span class="dots" role="img" aria-label="${esc(UI.bulletin.difficulty(g.difficulty.label))}" title="${esc(g.difficulty.label)}">`
   + [1, 2, 3, 4].map((i) => `<i class="${i <= g.difficulty.rating ? 'on' : ''}"></i>`).join('') + '</span>';
 
-/** Neutral chip: a plant (or neighbor) and the width of its biggest bar as small squares. */
-const chip = (label: string, cells: number) =>
-  `<li class="chip"><span class="sq">${'<i></i>'.repeat(Math.max(1, Math.min(6, cells)))}</span>${esc(label)}</li>`;
-
-function plantChips(grid: Grid): string {
-  const chips = (Object.keys(grid.pieces) as PieceId[]).map((id) => chip(PIECE_WORDS[id].name, grid.pieces[id]?.len.at(-1) ?? 1));
-  for (const nb of grid.neighbors) chips.push(chip(nb.name, 1));
-  if (grid.step) chips.push(chip(UI.stepName, 1));
-  return chips.join('');
-}
-
 const goLabel = (st: GridStatus) => (st === 'done' ? UI.bulletin.reviewShift : st === 'started' ? UI.bulletin.resumeShift : UI.bulletin.take);
 
 function sheetCard(g: BulletinGrid, st: GridStatus): string {
@@ -43,8 +32,7 @@ function sheetCard(g: BulletinGrid, st: GridStatus): string {
     <div class="sbody">
       <p>${esc(frenchSpaces(b.text))}</p>
       <div class="sil-wrap">${sheetSilhouette(g, b.weather, (k) => UI.bulletin.weather[k], UI.bulletin.silhouetteLabel(Math.min(...g.demand), Math.max(...g.demand), g.demand.length), st === 'done')}</div>
-      <ul class="plant-chips">${plantChips(g)}</ul>
-      <div class="sact">${dots(g)}<a class="btn${st === 'done' ? ' secondary' : ''}" href="#/grille/${g.id}">${icon('next')}${esc(goLabel(st))}</a></div>
+      <div class="sact">${dots(g)}<a class="btn secondary" href="#/grille/${g.id}">${icon('next')}${esc(goLabel(st))}</a></div>
     </div></article>`;
 }
 
@@ -83,7 +71,7 @@ export function renderHome(root: HTMLElement, grids: readonly Grid[], progress: 
   const prev = previousBulletins(grids, today);
   const list = dossiers(grids);
   root.innerHTML = `<div class="m home">
-    ${siteHead(`<button type="button" class="ghost" aria-expanded="false" aria-controls="rules" data-rules>${esc(UI.bulletin.howTo)}</button>`)}
+    ${siteHead(`<div class="head-actions"><a class="ghost" href="#/imprimer/tout">${icon('print')}${esc(UI.printAll)}</a><button type="button" class="ghost" aria-expanded="false" aria-controls="rules" data-rules>${esc(UI.bulletin.howTo)}</button></div>`)}
     <h1 class="sr-only">${esc(UI.appName)}</h1>
     <section class="card rules" id="rules" hidden><h2 class="ct">${esc(UI.rulesTitle)}</h2><p class="rtag">${esc(UI.tagline)}</p><ol>${UI.rules.map((r) => `<li>${esc(r)}</li>`).join('')}</ol></section>
     <div class="hgrid">
@@ -91,7 +79,6 @@ export function renderHome(root: HTMLElement, grids: readonly Grid[], progress: 
       ${prev.length ? `<aside class="prevs"><span class="eyebrow">${esc(UI.bulletin.previous)}</span><ul>${prev.map((g) => previousRow(g, statusOf(progress, g.id))).join('')}</ul></aside>` : ''}
     </div>
     ${list.length ? `<section class="dossiers"><span class="eyebrow">${esc(UI.bulletin.dossiers)}</span><div class="dgrid">${list.map((d) => dossierCard(d, progress)).join('')}</div></section>` : ''}
-    <footer class="home-foot"><a class="tool" href="#/imprimer/tout">${icon('print')}${esc(UI.printAll)}</a></footer>
   </div>`;
   const toggle = root.querySelector<HTMLButtonElement>('[data-rules]');
   const rules = root.querySelector<HTMLElement>('#rules');
@@ -124,7 +111,7 @@ export function renderDossier(root: HTMLElement, d: Dossier, progress: Progress)
   }).join('');
   root.innerHTML = `<div class="m home">
     ${siteHead()}
-    <section class="glist"><div class="sh"><h1>${esc(words.title)}</h1><p>${esc(words.lead)}</p></div>
+    <section class="glist"><div class="sh"><h1>${esc(words.title)}</h1></div>
       <div class="prog"><span>${esc(UI.dossierDone(done, total))}</span><span class="bar" role="progressbar" aria-label="${esc(UI.dossierDone(done, total))}" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><i style="width:${total ? (done / total) * 100 : 0}%"></i></span></div>
       <ol class="fiches">${cards}</ol></section>
   </div>`;
