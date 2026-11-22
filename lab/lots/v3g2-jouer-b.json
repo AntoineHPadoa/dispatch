@@ -1,0 +1,104 @@
+{
+ "lot": "v3g2-jouer-b",
+ "size": 20,
+ "seed": 3202,
+ "max_attempts": 4000,
+ "comment": "Play lot B, generator v3-gen-2: no ramp, more STEP and longer days, at least 3 grids per rating, at most 6 single-type grids. Decision diversity: at most 10 grids with an exchange decision; at least 4 with STEP, 4 with tall coal, 2 with the dam's stock, 3 with STEP and CO2 together, 6 with a global mechanic (STEP or CO2). Mix favours the global mechanics: STEP + CO2 (free inventory, weight 3), STEP + CO2 + 1 neighbour (recipe of v3-jouer-c n. 10), plus stock + tall coal, stock + STEP and tall coal + STEP or CO2, without neighbour.",
+ "mix": [
+  {
+   "weight": 2,
+   "cols": 8,
+   "neighbors": 1,
+   "step": 1,
+   "co2_cap": "auto",
+   "inventory": "none"
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "neighbors": 2
+  },
+  {
+   "weight": 1,
+   "cols": 12,
+   "step": 1,
+   "neighbors": 1
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "co2_cap": "auto",
+   "neighbors": 1,
+   "inventory": "none"
+  },
+  {
+   "weight": 3,
+   "cols": 8,
+   "step": 2,
+   "co2_cap": "auto",
+   "inventory": "none"
+  },
+  {
+   "weight": 2,
+   "cols": 12,
+   "pieces": "NBCGT",
+   "tall": true,
+   "stock": 3,
+   "inventory": "none"
+  },
+  {
+   "weight": 2,
+   "cols": 8,
+   "pieces": "NBGT",
+   "step": 2,
+   "stock": 2,
+   "inventory": "none"
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "pieces": "NCGT",
+   "tall": true,
+   "neighbors": 1
+  },
+  {
+   "weight": 1,
+   "cols": 6,
+   "pieces": "NCGT",
+   "tall": true,
+   "step": 1
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "inventory": "exact",
+   "pieces": "NCGT",
+   "neighbors": 1
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "pieces": "NBCGT",
+   "surplus": true,
+   "neighbors": 2
+  }
+ ],
+ "quotas": {
+  "max_same_family": 3,
+  "max_same_mechanics": 3,
+  "max_same_clue_profile": 4,
+  "max_same_single_decision": 6,
+  "max_with_type": {
+   "exchange": 10
+  },
+  "min_with_type": {
+   "step": 4,
+   "tall": 4,
+   "stock": 2,
+   "step+carbon": 3,
+   "step|carbon": 6
+  },
+  "min_per_rating": 3,
+  "min_per_mix": 1
+ }
+}

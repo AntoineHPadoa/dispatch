@@ -1,0 +1,195 @@
+{
+ "lot": "v3g2-jouer-a",
+ "kept": 20,
+ "size": 20,
+ "attempts": 319,
+ "rejects": {
+  "too_many_clues": 94,
+  "one_plant": 36,
+  "not_unique": 2,
+  "quota:mix": 8,
+  "trivial": 44,
+  "quota:family": 6,
+  "no_decision": 6,
+  "quota:clue_profile": 22,
+  "quota:rating": 50,
+  "quota:mechanics": 16,
+  "quota:with_type": 5
+ },
+ "rejects_by_family": {
+  "deux_bosses": {
+   "attempts": 4,
+   "not_unique": 1
+  },
+  "midi_solaire": {
+   "attempts": 97,
+   "too_many_clues": 30,
+   "one_plant": 4,
+   "trivial": 1,
+   "no_decision": 2,
+   "not_unique": 1
+  },
+  "nuit_plate": {
+   "attempts": 12,
+   "too_many_clues": 6,
+   "trivial": 2
+  },
+  "plateau_hiver": {
+   "attempts": 146,
+   "one_plant": 32,
+   "trivial": 38,
+   "too_many_clues": 34,
+   "no_decision": 2
+  },
+  "pointe_soir": {
+   "attempts": 9,
+   "too_many_clues": 3
+  },
+  "surplus_midi": {
+   "attempts": 25,
+   "trivial": 3,
+   "too_many_clues": 12,
+   "no_decision": 2
+  },
+  "vent_nocturne": {
+   "attempts": 15,
+   "too_many_clues": 9
+  }
+ },
+ "ratings": {
+  "Facile": 3,
+  "Moyen": 10,
+  "Difficile": 3,
+  "Expert": 4
+ },
+ "families": {
+  "deux_bosses": 3,
+  "midi_solaire": 3,
+  "pointe_soir": 3,
+  "surplus_midi": 3,
+  "nuit_plate": 3,
+  "vent_nocturne": 3,
+  "plateau_hiver": 2
+ },
+ "per_mix": {
+  "0": 2,
+  "1": 2,
+  "2": 3,
+  "3": 1,
+  "4": 1,
+  "5": 1,
+  "6": 2,
+  "7": 3,
+  "8": 1,
+  "9": 2,
+  "10": 2
+ },
+ "mechanics": {
+  "neighbors:1 co2 inventory:none": 1,
+  "step stock inventory:none": 3,
+  "neighbors:1 step co2 inventory:none": 1,
+  "co2 tall inventory:none": 1,
+  "neighbors:1 step surplus co2 inventory:none": 1,
+  "step co2 inventory:none": 1,
+  "neighbors:1 step inventory:none": 1,
+  "tall stock inventory:none": 2,
+  "tall inventory:exact": 2,
+  "neighbors:1 tall inventory:exact": 1,
+  "neighbors:1 inventory:none": 1,
+  "neighbors:1 inventory:exact": 2,
+  "neighbors:1 step surplus inventory:none": 1,
+  "neighbors:1 surplus inventory:none": 1,
+  "neighbors:1 step inventory:exact": 1
+ },
+ "clue_profiles": {
+  "exchanges": 2,
+  "bar column exchanges": 1,
+  "column exchanges flow length": 1,
+  "bar column exchanges price": 2,
+  "column": 4,
+  "bar exchanges flow price": 1,
+  "column exchanges flow price": 1,
+  "column exchanges price": 1,
+  "": 4,
+  "column price": 1,
+  "bar column exchanges flow price": 1,
+  "column flow price": 1
+ },
+ "decisions": {
+  "by_type": {
+   "exchange": 22,
+   "step": 9,
+   "tall": 6,
+   "ramp": 0,
+   "carbon": 5,
+   "stock": 2,
+   "price": 0
+  },
+  "grids_with_type": {
+   "exchange": 10,
+   "step": 9,
+   "tall": 6,
+   "ramp": 0,
+   "carbon": 5,
+   "stock": 2,
+   "price": 0
+  },
+  "single_type": {
+   "exchange": 4,
+   "step": 3,
+   "tall": 3
+  },
+  "type_quotas": {
+   "max_with_type": {
+    "exchange": 10
+   },
+   "min_with_type": {
+    "step": 4,
+    "tall": 4,
+    "stock": 2,
+    "step+carbon": 3,
+    "step|carbon": 6
+   }
+  },
+  "grids_with_key": {
+   "carbon": 5,
+   "exchange": 10,
+   "step": 9,
+   "step+carbon": 3,
+   "step|carbon": 11,
+   "stock": 2,
+   "tall": 6
+  },
+  "per_grid": {
+   "1": 6,
+   "2": 9,
+   "3": 2,
+   "4": 2,
+   "6": 1
+  },
+  "live_mechanics": {
+   "1": 10,
+   "2": 8,
+   "3": 2
+  }
+ },
+ "cleaned": {
+  "neighbors": 1,
+  "co2_cap": 0
+ },
+ "ramp_grids": 0,
+ "ramp_grids_with_technique": 0,
+ "ramp_grids_with_own_technique": 0,
+ "ramp_techniques": {
+  "ramp_lone": 0,
+  "ramp_plateau": 0,
+  "ramp_relay": 0,
+  "ramp_shoulder": 0
+ },
+ "seconds": 62.2,
+ "seconds_per_kept_grid": 3.1,
+ "workers": 6,
+ "generator": "dispatch-solver 2.0.0",
+ "blocked_ramp": 0,
+ "errors": []
+}
