@@ -191,10 +191,14 @@ describe('lab clue count and eyebrow', () => {
     const withLine = grids.filter((g) => g.inventory.level === 'exact' && !g.clues.some((c) => c.type === 'exchanges'));
     expect(withLine.length).toBeGreaterThan(0);
     for (const g of grids) {
-      expect(labClueCount({ clues: g.clues, inventory: g.inventory, step: g.step })).toBe(shownClueCount(g));
+      expect(labClueCount({ clues: g.clues, inventory: g.inventory, step: g.step, co2_cap: g.co2_cap })).toBe(shownClueCount(g));
     }
     const g = withLine.find((x) => x.inventory.exports || x.inventory.imports || x.inventory.step !== undefined);
     if (g) expect(labClueCount(g)).toBe(g.clues.length + 1);
+    // The CO2 limit is a listed publication: the lab counts it like the game.
+    const co2 = { ...grids[0]!, co2_cap: 20 };
+    expect(labClueCount({ clues: co2.clues, inventory: co2.inventory, step: co2.step, co2_cap: co2.co2_cap })).toBe(shownClueCount(co2));
+    expect(labClueCount({ clues: co2.clues, inventory: co2.inventory, step: co2.step, co2_cap: 20 })).toBe(labClueCount(grids[0]!)! + 1);
     expect(labClueCount(undefined)).toBeUndefined();
   });
 

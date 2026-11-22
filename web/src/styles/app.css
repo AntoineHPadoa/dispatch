@@ -98,14 +98,15 @@ button.prow:hover { background: #faf4f7; }
 .pname { display: grid; line-height: 1.2; }
 .pname b { font-weight: 800; font-size: .84rem; }
 .pname span { font-size: .68rem; color: var(--soft); }
-.bars { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; min-width: 0; }
+.bars { display: flex; gap: 8px; align-items: center; min-width: 0; }
+.glyphs { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; min-width: 0; }
 .mb { display: inline-grid; gap: 2px; position: relative; }
 .mb i { width: 11px; height: 11px; border-radius: 3px; display: block; }
 .mb i.d { background: transparent !important; border: 1.5px dashed var(--c); }
 .mb i.e { background: transparent; }
 .mb.used i { opacity: .28; }
 .mb.used::after { content: ""; position: absolute; left: -2px; right: -2px; top: 50%; border-top: 1.5px solid var(--soft); }
-.count { font-size: .7rem; color: var(--soft); font-variant-numeric: tabular-nums; margin-left: 2px; }
+.count { font-size: .7rem; color: var(--soft); font-variant-numeric: tabular-nums; margin-left: 2px; flex: none; white-space: nowrap; }
 .count.over { color: var(--bad); font-weight: 800; }
 .step-glyph { font-size: .66rem; font-weight: 800; letter-spacing: .05em; color: #4f7fb8; background: #e3eefa; border: 1px solid #bfd7f1; border-radius: 6px; padding: 1px 6px; position: relative; }
 .step-glyph.used { opacity: .45; }

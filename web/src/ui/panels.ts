@@ -167,7 +167,7 @@ export function renderBook(grid: Grid, state: PlayState, selected: PieceKey | nu
     }
     const sel = !paper && selected === e.key;
     const body = `<span class="pname"><b>${esc(label)}</b>${hint ? `<span>${esc(hint)}</span>` : ''}</span>`
-      + `<span class="bars">${glyphs}${count ? `<span class="count${overUse ? ' over' : ''}">${esc(count)}</span>` : ''}</span>`;
+      + `<span class="bars"><span class="glyphs">${glyphs}</span>${count ? `<span class="count${overUse ? ' over' : ''}">${esc(count)}</span>` : ''}</span>`;
     if (paper) return `<div class="prow">${body}</div>`;
     return `<button type="button" class="prow${sel ? ' sel' : ''}" data-piece="${esc(e.key)}" aria-pressed="${sel}">${body}</button>`;
   });
@@ -276,10 +276,12 @@ const inText = (n: string) => (n === n.toUpperCase() ? n : n.toLowerCase());
 
 /** Points per cell of every emitting plant and import line, in merit order: "charbon 3, TAC 2, import d’Allemagne 3". */
 function co2PerCellText(grid: Grid): string {
-  const per = PIECE_IDS.filter((id) => grid.pieces[id] && (grid.pieces[id]?.co2 ?? 0) > 0)
-    .map((id) => `${inText(PIECE_WORDS[id].name)} ${grid.pieces[id]?.co2}`);
-  for (const nb of grid.neighbors) if (nb.co2 > 0) per.push(`${UI.importWord} ${countryFrom(grid, nb.id)} ${nb.co2}`);
-  return per.join(', ');
+  const byPoints = (a: { co2: number }, b: { co2: number }) => b.co2 - a.co2;
+  const plants = PIECE_IDS.map((id) => ({ id, co2: grid.pieces[id]?.co2 ?? 0 })).filter((p) => p.co2 > 0).sort(byPoints)
+    .map((p) => `${inText(PIECE_WORDS[p.id].name)} ${p.co2}`);
+  const imports = grid.neighbors.filter((nb) => nb.co2 > 0).sort(byPoints)
+    .map((nb) => `${UI.importWord} ${countryFrom(grid, nb.id)} ${nb.co2}`);
+  return [...plants, ...imports].join(', ');
 }
 
 /**
