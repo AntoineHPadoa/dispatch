@@ -1,0 +1,319 @@
+{
+ "name": "surplus-brick",
+ "grid": {
+  "id": 113,
+  "title": "surplus-brick",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   3,
+   5,
+   5,
+   4,
+   5,
+   5,
+   4,
+   3
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    1,
+    2,
+    5,
+    2,
+    1,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "DE",
+    "name": "Allemagne",
+    "cap": 1,
+    "co2": 1
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "G": {},
+    "T": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "exchanges",
+    "exports": {
+     "DE": 1
+    }
+   },
+   {
+    "type": "column",
+    "col": 5,
+    "counts": {
+     "N": 3
+    }
+   },
+   {
+    "type": "price",
+    "col": 1,
+    "piece": "G"
+   },
+   {
+    "type": "price",
+    "col": 4,
+    "piece": "G"
+   },
+   {
+    "type": "price",
+    "col": 7,
+    "piece": "G"
+   },
+   {
+    "type": "column",
+    "col": 0,
+    "counts": {
+     "N": 1
+    }
+   },
+   {
+    "type": "flow",
+    "col": 0,
+    "country": "DE",
+    "dir": "import",
+    "value": 0
+   }
+  ],
+  "solution": {
+   "exports": {
+    "DE": [
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     0
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "T",
+     "row": 0,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "G",
+     "row": 1,
+     "col": 0,
+     "len": 2
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 3,
+     "col": 1,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 4,
+     "col": 1,
+     "len": 2
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 4,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 4,
+     "col": 4,
+     "len": 2
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 0,
+     "col": 6,
+     "len": 2
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "flow",
+    "price_cap",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover"
+   ]
+  }
+ },
+ "expect": {
+  "valid": true,
+  "errors": [],
+  "compositions": 1,
+  "deduction": "solved",
+  "rating": 2,
+  "techniques": [
+   "flow",
+   "price_cap",
+   "record",
+   "ribbon",
+   "room",
+   "single_cover"
+  ],
+  "composition": {
+   "cells": [
+    {
+     "G": 1,
+     "N": 1,
+     "T": 1
+    },
+    {
+     "G": 3,
+     "N": 1
+    },
+    {
+     "G": 2,
+     "N": 1
+    },
+    {},
+    {
+     "G": 1,
+     "N": 2
+    },
+    {
+     "G": 1,
+     "N": 3
+    },
+    {
+     "G": 1,
+     "N": 3
+    },
+    {
+     "G": 1,
+     "N": 2
+    }
+   ],
+   "exports": {
+    "DE": [
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     0
+    ]
+   },
+   "pumps": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "turbines": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "requires": []
+ }
+}

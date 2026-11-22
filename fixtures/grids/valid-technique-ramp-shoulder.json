@@ -2,7 +2,7 @@
  "name": "technique-ramp-shoulder",
  "grid": {
   "id": 403,
-  "title": "Les éoliennes veillent",
+  "title": "Le charbon prend son temps",
   "section": "rated",
   "columns": [
    "0h",
@@ -15,14 +15,14 @@
    "21h"
   ],
   "demand": [
-   4,
-   4,
    3,
+   3,
+   3,
+   3,
+   2,
    4,
-   4,
-   6,
-   6,
-   4
+   5,
+   3
   ],
   "pieces": {
    "N": {
@@ -58,18 +58,28 @@
     ],
     "rank": 4,
     "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
    }
   },
   "weather": {
    "R": [
-    3,
-    3,
+    0,
+    0,
     0,
     1,
     1,
+    1,
     0,
-    0,
-    3
+    0
    ],
    "F": [
     0,
@@ -90,14 +100,21 @@
    "pieces": {
     "N": {},
     "C": {},
-    "G": {}
+    "G": {},
+    "T": {}
    }
   },
   "clues": [
    {
     "type": "price",
-    "col": 2,
+    "col": 0,
     "piece": "N"
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 4,
+    "len": 4
    },
    {
     "type": "column",
@@ -107,17 +124,14 @@
     }
    },
    {
-    "type": "bar",
-    "piece": "N",
-    "col": 0,
-    "len": 5
+    "type": "length",
+    "piece": "G",
+    "len": 2
    },
    {
-    "type": "column",
-    "col": 5,
-    "counts": {
-     "N": 2
-    }
+    "type": "price",
+    "col": 3,
+    "piece": "N"
    }
   ],
   "solution": {
@@ -128,43 +142,49 @@
      "piece": "N",
      "row": 0,
      "col": 0,
-     "len": 5
+     "len": 3
     },
     {
      "piece": "N",
      "row": 1,
-     "col": 2,
+     "col": 0,
      "len": 4
     },
     {
      "piece": "N",
      "row": 2,
-     "col": 2,
-     "len": 5
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 4,
+     "len": 4
     },
     {
      "piece": "C",
-     "row": 0,
+     "row": 2,
      "col": 5,
      "len": 3
     },
     {
-     "piece": "G",
+     "piece": "T",
      "row": 3,
      "col": 5,
-     "len": 2
+     "len": 1
     },
     {
      "piece": "G",
+     "row": 0,
+     "col": 6,
+     "len": 2
+    },
+    {
+     "piece": "T",
      "row": 4,
-     "col": 5,
-     "len": 2
-    },
-    {
-     "piece": "G",
-     "row": 5,
-     "col": 5,
-     "len": 2
+     "col": 6,
+     "len": 1
     }
    ]
   },
@@ -172,9 +192,9 @@
    "rating": 2,
    "label": "Moyen",
    "techniques": [
+    "length",
     "price_cap",
     "program",
-    "ramp_lone",
     "ramp_plateau",
     "ramp_shoulder",
     "record",
@@ -191,9 +211,9 @@
   "deduction": "solved",
   "rating": 2,
   "techniques": [
+   "length",
    "price_cap",
    "program",
-   "ramp_lone",
    "ramp_plateau",
    "ramp_shoulder",
    "record",
@@ -204,12 +224,6 @@
   "composition": {
    "cells": [
     {
-     "N": 1
-    },
-    {
-     "N": 1
-    },
-    {
      "N": 3
     },
     {
@@ -219,17 +233,26 @@
      "N": 3
     },
     {
-     "C": 1,
-     "G": 3,
      "N": 2
     },
     {
-     "C": 2,
-     "G": 3,
      "N": 1
     },
     {
-     "C": 1
+     "C": 1,
+     "N": 1,
+     "T": 1
+    },
+    {
+     "C": 2,
+     "G": 1,
+     "N": 1,
+     "T": 1
+    },
+    {
+     "C": 1,
+     "G": 1,
+     "N": 1
     }
    ],
    "exports": {},
@@ -257,6 +280,6 @@
   "requires": [
    "ramp"
   ],
-  "note": "seed 0 of {'cols': 8, 'ramp': 'trap'}"
+  "note": "seed 2 of {'cols': 8, 'ramp': 'trap'}"
  }
 }
