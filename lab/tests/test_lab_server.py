@@ -481,3 +481,20 @@ def test_older_boolean_star_belongs_to_player_1(api, lab):
     assert lab.notes() == {"t:0": {"kept": {"Joueur 1": True}}, "t:1": {}}
     assert api("GET", "/api/candidates?lot=t&player=Joueur%201")[1][0]["kept"]
     assert not api("GET", "/api/candidates?lot=t&player=Joueur%202")[1][0]["kept"]
+
+
+def test_reveal_is_per_lot_and_index(api, lab):
+    """Rating index 0 of another lot reveals nothing about t:0: not its measures, not another player's star or comment."""
+    other = [grid(0)]
+    other[0]["lab"]["lot"] = "u"
+    (lab.dir / "candidates" / "u.json").write_text(json.dumps(other))
+    api("PUT", "/api/notes/t/0", {"kept": True, "comment": "bien", "player": "Joueur 2"})
+    play = api("POST", "/api/plays", {**PLAY, "lot": "u", "index": 0})[1]
+    api("POST", f"/api/plays/{play['id']}/rate", {"felt": 2})
+    assert not lab.revealed("t", 0, "Joueur 1") and lab.revealed("u", 0, "Joueur 1")
+    note = api("GET", "/api/notes?player=Joueur%201")[1].get("t:0", {})
+    assert "kept" not in note and "comment" not in note and "felt" not in note
+    c = api("GET", "/api/candidates?lot=t&player=Joueur%201")[1][0]
+    assert not c["revealed"] and not c["kept_any"]
+    rated(api, "Joueur 1", 0, felt=3)  # rating t:0 itself reveals it
+    assert api("GET", "/api/notes?player=Joueur%201")[1]["t:0"]["kept"] == {"Joueur 2": True}

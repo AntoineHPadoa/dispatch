@@ -231,7 +231,7 @@ class Lab:
         if player in notes.get(f"{lot}:{index}", {}).get("felt", {}):
             return True
         plays = self.plays(lot) if plays is None else plays
-        return any(p["index"] == index and p["player"] == player and p.get("felt") for p in plays)
+        return any(p.get("lot", lot) == lot and p["index"] == index and p["player"] == player and p.get("felt") for p in plays)
 
     def candidates(self, lot: str, player: str | None = None, creation: bool = False) -> list[dict[str, Any]]:
         """Candidates for the list screen; rating, techniques, steps and felt ratings only once revealed to `player`."""

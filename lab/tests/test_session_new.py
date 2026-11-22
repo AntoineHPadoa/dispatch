@@ -214,7 +214,7 @@ def test_order_never_puts_two_long_grids_in_a_row(lab):
         order = lab_server.draw_session(pool, 8, random.Random(f"big:{seed}"))
         long = [len(pool[i][1]["columns"]) == 12 for i in order]
         assert len(set(order)) == 8
-        if sum(long) <= len(long) - sum(long) + 1:  # separable: the drawn grids hold enough short ones
+        if sum(long) <= len(long) - sum(long) + 1:  # separable: enough short grids drawn (the short one imposed first is an even size's spare)
             assert not any(a and b for a, b in zip(long, long[1:])), (seed, long)
 
 
