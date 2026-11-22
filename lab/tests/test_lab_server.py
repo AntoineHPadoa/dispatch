@@ -104,6 +104,7 @@ def test_list_hides_solver_measures_until_the_player_rated(api):
     c = api("GET", "/api/candidates?lot=t&player=Joueur%201")[1][0]
     assert c["revealed"] is False
     assert c["rating"] is None and c["techniques"] == [] and c["trace_summary"] == {} and c["felt"] == {}
+    assert c["clue_source"]["clues"] == [{"type": "price", "col": 0, "piece": "N"}]  # parts the game counts its clue card from
     assert c["plays"] == 1 and c["title"] == "Candidate 1"  # the draft title can hint at the difficulty too
     # without a player nothing is shown either
     assert api("GET", "/api/candidates?lot=t")[1][0]["rating"] is None

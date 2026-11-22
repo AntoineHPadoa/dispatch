@@ -5,7 +5,7 @@
  * - Reads carry the viewer (player, creation mode): the server hides the solver measures from a player who has not rated the grid.
  */
 import type { Grid } from '../model/grid';
-import type { Candidate, Play, PlayRecord, Weather } from './logic';
+import { labClueCount, type Candidate, Play, PlayRecord, Weather } from './logic';
 
 export interface Bulletin { title?: string; text?: string; weather?: Weather[] }
 export interface Reveal {
@@ -36,7 +36,8 @@ async function call<T>(method: string, path: string, body?: unknown): Promise<T>
 export const api = {
   players: () => call<string[]>('GET', '/players'),
   lots: () => call<LotInfo[]>('GET', '/lots'),
-  candidates: (lot: string) => call<Candidate[]>('GET', `/candidates?lot=${encodeURIComponent(lot)}&${viewerQuery()}`),
+  candidates: async (lot: string) => (await call<Candidate[]>('GET', `/candidates?lot=${encodeURIComponent(lot)}&${viewerQuery()}`))
+    .map((c) => ({ ...c, clues: labClueCount(c.clue_source) ?? c.clues })),
   grid: (lot: string, index: number) => call<Grid>('GET', `/grid/${lot}/${index}`),
   /** Solver measures: refused (403) until `player` has rated the grid, unless in creation mode. */
   reveal: (lot: string, index: number, player?: string) => call<Reveal>('GET', `/reveal/${lot}/${index}?${viewerQuery(player)}`),

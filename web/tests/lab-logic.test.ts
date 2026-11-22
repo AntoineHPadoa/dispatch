@@ -181,3 +181,30 @@ describe('bulletin and lot helpers', () => {
     expect(lotTemplate('lot-01', 20, 7)).toMatchObject({ lot: 'lot-01', size: 20, seed: 7 });
   });
 });
+
+describe('lab clue count and eyebrow', () => {
+  it('labClueCount matches the game card, exchanges line of an exact inventory included', async () => {
+    const { default: data } = await import('../src/data/grids.json');
+    const { shownClueCount } = await import('../src/ui/panels');
+    const { labClueCount } = await import('../src/lab/logic');
+    const grids = data as unknown as import('../src/model/grid').Grid[];
+    const withLine = grids.filter((g) => g.inventory.level === 'exact' && !g.clues.some((c) => c.type === 'exchanges'));
+    expect(withLine.length).toBeGreaterThan(0);
+    for (const g of grids) {
+      expect(labClueCount({ clues: g.clues, inventory: g.inventory, step: g.step })).toBe(shownClueCount(g));
+    }
+    const g = withLine.find((x) => x.inventory.exports || x.inventory.imports || x.inventory.step !== undefined);
+    if (g) expect(labClueCount(g)).toBe(g.clues.length + 1);
+    expect(labClueCount(undefined)).toBeUndefined();
+  });
+
+  it('the game eyebrow takes the lab label in place of "Grille notée", published games keep it', async () => {
+    const { default: data } = await import('../src/data/grids.json');
+    const { gameEyebrow } = await import('../src/ui/game');
+    const grids = data as unknown as import('../src/model/grid').Grid[];
+    const g = { ...grids.find((x) => x.section !== 'tutorial')!, bulletin: undefined };
+    expect(gameEyebrow(g, grids)).toContain('Grille notée');
+    expect(gameEyebrow(g, grids, 'Candidate')).toMatch(/^Candidate/);
+    expect(gameEyebrow(g, grids, 'Candidate')).not.toContain('Grille notée');
+  });
+});

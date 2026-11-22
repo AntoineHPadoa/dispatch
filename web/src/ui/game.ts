@@ -35,6 +35,16 @@ export interface GameContext {
   print: (grid: Grid) => void;
   /** Optional observer of play events (the lab counts errors, undos, erasures). */
   onEvent?: (event: GameEvent) => void;
+  /** Replaces the "rated grid" eyebrow of a grid without a bulletin tag (the lab shows a neutral label). */
+  ratedEyebrow?: string;
+}
+
+/** Eyebrow tag of the game screen: tutorial rank, else bulletin tag or the rated label (`ratedEyebrow` overrides it). */
+export function gameEyebrow(grid: Grid, grids: readonly Grid[], ratedEyebrow?: string): string {
+  const tutorials = grids.filter((g) => g.section === 'tutorial').sort((a, b) => a.id - b.id);
+  return grid.section === 'tutorial'
+    ? UI.tutorialOf(tutorials.findIndex((g) => g.id === grid.id) + 1, tutorials.length)
+    : `${bulletinTag(grid) ?? ratedEyebrow ?? UI.ratedEyebrow}${grid.inventory.level === 'none' ? ` · ${UI.noInventory}` : ''}`;
 }
 
 /** What the player did: a refused or clue-breaking pose, an undo, an erasure, a reset, the solve. */
@@ -171,10 +181,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   let frozenElapsed: number | null = saved?.status === 'done' && ev.solved ? elapsedBase : null;
   const elapsed = () => frozenElapsed ?? elapsedBase + (Date.now() - sessionStart);
 
-  const tutorials = ctx.grids.filter((g) => g.section === 'tutorial').sort((a, b) => a.id - b.id);
-  const eyebrow = grid.section === 'tutorial'
-    ? UI.tutorialOf(tutorials.findIndex((g) => g.id === grid.id) + 1, tutorials.length)
-    : `${bulletinTag(grid) ?? UI.ratedEyebrow}${grid.inventory.level === 'none' ? ` · ${UI.noInventory}` : ''}`;
+  const eyebrow = gameEyebrow(grid, ctx.grids, ctx.ratedEyebrow);
 
   const tech = techniqueLine(grid);
   const intro = grid.intro

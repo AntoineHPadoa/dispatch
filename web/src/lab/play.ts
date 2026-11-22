@@ -58,7 +58,7 @@ export async function mountPlay(root: HTMLElement, ctx: LabCtx, lot: string, ind
 
   const store = new ProgressStore(() => null);
   const stop = mountGame(root.querySelector<HTMLElement>('#lab-game')!, grid, {
-    grids: [], store, navigate: ctx.navigate, print: () => undefined,
+    grids: [], store, ratedEyebrow: 'Candidate', navigate: ctx.navigate, print: () => undefined,
     onEvent: (e) => {
       rec.event(e);
       if (e === 'solved') { finishBtn.hidden = false; giveUp.hidden = true; void post(false); }

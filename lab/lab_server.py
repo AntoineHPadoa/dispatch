@@ -167,6 +167,7 @@ class Lab:
             out.append({
                 "lot": lot, "index": index, "title": g.get("title") if show else f"Candidate {index + 1}",
                 "cols": len(g["columns"]), "clues": len(g["clues"]),
+                "clue_source": {k: g[k] for k in ("clues", "inventory", "step") if k in g},
                 "revealed": show,
                 "rating": g.get("difficulty", {}).get("rating") if show else None,
                 "techniques": g.get("difficulty", {}).get("techniques", []) if show else [],

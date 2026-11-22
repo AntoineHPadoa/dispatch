@@ -4,10 +4,18 @@
  * - PlayRecorder counts moves, errors, undos, erasures and active time (hidden tab excluded) of one game and builds the record sent.
  * - playStats keeps first plays only (attempt 1, no stray open): a replay has a biased time; replays are counted apart.
  * - "error" = a pose refused by the engine or one that contradicts a clue (not an export or STEP pair against a clue).
+ * - labClueCount reuses the game's shownClueCount.
  * - playStats / feltAverage summarise the plays and the felt ratings of a candidate.
  */
 import { GIVEN_STEP, TECHNIQUES } from '../i18n/fr';
+import type { Grid } from '../model/grid';
+import { shownClueCount } from '../ui/panels';
 import type { GameEvent } from '../ui/game';
+
+/** Clues the game's clue card lists for this grid (exchanges line of an exact inventory included); undefined without a source. */
+export function labClueCount(src: Pick<Grid, 'clues' | 'inventory' | 'step'> | undefined): number | undefined {
+  return src ? shownClueCount(src as Grid) : undefined;
+}
 
 export type Weather = 'sun' | 'moon' | 'cloud' | 'wind';
 export const WEATHERS: readonly Weather[] = ['sun', 'moon', 'cloud', 'wind'];
@@ -18,6 +26,8 @@ export interface Candidate {
   title: string;
   cols: number;
   clues: number;
+  /** The grid parts the game counts its clue card from (clues, inventory, step); see labClueCount. */
+  clue_source?: Pick<Grid, 'clues' | 'inventory' | 'step'>;
   rating: number | null;
   techniques: string[];
   family: string | null;

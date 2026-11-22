@@ -7,7 +7,7 @@
  */
 import { api, type Note } from './api';
 import type { LabCtx } from './ctx';
-import { displayNumber, feltAverage, formatDuration, techniqueLabel, type Play } from './logic';
+import { displayNumber, labClueCount, feltAverage, formatDuration, techniqueLabel, type Play } from './logic';
 import { esc } from '../ui/palette';
 
 const LEVELS = ['Facile', 'Moyen', 'Difficile', 'Expert'];
@@ -30,6 +30,7 @@ export async function renderEnd(root: HTMLElement, ctx: LabCtx, lot: string, ind
 
   async function draw(): Promise<void> {
     const reveal = revealed ? await api.reveal(lot, index, player) : null;
+    const clueCount = reveal ? (labClueCount(await api.grid(lot, index)) ?? 0) : 0;
     const others = ctx.players.filter((p) => p !== player && note.felt?.[p]);
     const locked = revealed ? ' disabled' : '';
     root.innerHTML = `<div class="lab-m"><div class="lab-head"><a class="lab-btn" href="#/">← Lot</a><h2>Candidate ${displayNumber(index)}</h2>`
@@ -42,10 +43,10 @@ export async function renderEnd(root: HTMLElement, ctx: LabCtx, lot: string, ind
       + `<label class="lab-field">Commentaire (facultatif)<textarea id="lab-comment" rows="2"${locked}>${esc(note.comment?.[player] ?? '')}</textarea></label>`
       + `<div class="lab-actions"><button type="button" class="lab-btn pri" id="lab-reveal"${locked}>Valider et révéler</button>`
       + `<button type="button" class="lab-btn" id="lab-keep">${kept ? '★ Gardée' : '☆ Garder cette grille'}</button></div></div></div>`
-      + `<div class="lab-card lab-reveal">${reveal ? revealHtml(reveal, felt, others.map((p) => `${p} : ${note.felt![p]}`)) : '<div class="lab-ph">🔒 Note du solveur et techniques cachées jusqu\'à ta note.</div>'}</div></div></div>`;
+      + `<div class="lab-card lab-reveal">${reveal ? revealHtml(reveal, clueCount, felt, others.map((p) => `${p} : ${note.felt![p]}`)) : '<div class="lab-ph">🔒 Note du solveur et techniques cachées jusqu\'à ta note.</div>'}</div></div></div>`;
   }
 
-  function revealHtml(r: Awaited<ReturnType<typeof api.reveal>>, mine: number, others: string[]): string {
+  function revealHtml(r: Awaited<ReturnType<typeof api.reveal>>, clueCount: number, mine: number, others: string[]): string {
     const ts = r.lab.trace_summary ?? {};
     const gap = mine - r.difficulty.rating;
     const all = feltAverage({ ...note.felt, [player]: note.felt?.[player] ?? mine });
@@ -56,7 +57,7 @@ export async function renderEnd(root: HTMLElement, ctx: LabCtx, lot: string, ind
       + (all !== null ? `<dt>Moyenne perçue</dt><dd>${all.toFixed(1)}</dd>` : '')
       + `<dt>Techniques</dt><dd>${r.difficulty.techniques.map((t) => `<span class="lab-chip" title="${esc(t)}">${esc(techniqueLabel(t))}${ts.techniques?.[t] ? ` ×${ts.techniques[t]}` : ''}</span>`).join(' ')}</dd>`
       + `<dt>Étapes</dt><dd>${ts.steps ?? '?'}${ts.level2_steps !== undefined ? ` dont ${ts.level2_steps} de niveau 2` : ''}</dd>`
-      + `<dt>Étapes à effet unique</dt><dd>${ts.single_effect_steps ?? '?'}</dd><dt>Indices</dt><dd>${esc((r.lab.clue_profile ?? []).join(', '))}</dd>`
+      + `<dt>Étapes à effet unique</dt><dd>${ts.single_effect_steps ?? '?'}</dd><dt>Indices</dt><dd>${clueCount}${r.lab.clue_profile?.length ? ` (${esc(r.lab.clue_profile.join(', '))})` : ''}</dd>`
       + `<dt>Mécaniques</dt><dd>${esc((r.lab.mechanics ?? []).join(', ') || 'aucune')}</dd></dl>`;
   }
 
