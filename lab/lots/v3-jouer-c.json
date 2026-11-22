@@ -1,0 +1,72 @@
+{
+ "lot": "v3-jouer-c",
+ "size": 20,
+ "seed": 1303,
+ "max_attempts": 1800,
+ "comment": "Play lot C: no ramp, short and long days, reduced clue types, at least 3 grids per rating. Weather cells are fixed bricks (v3 rule).",
+ "mix": [
+  {
+   "weight": 2,
+   "cols": 6,
+   "neighbors": 1
+  },
+  {
+   "weight": 2,
+   "cols": 12,
+   "neighbors": 1
+  },
+  {
+   "weight": 2,
+   "cols": 8,
+   "pieces": "NBCGT",
+   "neighbors": 1
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "step": 1,
+   "co2_cap": "auto"
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "pieces": "NCGT",
+   "tall": true,
+   "step": 1
+  },
+  {
+   "weight": 1,
+   "cols": 12,
+   "surplus": true,
+   "neighbors": 2
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "clue_types": [
+    "column",
+    "length",
+    "bar"
+   ]
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "neighbors": 4
+  },
+  {
+   "weight": 1,
+   "cols": 6,
+   "pieces": "NBGT",
+   "stock": 2,
+   "neighbors": 1
+  }
+ ],
+ "quotas": {
+  "max_same_family": 3,
+  "max_same_mechanics": 3,
+  "max_same_clue_profile": 4,
+  "min_per_rating": 3,
+  "min_per_mix": 1
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "lot": "v3-reprises",
+ "kept": 6,
+ "size": 6,
+ "attempts": 0,
+ "rejects": {},
+ "ratings": {
+  "Facile": 2,
+  "Moyen": 1,
+  "Difficile": 0,
+  "Expert": 3
+ },
+ "families": {
+  "plateau_hiver": 4,
+  "pointe_soir": 1,
+  "nuit_plate": 1
+ },
+ "sources": [
+  "nuit-jouer-a:5",
+  "nuit-jouer-c:0",
+  "nuit-jouer-c:15",
+  "nuit-rampe:2",
+  "nuit-jouer-a:14",
+  "nuit-jouer-c:14"
+ ]
+}

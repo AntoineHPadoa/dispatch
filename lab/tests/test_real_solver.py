@@ -17,7 +17,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import lab_server  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
-DEMO = ROOT / "lab" / "candidates" / "demo-01.json"
+DEMO = ROOT / "lab" / "candidates" / "archive" / "demo-01.json"  # ramp lot, archived: structure only
+LIVE = ROOT / "lab" / "candidates" / "v3-jouer-a.json"
 PUBLISHED = ROOT / "web" / "src" / "data" / "grids.json"
 
 
@@ -25,6 +26,7 @@ PUBLISHED = ROOT / "web" / "src" / "data" / "grids.json"
 def lab(tmp_path):
     (tmp_path / "candidates").mkdir()
     shutil.copy(DEMO, tmp_path / "candidates" / "demo-01.json")
+    shutil.copy(LIVE, tmp_path / "candidates" / "v3-jouer-a.json")
     grids = tmp_path / "grids.json"
     shutil.copy(PUBLISHED, grids)
     return lab_server.Lab(tmp_path, grids)
@@ -51,10 +53,15 @@ def test_real_check_grid_reports_what_promotion_needs():
 
 
 def test_real_candidate_is_promotable_then_refused_twice(lab):
-    cand = next(c for c in lab.candidates("demo-01", creation=True) if c["playable"])
-    res = lab.promote("demo-01", cand["index"], 900, "2030-01-01")
+    # Chosen by property: playable and passing the real checker (archived lots hold grids the weather-brick rule refuses).
+    def promotable(c):
+        r = lab_server.default_checker(lab.full_grid("v3-jouer-a", c["index"]))
+        return r["valid"] and r["compositions"] == 1 and r["deduction"] == "solved" and r["matches_reference"]
+
+    cand = next(c for c in lab.candidates("v3-jouer-a", creation=True) if c["playable"] and promotable(c))
+    res = lab.promote("v3-jouer-a", cand["index"], 900, "2030-01-01")
     published = json.loads(lab.grids_path.read_text())
     assert published[-1]["id"] == res["id"] and "lab" not in published[-1]
     with pytest.raises(lab_server.LabError) as e:
-        lab.promote("demo-01", cand["index"], 901, "2030-01-02")
+        lab.promote("v3-jouer-a", cand["index"], 901, "2030-01-02")
     assert e.value.status == 409
