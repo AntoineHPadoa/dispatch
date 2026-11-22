@@ -86,7 +86,7 @@ const widthLabel = (min: number, max = min): string | undefined => (max <= 1 ? u
 /** One glyph and its own "laid / allowed" counter (screen book). */
 function group(glyph: string, laid: number, allowed: number | null): string {
   const over = allowed !== null && laid > allowed;
-  const done = allowed !== null && laid >= allowed;
+  const done = allowed !== null && laid === allowed;
   return `<span class="grp${done ? ' done' : ''}">${glyph}<span class="gcount${over ? ' over' : ''}">${esc(UI.count(Math.min(laid, 99), allowed))}</span></span>`;
 }
 
