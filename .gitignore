@@ -23,3 +23,7 @@ docs/reviews/**/*.jpg
 docs/reviews/**/*.jpeg
 docs/reviews/**/*.webp
 docs/reviews/**/*.pdf
+
+# Gallery build (web/scripts/ui-gallery.mjs) and its captures: the HTML pages are versioned, not the images
+web/dist-gallery/
+docs/ui-gallery/**/img/
