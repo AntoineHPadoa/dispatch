@@ -478,11 +478,12 @@ TRAPS = {
 }
 
 # Generated grids that exercise a technique no other fixture shows: name -> (config, technique).
+# min_decisions 0: these grids show a technique, they need not hold a decision (no_decision is a lot filter).
 TECHNIQUE_GRIDS = {
-    "technique-length": ({"cols": 8, "clue_types": ["length", "column"]}, "length"),
-    "technique-single-spot": ({"cols": 6, "inventory": "exact", "neighbors": 1}, "single_spot"),
-    "technique-ramp-plateau": ({"cols": 8, "ramp": "trap"}, "ramp_plateau"),
-    "technique-ramp-shoulder": ({"cols": 8, "ramp": "trap"}, "ramp_shoulder"),
+    "technique-length": ({"cols": 8, "clue_types": ["length", "column"], "min_decisions": 0}, "length"),
+    "technique-single-spot": ({"cols": 6, "inventory": "exact", "neighbors": 1, "min_decisions": 0}, "single_spot"),
+    "technique-ramp-plateau": ({"cols": 8, "ramp": "trap", "min_decisions": 0}, "ramp_plateau"),
+    "technique-ramp-shoulder": ({"cols": 8, "ramp": "trap", "min_decisions": 0}, "ramp_shoulder"),
 }
 
 

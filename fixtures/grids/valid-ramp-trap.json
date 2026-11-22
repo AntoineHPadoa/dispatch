@@ -168,8 +168,8 @@
    ]
   },
   "difficulty": {
-   "rating": 2,
-   "label": "Moyen",
+   "rating": 1,
+   "label": "Facile",
    "techniques": [
     "price_cap",
     "record",
@@ -183,7 +183,7 @@
   "errors": [],
   "compositions": 1,
   "deduction": "solved",
-  "rating": 2,
+  "rating": 1,
   "techniques": [
    "price_cap",
    "record",

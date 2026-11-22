@@ -211,8 +211,8 @@
    ]
   },
   "difficulty": {
-   "rating": 2,
-   "label": "Moyen",
+   "rating": 4,
+   "label": "Expert",
    "techniques": [
     "carbon",
     "flow",
@@ -260,7 +260,12 @@
      "carbon": 1,
      "silhouette": 2
     },
-    "shape_steps": {}
+    "shape_steps": {},
+    "technique_level": 2,
+    "coupled_globals": [
+     "step",
+     "carbon"
+    ]
    },
    "ramp_techniques": {},
    "decisions": {
@@ -294,7 +299,13 @@
    "seconds": 7.55,
    "mix": 0,
    "lot": "v3g2-jouer-b",
-   "index": 0
+   "index": 0,
+   "coupled_globals": [
+    "step",
+    "carbon"
+   ],
+   "compactness": 0.88,
+   "demand_prices": 0
   }
  },
  {
@@ -446,8 +457,8 @@
    ]
   },
   "difficulty": {
-   "rating": 2,
-   "label": "Moyen",
+   "rating": 1,
+   "label": "Facile",
    "techniques": [
     "price_cap",
     "record",
@@ -493,7 +504,9 @@
      "price_cap:tall": 1,
      "record:tall": 1,
      "ribbon:tall": 5
-    }
+    },
+    "technique_level": 2,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "decisions": {
@@ -523,7 +536,10 @@
    "seconds": 0.32,
    "mix": 8,
    "lot": "v3g2-jouer-b",
-   "index": 1
+   "index": 1,
+   "coupled_globals": [],
+   "compactness": 0.83,
+   "demand_prices": 0
   }
  },
  {
@@ -728,8 +744,8 @@
    ]
   },
   "difficulty": {
-   "rating": 2,
-   "label": "Moyen",
+   "rating": 1,
+   "label": "Facile",
    "techniques": [
     "flow",
     "price_cap",
@@ -777,7 +793,9 @@
      "room:tall": 3,
      "record:tall": 2,
      "ribbon:tall": 1
-    }
+    },
+    "technique_level": 2,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "decisions": {
@@ -809,7 +827,10 @@
    "seconds": 2.05,
    "mix": 7,
    "lot": "v3g2-jouer-b",
-   "index": 2
+   "index": 2,
+   "coupled_globals": [],
+   "compactness": 0.67,
+   "demand_prices": 0
   }
  },
  {
@@ -1025,8 +1046,8 @@
    ]
   },
   "difficulty": {
-   "rating": 2,
-   "label": "Moyen",
+   "rating": 1,
+   "label": "Facile",
    "techniques": [
     "exhausted",
     "price_cap",
@@ -1078,7 +1099,9 @@
      "record:tall": 1,
      "room:tall": 1,
      "ribbon:tall": 2
-    }
+    },
+    "technique_level": 2,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "decisions": {
@@ -1114,7 +1137,10 @@
    "seconds": 0.97,
    "mix": 5,
    "lot": "v3g2-jouer-b",
-   "index": 3
+   "index": 3,
+   "coupled_globals": [],
+   "compactness": 0.3,
+   "demand_prices": 0
   }
  },
  {
@@ -1387,7 +1413,11 @@
      "share_out": 4,
      "single_cover": 2
     },
-    "shape_steps": {}
+    "shape_steps": {},
+    "technique_level": 3,
+    "coupled_globals": [
+     "step"
+    ]
    },
    "ramp_techniques": {},
    "decisions": {
@@ -1423,7 +1453,12 @@
    "seconds": 8.69,
    "mix": 2,
    "lot": "v3g2-jouer-b",
-   "index": 4
+   "index": 4,
+   "coupled_globals": [
+    "step"
+   ],
+   "compactness": 0.67,
+   "demand_prices": 0
   }
  },
  {
@@ -1616,8 +1651,8 @@
    ]
   },
   "difficulty": {
-   "rating": 2,
-   "label": "Moyen",
+   "rating": 1,
+   "label": "Facile",
    "techniques": [
     "price_cap",
     "record",
@@ -1666,7 +1701,9 @@
      "price_cap:tall": 1,
      "record:tall": 1,
      "ribbon:tall": 1
-    }
+    },
+    "technique_level": 2,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "decisions": {
@@ -1698,7 +1735,10 @@
    "seconds": 1.22,
    "mix": 7,
    "lot": "v3g2-jouer-b",
-   "index": 5
+   "index": 5,
+   "coupled_globals": [],
+   "compactness": 0.5,
+   "demand_prices": 0
   }
  },
  {
@@ -1947,8 +1987,8 @@
    ]
   },
   "difficulty": {
-   "rating": 1,
-   "label": "Facile",
+   "rating": 2,
+   "label": "Moyen",
    "techniques": [
     "exhausted",
     "flow",
@@ -1998,7 +2038,11 @@
      "silhouette": 1,
      "exhausted": 1
     },
-    "shape_steps": {}
+    "shape_steps": {},
+    "technique_level": 1,
+    "coupled_globals": [
+     "step"
+    ]
    },
    "ramp_techniques": {},
    "decisions": {
@@ -2032,7 +2076,12 @@
    "seconds": 15.64,
    "mix": 6,
    "lot": "v3g2-jouer-b",
-   "index": 6
+   "index": 6,
+   "coupled_globals": [
+    "step"
+   ],
+   "compactness": 0.67,
+   "demand_prices": 0
   }
  },
  {
@@ -2283,7 +2332,9 @@
      "exhausted": 1,
      "length": 1
     },
-    "shape_steps": {}
+    "shape_steps": {},
+    "technique_level": 1,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "decisions": {
@@ -2315,7 +2366,10 @@
    "seconds": 11.88,
    "mix": 6,
    "lot": "v3g2-jouer-b",
-   "index": 7
+   "index": 7,
+   "coupled_globals": [],
+   "compactness": 0.7,
+   "demand_prices": 0
   }
  },
  {
@@ -2538,7 +2592,9 @@
      "silhouette": 2,
      "carbon": 2
     },
-    "shape_steps": {}
+    "shape_steps": {},
+    "technique_level": 2,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "decisions": {
@@ -2574,7 +2630,10 @@
    "seconds": 0.75,
    "mix": 4,
    "lot": "v3g2-jouer-b",
-   "index": 8
+   "index": 8,
+   "coupled_globals": [],
+   "compactness": 1.29,
+   "demand_prices": 0
   }
  },
  {
@@ -2776,8 +2835,8 @@
    ]
   },
   "difficulty": {
-   "rating": 2,
-   "label": "Moyen",
+   "rating": 1,
+   "label": "Facile",
    "techniques": [
     "exhausted",
     "record",
@@ -2820,7 +2879,9 @@
      "exhausted": 1,
      "ribbon": 1
     },
-    "shape_steps": {}
+    "shape_steps": {},
+    "technique_level": 2,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "decisions": {
@@ -2852,7 +2913,10 @@
    "seconds": 51.05,
    "mix": 6,
    "lot": "v3g2-jouer-b",
-   "index": 9
+   "index": 9,
+   "coupled_globals": [],
+   "compactness": 0.78,
+   "demand_prices": 0
   }
  },
  {
@@ -3080,7 +3144,9 @@
     },
     "shape_steps": {
      "room:tall": 1
-    }
+    },
+    "technique_level": 1,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "decisions": {
@@ -3110,7 +3176,10 @@
    "seconds": 0.01,
    "mix": 8,
    "lot": "v3g2-jouer-b",
-   "index": 10
+   "index": 10,
+   "coupled_globals": [],
+   "compactness": 0.56,
+   "demand_prices": 0
   }
  },
  {
@@ -3321,8 +3390,8 @@
    ]
   },
   "difficulty": {
-   "rating": 2,
-   "label": "Moyen",
+   "rating": 3,
+   "label": "Difficile",
    "techniques": [
     "carbon",
     "flow",
@@ -3368,7 +3437,11 @@
      "ribbon": 5,
      "carbon": 1
     },
-    "shape_steps": {}
+    "shape_steps": {},
+    "technique_level": 2,
+    "coupled_globals": [
+     "carbon"
+    ]
    },
    "ramp_techniques": {},
    "decisions": {
@@ -3400,7 +3473,12 @@
    "seconds": 0.67,
    "mix": 3,
    "lot": "v3g2-jouer-b",
-   "index": 11
+   "index": 11,
+   "coupled_globals": [
+    "carbon"
+   ],
+   "compactness": 0.54,
+   "demand_prices": 0
   }
  },
  {
@@ -3604,8 +3682,8 @@
    ]
   },
   "difficulty": {
-   "rating": 3,
-   "label": "Difficile",
+   "rating": 2,
+   "label": "Moyen",
    "techniques": [
     "exhausted",
     "ribbon",
@@ -3647,7 +3725,9 @@
      "ribbon": 1,
      "single_spot": 1
     },
-    "shape_steps": {}
+    "shape_steps": {},
+    "technique_level": 3,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "decisions": {
@@ -3677,7 +3757,10 @@
    "seconds": 0.03,
    "mix": 9,
    "lot": "v3g2-jouer-b",
-   "index": 12
+   "index": 12,
+   "coupled_globals": [],
+   "compactness": 0.2,
+   "demand_prices": 0
   }
  },
  {
@@ -3854,8 +3937,8 @@
    ]
   },
   "difficulty": {
-   "rating": 2,
-   "label": "Moyen",
+   "rating": 3,
+   "label": "Difficile",
    "techniques": [
     "carbon",
     "column_sum",
@@ -3898,7 +3981,11 @@
      "ribbon": 2,
      "carbon": 1
     },
-    "shape_steps": {}
+    "shape_steps": {},
+    "technique_level": 2,
+    "coupled_globals": [
+     "carbon"
+    ]
    },
    "ramp_techniques": {},
    "decisions": {
@@ -3930,7 +4017,12 @@
    "seconds": 2.21,
    "mix": 3,
    "lot": "v3g2-jouer-b",
-   "index": 13
+   "index": 13,
+   "coupled_globals": [
+    "carbon"
+   ],
+   "compactness": 0.6,
+   "demand_prices": 0
   }
  },
  {
@@ -4160,8 +4252,8 @@
    ]
   },
   "difficulty": {
-   "rating": 3,
-   "label": "Difficile",
+   "rating": 2,
+   "label": "Moyen",
    "techniques": [
     "exhausted",
     "flow",
@@ -4202,7 +4294,9 @@
      "single_cover": 1,
      "silhouette": 1
     },
-    "shape_steps": {}
+    "shape_steps": {},
+    "technique_level": 3,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "decisions": {
@@ -4232,7 +4326,10 @@
    "seconds": 2.41,
    "mix": 1,
    "lot": "v3g2-jouer-b",
-   "index": 14
+   "index": 14,
+   "coupled_globals": [],
+   "compactness": 0.18,
+   "demand_prices": 0
   }
  },
  {
@@ -4421,7 +4518,9 @@
      "ribbon": 5,
      "carbon": 1
     },
-    "shape_steps": {}
+    "shape_steps": {},
+    "technique_level": 2,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "decisions": {
@@ -4453,7 +4552,10 @@
    "seconds": 0.09,
    "mix": 4,
    "lot": "v3g2-jouer-b",
-   "index": 15
+   "index": 15,
+   "coupled_globals": [],
+   "compactness": 1.29,
+   "demand_prices": 0
   }
  },
  {
@@ -4712,7 +4814,9 @@
      "single_cover": 1,
      "silhouette": 1
     },
-    "shape_steps": {}
+    "shape_steps": {},
+    "technique_level": 1,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "decisions": {
@@ -4742,7 +4846,10 @@
    "seconds": 0.11,
    "mix": 10,
    "lot": "v3g2-jouer-b",
-   "index": 16
+   "index": 16,
+   "coupled_globals": [],
+   "compactness": 0.18,
+   "demand_prices": 0
   }
  },
  {
@@ -4945,8 +5052,8 @@
    ]
   },
   "difficulty": {
-   "rating": 4,
-   "label": "Expert",
+   "rating": 2,
+   "label": "Moyen",
    "techniques": [
     "carbon",
     "record",
@@ -4992,7 +5099,9 @@
      "silhouette": 2,
      "refuted": 1
     },
-    "shape_steps": {}
+    "shape_steps": {},
+    "technique_level": 4,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "decisions": {
@@ -5024,7 +5133,10 @@
    "seconds": 1.72,
    "mix": 4,
    "lot": "v3g2-jouer-b",
-   "index": 17
+   "index": 17,
+   "coupled_globals": [],
+   "compactness": 0.6,
+   "demand_prices": 0
   }
  },
  {
@@ -5237,8 +5349,8 @@
    ]
   },
   "difficulty": {
-   "rating": 4,
-   "label": "Expert",
+   "rating": 2,
+   "label": "Moyen",
    "techniques": [
     "column_sum",
     "exhausted",
@@ -5290,7 +5402,9 @@
      "room:tall": 1,
      "ribbon:tall": 3,
      "refuted:tall": 1
-    }
+    },
+    "technique_level": 4,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "decisions": {
@@ -5320,7 +5434,10 @@
    "seconds": 1.56,
    "mix": 8,
    "lot": "v3g2-jouer-b",
-   "index": 18
+   "index": 18,
+   "coupled_globals": [],
+   "compactness": 0.56,
+   "demand_prices": 0
   }
  },
  {
@@ -5474,8 +5591,8 @@
    ]
   },
   "difficulty": {
-   "rating": 4,
-   "label": "Expert",
+   "rating": 2,
+   "label": "Moyen",
    "techniques": [
     "carbon",
     "refuted",
@@ -5514,7 +5631,9 @@
      "silhouette": 4,
      "carbon": 1
     },
-    "shape_steps": {}
+    "shape_steps": {},
+    "technique_level": 4,
+    "coupled_globals": []
    },
    "ramp_techniques": {},
    "decisions": {
@@ -5546,7 +5665,10 @@
    "seconds": 0.52,
    "mix": 4,
    "lot": "v3g2-jouer-b",
-   "index": 19
+   "index": 19,
+   "coupled_globals": [],
+   "compactness": 1.12,
+   "demand_prices": 0
   }
  }
 ]

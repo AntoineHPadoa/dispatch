@@ -172,8 +172,8 @@
    ]
   },
   "difficulty": {
-   "rating": 3,
-   "label": "Difficile",
+   "rating": 2,
+   "label": "Moyen",
    "techniques": [
     "exhausted",
     "record",
@@ -191,7 +191,7 @@
   "requires": [
    "ramp"
   ],
-  "rating": 3,
+  "rating": 2,
   "techniques": [
    "exhausted",
    "record",

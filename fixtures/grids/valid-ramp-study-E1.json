@@ -178,8 +178,8 @@
    ]
   },
   "difficulty": {
-   "rating": 4,
-   "label": "Expert",
+   "rating": 2,
+   "label": "Moyen",
    "techniques": [
     "record",
     "refuted",
@@ -195,7 +195,7 @@
   "requires": [
    "ramp"
   ],
-  "rating": 4,
+  "rating": 2,
   "techniques": [
    "record",
    "refuted",

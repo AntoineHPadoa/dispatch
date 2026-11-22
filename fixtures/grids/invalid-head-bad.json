@@ -4,7 +4,6 @@
   "id": 5,
   "title": "",
   "section": "daily",
-  "intro": "Nouveau : un flux publié, qui fixe l’échange d’un créneau avec l’Allemagne. Une colonne a autant de cases que sa hauteur : connaissant les autres, on déduit celle qui reste.",
   "teaches": [
    "flow",
    "column_sum"

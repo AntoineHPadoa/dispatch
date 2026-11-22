@@ -117,7 +117,7 @@
   "deduction": "solved",
   "requires": [],
   "note": "carbon: the CO2 cap picks the importing country",
-  "rating": 2,
+  "rating": 3,
   "techniques": [
    "carbon",
    "record",

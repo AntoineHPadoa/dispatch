@@ -8,6 +8,9 @@
   the deduction up to `max_level` solves the grid (levels 3-4 are only tried near the end); then prune
   every clue the grid can do without, at that level then with every technique (§8.3), until stable.
   `max_level` is the generator's lever on the rating; the last prune may raise the rating above it.
+  `seed` clues (e.g. a price that makes a demand appear, D7) start in the selection and are pruned last.
+- demand_prices(): price clues of the pool on a dear plant (C, G, T) in a column with an export: the price
+  says the plant runs although the day's own demand would not call it (tutorial 6, "La case la plus chère").
 - Monotone: removing any remaining clue makes the deduction fail (tested).
 
 Example: clues = select_clues(grid, pool)  # None when even the whole pool does not suffice
@@ -23,6 +26,7 @@ from ..deduce import Solver
 
 TYPE_ORDER = ("price", "column", "flow", "bar", "length", "exchanges", "engaged")
 PRUNE_ORDER = ("engaged", "bar", "length", "flow", "column", "exchanges", "price")
+DEAR_PLANTS = ("C", "G", "T")
 
 
 def clue_pool(g: dict[str, Any], types: tuple[str, ...] = TYPE_ORDER[:-1]) -> list[dict[str, Any]]:
@@ -84,6 +88,16 @@ def clue_pool(g: dict[str, Any], types: tuple[str, ...] = TYPE_ORDER[:-1]) -> li
     return pool
 
 
+def demand_prices(g: dict[str, Any], clues: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Price clues on a dear plant (DEAR_PLANTS) in a column where the reference exports (D7)."""
+    exports = reference_composition(g)["exports"]
+    return [
+        c
+        for c in clues
+        if c["type"] == "price" and c["piece"] in DEAR_PLANTS and any(v[c["col"]] for v in exports.values())
+    ]
+
+
 def mandatory_clues(g: dict[str, Any]) -> list[dict[str, Any]]:
     if g["step"] and g["inventory"]["level"] == "none":
         return [{"type": "exchanges", "step": len(g["solution"]["step"])}]
@@ -122,17 +136,19 @@ def select_clues(
     max_level: int = 4,
     max_clues: int | None = None,
     rng: random.Random | None = None,
+    seed: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]] | None:
     """Minimal clue list for g (its reference solution), or None if the pool does not make it deducible.
 
     max_level: highest technique level allowed (the aimed rating); max_clues: stop (None) past this
     number of clues besides the mandatory ones. rng: draw each clue among those that make progress
     instead of taking the best one, and try the full deduction at every step: less informative clues,
-    harder grids (used when aiming at levels 3-4).
+    harder grids (used when aiming at levels 3-4). seed: clues chosen first and pruned last.
     """
     judge = _Judge(g)
     base = mandatory_clues(g)
-    chosen = list(base)
+    seed = [c for c in seed or [] if c not in base]
+    chosen = list(base) + seed
     left = [c for c in pool if c not in chosen]
     limit = max_clues if max_clues is not None else len(pool)
     cheap = min(max_level, 2)
@@ -168,8 +184,12 @@ def select_clues(
         changed = True
         while changed:
             changed = False
-            for t in PRUNE_ORDER:
-                for clue in [c for c in chosen if c["type"] == t and c not in base]:
+            for t in (*PRUNE_ORDER, "seed"):
+                for clue in [
+                    c
+                    for c in chosen
+                    if c not in base and ((c in seed) if t == "seed" else c["type"] == t and c not in seed)
+                ]:
                     trial = [c for c in chosen if c is not clue]
                     if judge.solves(trial, level):
                         chosen = trial

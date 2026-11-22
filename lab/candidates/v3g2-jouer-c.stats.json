@@ -59,10 +59,10 @@
   }
  },
  "ratings": {
-  "Facile": 3,
-  "Moyen": 11,
-  "Difficile": 3,
-  "Expert": 3
+  "Facile": 6,
+  "Moyen": 12,
+  "Difficile": 0,
+  "Expert": 2
  },
  "families": {
   "pointe_soir": 3,
@@ -184,10 +184,10 @@
  "ramp_grids_with_technique": 0,
  "ramp_grids_with_own_technique": 0,
  "ramp_techniques": {
-  "ramp_lone": 0,
   "ramp_plateau": 0,
-  "ramp_relay": 0,
-  "ramp_shoulder": 0
+  "ramp_shoulder": 0,
+  "ramp_lone": 0,
+  "ramp_relay": 0
  },
  "seconds": 139.3,
  "seconds_per_kept_grid": 7.0,
@@ -214,5 +214,6 @@
    "seed": 321572444,
    "error": "error:TimeoutError: CP-SAT timed out"
   }
- ]
+ ],
+ "rerated": "scripts/rerate_lots.py (notation A, S4.16)"
 }

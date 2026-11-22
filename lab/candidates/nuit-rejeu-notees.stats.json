@@ -4,8 +4,8 @@
  "size": 4,
  "ratings": {
   "Facile": 2,
-  "Moyen": 1,
-  "Difficile": 1,
+  "Moyen": 2,
+  "Difficile": 0,
   "Expert": 0
  },
  "comment": "Published rated grids, replayed blind in the lab for calibration.",
@@ -18,5 +18,5 @@
   "ramp_lone": 0,
   "ramp_relay": 0
  },
- "rerated": "scripts/rerate_lots.py (deduction review S8, C1-C5)"
+ "rerated": "scripts/rerate_lots.py (notation A, S4.16)"
 }
