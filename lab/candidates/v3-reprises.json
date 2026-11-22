@@ -1119,9 +1119,15 @@
    "placements": [
     {
      "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
      "row": 1,
      "col": 0,
-     "len": 5
+     "len": 4
     },
     {
      "piece": "N",
@@ -1130,16 +1136,16 @@
      "len": 4
     },
     {
-     "piece": "N",
-     "row": 2,
-     "col": 0,
-     "len": 3
-    },
-    {
      "piece": "T",
      "row": 3,
      "col": 2,
      "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 4,
+     "len": 4
     },
     {
      "piece": "N",
@@ -1150,12 +1156,6 @@
     {
      "piece": "N",
      "row": 0,
-     "col": 5,
-     "len": 3
-    },
-    {
-     "piece": "N",
-     "row": 2,
      "col": 5,
      "len": 3
     },
@@ -1246,7 +1246,7 @@
    "lot": "v3-reprises",
    "index": 4,
    "source": "nuit-jouer-a:14",
-   "redrawn": "lifted"
+   "redrawn": "solver"
   }
  },
  {
@@ -1379,7 +1379,7 @@
      "piece": "N",
      "row": 3,
      "col": 0,
-     "len": 3
+     "len": 6
     },
     {
      "piece": "N",
@@ -1391,24 +1391,24 @@
      "piece": "N",
      "row": 5,
      "col": 0,
-     "len": 6
+     "len": 3
     },
     {
      "piece": "I",
-     "row": 5,
+     "row": 0,
      "col": 1,
      "len": 1,
      "country": "IT"
     },
     {
      "piece": "N",
-     "row": 3,
+     "row": 5,
      "col": 3,
      "len": 3
     },
     {
      "piece": "G",
-     "row": 5,
+     "row": 0,
      "col": 4,
      "len": 2
     }
@@ -1479,7 +1479,7 @@
     }
    ],
    "source": "nuit-jouer-c:14",
-   "redrawn": "lifted"
+   "redrawn": "solver"
   }
  }
 ]
