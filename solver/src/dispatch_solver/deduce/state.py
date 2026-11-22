@@ -90,7 +90,11 @@ class _Lazy(dict):
 
 
 class View:
-    """Derived facts of a state; cell sets are bit masks (cell r, c = bit r * n + c)."""
+    """Derived facts of a state; cell sets are bit masks (cell r, c = bit r * n + c).
+
+    minh / maxh are heights to fill (counts of cells); rows are absolute, so column c spans the rows
+    w[c] .. w[c] + maxh[c] - 1 above its weather bricks, and the rows under w[c] + minh[c] are sure.
+    """
 
     def __init__(self, pz: Puzzle, st: State) -> None:
         if not st.sil:
@@ -133,12 +137,15 @@ class View:
             for cell in pz.placements[i].cells:
                 self.occupied[cell] = i
         self.occ = occ
-        self.cells: list[Cell] = [(r, c) for c in range(n) for r in range(self.maxh[c])]
+        w = self.w = pz.w
+        self.top_min = [w[c] + self.minh[c] for c in range(n)]  # rows under it are sure
+        self.top_max = [w[c] + self.maxh[c] for c in range(n)]  # rows from it are absent
+        self.cells: list[Cell] = [(r, c) for c in range(n) for r in range(w[c], self.top_max[c])]
         under = 0
         sure = 0
         for r, c in self.cells:
             under |= pz.bit(r, c)
-            if r < self.minh[c]:
+            if r < self.top_min[c]:
                 sure |= pz.bit(r, c)
         self.under, self.sure_mask = under, sure
         cands = st.cands
@@ -156,10 +163,10 @@ class View:
         self.single_sil = len(st.sil) == 1 and all(len(es) == 1 for es in next(iter(st.sil.values())))
 
     def sure(self, cell: Cell) -> bool:
-        return cell[0] < self.minh[cell[1]]
+        return self.w[cell[1]] <= cell[0] < self.top_min[cell[1]]
 
     def column(self, c: int) -> list[Cell]:
-        return [(r, c) for r in range(self.maxh[c])]
+        return [(r, c) for r in range(self.w[c], self.top_max[c])]
 
     def unresolved(self) -> int:
         return sum(1 for x in self.cells if not (self.sure(x) and len(self.dom[x]) == 1)) + (not self.single_sil)

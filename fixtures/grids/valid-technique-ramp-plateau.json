@@ -2,7 +2,7 @@
  "name": "technique-ramp-plateau",
  "grid": {
   "id": 402,
-  "title": "Les éoliennes veillent",
+  "title": "Rafales nocturnes",
   "section": "rated",
   "columns": [
    "0h",
@@ -58,6 +58,16 @@
     ],
     "rank": 4,
     "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
    }
   },
   "weather": {
@@ -90,34 +100,40 @@
    "pieces": {
     "N": {},
     "C": {},
-    "G": {}
+    "G": {},
+    "T": {}
    }
   },
   "clues": [
    {
-    "type": "price",
-    "col": 2,
-    "piece": "N"
-   },
-   {
     "type": "column",
-    "col": 5,
+    "col": 2,
     "counts": {
-     "C": 1
+     "N": 2
     }
    },
    {
     "type": "bar",
-    "piece": "N",
-    "col": 0,
-    "len": 5
+    "piece": "C",
+    "col": 4,
+    "len": 4
+   },
+   {
+    "type": "price",
+    "col": 5,
+    "piece": "G"
    },
    {
     "type": "column",
-    "col": 5,
+    "col": 6,
     "counts": {
      "N": 2
     }
+   },
+   {
+    "type": "price",
+    "col": 0,
+    "piece": "G"
    }
   ],
   "solution": {
@@ -125,16 +141,22 @@
    "step": [],
    "placements": [
     {
-     "piece": "N",
-     "row": 0,
+     "piece": "G",
+     "row": 3,
      "col": 0,
-     "len": 5
+     "len": 2
+    },
+    {
+     "piece": "T",
+     "row": 0,
+     "col": 2,
+     "len": 1
     },
     {
      "piece": "N",
      "row": 1,
      "col": 2,
-     "len": 4
+     "len": 5
     },
     {
      "piece": "N",
@@ -143,20 +165,20 @@
      "len": 5
     },
     {
-     "piece": "C",
-     "row": 0,
-     "col": 5,
-     "len": 3
-    },
-    {
-     "piece": "G",
+     "piece": "T",
      "row": 3,
-     "col": 5,
-     "len": 2
+     "col": 3,
+     "len": 1
+    },
+    {
+     "piece": "C",
+     "row": 3,
+     "col": 4,
+     "len": 4
     },
     {
      "piece": "G",
-     "row": 4,
+     "row": 0,
      "col": 5,
      "len": 2
     },
@@ -174,9 +196,7 @@
    "techniques": [
     "price_cap",
     "program",
-    "ramp_lone",
     "ramp_plateau",
-    "ramp_shoulder",
     "record",
     "ribbon",
     "room",
@@ -193,9 +213,7 @@
   "techniques": [
    "price_cap",
    "program",
-   "ramp_lone",
    "ramp_plateau",
-   "ramp_shoulder",
    "record",
    "ribbon",
    "room",
@@ -204,29 +222,32 @@
   "composition": {
    "cells": [
     {
-     "N": 1
+     "G": 1
     },
     {
-     "N": 1
+     "G": 1
     },
     {
-     "N": 3
+     "N": 2,
+     "T": 1
     },
     {
-     "N": 3
-    },
-    {
-     "N": 3
+     "N": 2,
+     "T": 1
     },
     {
      "C": 1,
-     "G": 3,
      "N": 2
     },
     {
      "C": 2,
-     "G": 3,
-     "N": 1
+     "G": 2,
+     "N": 2
+    },
+    {
+     "C": 2,
+     "G": 2,
+     "N": 2
     },
     {
      "C": 1

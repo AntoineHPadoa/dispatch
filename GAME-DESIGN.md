@@ -15,7 +15,8 @@ Base de référence pour construire la version propre du jeu. Il décrit ce qui 
 - **Colonnes = créneaux horaires** de la journée : 6 à 12 colonnes (créneaux de 4 h, 3 h ou 2 h). 12 au maximum pour rester lisible sur papier.
 - **Demande** : une hauteur par colonne, en GW. La production non pilotable (renouvelables, fil de l'eau) est posée par la météo (§3). Ce qui reste à couvrir avec les centrales pilotables est la **demande résiduelle** ; elle peut être négative (surplus de renouvelables, voir §5).
 - **Silhouette** : la forme dessinée par la demande. Chaque case sous la silhouette doit être couverte exactement une fois ; rien au-dessus.
-- Les lignes sont numérotées de bas en haut. Le bas de la silhouette représente la consommation de base, le haut la pointe.
+- Les lignes sont numérotées de bas en haut, à partir du bas de la grille (ligne 0), météo comprise. Le bas de la silhouette représente la consommation de base, le haut la pointe.
+- **Météo** : elle occupe le bas de chaque colonne, d'abord le fil de l'eau F, puis les renouvelables R. Ce sont des **briques imposées**, comme des usines déjà posées : le joueur ne les pose ni ne les retire, et aucune centrale ne les recouvre. Elles s'affichent en barres hachurées.
 
 ## 3. Les centrales (pièces)
 
@@ -44,7 +45,7 @@ Le prototype n'utilise encore que des barres d'une case de haut ; les pièces ve
 | R | Renouvelables (soleil, vent) | cases imposées par la météo, en bas de la colonne | 0 | 0 |
 | F | Fil de l'eau | cases imposées, constantes sur la journée | 0 | 0 |
 
-Aujourd'hui, R et F ne font que réduire la demande à couvrir. Elles restent des pièces à part entière pour ouvrir des mécaniques : prévision météo incertaine, écrêtement d'un surplus, indice « production solaire de midi », renouvelables qui varient d'un créneau à l'autre.
+R et F sont des briques posées par la météo en bas de leur colonne, à position fixe ; une centrale ne peut pas les recouvrir. Le compte de cases à couvrir par colonne reste la demande résiduelle (demande − météo + exports + pompages − turbinages). Elles restent des pièces à part entière pour ouvrir des mécaniques : prévision météo incertaine, écrêtement d'un surplus, indice « production solaire de midi », renouvelables qui varient d'un créneau à l'autre.
 
 **La rampe du charbon** : une grille peut déclarer son charbon en rampe (trapèze 1 → 2 → 1), jamais rectangle et rampe à la fois.
 - Une rampe de largeur W occupe W cases sur sa **ligne de base** et W − 2 cases (le **plateau**) sur la ligne juste au-dessus ; les deux cases du bout de la base sont les **épaules**. Elle compte 2W − 2 cases.
@@ -57,7 +58,17 @@ Toutes les pièces ne sont pas présentes dans chaque grille : la grille déclar
 
 ## 4. Règles de pose
 
-1. Chaque pièce est posée entièrement dans la silhouette, sans chevaucher une autre pièce.
+1. Chaque pièce est posée entièrement dans la silhouette, **au-dessus des briques météo**, sans chevaucher une autre pièce. Une centrale est un vrai rectangle sur une seule ligne de la grille : chacune de ses cases est libre (ni météo, ni autre centrale). Elle n'épouse jamais le relief de la météo.
+
+```
+autorisé            interdit (une barre pliée)
+  .. .                .. .
+NNN...              ..N...
+..RR..              NNRR..
+FFFFFF              FFFFFF
+```
+
+Les cases vides sous la barre autorisée se remplissent avec d'autres centrales, comme toute case sous la demande. Le dessin interdit reste possible avec deux centrales distinctes si leurs longueurs sont permises.
 2. Sa forme fait partie de celles autorisées pour sa pièce : largeur et hauteur pour un rectangle, largeur pour une rampe.
 3. Toutes les cases de la silhouette sont couvertes.
 4. L'inventaire est respecté (§6) et tous les indices sont vrais (§7).
@@ -73,7 +84,7 @@ Chacune s'active par grille. Elles créent du choix, et c'est ce choix qui fait 
   - À chaque créneau : imports + exports avec ce pays ≤ capacité de la ligne.
   - Plusieurs voisins possibles (ex. Allemagne, Royaume-Uni, Espagne), chacun avec sa ligne.
   - Les voisins n'ont **pas de prix** : seuls la capacité et les indices comptent.
-- **Surplus** : une colonne de demande résiduelle négative doit être absorbée par des exports ou par un pompage de STEP (pas d'écrêtement). Un surplus casse les rubans de nucléaire, un export permet de les prolonger.
+- **Surplus** : une colonne de demande résiduelle négative doit être absorbée par des exports ou par un pompage de STEP (pas d'écrêtement) : les briques météo au-dessus de la demande sont couvertes par ces exports ou ce pompage. Un surplus casse les rubans de nucléaire, un export permet de les prolonger. Une marche de météo coupe aussi toute ligne qu'elle traverse : un ruban ne passe pas sur une brique.
 - **STEP (stockage par pompage)** : une paire pompage ▲ / turbinage ▼. Le pompage ajoute une case à remplir dans un créneau, le turbinage en retire une dans un créneau **plus tard**. Le nombre de paires est fixé par la grille. Usage typique : remplir un creux pour prolonger un ruban, raboter une pointe.
 - **Plafond CO₂** : la somme du CO₂ des cases posées ne dépasse pas le plafond. Avec plusieurs voisins, chaque pays a son **CO₂ par case importée** : sous plafond, le choix du pays devient une vraie décision. Le contrôle se fait en comptant des cases.
 
@@ -141,7 +152,7 @@ Note = la technique la plus avancée nécessaire, à la Sudoku. Chaque technique
 | 3 | Deux épaules se relaient | Deux cases de rampe sans plateau autour : une rampe s'arrête et une autre démarre sur son épaule. |
 | 4 | Hypothèse réfutée | Si un choix mène à une impasse par les règles simples, il est exclu (une seule hypothèse, jamais imbriquée). |
 
-Les quatre techniques de rampe (trapèze, `docs/next/rampe.md` §2) ne servent qu'aux grilles dont le charbon est une rampe ; leurs niveaux sont provisoires. « Le plateau barre la ligne du dessus » et « L'épaule appelle une case » sont « Pas de place » et « Une seule barre pour cette case » nommées pour une rampe : elles enseignent le geste, mais ne rendent pas une grille plus difficile. « Pas de place » regarde aussi plusieurs colonnes à la fois : une barre qui demanderait plus d'exports (ou de pompages) que le jour n'en publie est exclue. « Cases interchangeables » ne compte que les cases sûres et les relevés de la colonne : quand il faut la hauteur de la colonne, c'est « Compter la colonne ». Les noms et phrases sont les mêmes dans `web/src/i18n/fr.ts` et dans les traces du solveur (testé).
+Les quatre techniques de rampe (trapèze, `docs/next/rampe.md` §2) ne servent qu'aux grilles dont le charbon est une rampe ; leurs niveaux sont provisoires. « Le plateau barre la ligne du dessus » et « L'épaule appelle une case » sont « Pas de place » et « Une seule barre pour cette case » nommées pour une rampe : elles enseignent le geste, mais ne rendent pas une grille plus difficile. Une brique météo est une case occupée dès le départ : « Pas de place » et « Le creux coupe le ruban » la traitent comme une barre déjà posée, sans technique à part. « Pas de place » regarde aussi plusieurs colonnes à la fois : une barre qui demanderait plus d'exports (ou de pompages) que le jour n'en publie est exclue. « Cases interchangeables » ne compte que les cases sûres et les relevés de la colonne : quand il faut la hauteur de la colonne, c'est « Compter la colonne ». Les noms et phrases sont les mêmes dans `web/src/i18n/fr.ts` et dans les traces du solveur (testé).
 
 **Ce qui crée la difficulté** (constaté sur les tirages) : des choix réels, c'est-à-dire un voisin, un STEP ou l'absence d'inventaire. Sans voisin et avec un inventaire exact, les grilles sont toujours faciles.
 
@@ -219,11 +230,12 @@ Champs de la grille complète, en plus de l'exemple ci-dessus :
 
 - **Tête** : `id` (entier > 0), `title`, `section` (`"tutorial"` ou `"rated"`), `intro` (texte affiché avant de jouer, facultatif) et `teaches` (ids des techniques introduites, pour les grilles de tutoriel).
 - **`column.counts`** : une clé est un id de pièce, ou `I:<pays>` pour les imports d'un seul voisin (ex. `{"G": 2, "I:DE": 0}`).
+- **`row`** (pose de `solution.placements`, indice `engaged`) : ligne de la case du bas, comptée depuis le bas de la grille (0 = première ligne, météo comprise). Une pose ne couvre aucune case de colonne `c` sous `F[c] + R[c]`.
 - **`height`** : facultatif sur une pose (`solution.placements`) et sur un indice `engaged` ; 1 par défaut, et toujours une valeur de `pieces.<id>.height`.
 - **`pieces.<id>.shape`** : `"rect"` (défaut), `"trap"` (rampe 1 → 2 → 1) ou `"stair"` (escalier 2 → 1). Seul le charbon `C` peut être une rampe ; une rampe n'a pas de `height` ; `len` est sa largeur totale (≥ 3 pour `trap`, ≥ 2 pour `stair`). Une pose de rampe garde `{piece, row, col, len}` : `row` est sa ligne de base, ses cases se déduisent de la forme (`web/src/model/shapes.ts`). Exemple : `"C": {"shape": "trap", "len": [3, 4, 5], "rank": 3, "co2": 3}`.
 - **`inventory.pieces.<id>.max_cells`** : stock maximal en cases d'une pièce, connu du joueur même au niveau `none` (ex. l'eau d'un barrage : `"B": {"max_cells": 2}`). Le moteur refuse une pose qui dépasse ce stock.
 
-Contrôles du validateur : de 6 à 12 colonnes ; rang et CO₂ de chaque pièce égaux à ceux du §3 ; `pieces` et `inventory.pieces` ont les mêmes clés ; `imports` ne mêle pas `"*"` et des clés par pays ; une rampe est du charbon, sans `height`, assez large ; chaque pose a une largeur et une hauteur permises (aucune hauteur pour une rampe), tient dans la grille, et un import fait 1 case ; un bulletin a un numéro, un titre, un texte, un ciel par colonne et une date ISO réelle ; une grille avec STEP publie son nombre de paires (`inventory.step` en exact, `step` d'un indice `exchanges` sinon) ; dans `solution.step`, `pump` est avant `turbine` ; un flux ou un export ne dépasse pas le `cap` de la ligne.
+Contrôles du validateur : de 6 à 12 colonnes ; rang et CO₂ de chaque pièce égaux à ceux du §3 ; `pieces` et `inventory.pieces` ont les mêmes clés ; `imports` ne mêle pas `"*"` et des clés par pays ; une rampe est du charbon, sans `height`, assez large ; chaque pose a une largeur et une hauteur permises (aucune hauteur pour une rampe), tient dans la grille, ne couvre aucune case de météo (message `solution.placements[i]: covers a weather cell at <libellé de la 1re colonne fautive>`, par exemple `… at 10h` ; `clues[i]: …` pour un indice `engaged`), et un import fait 1 case ; un bulletin a un numéro, un titre, un texte, un ciel par colonne et une date ISO réelle ; une grille avec STEP publie son nombre de paires (`inventory.step` en exact, `step` d'un indice `exchanges` sinon) ; dans `solution.step`, `pump` est avant `turbine` ; un flux ou un export ne dépasse pas le `cap` de la ligne.
 
 - **`bulletin`** (facultatif) : le bulletin du marché publié avec la grille, `{"number", "title", "text", "weather", "published"}`.
   - `number` : numéro du bulletin (entier > 0, unique d'une grille à l'autre) ; `title` et `text` : titre et court texte de contexte (non vides).

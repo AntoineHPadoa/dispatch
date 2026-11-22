@@ -2,7 +2,7 @@
  "name": "technique-single-spot",
  "grid": {
   "id": 401,
-  "title": "Midi déborde",
+  "title": "Ligne chargée",
   "section": "rated",
   "columns": [
    "0h",
@@ -13,11 +13,11 @@
    "20h"
   ],
   "demand": [
+   4,
    3,
    3,
-   2,
+   4,
    6,
-   5,
    4
   ],
   "pieces": {
@@ -58,28 +58,28 @@
   },
   "weather": {
    "R": [
+    3,
     0,
     0,
-    2,
-    4,
+    1,
     0,
-    0
+    3
    ],
    "F": [
-    1,
-    1,
-    1,
-    1,
-    1,
-    1
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
    ]
   },
   "neighbors": [
    {
-    "id": "ES",
-    "name": "Espagne",
+    "id": "UK",
+    "name": "Royaume-Uni",
     "cap": 1,
-    "co2": 0
+    "co2": 1
    }
   ],
   "step": false,
@@ -89,14 +89,14 @@
    "pieces": {
     "N": {
      "bars": [
-      3,
+      6,
+      4,
+      4,
       3
      ]
     },
     "G": {
      "bars": [
-      2,
-      2,
       2
      ]
     },
@@ -105,68 +105,76 @@
     }
    },
    "exports": {
-    "ES": 2
+    "UK": 4
    },
    "imports": {
-    "ES": 0
+    "UK": 1
    }
   },
   "clues": [],
   "solution": {
    "exports": {
-    "ES": [
-     0,
+    "UK": [
      0,
      1,
      1,
+     1,
      0,
-     0
+     1
     ]
    },
    "step": [],
    "placements": [
     {
-     "piece": "G",
-     "row": 0,
+     "piece": "N",
+     "row": 3,
      "col": 0,
-     "len": 2
+     "len": 6
     },
     {
      "piece": "G",
-     "row": 1,
-     "col": 0,
+     "row": 0,
+     "col": 1,
      "len": 2
     },
     {
      "piece": "N",
-     "row": 0,
-     "col": 3,
-     "len": 3
+     "row": 1,
+     "col": 1,
+     "len": 4
     },
     {
      "piece": "N",
-     "row": 1,
-     "col": 3,
-     "len": 3
-    },
-    {
-     "piece": "G",
      "row": 2,
-     "col": 4,
-     "len": 2
+     "col": 1,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 3,
+     "len": 3
     },
     {
      "piece": "T",
-     "row": 3,
+     "row": 0,
      "col": 4,
      "len": 1
+    },
+    {
+     "piece": "I",
+     "row": 5,
+     "col": 4,
+     "len": 1,
+     "country": "UK"
     }
    ]
   },
   "difficulty": {
-   "rating": 1,
-   "label": "Facile",
+   "rating": 2,
+   "label": "Moyen",
    "techniques": [
+    "column_sum",
     "exhausted",
     "room",
     "silhouette",
@@ -179,8 +187,9 @@
   "errors": [],
   "compositions": 1,
   "deduction": "solved",
-  "rating": 1,
+  "rating": 2,
   "techniques": [
+   "column_sum",
    "exhausted",
    "room",
    "silhouette",
@@ -189,33 +198,36 @@
   "composition": {
    "cells": [
     {
-     "G": 2
-    },
-    {
-     "G": 2
-    },
-    {},
-    {
-     "N": 2
+     "N": 1
     },
     {
      "G": 1,
-     "N": 2,
+     "N": 3
+    },
+    {
+     "G": 1,
+     "N": 3
+    },
+    {
+     "N": 4
+    },
+    {
+     "I:UK": 1,
+     "N": 4,
      "T": 1
     },
     {
-     "G": 1,
      "N": 2
     }
    ],
    "exports": {
-    "ES": [
-     0,
+    "UK": [
      0,
      1,
      1,
+     1,
      0,
-     0
+     1
     ]
    },
    "pumps": [
@@ -236,6 +248,6 @@
    ]
   },
   "requires": [],
-  "note": "seed 3 of {'cols': 6, 'inventory': 'exact', 'neighbors': 1}"
+  "note": "seed 0 of {'cols': 6, 'inventory': 'exact', 'neighbors': 1}"
  }
 }

@@ -38,6 +38,17 @@
     "rank": 1,
     "co2": 0
    },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   },
    "T": {
     "len": [
      1
@@ -85,21 +96,22 @@
    "level": "none",
    "pieces": {
     "N": {},
+    "G": {},
     "T": {}
    }
   },
   "clues": [
    {
-    "type": "column",
-    "col": 7,
-    "counts": {
-     "N": 5
-    }
+    "type": "price",
+    "col": 4,
+    "piece": "N"
    },
    {
-    "type": "price",
+    "type": "column",
     "col": 0,
-    "piece": "N"
+    "counts": {
+     "N": 1
+    }
    },
    {
     "type": "exchanges",
@@ -108,67 +120,104 @@
     }
    },
    {
-    "type": "price",
-    "col": 4,
-    "piece": "N"
+    "type": "column",
+    "col": 7,
+    "counts": {
+     "N": 3
+    }
    },
    {
-    "type": "exchanges",
-    "imports": {
-     "DE": 0
-    }
+    "type": "price",
+    "col": 1,
+    "piece": "G"
+   },
+   {
+    "type": "price",
+    "col": 6,
+    "piece": "G"
+   },
+   {
+    "type": "flow",
+    "col": 2,
+    "country": "DE",
+    "dir": "import",
+    "value": 0
    }
   ],
   "solution": {
    "exports": {
     "DE": [
-     0,
+     1,
      0,
      0,
      1,
      0,
      0,
      0,
-     1
+     0
     ]
    },
    "step": [],
    "placements": [
     {
-     "piece": "N",
+     "piece": "T",
      "row": 0,
      "col": 0,
-     "len": 3
+     "len": 1
     },
     {
-     "piece": "N",
+     "piece": "G",
      "row": 1,
      "col": 0,
-     "len": 3
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 2,
+     "col": 0,
+     "len": 2
     },
     {
      "piece": "N",
-     "row": 2,
+     "row": 3,
      "col": 0,
      "len": 3
     },
     {
      "piece": "T",
-     "row": 3,
+     "row": 4,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 5,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 6,
      "col": 2,
      "len": 1
     },
     {
      "piece": "N",
-     "row": 0,
+     "row": 3,
      "col": 4,
      "len": 4
     },
     {
      "piece": "N",
-     "row": 1,
+     "row": 4,
      "col": 4,
-     "len": 4
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 5,
+     "len": 3
     },
     {
      "piece": "N",
@@ -177,22 +226,16 @@
      "len": 3
     },
     {
-     "piece": "N",
-     "row": 3,
-     "col": 5,
-     "len": 3
-    },
-    {
-     "piece": "N",
-     "row": 4,
-     "col": 5,
-     "len": 3
-    },
-    {
-     "piece": "T",
+     "piece": "G",
      "row": 5,
+     "col": 5,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 0,
      "col": 6,
-     "len": 1
+     "len": 2
     }
    ]
   },
@@ -200,6 +243,7 @@
    "rating": 2,
    "label": "Moyen",
    "techniques": [
+    "flow",
     "price_cap",
     "record",
     "ribbon",
@@ -215,6 +259,7 @@
   "deduction": "solved",
   "rating": 2,
   "techniques": [
+   "flow",
    "price_cap",
    "record",
    "ribbon",
@@ -224,40 +269,45 @@
   "composition": {
    "cells": [
     {
-     "N": 3
-    },
-    {
-     "N": 3
-    },
-    {
-     "N": 3,
+     "G": 2,
+     "N": 1,
      "T": 1
+    },
+    {
+     "G": 2,
+     "N": 1
+    },
+    {
+     "N": 1,
+     "T": 3
     },
     {},
     {
      "N": 2
     },
     {
-     "N": 5
+     "G": 1,
+     "N": 4
     },
     {
-     "N": 5,
-     "T": 1
+     "G": 2,
+     "N": 4
     },
     {
-     "N": 5
+     "G": 1,
+     "N": 3
     }
    ],
    "exports": {
     "DE": [
-     0,
+     1,
      0,
      0,
      1,
      0,
      0,
      0,
-     1
+     0
     ]
    },
    "pumps": [

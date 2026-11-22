@@ -2,7 +2,8 @@
 
 - One boolean per placement; exports per neighbor and column; pumps and turbines per column (pairs are
   rebuilt afterwards: a turbining always follows a pumping); height to fill per column through monotone
-  "row r is under the silhouette" booleans; every cell under it covered exactly once, none above.
+  "row w + r is under the silhouette" booleans (rows are absolute, w = weather bricks of the column); every
+  cell under it covered exactly once, none above.
 - Inventory, line capacity, CO2 cap and every clue are constraints (clues.py gives their meaning).
 - Counting: solve, forbid that composition ("at least one value differs"), solve again, up to `cap`.
 
@@ -79,7 +80,7 @@ class Model:
                 m.AddImplication(b, a)
             m.Add(sum(under) == h)
             for r_ in range(pz.maxh[c]):
-                m.Add(sum(self.x[i] for i in cover.get((r_, c), [])) == under[r_])
+                m.Add(sum(self.x[i] for i in cover.get((pz.w[c] + r_, c), [])) == under[r_])
 
         # Composition expressions
         self.cells: dict[tuple[str, int], Any] = {}

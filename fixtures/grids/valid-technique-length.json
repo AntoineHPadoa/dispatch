@@ -2,7 +2,7 @@
  "name": "technique-length",
  "grid": {
   "id": 400,
-  "title": "Midi creux",
+  "title": "La nuit souffle",
   "section": "rated",
   "columns": [
    "0h",
@@ -15,13 +15,13 @@
    "21h"
   ],
   "demand": [
+   5,
+   5,
+   5,
    4,
-   4,
    5,
-   5,
-   5,
-   5,
-   5,
+   8,
+   7,
    5
   ],
   "pieces": {
@@ -62,14 +62,14 @@
   },
   "weather": {
    "R": [
-    0,
-    0,
-    0,
-    2,
     4,
+    4,
+    0,
+    0,
+    1,
     1,
     0,
-    0
+    4
    ],
    "F": [
     0,
@@ -96,35 +96,35 @@
   "clues": [
    {
     "type": "column",
-    "col": 0,
+    "col": 2,
     "counts": {
      "N": 4
     }
    },
    {
     "type": "column",
-    "col": 7,
+    "col": 6,
     "counts": {
      "N": 4
     }
    },
    {
     "type": "column",
-    "col": 3,
+    "col": 5,
     "counts": {
-     "N": 3
+     "G": 2
     }
    },
    {
     "type": "length",
-    "piece": "G",
-    "len": 2
+    "piece": "N",
+    "len": 4
    },
    {
     "type": "column",
-    "col": 4,
+    "col": 2,
     "counts": {
-     "N": 1
+     "G": 1
     }
    }
   ],
@@ -134,63 +134,63 @@
    "placements": [
     {
      "piece": "N",
-     "row": 0,
-     "col": 0,
-     "len": 3
-    },
-    {
-     "piece": "N",
-     "row": 1,
-     "col": 0,
-     "len": 4
-    },
-    {
-     "piece": "N",
-     "row": 2,
-     "col": 0,
-     "len": 4
-    },
-    {
-     "piece": "N",
-     "row": 3,
-     "col": 0,
-     "len": 3
-    },
-    {
-     "piece": "T",
      "row": 4,
-     "col": 2,
-     "len": 1
-    },
-    {
-     "piece": "N",
-     "row": 0,
-     "col": 3,
-     "len": 5
-    },
-    {
-     "piece": "N",
-     "row": 1,
-     "col": 5,
-     "len": 3
-    },
-    {
-     "piece": "N",
-     "row": 2,
-     "col": 5,
-     "len": 3
-    },
-    {
-     "piece": "N",
-     "row": 3,
-     "col": 5,
+     "col": 0,
      "len": 3
     },
     {
      "piece": "G",
-     "row": 4,
-     "col": 6,
+     "row": 0,
+     "col": 2,
      "len": 2
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 2,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 2,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 2,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "G",
+     "row": 5,
+     "col": 5,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 6,
+     "col": 5,
+     "len": 2
+    },
+    {
+     "piece": "T",
+     "row": 7,
+     "col": 5,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 0,
+     "col": 6,
+     "len": 1
     }
    ]
   },
@@ -222,31 +222,34 @@
   "composition": {
    "cells": [
     {
-     "N": 4
-    },
-    {
-     "N": 4
-    },
-    {
-     "N": 4,
-     "T": 1
-    },
-    {
-     "N": 3
+     "N": 1
     },
     {
      "N": 1
     },
     {
-     "N": 4
-    },
-    {
      "G": 1,
      "N": 4
     },
     {
      "G": 1,
+     "N": 3
+    },
+    {
      "N": 4
+    },
+    {
+     "G": 2,
+     "N": 4,
+     "T": 1
+    },
+    {
+     "G": 2,
+     "N": 4,
+     "T": 1
+    },
+    {
+     "N": 1
     }
    ],
    "exports": {},
@@ -272,6 +275,6 @@
    ]
   },
   "requires": [],
-  "note": "seed 4 of {'cols': 8, 'clue_types': ['length', 'column']}"
+  "note": "seed 6 of {'cols': 8, 'clue_types': ['length', 'column']}"
  }
 }

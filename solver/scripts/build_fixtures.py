@@ -3,6 +3,8 @@
 - Valid grids: hand-drawn drafts covering what the published grids do not (several neighbors, tall
   pieces, stock, surplus, CO2 cap, length clues, partial day totals, STEP without inventory, ramps),
   completed by the reference solution and the clue selection, then checked (one composition, deducible).
+- Weather bricks: a bar above a weather step and a surplus brick over the demand (checked on the reference);
+  the invalid cases include a bar and an engaged clue on a weather cell.
 - Invalid grids: one per validator check, with the expected messages written by hand (the contract with
   the TS validator), and well-formed grids that are not publishable (two compositions, reference
   breaking a clue, unique but not deducible).
@@ -129,7 +131,37 @@ VALID: dict[str, tuple[dict[str, Any], str, dict[str, int], tuple[str, ...], lis
         ("price", "column", "bar"),
         ["ramp"],
     ),
+    # Weather bricks (rows are absolute): a bar may run above a weather step, never across it.
+    "bar-above-step": (
+        dict(residual=[4, 4, 2, 2, 4, 4, 3, 3], pieces="NGT", weather_r=[0, 0, 2, 2, 0, 0, 1, 1]),
+        "none",
+        {},
+        ("price", "column", "bar"),
+        [],
+    ),
+    "surplus-brick": (
+        dict(
+            residual=[3, 4, 3, -1, 3, 4, 4, 3],
+            pieces="NGT",
+            neighbors=[("DE", 1, 1)],
+            weather_r=[0, 1, 2, 5, 2, 1, 0, 0],
+        ),
+        "none",
+        {"DE": 1},
+        ("price", "column", "flow", "exchanges"),
+        [],
+    ),
 }
+
+# What a weather fixture must show, checked on its reference solution.
+WEATHER_SHAPES = {"bar-above-step": "above_step", "surplus-brick": "brick_over_demand"}
+
+
+def weather_shape(g: dict[str, Any], what: str) -> bool:
+    w = [r + f for r, f in zip(g["weather"]["R"], g["weather"]["F"])]
+    if what == "brick_over_demand":
+        return any(w[c] > g["demand"][c] for c in range(len(w)))
+    return any(len({w[c] for c in range(p["col"], p["col"] + p["len"])}) > 1 for p in g["solution"]["placements"])
 
 
 def build_valid(name: str, spec: tuple[Any, ...], seed: int) -> dict[str, Any]:
@@ -152,6 +184,8 @@ def build_valid(name: str, spec: tuple[Any, ...], seed: int) -> dict[str, Any]:
     assert ex.count == 1 and ex.composition == reference_composition(g), name
     errors = validate(g, allow_ramp=bool(requires))
     assert not errors, (name, errors)
+    if name in WEATHER_SHAPES and not weather_shape(g, WEATHER_SHAPES[name]):
+        raise SystemExit(f"{name}: the reference does not show {WEATHER_SHAPES[name]}")
     return {
         "name": name,
         "grid": g,
@@ -352,6 +386,19 @@ INVALID: dict[str, tuple[Any, list[str], bool]] = {
     "engaged-row-bad": (
         lambda g: g["clues"].append({"type": "engaged", "piece": "N", "row": -1, "col": 0, "len": 3}),
         ["clues[1].row: integer >= 0 expected"],
+        False,
+    ),
+    "placement-on-weather": (
+        lambda g: g["weather"].update(R=[0, 0, 1, 0, 0, 0]),
+        ["solution.placements[0]: covers a weather cell at 8h"],
+        False,
+    ),
+    "engaged-on-weather": (
+        lambda g: (
+            g["weather"].update(R=[0, 0, 1, 0, 0, 0]),
+            g["clues"].append({"type": "engaged", "piece": "N", "row": 0, "col": 1, "len": 3}),
+        ),
+        ["clues[1]: covers a weather cell at 8h", "solution.placements[0]: covers a weather cell at 8h"],
         False,
     ),
     "bulletin-text-blank": (
