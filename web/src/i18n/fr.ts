@@ -155,23 +155,23 @@ function lenText(lens: number[]): string {
 
 /** Rule violations, one function per reason. */
 export const MSG = {
-  bounds: (ramp = false) => `La ${ramp ? 'rampe' : 'barre'} dépasse de la grille.`,
+  bounds: (ramp = false) => `La barre${ramp ? ' à paliers' : ''} dépasse de la grille.`,
   length: (name: string, lens: number[]) => `La barre ${name} doit faire ${lenText(lens)}.`,
-  rampLength: (lens: number[]) => `Une rampe de charbon fait ${lenText(lens)}.`,
+  rampLength: (lens: number[]) => `Une barre de charbon à paliers fait ${lenText(lens)}.`,
   height: (name: string, heights: number[]) => `La barre ${name} doit faire ${heights.join(' ou ')} GW de haut.`,
   silhouette: (col: string) => `Hors de la silhouette à ${col}.`,
   weather: (col: string) => `La météo occupe déjà cette case à ${col}.`,
   overlap: () => 'Case déjà occupée.',
   unavailable: (of: string) => `Pas de centrale ${of} dans cette grille.`,
   unknownCountry: () => 'Ce pays n’est pas relié à la grille.',
-  inventoryBar: (name: string, len: number, ramp = false) => `Plus de ${ramp ? 'rampe' : 'barre'} ${name} de ${plural(len, 'créneau', 'créneaux')} dans l’inventaire.`,
-  inventoryCells: (name: string, total: number) => `Plus de case ${name} dans l’inventaire (${total} au total).`,
+  inventoryBar: (name: string, len: number, ramp = false) => `Plus de barre${ramp ? ' à paliers' : ''} ${name} de ${plural(len, 'créneau', 'créneaux')} dans le carnet.`,
+  inventoryCells: (name: string, total: number) => `Plus de case ${name} dans le carnet (${total} au total).`,
   stock: (piece: string, of: string, total: number) => (piece === 'B'
     ? `Plus d’eau dans le barrage (${plural(total, 'case')} au plus).`
     : `Plus de stock ${of} (${plural(total, 'case')} au plus).`),
-  inventoryImports: (from: string, total: number) => `Plus d’import ${from} dans l’inventaire (${total} au total).`,
-  inventoryImportsAll: (total: number) => `Plus d’import dans l’inventaire (${total} au total, tous pays).`,
-  inventoryExports: (to: string, total: number) => `Plus d’export ${to} dans l’inventaire (${total} au total).`,
+  inventoryImports: (from: string, total: number) => `Plus d’import ${from} dans le carnet (${total} au total).`,
+  inventoryImportsAll: (total: number) => `Plus d’import dans le carnet (${total} au total, tous pays).`,
+  inventoryExports: (to: string, total: number) => `Plus d’export ${to} dans le carnet (${total} au total).`,
   line: (to: string, col: string) => `Ligne ${to} saturée à ${col}.`,
   exportRange: (col: string) => `Export impossible à ${col}.`,
   surplus: (col: string) => `Surplus non absorbé à ${col} : il faut exporter ou pomper.`,
@@ -221,26 +221,26 @@ export const INVENTORY = {
 /** Deduction techniques (GAME-DESIGN.md §9): name and sentence for the player, by solver id. */
 export const TECHNIQUES: Record<string, { name: string; text: string }> = {
   room: { name: 'Pas de place', text: 'Une barre ne peut ni dépasser de la silhouette ni chevaucher une barre déjà posée.' },
-  exhausted: { name: 'Inventaire épuisé', text: 'Quand toutes les cases d’une pièce sont trouvées, elle ne va nulle part ailleurs ; une barre plus longue que ce qu’il reste ne passe plus.' },
+  exhausted: { name: 'Carnet épuisé', text: 'Quand toutes les cases d’une pièce sont trouvées, elle ne va nulle part ailleurs ; une barre plus longue que ce qu’il reste ne passe plus.' },
   price_cap: { name: 'Le prix plafonne la colonne', text: 'Sous un prix publié, aucune case n’est plus chère que ce prix.' },
   record: { name: 'Le relevé compte les cases', text: 'Un relevé atteint interdit d’autres cases de cette pièce ; s’il reste juste assez de cases possibles, elles y passent toutes. Les échanges du jour se comptent de même.' },
   flow: { name: 'Flux publié', text: 'Un flux publié fixe l’export ou l’import d’un créneau avec un pays.' },
   single_cover: { name: 'Une seule barre pour cette case', text: 'Une case qu’une seule barre peut encore couvrir reçoit cette barre.' },
-  single_spot: { name: 'La barre qui ne tient qu’à un endroit', text: 'Une barre de l’inventaire qui n’a plus qu’une place possible y va.' },
+  single_spot: { name: 'La barre qui ne tient qu’à un endroit', text: 'Une barre du carnet qui n’a plus qu’une place possible y va.' },
   program: { name: 'Programme publié', text: 'La barre annoncée par un programme va sur la seule ligne où elle tient.' },
   length: { name: 'Durée de marche', text: 'La barre dont on connaît la durée de marche va à la seule place où cette durée tient.' },
   silhouette: { name: 'La silhouette suit les barres', text: 'Un export ou un pompage qui laisserait une case impossible à couvrir est exclu.' },
   swap: { name: 'Cases interchangeables', text: 'Quand on connaît le nombre de cases de chaque pièce dans une colonne, l’ordre ne compte pas.' },
   top_price: { name: 'La case la plus chère', text: 'Un prix publié exige au moins une case de cette centrale dans la colonne : s’il n’y a qu’une place possible, c’est elle.' },
   ribbon: { name: 'Le creux coupe le ruban', text: 'Chaque ligne se découpe en rubans entre les creux : une barre qui laisserait un bout impossible à remplir est exclue.' },
-  just_enough: { name: 'Inventaire juste', text: 'S’il reste exactement autant de cases possibles que de cases à poser pour une pièce, toutes sont à elle.' },
+  just_enough: { name: 'Carnet juste', text: 'S’il reste exactement autant de cases possibles que de cases à poser pour une pièce, toutes sont à elle.' },
   column_sum: { name: 'Compter la colonne', text: 'Une colonne a autant de cases que sa hauteur : connaissant les autres pièces, on déduit celle qui reste.' },
   carbon: { name: 'Plafond carbone', text: 'Une barre qui ferait dépasser le plafond CO₂ est exclue.' },
-  ramp_plateau: { name: 'Le plateau barre la ligne du dessus', text: 'Au-dessus de sa base, la rampe occupe aussi la ligne suivante sur tout son plateau : aucun ruban de cette ligne ne la traverse.' },
-  ramp_shoulder: { name: 'L’épaule appelle une case', text: 'La case au-dessus d’une épaule est fermée côté plateau : seule une pièce d’une case, ou une barre qui s’arrête pile là, peut la couvrir.' },
-  ramp_lone: { name: 'Une case seule est une épaule', text: 'Une seule case de rampe dans une colonne, c’est une épaule : la rampe continue à deux cases d’un côté et s’arrête de l’autre.' },
-  ramp_relay: { name: 'Deux épaules se relaient', text: 'Deux cases de rampe sans plateau autour : une rampe s’arrête et une autre démarre sur son épaule.' },
-  share_out: { name: 'Répartition de l’inventaire', text: 'Les barres doivent toutes trouver une ligne : un découpage qui empêche les autres de se placer est exclu.' },
+  ramp_plateau: { name: 'Le plateau barre la ligne du dessus', text: 'Au-dessus de sa base, la barre à paliers occupe aussi la ligne suivante sur tout son plateau : aucun ruban de cette ligne ne la traverse.' },
+  ramp_shoulder: { name: 'Le bord appelle une case', text: 'La case au-dessus d’un bord est fermée côté plateau : seule une pièce d’une case, ou une barre qui s’arrête pile là, peut la couvrir.' },
+  ramp_lone: { name: 'Une case seule est un bord', text: 'Une seule case à paliers dans une colonne, c’est un bord : la barre continue à deux cases d’un côté et s’arrête de l’autre.' },
+  ramp_relay: { name: 'Deux bords se relaient', text: 'Deux cases à paliers sans plateau autour : une barre s’arrête et une autre démarre sur son bord.' },
+  share_out: { name: 'Répartition du carnet', text: 'Les barres doivent toutes trouver une ligne : un découpage qui empêche les autres de se placer est exclu.' },
   refuted: { name: 'Hypothèse réfutée', text: 'Si un choix mène à une impasse par les règles simples, il est exclu (une seule hypothèse, jamais imbriquée).' },
 };
 
@@ -277,7 +277,7 @@ export const programLabel = (grid: Grid, piece: PieceId, col: number, len: numbe
 /** Shape hint under a plant name in the order book: "ruban de 3 à 6 créneaux", "1 case, pointe", "stock : 2 cases". */
 export function pieceHint(piece: PieceId, lens: number[], heights: number[], maxCells?: number, shape: ShapeKind = 'rect'): string {
   if (maxCells !== undefined) return `stock : ${plural(maxCells, 'case')}`;
-  if (shape !== 'rect') return `rampe de ${lenText(lens)}`;
+  if (shape !== 'rect') return `à paliers, ${lenText(lens)}`;
   const minL = lens[0] ?? 1;
   const maxL = lens[lens.length - 1] ?? minL;
   const minH = heights[0] ?? 1;
@@ -296,7 +296,7 @@ export function placementLabel(grid: Grid, piece: string, country: string | unde
   len: number, height = 1, shape: ShapeKind = 'rect'): string {
   const name = piece === IMPORT_PIECE ? `Import ${countryFrom(grid, country ?? '')}` : PIECE_WORDS[piece as PieceId]?.name ?? piece;
   const when = len === 1 ? `à ${columnLabel(grid, col)}` : `de ${columnLabel(grid, col)} à ${columnLabel(grid, col + len)}`;
-  if (shape !== 'rect') return `${name} en rampe ${when}, base ligne ${row + 1}`;
+  if (shape !== 'rect') return `${name} par paliers ${when}, base ligne ${row + 1}`;
   const where = height > 1 ? `lignes ${row + 1} à ${row + height}` : `ligne ${row + 1}`;
   return `${name} ${when}, ${where}`;
 }
@@ -316,7 +316,7 @@ export const UI = {
   rulesTitle: 'Règle du jeu',
   rules: [
     'Une case vaut 1 créneau en largeur et 1 GW en hauteur. Couvre chaque case de la silhouette exactement une fois.',
-    'Une centrale a une forme fixe : sa largeur est sa durée de marche, sa hauteur sa puissance. Le charbon peut démarrer en rampe.',
+    'Une centrale a une forme fixe : sa largeur est sa durée de marche, sa hauteur sa puissance. Le charbon peut démarrer par paliers.',
     'Respecte le carnet d’ordres et les indices du marché. Une seule solution.',
   ],
   bulletin: {
@@ -338,8 +338,20 @@ export const UI = {
     months: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
   },
   dossier: {
-    'premiers-pas': { title: 'Premiers pas', lead: 'Des grilles guidées, une technique chacune, avec l’inventaire exact.' },
-  } as Record<string, { title: string; lead: string }>,
+    'premiers-pas': { title: 'Premiers pas' },
+  } as Record<string, { title: string }>,
+  /** Dossier card blurb in the shift chief's voice, by the first technique the grid teaches. */
+  briefing: {
+    swap: 'Premier quart : le carnet est exact, tu poses tout, ni plus ni moins.',
+    price_cap: 'La bourse affiche un prix : aucune centrale plus chère n’a sa place sous ce créneau.',
+    just_enough: 'La ligne vers l’Allemagne s’ouvre : exporte juste ce qu’il faut pour boucler.',
+    ribbon: 'Le nucléaire tourne en ruban : repère où la demande creuse et où il peut passer.',
+    flow: 'Berlin annonce son échange : compte ta colonne, la dernière case se déduit.',
+    top_price: 'La bourse exige une centrale chère sur ce créneau : trouve où elle peut tourner.',
+    silhouette: 'La STEP entre en scène : pompe la nuit, turbine au pic, et suis le programme de RTE.',
+    ramp_plateau: 'Le charbon monte et descend par paliers : surveille ses bords.',
+    ramp_relay: 'Deux charbons par paliers se croisent : l’un s’arrête, l’autre démarre.',
+  } as Record<string, string>,
   dossierCount: (k: number) => `${k} ${k > 1 ? 'grilles' : 'grille'}`,
   dossierProgress: (done: number, total: number) => `${done} / ${total}`,
   dossierDone: (done: number, total: number) => `${done} / ${total} ${total > 1 ? 'terminées' : 'terminée'}`,
@@ -352,7 +364,7 @@ export const UI = {
   tutorialOf: (k: number, n: number) => `Tutoriel ${k} sur ${n}`,
   tutorialShort: (k: number) => `Tutoriel ${k}`,
   ratedEyebrow: 'Grille notée',
-  noInventory: 'sans inventaire',
+  noInventory: 'sans carnet exact',
   gridNumber: (id: number) => `Grille n° ${id}`,
   techniqueOfDay: 'Technique du jour',
   instructions: 'Consigne',
@@ -368,7 +380,7 @@ export const UI = {
   cluesChecked: (k: number, n: number) => `${k} sur ${n} ${k > 1 ? 'vérifiés' : 'vérifié'}`,
   clueState: { ok: 'vérifié', open: 'à vérifier', broken: 'contredit' } as const,
   chipsLabel: 'Centrales',
-  tools: { erase: 'Gomme', undo: 'Annuler', reset: 'Recommencer', print: 'Imprimer' },
+  tools: { erase: 'Gomme', undo: 'Annuler', reset: 'Recommencer' },
   toolsLabel: 'Outils',
   co2: 'CO₂',
   co2Points: (k: number, cap: number) => `${k} ${k > 1 ? 'points' : 'point'} sur ${cap}`,
@@ -403,7 +415,7 @@ export const UI = {
   hintSecondTap: (label: string) => `${label} : touche maintenant la case d’arrivée.`,
   hintErase: 'Gomme : touche une centrale pour la retirer.',
   poseOk: (label: string) => `${label} : la pose tient.`,
-  /** "Remplace 1 barre de gaz et 2 imports d’Allemagne", "1 rampe de charbon" (bars covered by a new placement). */
+  /** "Remplace 1 barre de gaz et 2 imports d’Allemagne", "1 barre à paliers de charbon" (bars covered by a new placement). */
   replaces: (grid: Grid, bars: readonly { piece: string; country?: string }[]) => {
     const counts = new Map<string, number>();
     for (const b of bars) {
@@ -412,7 +424,7 @@ export const UI = {
     }
     const parts = [...counts].map(([key, k]) => (key.startsWith('I:')
       ? `${plural(k, 'import')} ${countryFrom(grid, key.slice(2))}`
-      : `${plural(k, isRamp(shapeKind(grid.pieces[key as PieceId])) ? 'rampe' : 'barre')} ${PIECE_WORDS[key as PieceId]?.of ?? key}`));
+      : `${plural(k, isRamp(shapeKind(grid.pieces[key as PieceId])) ? 'barre à paliers' : 'barre')} ${PIECE_WORDS[key as PieceId]?.of ?? key}`));
     const list = parts.length > 1 ? `${parts.slice(0, -1).join(', ')} et ${parts[parts.length - 1]}` : parts[0] ?? '';
     return `Remplace ${list}`;
   },

@@ -134,7 +134,7 @@ describe('blind lists and labels', () => {
   it('translates techniques and falls back on the id', () => {
     expect(techniqueLabel('single_cover')).toBe('Une seule barre pour cette case');
     expect(techniqueLabel('record')).toBe('Le relevé compte les cases');
-    expect(techniqueLabel('ramp_relay')).toBe('Deux épaules se relaient');
+    expect(techniqueLabel('ramp_relay')).toBe('Deux bords se relaient');
     expect(techniqueLabel('given')).toBe('Centrale engagée');
     expect(techniqueLabel('new_tech')).toBe('new tech');
     for (const id of Object.keys(TECHNIQUES)) expect(techniqueLabel(id)).toBe(TECHNIQUES[id]!.name);

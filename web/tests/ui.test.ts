@@ -356,7 +356,7 @@ describe('board and game helpers', () => {
   });
 
   it('display titles: tutorials lose their number, rated grids get one', () => {
-    expect(displayTitle(byId(1))).toBe('Poser l’inventaire');
+    expect(displayTitle(byId(1))).toBe('Poser le carnet');
     expect(displayTitle(byId(8))).toBe(byId(8).bulletin!.title);
     const noBulletin = { ...byId(8), bulletin: undefined, title: byId(8).difficulty.label } as Grid;
     expect(displayTitle(noBulletin)).toBe(UI.gridNumber(8));

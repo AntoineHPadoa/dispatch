@@ -145,6 +145,10 @@ body:has(.home), body:has(.game) { background-color: #faf8f9; background-image: 
 .brand .wm { font-family: var(--f-title); font-weight: 300; font-size: clamp(1.7rem, 6vw, 2.2rem); letter-spacing: -.03em; line-height: 1; }
 .ghost { font: inherit; font-weight: 700; font-size: .84rem; background: transparent; border: 1px solid var(--hair); border-radius: 999px; padding: 8px 16px; cursor: pointer; color: var(--ink); min-height: 36px; white-space: nowrap; flex: none; }
 .ghost:hover { border-color: #d9cbd3; }
+.home .site-head { flex-wrap: wrap; }
+.head-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+a.ghost { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+a.ghost svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 .rules[hidden] { display: none; }
 .rtag { margin: 0 0 10px; color: #5d5463; font-size: .86rem; max-width: 64ch; }
 .rules ol { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; font-size: .84rem; }
@@ -159,10 +163,6 @@ body:has(.home), body:has(.game) { background-color: #faf8f9; background-image: 
 .sbody p { margin: 0; color: #5d5463; font-size: .9rem; max-width: 62ch; }
 .sil-wrap { display: grid; place-items: center; }
 .sil { width: 100%; max-width: 380px; height: auto; display: block; }
-.plant-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
-.home .chip { cursor: default; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: .76rem; padding: 4px 10px 4px 6px; border-radius: 999px; background: #fff; border: 1px solid #ece6ea; }
-.sq { display: inline-flex; gap: 2px; }
-.sq i { width: 7px; height: 7px; border-radius: 2px; background: #cfc6cc; display: block; }
 .sact { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .dots { display: inline-flex; gap: 3px; flex: none; }
 .dots i { width: 7px; height: 7px; border-radius: 2px; background: #e6e0e4; display: block; }
@@ -221,13 +221,11 @@ body:has(.home), body:has(.game) { background-color: #faf8f9; background-image: 
 .ffoot { display: grid; gap: 10px; padding: 6px 16px 16px; }
 .fmeta { display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 22px; }
 .fbtn { display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: .86rem; min-height: 40px; border-radius: 999px; border: 1.5px solid var(--ink); color: var(--ink); }
-.fiche.next .fbtn { background: var(--ink); color: #fff; }
 .fiche.done .fbtn { border-color: #e9c4d2; color: var(--rose); }
 .fiche > a:hover .fbtn { border-color: var(--rose); }
 .status { font-size: .68rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--hair); color: var(--soft); }
 .status.started { border-color: #e9c4d2; color: var(--rose); background: var(--rose-wash); }
 .status.done { border-color: #e9c4d2; color: var(--rose); background: var(--rose-soft); }
-.home-foot { display: flex; justify-content: center; }
 
 /* ---- print preview bar ---- */
 .print-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-bottom: 12px; }
@@ -269,7 +267,6 @@ body.print-preview #print-root .a4 { box-shadow: 0 2px 18px rgba(59, 51, 64, .12
   .sbody { padding: 14px 16px 18px; }
   .dgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .game h1 { font-size: 1.4rem; }
-  .print-tool { display: none; }
   .prow { grid-template-columns: 84px 1fr; padding: 6px 4px; }
   .intro b { font-size: .95rem; }
 }
