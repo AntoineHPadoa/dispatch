@@ -297,7 +297,7 @@
     "id": 3,
     "title": "3. Carnet juste",
     "section": "tutorial",
-    "intro": "Nouveau : la ligne vers l’Allemagne. Touche une case de la rangée de l’Allemagne, sous la grille, pour exporter un bloc ; pose « Import » comme une centrale d’une case. S’il reste exactement autant de cases possibles que de cases à poser pour une centrale, toutes ces cases sont à elle.",
+    "intro": "Nouveau : la ligne vers l’Allemagne. Touche une pastille sous un créneau pour exporter un bloc ; pose « Import » comme une centrale d’une case. S’il reste exactement autant de cases possibles que de cases à poser pour une centrale, toutes ces cases sont à elle.",
     "teaches": [
       "just_enough"
     ],
