@@ -49,7 +49,16 @@ node scripts/ui-gallery.mjs --only W-03,M-07 --skip-build   # quelques vues seul
 
 - Quand la grille est plus large que son cadre, le jeu affiche sous la grille un slider de défilement (`input.board-slider`, `web/src/ui/game.ts`, mis à jour par `syncSlider()`).
 - Tableau mesuré par le script sur le build de prod, pour chaque grille publiée : le slider est-il visible à l'ouverture, et de combien de pixels la grille défile.
-- **Résultat** : aucune vraie grille ne l'affiche à 1280, 375 ou 320 px. Sur ordinateur, dans une fenêtre de 861 à 1116 px de large (la grille garde alors la mise en page à deux colonnes), toutes les vraies grilles l'affichent : les grilles de 8 créneaux jusqu'à 1116 px, celles de 6 créneaux jusqu'à un peu moins de 1000 px (oui à 960, non à 1000).
+- **Résultat** : aucune vraie grille ne l'affiche à 1280, 375 ou 320 px, ni entre 320 et 860 px. Il apparaît à 861 px, quand le jeu passe à la mise en page en deux colonnes, et disparaît à un seuil qui dépend de la grille (largeur de fenêtre utile, mesures de la revue S3.2) :
+
+| Grilles | Créneaux | Slider visible de … à … |
+|---|---|---|
+| 1, 2, 12 | 6 | 861 à 975 px |
+| 3, 4, 5, 6 | 6 | 861 à 997 px |
+| 13 | 8 | 861 à 1095 px |
+| 7, 8, 9, 10, 11 | 8 | 861 à 1117 px |
+
+- **Appareils** : en plus d'une fenêtre d'ordinateur réduite, les grands téléphones couchés (Pixel 7 en 915 × 412, iPhone 15 Pro Max en 932 × 430) l'affichent sur les 13 grilles, et l'iPad mini en paysage (1024 × 768) sur les grilles 7 à 11 et 13. Aucun téléphone en portrait, ni écran d'ordinateur en plein écran (1280 px et plus).
 - **Vues** : W-31 à W-33 le montrent sur de vraies grilles (1024 et 960 px) ; W-29, M-29, M-31 et M-33 sur la grille fictive de 12 créneaux, la seule qui le déclenche à 1280, 375 et 320 px.
 
 <!-- slider:start -->
@@ -108,7 +117,7 @@ node scripts/ui-gallery.mjs --only W-03,M-07 --skip-build   # quelques vues seul
 | W-26 | Verdict | 7 · 7. Pompage, relevé et programme | `#/grille/7` | 1280 px | chrono amorcé à 12 min 34 s ; pose toute la solution | Verdict juste sur un vrai tutoriel : bandeau « Programme bouclé », temps, bouton « Grille suivante ». |
 | W-27 | Verdict | 11 · Expert | `#/grille/11` | 1280 px | chrono amorcé à 12 min 34 s ; pose toute la solution | Verdict juste sur la fiche du jour (grille notée) : dernière grille notée, le bouton ramène à l’accueil. |
 | W-28 | Verdict | 2 · 2. Le prix plafonne la colonne | `#/grille/2` | 1280 px | pose la solution en échangeant les poses 2 et 3 | Verdict faux : grille pleine mais le prix de 16h est contredit (barrage et TAC échangés). |
-| W-29 | Grilles extrêmes | 906 · Galerie · Grande journée d’hiver sur douze créneaux, avec trois pointes et l’Espagne en renfort (fictive) | `#/grille/906` | 1280 px | — | Grande grille de 12 créneaux, titre et relevé très longs, onze indices ; elle déborde de son cadre, d’où le slider de défilement sous la grille. À 1280 px, seule une grille de 12 créneaux le fait apparaître ; les vraies grilles l’affichent dans une fenêtre de 861 à 1116 px (vues W-31 à W-33). |
+| W-29 | Grilles extrêmes | 906 · Galerie · Grande journée d’hiver sur douze créneaux, avec trois pointes et l’Espagne en renfort (fictive) | `#/grille/906` | 1280 px | — | Grande grille de 12 créneaux, titre et relevé très longs, onze indices ; elle déborde de son cadre, d’où le slider de défilement sous la grille. À 1280 px, seule une grille de 12 créneaux le fait apparaître ; les vraies grilles l’affichent entre 861 px et 975 à 1117 px de large selon la grille (fenêtre d’ordinateur réduite, grand téléphone ou tablette en paysage ; vues W-31 à W-33). |
 | W-30 | Grilles extrêmes | 907 · Galerie · Pointe haute sur six créneaux (fictive) | `#/grille/907` | 1280 px | — | Grille étroite et haute : six créneaux, pointe à 12 GW. |
 | W-31 | Slider de défilement | 11 · Expert | `#/grille/11` | 1024 px | — | Vraie grille de 8 créneaux dans une fenêtre de 1024 px : elle déborde de son cadre, le slider de défilement sous la grille apparaît, au début. |
 | W-32 | Slider de défilement | 11 · Expert | `#/grille/11` | 1024 px | fait défiler la grille à droite | La même grille défilée vers la droite : slider de défilement sous la grille poussé au bout, premiers créneaux masqués. |

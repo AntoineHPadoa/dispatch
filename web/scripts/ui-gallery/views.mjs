@@ -54,7 +54,7 @@ const SCREENS = [
   { n: 27, cat: 'Verdict', grid: 11, progress: CLOCK, actions: [{ t: 'solution' }], shows: 'Verdict juste sur la fiche du jour (grille notée) : dernière grille notée, le bouton ramène à l’accueil.' },
   { n: 28, cat: 'Verdict', grid: 2, actions: [{ t: 'solution', swap: [2, 3] }], shows: 'Verdict faux : grille pleine mais le prix de 16h est contredit (barrage et TAC échangés).' },
   // Size extremes
-  { n: 29, cat: 'Grilles extrêmes', grid: 906, only: 'W', shows: 'Grande grille de 12 créneaux, titre et relevé très longs, onze indices ; elle déborde de son cadre, d’où le slider de défilement sous la grille. À 1280 px, seule une grille de 12 créneaux le fait apparaître ; les vraies grilles l’affichent dans une fenêtre de 861 à 1116 px (vues W-31 à W-33).' },
+  { n: 29, cat: 'Grilles extrêmes', grid: 906, only: 'W', shows: 'Grande grille de 12 créneaux, titre et relevé très longs, onze indices ; elle déborde de son cadre, d’où le slider de défilement sous la grille. À 1280 px, seule une grille de 12 créneaux le fait apparaître ; les vraies grilles l’affichent entre 861 px et 975 à 1117 px de large selon la grille (fenêtre d’ordinateur réduite, grand téléphone ou tablette en paysage ; vues W-31 à W-33).' },
   { n: 29, cat: 'Grilles extrêmes', grid: 906, only: 'M', shows: 'Grande grille de 12 créneaux, titre et relevé très longs, onze indices ; slider de défilement sous la grille, au début. Aucune vraie grille ne l’affiche à 375 ni à 320 px.' },
   { n: 30, cat: 'Grilles extrêmes', grid: 907, shows: 'Grille étroite et haute : six créneaux, pointe à 12 GW.' },
 ];
