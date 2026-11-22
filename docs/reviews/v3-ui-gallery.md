@@ -400,3 +400,70 @@ La galerie les montre fidèlement ; ils sont à corriger dans le jeu, pas dans l
 
 - **Catégorie mal nommée** : W-31 à W-33 sont rangées sous « Slider de défilement » alors qu'elles montrent son absence. Leurs légendes le disent clairement ; un intitulé du type « Fenêtres étroites » serait plus juste.
 - **Mobile et papier non régénérés** : ces deux galeries ne l'ont pas été dans ce commit, et la doc le dit pour M-29, M-31 et M-33. Elles montrent encore l'ancienne interface et sont hors de ce contrôle.
+
+## Contrôle galeries finales (commit `51faeb0`)
+
+### Verdict
+
+- **72 vues contrôlées sur 72** : web W-01…W-35, mobile M-01…M-37. **72 OK, aucun écart.**
+- **Build** : 433 tests verts, typecheck et build OK, `check_unique.py` vert. Le code du jeu de la branche est exactement celui de sa base `59ced92` : aucun fichier de `web/src`, `vite.config.ts`, `index.html` ni `public/` ne diffère.
+
+### Méthode
+
+- **Builds** reconstruits depuis la branche :
+  - prod : `dist/`, sans `DISPATCH_GRIDS` ;
+  - galerie : ma propre fusion des grilles publiées et des grilles 901 à 911, identique au `dist-gallery/` de s1.
+- **Mon script de capture**, celui de S6.6 (lignes absolues, cases visées par `getScreenCTM()`), complété de cinq vues :
+  - W-34, W-35, M-35, M-36 : grilles 908 et 910 ouvertes à vide ;
+  - M-37 : mon propre toucher sur `.record-marker[data-col="3"]` de la grille 902, attente de 800 ms, puis capture de l'écran seul (375 × 812, pas la page entière).
+- **Répartition** : 47 vues capturées sur la prod (vraies grilles, accueil, dossier), 25 sur le build de galerie (grilles fictives).
+- **Comparaison** pixel à pixel avec les 72 images des deux pages. Images de travail dans `docs/reviews/v3-ui-gallery/{v3,diff-v3}/`.
+- **Légendes** : chacune vérifiée sur son image, sauf celles de W-01 à W-05, dont l'image est identique au pixel à ma capture de S6.6 et la légende inchangée.
+
+### Résultats
+
+| Vues | Pixel | Légende |
+|---|---|---|
+| 70 vues | identiques | exactes |
+| W-30, M-23 | glyphes seulement (police chargée à froid), aucune différence de contenu | exactes |
+
+### Points de légende vérifiés
+
+- **Carnet par taille (K-B)** :
+  - longueur écrite dans la barre : nucléaire 6 et 3, gaz 2, charbon par paliers 3 (W-06, W-07, M-06, M-07) ;
+  - barres « 3–6 », « 3–5 », « 2–3 », « 3–8 » sur les grilles sans carnet exact (W-08, W-09, W-11, W-12, W-29) ;
+  - tailles barrées une fois posées (W-14, W-16, W-24, W-26, M-14, M-34).
+- **Hauteurs optionnelles** :
+  - 2 GW en pointillé au-dessus des barres « 3–6 », « 3–5 », « 2–3 » (W-13, M-13) ;
+  - nucléaire 6 et 4 avec pointillé (W-34, M-35) ;
+  - charbon imposé en une barre de 3 avec sa rangée possible en pointillé (W-35, M-36).
+- **CO₂** :
+  - publication « Limite CO₂ » réduite à « 28 points de CO₂ au plus » ;
+  - jauge continue à 19 sur 28 (W-12, M-12) et à 2 sur 28 (W-25, M-25) ;
+  - légende des coûts dans l'ordre annoncé : charbon 3, import d'Allemagne 3, TAC 2, gaz 1, import du Royaume-Uni 1.
+- **Exports X-D3** : compteurs « → … ← … » sous chaque rangée de voisin, à la valeur et à la couleur annoncées, vérifiés sur W-08, W-10, W-12, W-16 à W-18, W-25 à W-27, W-29, W-34, W-35 et leurs pendants mobiles.
+- **Relevés M-3 sur téléphone** :
+  - un relevé qui cite plusieurs centrales devient un marqueur « relevé » (3h et 9h sur 902, 12h sur 903, 8h et 18h sur 906) ;
+  - un relevé à une centrale reste en pastille (15h sur 902, 0h et 6h sur 911 et 910) ;
+  - prix courts « €N », « €T », « €G », « €B » (M-09, M-10, M-28, M-30).
+- **M-37** : la page a défilé jusqu'aux « Publications du marché », et le relevé de 9h est surligné en violet. Ma capture, prise 800 ms après mon propre toucher, est identique au pixel à celle de s1.
+- **Version téléphone** :
+  - icône d'imprimante à côté de « Comment jouer » (M-01, M-32) ;
+  - barre de puces avec compteurs sur carnet exact, sans compteur sinon (M-08, M-09) ;
+  - trois puces « Import » sans nom de pays (M-12, M-25) ;
+  - puces sur trois rangs (M-35) ;
+  - gomme en icône cerclée une fois active (M-24) ;
+  - slider seulement sur la grille de 12 créneaux (M-29, M-31, M-33) ;
+  - titre de M-33 bien sur cinq lignes.
+- **Tutoriels sans intro** : une ligne de récit en italique, plus d'encart (W-06, W-07, W-10, W-14, M-06, M-07, M-10, M-14).
+
+### Pages HTML
+
+- Web : 35 figures pour 35 images. Mobile : 37 figures pour 37 images.
+- Chaque `<img>` vaut la moitié de la taille de son PNG ; M-37 mesure 750 × 1624, soit l'écran de 375 × 812.
+- Badges « grille fictive » : 12 et 15.
+- Vues annoncées « build de prod » : 23 et 22, justes.
+
+### Remarque (pas un écart)
+
+- **Consigne de la grille fictive 910** (W-35, M-36) : elle cite son origine interne (« reprise du candidat 8 du lot v3-jouer-a »). C'est sans conséquence, la grille n'est pas publiée, mais ce texte apparaît tel quel sur les captures.
