@@ -266,6 +266,11 @@ body.print-preview #print-root .a4 { box-shadow: 0 2px 18px rgba(59, 51, 64, .12
   .erase-tool { display: none; }
   .game:not(:has(> .intro)) { grid-template-areas: none; }
   .hgrid { grid-template-columns: minmax(0, 1fr); }
+  /* Home header on one line: "print every grid" shrinks to its printer icon. */
+  .head-actions { flex-wrap: nowrap; }
+  .head-actions .print-all .label { display: none; }
+  .head-actions .print-all { padding: 8px 10px; }
+  .head-actions .print-all svg { width: 16px; height: 16px; }
 }
 @media (max-width: 600px) {
   .board-card { padding: 8px; }
@@ -286,6 +291,16 @@ body.print-preview #print-root .a4 { box-shadow: 0 2px 18px rgba(59, 51, 64, .12
 /* Phones: the plant chips wrap instead of scrolling, so the last one is never cut off. */
 @media (max-width: 400px) {
   .chips-row { flex-wrap: wrap; overflow-x: visible; -webkit-mask-image: none; mask-image: none; }
+}
+/* Home header: logo, name, printer icon and "how to play" still on one line down to 320 px. */
+@media (max-width: 374px) {
+  .home .site-head { gap: 8px; }
+  .home .brand { gap: 8px; }
+  .home .brand .logo { width: 30px; height: 30px; }
+  .home .brand .wm { font-size: 1.35rem; }
+  .head-actions { gap: 6px; }
+  .head-actions .ghost { padding: 8px 10px; font-size: .8rem; }
+  .head-actions .print-all { padding: 8px 9px; }
 }
 @media (max-width: 360px) { .tool { padding: 6px 8px; gap: 4px; font-size: .74rem; } }
 

@@ -189,6 +189,15 @@ describe('home rendering', () => {
     expect(root.innerHTML).not.toContain('Bouclé');
   });
 
+  it('the print-everything link keeps an accessible name when it shrinks to its icon (phones)', () => {
+    const root = stub();
+    renderHome(root, grids, emptyProgress(), '2026-11-21');
+    const link = root.innerHTML.match(/<a class="ghost print-all"[^>]*>/)?.[0] ?? '';
+    expect(link).toContain('aria-label="Imprimer toutes les grilles"');
+    expect(link).toContain('title="Imprimer toutes les grilles"');
+    expect(root.innerHTML).toMatch(/class="ghost print-all"[^>]*>.*?<span class="label">Imprimer toutes les grilles<\/span>/);
+  });
+
   it('stamps a finished sheet', () => {
     const root = stub();
     const done = currentBulletin(grids, '2026-11-21')!;
