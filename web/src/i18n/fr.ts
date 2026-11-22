@@ -244,6 +244,19 @@ export const TECHNIQUES: Record<string, { name: string; text: string }> = {
   refuted: { name: 'Hypothèse réfutée', text: 'Si un choix mène à une impasse par les règles simples, il est exclu (une seule hypothèse, jamais imbriquée).' },
 };
 
+/** One lore line per tutorial (by grid id), shown under the title instead of an instructions card. */
+export const TUTORIAL_LORE: Record<number, string> = {
+  1: 'Premier quart au centre de dispatching : le carnet d’ordres est arrivé, à toi de caser chaque centrale sous la courbe.',
+  2: 'La bourse vient de publier ses prix : sur ces créneaux, aucune centrale plus chère ne tournera.',
+  3: 'La ligne vers l’Allemagne est ouverte : ce qui manque arrive par le câble, ce qui déborde repart.',
+  4: 'Un réacteur n’aime pas s’arrêter : chaque creux de la demande lui barre la route.',
+  5: 'Le gestionnaire du réseau a annoncé ses échanges avec l’Allemagne : ces créneaux sont réservés.',
+  6: 'Quand la bourse affiche un prix, la centrale qui le fixe tourne forcément dans le créneau.',
+  7: 'La STEP de montagne remonte son eau quand le courant abonde et la relâche quand la demande grimpe.',
+  12: 'La vieille centrale à charbon est lente à se réveiller : elle démarre progressivement et s’éteint de même.',
+  13: 'Deux centrales à charbon se passent le relais : l’une s’éteint doucement pendant que l’autre démarre.',
+};
+
 /** Name of the `given` trace step (an engaged plant), not a technique the player learns. */
 export const GIVEN_STEP = 'Centrale engagée';
 
@@ -366,15 +379,15 @@ export const UI = {
   ratedEyebrow: 'Grille notée',
   noInventory: 'sans carnet exact',
   gridNumber: (id: number) => `Grille n° ${id}`,
-  techniqueOfDay: 'Technique du jour',
   instructions: 'Consigne',
   book: 'Carnet d’ordres',
-  bookHint: 'touche une centrale pour la choisir',
   available: 'Centrales disponibles',
   availableHint: 'formes autorisées, quantités à déduire',
   importName: 'Import',
+  importOf: (from: string) => `Import ${from}`,
   importHint: (country: string) => `${country}, 1\u00a0case`,
-  placed: (k: number) => `${k} ${k > 1 ? 'cases posées' : 'case posée'}`,
+  /** Book counter: laid / allowed, ∞ when the quantity is free. */
+  count: (k: number, max: number | null) => `${k} / ${max ?? '∞'}`,
   /** Name of the card listing every publication of the day (a single name, whatever the grid). */
   cluesTitle: 'Publications du marché',
   cluesChecked: (k: number, n: number) => `${k} sur ${n} ${k > 1 ? 'vérifiés' : 'vérifié'}`,
@@ -384,26 +397,24 @@ export const UI = {
   toolsLabel: 'Outils',
   co2: 'CO₂',
   co2Points: (k: number, cap: number) => `${k} ${k > 1 ? 'points' : 'point'} sur ${cap}`,
-  co2Cap: 'plafond',
   co2Left: (k: number) => (k >= 0 ? `${k} ${k > 1 ? 'restants' : 'restant'}` : `${-k} de trop`),
   co2PerCell: (k: number) => `CO₂ ${k} par case`,
   co2Detail: (parts: string[]) => parts.join(' · '),
   co2Rule: (cap: number, per: string) => `${cap} points au plus ; points par case : ${per}.`,
   co2Kind: 'Plafond CO₂',
+  /** CO2 publication generated from `co2_cap`, listed with the market publications. */
+  co2ClueKind: 'Limite CO₂',
+  co2Clue: (cap: number, per: string) => `Aujourd’hui : ${cap} points de CO₂ au plus.${per ? ` Par case : ${per}.` : ''}`,
   neighborLine: (name: string, cap: number) => `${name} · ${cap} ${cap > 1 ? 'blocs' : 'bloc'} par créneau`,
   stepLine: 'STEP · pompage ▲ puis turbinage ▼',
   stepLineNumbered: 'STEP · pompage ▲ puis turbinage ▼ · numérote les paires : ▲1 ▼1, ▲2 ▼2…',
   stepName: 'STEP',
-  stepPairsToDeduce: 'paires à déduire',
-  pairsLaid: (k: number) => `${k} ${k > 1 ? 'paires posées' : 'paire posée'}`,
   stepTagLabel: (pump: string, turbine: string) => `Paire STEP : pompage à ${pump}, turbinage à ${turbine}. Touche pour la retirer.`,
   hintStep: 'STEP : touche ▲ au-dessus du créneau où l’on pompe. Touche une étiquette ▲ ou ▼ posée pour retirer la paire.',
   stepArrowPump: (col: string) => `Pomper à ${col}`,
   stepArrowChosen: (col: string) => `Pompage à ${col} choisi. Touche pour l’annuler.`,
   stepArrowTurbine: (col: string) => `Turbiner à ${col}`,
   stepTooEarly: (pump: string) => `Le turbinage vient après le pompage de ${pump} : touche un créneau plus tard.`,
-  stepPumpWord: 'pompe',
-  stepTurbineWord: 'turbine',
   exportLabel: (name: string, col: string, value: number, imports: number) =>
     `${name}, ${col} : ${value} exporté${value > 1 ? 's' : ''}${imports ? `, ${imports} importé${imports > 1 ? 's' : ''}` : ''}. Touche pour changer l’export.`,
   exportLocked: (name: string, col: string) => `${name}, ${col} : flux publié, verrouillé.`,

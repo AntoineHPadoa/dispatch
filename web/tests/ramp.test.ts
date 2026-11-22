@@ -185,7 +185,14 @@ describe('book, texts and gesture', () => {
     const g = t1();
     expect(bookEntries(g).find((e) => e.key === 'C')?.shape).toBe('trap');
     const html = renderBook(g, newGame(g), 'C');
-    expect(html).toContain('à paliers, 3 à 5 créneaux');
+    // Screen: no hint; a free ramp shows one glyph per allowed width (3, 4, 5); paper keeps the hint.
+    expect(html).not.toContain('à paliers');
+    const widths = (h: string) => [...(h.split('data-piece="C"')[1]!.split('data-piece=')[0]!
+      .matchAll(/<span class="mb" style="grid-template-columns:repeat\((\d),auto\)"/g))].map((m) => m[1]);
+    expect(widths(html)).toEqual(['3']);
+    const free = t1({ inventory: { level: 'none', pieces: { N: {}, C: {}, T: {} } } });
+    expect(widths(renderBook(free, newGame(free), null))).toEqual(['3', '4', '5']);
+    expect(renderBook(g, newGame(g), null, true)).toContain('à paliers, 3 à 5 créneaux');
     // A ramp of 3 on two rows: two blank shoulder slots on the top row.
     expect(html).toMatch(/<span class="mb" style="grid-template-columns:repeat\(3,auto\)"><i class="e"><\/i><i class=""[^>]*><\/i><i class="e"><\/i>/);
   });

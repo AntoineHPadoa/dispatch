@@ -23,7 +23,7 @@ import lab_server  # noqa: E402
 def grid(index: int) -> dict:
     return {
         "id": 900 + index, "title": "Pointe du soir", "section": "rated", "columns": ["0h", "6h", "12h", "18h"],
-        "demand": [2, 3, 2, 4], "clues": [{"type": "price", "col": 0, "piece": "N"}],
+        "demand": [2, 3, 2, 4], "clues": [{"type": "price", "col": 0, "piece": "N"}], "co2_cap": None,
         "difficulty": {"rating": 3, "label": "Difficile", "techniques": ["ribbon"]}, "intro": "secret",
         "lab": {"lot": "t", "index": index, "family": "pointe_soir", "mechanics": ["step"],
                 "clue_profile": ["price"], "trace_summary": {"steps": 5},
@@ -104,7 +104,8 @@ def test_list_hides_solver_measures_until_the_player_rated(api):
     c = api("GET", "/api/candidates?lot=t&player=Joueur%201")[1][0]
     assert c["revealed"] is False
     assert c["rating"] is None and c["techniques"] == [] and c["trace_summary"] == {} and c["felt"] == {}
-    assert c["clue_source"]["clues"] == [{"type": "price", "col": 0, "piece": "N"}]  # parts the game counts its clue card from
+    # Parts the game counts its clue card from, the CO2 limit included.
+    assert c["clue_source"] == {"clues": [{"type": "price", "col": 0, "piece": "N"}], "co2_cap": None}
     assert c["plays"] == 1 and c["title"] == "Candidate 1"  # the draft title can hint at the difficulty too
     # without a player nothing is shown either
     assert api("GET", "/api/candidates?lot=t")[1][0]["rating"] is None

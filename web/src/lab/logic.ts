@@ -13,8 +13,11 @@ import type { Grid } from '../model/grid';
 import { shownClueCount } from '../ui/panels';
 import type { GameEvent } from '../ui/game';
 
-/** Clues the game's clue card lists for this grid (exchanges line of an exact inventory included); undefined without a source. */
-export function labClueCount(src: Pick<Grid, 'clues' | 'inventory' | 'step'> | undefined): number | undefined {
+/** Grid parts the clue card is counted from (`co2_cap` adds the CO2 limit). */
+export type ClueSource = Pick<Grid, 'clues' | 'inventory' | 'step'> & Partial<Pick<Grid, 'co2_cap'>>;
+
+/** Clues the game's clue card lists for this grid (exchanges line of an exact inventory and CO2 limit included); undefined without a source. */
+export function labClueCount(src: ClueSource | undefined): number | undefined {
   return src ? shownClueCount(src as Grid) : undefined;
 }
 
@@ -28,7 +31,7 @@ export interface Candidate {
   cols: number;
   clues: number;
   /** The grid parts the game counts its clue card from (clues, inventory, step); see labClueCount. */
-  clue_source?: Pick<Grid, 'clues' | 'inventory' | 'step'>;
+  clue_source?: ClueSource;
   rating: number | null;
   techniques: string[];
   family: string | null;

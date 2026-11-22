@@ -29,7 +29,14 @@ export const STEP_KEY = 'STEP';
 
 export { publishedStepPairs } from '../model/grid';
 
-/** Plants, import lines and the STEP the player can lay, in merit order. */
+/** True when no block can come from `country` today: a line without capacity, or a published zero total. */
+function importRuledOut(grid: Grid, country: string): boolean {
+  if ((grid.neighbors.find((nb) => nb.id === country)?.cap ?? 0) <= 0) return true;
+  const imports = grid.clues.find((c): c is ExchangesClue => c.type === 'exchanges')?.imports;
+  return imports !== undefined && (imports[ANY_COUNTRY] === 0 || imports[country] === 0);
+}
+
+/** Plants, import lines and the STEP the player can lay, in merit order (no import line when none is possible). */
 export function bookEntries(grid: Grid): BookEntry[] {
   const out: BookEntry[] = [];
   for (const id of PIECE_IDS) {
@@ -43,7 +50,7 @@ export function bookEntries(grid: Grid): BookEntry[] {
       const own = inv.imports?.[nb.id];
       const any = inv.imports?.[ANY_COUNTRY];
       if (!(own && own > 0) && !(own === undefined && any && any > 0)) continue;
-    }
+    } else if (importRuledOut(grid, nb.id)) continue;
     out.push({ key: `I:${nb.id}`, piece: IMPORT_PIECE, country: nb.id, lens: [1], heights: [1], shape: 'rect' });
   }
   if (grid.step) out.push({ key: STEP_KEY, piece: STEP_KEY, lens: [1], heights: [1], shape: 'rect' });
@@ -76,70 +83,91 @@ function importCells(state: PlayState, country: string): number {
   return state.bars.filter((b) => b.piece === IMPORT_PIECE && b.country === country).reduce((a, b) => a + b.len * (b.height ?? 1), 0);
 }
 
-/** Order book (exact) or available plants (none). `selected` is highlighted; paper hides usage. */
+/** Allowed shapes as mini pieces: a dashed tail for a range of widths, one piece per width otherwise, one per extra height. */
+function shapeGlyphs(e: BookEntry, paper: boolean): string {
+  const id = e.piece;
+  const minL = e.lens[0] ?? 1;
+  const maxL = e.lens[e.lens.length - 1] ?? minL;
+  const minH = e.heights[0] ?? 1;
+  const ramp = isRamp(e.shape);
+  // A ramp draws each width (a dashed tail would cut its last shoulder); so do widths with a gap.
+  let out = ramp || e.lens.length !== maxL - minL + 1
+    ? e.lens.map((len) => mb(id, len, ramp ? 1 : minH, { paper, shape: e.shape })).join('')
+    : mb(id, maxL, minH, { dashFrom: minL, paper });
+  for (const h of e.heights.slice(1)) out += mb(id, minL, h, { paper });
+  return out;
+}
+
+/**
+ * Order book (exact) or available plants (none). `selected` is highlighted.
+ * - Screen: the glyphs carry every constraint (widths, heights, counts); counters read "laid / allowed" or "laid / ∞".
+ * - Paper: shape hints under the names, no usage.
+ */
 export function renderBook(grid: Grid, state: PlayState, selected: PieceKey | null, paper = false): string {
   const inv = grid.inventory;
   const rows = bookEntries(grid).filter((e) => !paper || e.piece !== STEP_KEY).map((e) => {
-    let hint: string;
+    let hint = '';
     let glyphs = '';
     let count = '';
     let overUse = false;
+    let label = name(e);
     if (e.piece === STEP_KEY) {
       const want = publishedStepPairs(grid);
       const used = state.step.length;
-      hint = want === null ? UI.stepPairsToDeduce : UI.pairs(want);
-      glyphs = `<span class="step-glyph" aria-hidden="true">▲▼</span>`;
-      count = want === null ? UI.pairsLaid(used) : `${used} / ${want}`;
+      glyphs = Array.from({ length: want ?? 1 }, (_, i) =>
+        `<span class="step-glyph${want !== null && i < used ? ' used' : ''}" aria-hidden="true">▲▼</span>`).join('');
+      count = UI.count(used, want);
       overUse = want !== null && used > want;
     } else if (e.piece === IMPORT_PIECE) {
       const country = e.country ?? '';
       const nbName = grid.neighbors.find((nb) => nb.id === country)?.name ?? country;
-      hint = UI.importHint(nbName);
-      if (grid.co2_cap !== null) hint += ` · ${UI.co2PerCell(grid.neighbors.find((nb) => nb.id === country)?.co2 ?? 0)}`;
+      if (paper) {
+        hint = UI.importHint(nbName);
+        if (grid.co2_cap !== null) hint += ` · ${UI.co2PerCell(grid.neighbors.find((nb) => nb.id === country)?.co2 ?? 0)}`;
+      } else label = UI.importOf(countryFrom(grid, country));
       const used = importCells(state, country);
       const want = inv.level === 'exact' ? inv.imports?.[country] ?? inv.imports?.[ANY_COUNTRY] : undefined;
       if (want !== undefined) {
         glyphs = Array.from({ length: want }, (_, i) => mb('I', 1, 1, { used: !paper && i < used, paper })).join('');
-        if (!paper) { count = `${Math.min(used, 99)} / ${want}`; overUse = used > want; }
+        if (!paper) { count = UI.count(Math.min(used, 99), want); overUse = used > want; }
         else count = UI.cells(want);
       } else {
         glyphs = mb('I', 1, 1, { paper });
-        if (!paper) count = UI.placed(used);
+        if (!paper) count = UI.count(used, null);
       }
     } else {
       const id = e.piece as PieceId;
       const spec = inv.pieces[id] ?? {};
-      hint = pieceHint(id, e.lens, e.heights, spec.max_cells, e.shape);
-      if (grid.co2_cap !== null && (grid.pieces[id]?.co2 ?? 0) > 0) hint += ` · ${UI.co2PerCell(grid.pieces[id]?.co2 ?? 0)}`;
+      if (paper) {
+        hint = pieceHint(id, e.lens, e.heights, spec.max_cells, e.shape);
+        if (grid.co2_cap !== null && (grid.pieces[id]?.co2 ?? 0) > 0) hint += ` · ${UI.co2PerCell(grid.pieces[id]?.co2 ?? 0)}`;
+      }
       const minH = e.heights[0] ?? 1;
       const used = pieceCells(grid, state, id);
       const shape = e.shape;
       if (spec.bars) {
         const placed = new Map<number, number>();
-        for (const b of state.bars) if (b.piece === id) placed.set(b.len, (placed.get(b.len) ?? 0) + 1);
+        let laid = 0;
+        for (const b of state.bars) if (b.piece === id) { placed.set(b.len, (placed.get(b.len) ?? 0) + 1); laid++; }
         glyphs = [...spec.bars].sort((a, b) => b - a).map((len) => {
           const k = placed.get(len) ?? 0;
           if (k > 0) placed.set(len, k - 1);
           return mb(id, len, minH, { used: !paper && k > 0, paper, shape });
         }).join('');
+        if (!paper) { count = UI.count(laid, spec.bars.length); overUse = laid > spec.bars.length; }
       } else if (spec.cells !== undefined || spec.max_cells !== undefined) {
         const total = spec.cells ?? spec.max_cells ?? 0;
         glyphs = Array.from({ length: total }, (_, i) => mb(id, 1, 1, { used: !paper && i < used, paper })).join('');
-        count = paper ? UI.cells(total) : `${used} / ${total}`;
+        count = paper ? UI.cells(total) : UI.count(used, total);
         overUse = !paper && used > total;
       } else {
-        const minL = e.lens[0] ?? 1;
-        const maxL = e.lens[e.lens.length - 1] ?? minL;
-        // A ramp shows its shortest shape: a dashed tail would cut its last shoulder.
-        glyphs = isRamp(shape) ? mb(id, minL, 1, { paper, shape }) : mb(id, maxL, minH, { dashFrom: minL, paper });
-        for (const h of e.heights.slice(1)) glyphs += mb(id, minL, h, { paper });
-        if (!paper) count = UI.placed(used);
+        glyphs = shapeGlyphs(e, paper);
+        if (!paper) count = UI.count(used, null);
       }
     }
     const sel = !paper && selected === e.key;
-    const over = overUse;
-    const body = `<span class="pname"><b>${esc(name(e))}</b><span>${esc(hint)}</span></span>`
-      + `<span class="bars">${glyphs}${count ? `<span class="count${over ? ' over' : ''}">${esc(count)}</span>` : ''}</span>`;
+    const body = `<span class="pname"><b>${esc(label)}</b>${hint ? `<span>${esc(hint)}</span>` : ''}</span>`
+      + `<span class="bars"><span class="glyphs">${glyphs}</span>${count ? `<span class="count${overUse ? ' over' : ''}">${esc(count)}</span>` : ''}</span>`;
     if (paper) return `<div class="prow">${body}</div>`;
     return `<button type="button" class="prow${sel ? ' sel' : ''}" data-piece="${esc(e.key)}" aria-pressed="${sel}">${body}</button>`;
   });
@@ -211,9 +239,9 @@ export function inventoryExchanges(grid: Grid): ExchangesClue | null {
   return clue.exports || clue.imports || clue.step !== undefined ? clue : null;
 }
 
-/** Number of clues the clue card lists: the grid's own, plus the exchanges line of an exact inventory. */
+/** Number of clues the clue card lists: the grid's own, plus the exchanges line of an exact inventory and the CO2 limit. */
 export function shownClueCount(grid: Grid): number {
-  return grid.clues.length + (inventoryExchanges(grid) ? 1 : 0);
+  return grid.clues.length + (inventoryExchanges(grid) ? 1 : 0) + (typeof grid.co2_cap === 'number' ? 1 : 0);
 }
 
 /** Status of an exchanges clue on a board: every total met (ok), one exceeded (broken), else open. */
@@ -233,25 +261,61 @@ export function withInventoryExchanges(grid: Grid, state: PlayState, reports: re
   return [...reports, { clue, text: clueText(grid, clue), status: exchangesStatus(state, clue) }];
 }
 
-/** Clue card: every clue in text, day clues first, then slot clues in time order. */
-export function renderClues(grid: Grid, boardReports: readonly ClueReport[], state: PlayState): string {
+/** CO2 points of the board, by plant ('I' for every import). */
+function co2Parts(grid: Grid, state: PlayState): Map<string, number> {
+  const parts = new Map<string, number>();
+  for (const b of state.bars) {
+    const k = b.piece === IMPORT_PIECE ? 'I' : b.piece;
+    parts.set(k, (parts.get(k) ?? 0) + co2PerCell(grid, b) * cellCount(grid, b));
+  }
+  return parts;
+}
+
+/** A plant name inside a sentence: lower case, acronyms (TAC) kept. */
+const inText = (n: string) => (n === n.toUpperCase() ? n : n.toLowerCase());
+
+/** Points per cell of every emitting plant and import line, in merit order: "charbon 3, TAC 2, import d’Allemagne 3". */
+function co2PerCellText(grid: Grid): string {
+  const byPoints = (a: { co2: number }, b: { co2: number }) => b.co2 - a.co2;
+  const plants = PIECE_IDS.map((id) => ({ id, co2: grid.pieces[id]?.co2 ?? 0 })).filter((p) => p.co2 > 0).sort(byPoints)
+    .map((p) => `${inText(PIECE_WORDS[p.id].name)} ${p.co2}`);
+  const imports = grid.neighbors.filter((nb) => nb.co2 > 0).sort(byPoints)
+    .map((nb) => `${UI.importWord} ${countryFrom(grid, nb.id)} ${nb.co2}`);
+  return [...plants, ...imports].join(', ');
+}
+
+/**
+ * CO2 limit as a market publication, generated from `co2_cap` (null without a cap):
+ * contradicted once the cap is exceeded, checked when the board is full under the cap.
+ */
+export function co2ClueItem(grid: Grid, state: PlayState, full: boolean): { html: string; status: ClueStatus } | null {
+  const cap = grid.co2_cap;
+  if (cap === null) return null;
+  const total = [...co2Parts(grid, state).values()].reduce((a, b) => a + b, 0);
+  const status: ClueStatus = total > cap ? 'broken' : full ? 'ok' : 'open';
+  const txt = esc(UI.co2Clue(cap, co2PerCellText(grid))).replace(/(^|\s)(\d+)(?=[\s,.]|$)/g, '$1<span class="slot">$2</span>');
+  const html = `<li class="clue"><span class="ico">${icon('co2')}</span>`
+    + `<span><span class="kind">${esc(UI.co2ClueKind)}</span><span class="txt">${txt}</span></span>${stateDot(status)}</li>`;
+  return { html, status };
+}
+
+/** Clue card: the CO2 limit and every clue in text, day clues first, then slot clues in time order. `full`: no cell left to cover. */
+export function renderClues(grid: Grid, boardReports: readonly ClueReport[], state: PlayState, full = false): string {
   const reports = withInventoryExchanges(grid, state, boardReports);
-  if (!reports.length) return '';
-  const ok = reports.filter((r) => r.status === 'ok').length;
+  const co2 = co2ClueItem(grid, state, full);
+  if (!reports.length && !co2) return '';
+  const ok = reports.filter((r) => r.status === 'ok').length + (co2?.status === 'ok' ? 1 : 0);
+  const n = reports.length + (co2 ? 1 : 0);
   const title = UI.cluesTitle;
-  const list = `<ul class="clues">${orderClues(reports).map((r) => clueItem(grid, r.clue, r.status)).join('')}</ul>`;
-  return `<section class="card" aria-label="${esc(title)}"><h2 class="ct">${esc(title)} <small>${esc(UI.cluesChecked(ok, reports.length))}</small></h2>${list}</section>`;
+  const list = `<ul class="clues">${co2?.html ?? ''}${orderClues(reports).map((r) => clueItem(grid, r.clue, r.status)).join('')}</ul>`;
+  return `<section class="card" aria-label="${esc(title)}"><h2 class="ct">${esc(title)} <small>${esc(UI.cluesChecked(ok, n))}</small></h2>${list}</section>`;
 }
 
 /** CO2 gauge in cells, split by plant (only when the grid has a cap). */
 export function renderCo2(grid: Grid, state: PlayState): string {
   const cap = grid.co2_cap;
   if (cap === null) return '';
-  const parts = new Map<string, number>();
-  for (const b of state.bars) {
-    const k = b.piece === IMPORT_PIECE ? 'I' : b.piece;
-    parts.set(k, (parts.get(k) ?? 0) + co2PerCell(grid, b) * cellCount(grid, b));
-  }
+  const parts = co2Parts(grid, state);
   const total = [...parts.values()].reduce((a, b) => a + b, 0);
   const scale = Math.max(cap, total) || 1;
   const segs = [...parts.entries()].filter(([, v]) => v > 0)
@@ -260,7 +324,7 @@ export function renderCo2(grid: Grid, state: PlayState): string {
     .map(([k, v]) => `${k === 'I' ? UI.importWord : PIECE_WORDS[k as PieceId].name.toLowerCase()} ${v}`);
   const over = total > cap;
   return `<section class="card gauge${over ? ' over' : ''}" aria-label="${esc(UI.co2Kind)}">
-    <div class="lbl"><span><b>${esc(UI.co2)}</b> ${esc(UI.co2Points(total, cap))}</span><span class="soft">${esc(UI.co2Cap)}</span></div>
+    <div class="lbl"><span><b>${esc(UI.co2)}</b> ${esc(UI.co2Points(total, cap))}</span></div>
     <div class="track">${segs}</div>
     <div class="lbl small soft"><span>${esc(UI.co2Detail(detail))}</span><span>${esc(UI.co2Left(cap - total))}</span></div></section>`;
 }
@@ -268,10 +332,7 @@ export function renderCo2(grid: Grid, state: PlayState): string {
 /** CO2 rule for the paper list: "24 cases au plus (charbon 3, TAC 2, gaz 1)." */
 export function co2RuleText(grid: Grid): string | null {
   if (grid.co2_cap === null) return null;
-  const per = PIECE_IDS.filter((id) => grid.pieces[id] && (grid.pieces[id]?.co2 ?? 0) > 0)
-    .map((id) => `${PIECE_WORDS[id].name.toLowerCase()} ${grid.pieces[id]?.co2}`);
-  for (const nb of grid.neighbors) if (nb.co2 > 0) per.push(`import ${countryFrom(grid, nb.id)} ${nb.co2}`);
-  return UI.co2Rule(grid.co2_cap, per.join(', '));
+  return UI.co2Rule(grid.co2_cap, co2PerCellText(grid));
 }
 
 
