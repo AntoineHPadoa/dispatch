@@ -48,7 +48,7 @@ function previousRow(g: BulletinGrid, st: GridStatus): string {
 function dossierCard(d: Dossier, progress: Progress): string {
   const isDone = (id: number) => statusOf(progress, id) === 'done';
   const { done, total } = dossierProgress(d, isDone);
-  const words = UI.dossier[d.id] ?? { title: d.id, lead: '' };
+  const words = UI.dossier[d.id] ?? { title: d.id };
   const demand = d.grids.map((g) => Math.max(...g.demand));
   return `<a class="dcard" href="#/dossier/${d.id}">
     <span class="dsil">${miniSilhouette(demand, 120, 48, done > 0)}</span>
@@ -94,7 +94,7 @@ const action = (st: GridStatus) => (st === 'done' ? UI.review : st === 'started'
 
 /** Dossier page: one card per grid (silhouette, technique taught, difficulty, status, button), in order. */
 export function renderDossier(root: HTMLElement, d: Dossier, progress: Progress): void {
-  const words = UI.dossier[d.id] ?? { title: d.id, lead: '' };
+  const words = UI.dossier[d.id] ?? { title: d.id };
   const next = dossierNext(d, (id) => statusOf(progress, id) === 'done');
   const { done, total } = dossierProgress(d, (id) => statusOf(progress, id) === 'done');
   const cards = d.grids.map((g, i) => {
@@ -105,7 +105,7 @@ export function renderDossier(root: HTMLElement, d: Dossier, progress: Progress)
       <span class="fband">${cellSilhouette(g.demand, 11)}<span class="fnum" aria-hidden="true">${i + 1}</span></span>
       <span class="fbody"><span class="eyebrow">${esc(UI.tutorialShort(i + 1))} · ${esc(g.difficulty.label)}${isNext ? ` · ${esc(UI.dossierNext)}` : ''}</span>
         <b>${esc(displayTitle(g))}</b>
-        ${blurb ? `<span class="ftxt">${esc(blurb)}</span>` : ''}</span>
+        ${blurb ? `<span class="ftxt">${esc(frenchSpaces(blurb))}</span>` : ''}</span>
       <span class="ffoot"><span class="fmeta">${dots(g)}${statusChip(st)}</span><span class="fbtn">${esc(action(st))}</span></span>
     </a></li>`;
   }).join('');

@@ -267,7 +267,6 @@ body.print-preview #print-root .a4 { box-shadow: 0 2px 18px rgba(59, 51, 64, .12
   .sbody { padding: 14px 16px 18px; }
   .dgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .game h1 { font-size: 1.4rem; }
-  .print-tool { display: none; }
   .prow { grid-template-columns: 84px 1fr; padding: 6px 4px; }
   .intro b { font-size: .95rem; }
 }

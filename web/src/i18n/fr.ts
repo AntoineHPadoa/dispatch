@@ -338,8 +338,8 @@ export const UI = {
     months: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
   },
   dossier: {
-    'premiers-pas': { title: 'Premiers pas', lead: '' },
-  } as Record<string, { title: string; lead: string }>,
+    'premiers-pas': { title: 'Premiers pas' },
+  } as Record<string, { title: string }>,
   /** Dossier card blurb in the shift chief's voice, by the first technique the grid teaches. */
   briefing: {
     swap: 'Premier quart : le carnet est exact, tu poses tout, ni plus ni moins.',
@@ -380,7 +380,7 @@ export const UI = {
   cluesChecked: (k: number, n: number) => `${k} sur ${n} ${k > 1 ? 'vérifiés' : 'vérifié'}`,
   clueState: { ok: 'vérifié', open: 'à vérifier', broken: 'contredit' } as const,
   chipsLabel: 'Centrales',
-  tools: { erase: 'Gomme', undo: 'Annuler', reset: 'Recommencer', print: 'Imprimer' },
+  tools: { erase: 'Gomme', undo: 'Annuler', reset: 'Recommencer' },
   toolsLabel: 'Outils',
   co2: 'CO₂',
   co2Points: (k: number, cap: number) => `${k} ${k > 1 ? 'points' : 'point'} sur ${cap}`,

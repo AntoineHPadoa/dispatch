@@ -21,10 +21,6 @@ export function startApp(app: HTMLElement, printRoot: HTMLElement, grids: readon
   let cleanup: (() => void) | null = null;
 
   const fillPrint = (list: readonly Grid[]) => { printRoot.innerHTML = renderSheets(list, grids); };
-  const print = (grid: Grid) => {
-    fillPrint([grid]);
-    window.print();
-  };
 
   function route() {
     cleanup?.();
@@ -39,7 +35,7 @@ export function startApp(app: HTMLElement, printRoot: HTMLElement, grids: readon
     if (page === 'grille' && grid) {
       document.title = `${displayTitle(grid)} · ${UI.appName}`;
       fillPrint([grid]);
-      cleanup = mountGame(app, grid, { grids, store, navigate, print });
+      cleanup = mountGame(app, grid, { grids, store, navigate });
     } else if (page === 'dossier' && dossiers(grids).some((d) => d.id === arg)) {
       const d = dossiers(grids).find((x) => x.id === arg)!;
       document.title = `${UI.dossier[d.id]?.title ?? d.id} · ${UI.appName}`;
