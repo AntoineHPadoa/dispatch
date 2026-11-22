@@ -1,0 +1,4708 @@
+[
+ {
+  "file": "nuit-jouer-a.json",
+  "index": 0,
+  "now": {
+   "id": 1,
+   "title": "Ligne chargée",
+   "cols": 8,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 3,
+   "techniques": [
+    "column_sum",
+    "exhausted",
+    "flow",
+    "record",
+    "ribbon",
+    "room",
+    "share_out",
+    "single_cover",
+    "single_spot"
+   ],
+   "seconds": 0.1
+  },
+  "abs": {
+   "id": 1,
+   "title": "Ligne chargée",
+   "cols": 8,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "flow",
+    "record",
+    "refuted",
+    "ribbon",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.3
+  }
+ },
+ {
+  "file": "nuit-jouer-a.json",
+  "index": 1,
+  "now": {
+   "id": 2,
+   "title": "Le chauffage tient bon",
+   "cols": 8,
+   "bent_bars": 9,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 3,
+   "techniques": [
+    "exhausted",
+    "room",
+    "share_out"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 2,
+   "title": "Le chauffage tient bon",
+   "cols": 8,
+   "bent_bars": 9,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 2,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "exhausted",
+    "refuted",
+    "room",
+    "share_out"
+   ],
+   "seconds": 0.1
+  }
+ },
+ {
+  "file": "nuit-jouer-a.json",
+  "index": 2,
+  "now": {
+   "id": 3,
+   "title": "Réveil et dîner",
+   "cols": 8,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "column_sum",
+    "exhausted",
+    "just_enough",
+    "ribbon",
+    "room",
+    "single_cover",
+    "single_spot"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 3,
+   "title": "Réveil et dîner",
+   "cols": 8,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "column_sum",
+    "refuted",
+    "share_out"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-a.json",
+  "index": 3,
+  "now": {
+   "id": 4,
+   "title": "Trop de soleil",
+   "cols": 12,
+   "bent_bars": 5,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "room",
+    "silhouette",
+    "single_cover",
+    "single_spot"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 4,
+   "title": "Trop de soleil",
+   "cols": 12,
+   "bent_bars": 5,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-a.json",
+  "index": 4,
+  "now": {
+   "id": 5,
+   "title": "Le barrage compte ses gouttes",
+   "cols": 8,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 3,
+   "techniques": [
+    "column_sum",
+    "just_enough",
+    "ribbon",
+    "share_out",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 5,
+   "title": "Le barrage compte ses gouttes",
+   "cols": 8,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "room",
+    "single_spot"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-a.json",
+  "index": 5,
+  "now": {
+   "id": 6,
+   "title": "Grand froid",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 4,
+   "techniques": [
+    "column_sum",
+    "exhausted",
+    "refuted",
+    "ribbon",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 6,
+   "title": "Grand froid",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 4,
+   "techniques": [
+    "column_sum",
+    "exhausted",
+    "refuted",
+    "ribbon",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-a.json",
+  "index": 6,
+  "now": {
+   "id": 7,
+   "title": "Le vent de la nuit",
+   "cols": 8,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 7,
+   "title": "Le vent de la nuit",
+   "cols": 8,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-a.json",
+  "index": 7,
+  "now": {
+   "id": 8,
+   "title": "Réserve d'eau",
+   "cols": 8,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "price_cap",
+    "program",
+    "record",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 8,
+   "title": "Réserve d'eau",
+   "cols": 8,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-a.json",
+  "index": 8,
+  "now": {
+   "id": 9,
+   "title": "Le creux de midi",
+   "cols": 8,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 9,
+   "title": "Le creux de midi",
+   "cols": 8,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-a.json",
+  "index": 9,
+  "now": {
+   "id": 10,
+   "title": "Pointe du soir",
+   "cols": 8,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "price_cap",
+    "program",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 10,
+   "title": "Pointe du soir",
+   "cols": 8,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "flow",
+    "price_cap",
+    "record",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-a.json",
+  "index": 10,
+  "now": {
+   "id": 11,
+   "title": "Frontière ouverte",
+   "cols": 12,
+   "bent_bars": 6,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "record",
+    "room"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 11,
+   "title": "Frontière ouverte",
+   "cols": 12,
+   "bent_bars": 6,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-a.json",
+  "index": 11,
+  "now": {
+   "id": 12,
+   "title": "Nuit calme",
+   "cols": 8,
+   "bent_bars": 12,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "flow",
+    "price_cap",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.1
+  },
+  "abs": {
+   "id": 12,
+   "title": "Nuit calme",
+   "cols": 8,
+   "bent_bars": 12,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "room"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-a.json",
+  "index": 12,
+  "now": {
+   "id": 13,
+   "title": "Un jour tranquille",
+   "cols": 12,
+   "bent_bars": 11,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "flow",
+    "record",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 13,
+   "title": "Un jour tranquille",
+   "cols": 12,
+   "bent_bars": 11,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "flow"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-a.json",
+  "index": 13,
+  "now": {
+   "id": 14,
+   "title": "Tout le monde rentre",
+   "cols": 6,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "column_sum",
+    "exhausted",
+    "flow",
+    "room",
+    "silhouette",
+    "single_cover",
+    "single_spot"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 14,
+   "title": "Tout le monde rentre",
+   "cols": 6,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "flow"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-a.json",
+  "index": 14,
+  "now": {
+   "id": 15,
+   "title": "Le pic de 19 heures",
+   "cols": 8,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "length",
+    "price_cap",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 15,
+   "title": "Le pic de 19 heures",
+   "cols": 8,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "length",
+    "price_cap",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-a.json",
+  "index": 15,
+  "now": {
+   "id": 16,
+   "title": "Échanges du jour",
+   "cols": 8,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "column_sum",
+    "price_cap",
+    "program",
+    "record",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 16,
+   "title": "Échanges du jour",
+   "cols": 8,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "price_cap",
+    "record",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-a.json",
+  "index": 16,
+  "now": {
+   "id": 17,
+   "title": "Midi déborde",
+   "cols": 8,
+   "bent_bars": 3,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "column_sum",
+    "flow",
+    "price_cap",
+    "program",
+    "record",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 17,
+   "title": "Midi déborde",
+   "cols": 8,
+   "bent_bars": 3,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "price_cap",
+    "record",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-a.json",
+  "index": 17,
+  "now": {
+   "id": 18,
+   "title": "Les éoliennes veillent",
+   "cols": 8,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "exhausted",
+    "price_cap",
+    "program",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 18,
+   "title": "Les éoliennes veillent",
+   "cols": 8,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "exhausted",
+    "price_cap",
+    "record",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-a.json",
+  "index": 18,
+  "now": {
+   "id": 19,
+   "title": "Deux bosses",
+   "cols": 8,
+   "bent_bars": 6,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 3,
+   "techniques": [
+    "exhausted",
+    "ribbon",
+    "room",
+    "share_out",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 19,
+   "title": "Deux bosses",
+   "cols": 8,
+   "bent_bars": 6,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-a.json",
+  "index": 19,
+  "now": {
+   "id": 20,
+   "title": "Une journée sans relief",
+   "cols": 12,
+   "bent_bars": 8,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 4,
+   "techniques": [
+    "carbon",
+    "price_cap",
+    "record",
+    "refuted",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.7
+  },
+  "abs": {
+   "id": 20,
+   "title": "Une journée sans relief",
+   "cols": 12,
+   "bent_bars": 8,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "carbon",
+    "price_cap",
+    "record",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-b.json",
+  "index": 0,
+  "now": {
+   "id": 1,
+   "title": "Frontière ouverte",
+   "cols": 8,
+   "bent_bars": 9,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 3,
+   "techniques": [
+    "exhausted",
+    "room",
+    "share_out",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 1,
+   "title": "Frontière ouverte",
+   "cols": 8,
+   "bent_bars": 9,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-b.json",
+  "index": 1,
+  "now": {
+   "id": 2,
+   "title": "Une journée sans relief",
+   "cols": 8,
+   "bent_bars": 9,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "room"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 2,
+   "title": "Une journée sans relief",
+   "cols": 8,
+   "bent_bars": 9,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 2,
+   "matches_reference": true,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "exhausted",
+    "refuted",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.1
+  }
+ },
+ {
+  "file": "nuit-jouer-b.json",
+  "index": 2,
+  "now": {
+   "id": 3,
+   "title": "Ligne chargée",
+   "cols": 8,
+   "bent_bars": 3,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "price_cap",
+    "program",
+    "record",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 3,
+   "title": "Ligne chargée",
+   "cols": 8,
+   "bent_bars": 3,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "price_cap",
+    "record",
+    "room"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-b.json",
+  "index": 3,
+  "now": {
+   "id": 4,
+   "title": "Échanges du jour",
+   "cols": 8,
+   "bent_bars": 2,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "carbon",
+    "record",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 4,
+   "title": "Échanges du jour",
+   "cols": 8,
+   "bent_bars": 2,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 2,
+   "matches_reference": false,
+   "deduction": "stuck",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "carbon",
+    "record",
+    "refuted",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-b.json",
+  "index": 4,
+  "now": {
+   "id": 5,
+   "title": "La journée en deux temps",
+   "cols": 8,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 4,
+   "techniques": [
+    "carbon",
+    "column_sum",
+    "record",
+    "refuted",
+    "room",
+    "share_out",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.1
+  },
+  "abs": {
+   "id": 5,
+   "title": "La journée en deux temps",
+   "cols": 8,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "carbon"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-b.json",
+  "index": 5,
+  "now": {
+   "id": 6,
+   "title": "Midi creux",
+   "cols": 12,
+   "bent_bars": 6,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "record",
+    "room"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 6,
+   "title": "Midi creux",
+   "cols": 12,
+   "bent_bars": 6,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "room"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-b.json",
+  "index": 6,
+  "now": {
+   "id": 7,
+   "title": "Charbon à pleine charge",
+   "cols": 12,
+   "bent_bars": 8,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 4,
+   "techniques": [
+    "exhausted",
+    "refuted",
+    "ribbon",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 7,
+   "title": "Charbon à pleine charge",
+   "cols": 12,
+   "bent_bars": 8,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 2,
+   "matches_reference": false,
+   "deduction": "stuck",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "refuted",
+    "ribbon",
+    "room",
+    "single_cover",
+    "single_spot"
+   ],
+   "seconds": 0.3
+  }
+ },
+ {
+  "file": "nuit-jouer-b.json",
+  "index": 7,
+  "now": {
+   "id": 8,
+   "title": "Réserve d'eau",
+   "cols": 12,
+   "bent_bars": 6,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "price_cap",
+    "record",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 8,
+   "title": "Réserve d'eau",
+   "cols": 12,
+   "bent_bars": 6,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 2,
+   "matches_reference": false,
+   "deduction": "stuck",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "price_cap",
+    "record",
+    "refuted",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.1
+  }
+ },
+ {
+  "file": "nuit-jouer-b.json",
+  "index": 8,
+  "now": {
+   "id": 9,
+   "title": "Plateau d'hiver",
+   "cols": 8,
+   "bent_bars": 7,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 9,
+   "title": "Plateau d'hiver",
+   "cols": 8,
+   "bent_bars": 7,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-b.json",
+  "index": 9,
+  "now": {
+   "id": 10,
+   "title": "Matin et soir",
+   "cols": 12,
+   "bent_bars": 6,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 4,
+   "techniques": [
+    "exhausted",
+    "refuted",
+    "ribbon",
+    "share_out",
+    "single_cover"
+   ],
+   "seconds": 0.1
+  },
+  "abs": {
+   "id": 10,
+   "title": "Matin et soir",
+   "cols": 12,
+   "bent_bars": 6,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-b.json",
+  "index": 10,
+  "now": {
+   "id": 11,
+   "title": "Plein soleil",
+   "cols": 6,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "program",
+    "record",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 11,
+   "title": "Plein soleil",
+   "cols": 6,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "record",
+    "room"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-b.json",
+  "index": 11,
+  "now": {
+   "id": 12,
+   "title": "Les éoliennes veillent",
+   "cols": 8,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 12,
+   "title": "Les éoliennes veillent",
+   "cols": 8,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-b.json",
+  "index": 12,
+  "now": {
+   "id": 13,
+   "title": "Vent de nuit",
+   "cols": 6,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "flow",
+    "program",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 13,
+   "title": "Vent de nuit",
+   "cols": 6,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-b.json",
+  "index": 13,
+  "now": {
+   "id": 14,
+   "title": "Rafales nocturnes",
+   "cols": 8,
+   "bent_bars": 8,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "flow",
+    "length",
+    "price_cap",
+    "program",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 14,
+   "title": "Rafales nocturnes",
+   "cols": 8,
+   "bent_bars": 8,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-b.json",
+  "index": 14,
+  "now": {
+   "id": 15,
+   "title": "Le charbon à deux étages",
+   "cols": 12,
+   "bent_bars": 13,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 4,
+   "techniques": [
+    "column_sum",
+    "exhausted",
+    "refuted",
+    "ribbon",
+    "share_out",
+    "single_cover"
+   ],
+   "seconds": 0.2
+  },
+  "abs": {
+   "id": 15,
+   "title": "Le charbon à deux étages",
+   "cols": 12,
+   "bent_bars": 13,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 2,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "refuted",
+    "ribbon",
+    "single_cover"
+   ],
+   "seconds": 0.6
+  }
+ },
+ {
+  "file": "nuit-jouer-b.json",
+  "index": 15,
+  "now": {
+   "id": 16,
+   "title": "Sous le plafond",
+   "cols": 8,
+   "bent_bars": 6,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "record",
+    "room"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 16,
+   "title": "Sous le plafond",
+   "cols": 8,
+   "bent_bars": 6,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 2,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "exhausted",
+    "record",
+    "refuted",
+    "ribbon",
+    "room"
+   ],
+   "seconds": 0.2
+  }
+ },
+ {
+  "file": "nuit-jouer-b.json",
+  "index": 16,
+  "now": {
+   "id": 17,
+   "title": "Le soleil en trop",
+   "cols": 12,
+   "bent_bars": 4,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "flow",
+    "room",
+    "silhouette",
+    "single_cover",
+    "single_spot"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 17,
+   "title": "Le soleil en trop",
+   "cols": 12,
+   "bent_bars": 4,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "flow",
+    "room"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-b.json",
+  "index": 17,
+  "now": {
+   "id": 18,
+   "title": "La courbe en canard",
+   "cols": 8,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 3,
+   "techniques": [
+    "exhausted",
+    "flow",
+    "just_enough",
+    "room",
+    "share_out"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 18,
+   "title": "La courbe en canard",
+   "cols": 8,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "flow",
+    "room"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-b.json",
+  "index": 18,
+  "now": {
+   "id": 19,
+   "title": "Deux pointes",
+   "cols": 12,
+   "bent_bars": 9,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 3,
+   "techniques": [
+    "column_sum",
+    "exhausted",
+    "just_enough",
+    "program",
+    "room",
+    "share_out",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.1
+  },
+  "abs": {
+   "id": 19,
+   "title": "Deux pointes",
+   "cols": 12,
+   "bent_bars": 9,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 2,
+   "matches_reference": false,
+   "deduction": "stuck",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "refuted",
+    "ribbon",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 1.3
+  }
+ },
+ {
+  "file": "nuit-jouer-b.json",
+  "index": 19,
+  "now": {
+   "id": 20,
+   "title": "La STEP au travail",
+   "cols": 8,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "column_sum",
+    "exhausted",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.2
+  },
+  "abs": {
+   "id": 20,
+   "title": "La STEP au travail",
+   "cols": 8,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-c.json",
+  "index": 0,
+  "now": {
+   "id": 1,
+   "title": "Grand froid",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 1,
+   "title": "Grand froid",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-c.json",
+  "index": 1,
+  "now": {
+   "id": 2,
+   "title": "Réserve d'eau",
+   "cols": 6,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "column_sum",
+    "exhausted",
+    "just_enough",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 2,
+   "title": "Réserve d'eau",
+   "cols": 6,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-c.json",
+  "index": 2,
+  "now": {
+   "id": 3,
+   "title": "Rafales nocturnes",
+   "cols": 12,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "column_sum",
+    "program",
+    "record",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 3,
+   "title": "Rafales nocturnes",
+   "cols": 12,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "record",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-c.json",
+  "index": 3,
+  "now": {
+   "id": 4,
+   "title": "Réveil et dîner",
+   "cols": 6,
+   "bent_bars": 2,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "price_cap",
+    "program",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 4,
+   "title": "Réveil et dîner",
+   "cols": 6,
+   "bent_bars": 2,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-c.json",
+  "index": 4,
+  "now": {
+   "id": 5,
+   "title": "La soirée sous tension",
+   "cols": 8,
+   "bent_bars": 7,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 5,
+   "title": "La soirée sous tension",
+   "cols": 8,
+   "bent_bars": 7,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-c.json",
+  "index": 5,
+  "now": {
+   "id": 6,
+   "title": "Deux bosses",
+   "cols": 8,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "price_cap",
+    "program",
+    "record",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 6,
+   "title": "Deux bosses",
+   "cols": 8,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-c.json",
+  "index": 6,
+  "now": {
+   "id": 7,
+   "title": "Matin et soir",
+   "cols": 8,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 7,
+   "title": "Matin et soir",
+   "cols": 8,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-c.json",
+  "index": 7,
+  "now": {
+   "id": 8,
+   "title": "Midi en excédent",
+   "cols": 8,
+   "bent_bars": 4,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "room"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 8,
+   "title": "Midi en excédent",
+   "cols": 8,
+   "bent_bars": 4,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-c.json",
+  "index": 8,
+  "now": {
+   "id": 9,
+   "title": "Nuit calme",
+   "cols": 8,
+   "bent_bars": 8,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "column_sum",
+    "record",
+    "room"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 9,
+   "title": "Nuit calme",
+   "cols": 8,
+   "bent_bars": 8,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "exhausted",
+    "room"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-c.json",
+  "index": 9,
+  "now": {
+   "id": 10,
+   "title": "Échanges du jour",
+   "cols": 6,
+   "bent_bars": 5,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "column_sum",
+    "price_cap",
+    "record",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 10,
+   "title": "Échanges du jour",
+   "cols": 6,
+   "bent_bars": 5,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-c.json",
+  "index": 10,
+  "now": {
+   "id": 11,
+   "title": "Ligne chargée",
+   "cols": 12,
+   "bent_bars": 7,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "price_cap",
+    "program",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 11,
+   "title": "Ligne chargée",
+   "cols": 12,
+   "bent_bars": 7,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "price_cap",
+    "record",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-c.json",
+  "index": 11,
+  "now": {
+   "id": 12,
+   "title": "Pomper, puis turbiner",
+   "cols": 8,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "record",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 12,
+   "title": "Pomper, puis turbiner",
+   "cols": 8,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "room"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-c.json",
+  "index": 12,
+  "now": {
+   "id": 13,
+   "title": "Le charbon à deux étages",
+   "cols": 8,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 4,
+   "techniques": [
+    "column_sum",
+    "exhausted",
+    "refuted",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 13,
+   "title": "Le charbon à deux étages",
+   "cols": 8,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-c.json",
+  "index": 13,
+  "now": {
+   "id": 14,
+   "title": "Midi au soleil",
+   "cols": 8,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 4,
+   "techniques": [
+    "exhausted",
+    "refuted",
+    "ribbon",
+    "room",
+    "share_out",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 14,
+   "title": "Midi au soleil",
+   "cols": 8,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-c.json",
+  "index": 14,
+  "now": {
+   "id": 15,
+   "title": "Un jour tranquille",
+   "cols": 6,
+   "bent_bars": 6,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "flow",
+    "room"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 15,
+   "title": "Un jour tranquille",
+   "cols": 6,
+   "bent_bars": 6,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "flow",
+    "room"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-c.json",
+  "index": 15,
+  "now": {
+   "id": 16,
+   "title": "La STEP au travail",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 4,
+   "techniques": [
+    "exhausted",
+    "record",
+    "refuted",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover",
+    "single_spot"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 16,
+   "title": "La STEP au travail",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 4,
+   "techniques": [
+    "exhausted",
+    "record",
+    "refuted",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover",
+    "single_spot"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-c.json",
+  "index": 16,
+  "now": {
+   "id": 17,
+   "title": "Le soir s'allume",
+   "cols": 8,
+   "bent_bars": 8,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "program",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 17,
+   "title": "Le soir s'allume",
+   "cols": 8,
+   "bent_bars": 8,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-c.json",
+  "index": 17,
+  "now": {
+   "id": 18,
+   "title": "Pointe du soir",
+   "cols": 8,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "exhausted",
+    "flow",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 18,
+   "title": "Pointe du soir",
+   "cols": 8,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "flow",
+    "room"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-c.json",
+  "index": 18,
+  "now": {
+   "id": 19,
+   "title": "La base fait tout",
+   "cols": 6,
+   "bent_bars": 7,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "exhausted",
+    "flow",
+    "just_enough",
+    "record",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 19,
+   "title": "La base fait tout",
+   "cols": 6,
+   "bent_bars": 7,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "exhausted",
+    "flow",
+    "room"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-jouer-c.json",
+  "index": 19,
+  "now": {
+   "id": 20,
+   "title": "Le barrage compte ses gouttes",
+   "cols": 6,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "column_sum",
+    "exhausted",
+    "flow",
+    "just_enough",
+    "ribbon",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 20,
+   "title": "Le barrage compte ses gouttes",
+   "cols": 6,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "flow",
+    "room"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-rampe.json",
+  "index": 0,
+  "now": {
+   "id": 1,
+   "title": "Montée en charge",
+   "cols": 8,
+   "bent_bars": 13,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 1,
+   "title": "Montée en charge",
+   "cols": 8,
+   "bent_bars": 13,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-rampe.json",
+  "index": 1,
+  "now": {
+   "id": 2,
+   "title": "Tout le monde rentre",
+   "cols": 8,
+   "bent_bars": 6,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "room"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 2,
+   "title": "Tout le monde rentre",
+   "cols": 8,
+   "bent_bars": 6,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "exhausted",
+    "room"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-rampe.json",
+  "index": 2,
+  "now": {
+   "id": 3,
+   "title": "Journée froide",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 4,
+   "techniques": [
+    "exhausted",
+    "ramp_plateau",
+    "ramp_shoulder",
+    "refuted",
+    "ribbon",
+    "room",
+    "share_out",
+    "single_cover",
+    "single_spot"
+   ],
+   "seconds": 0.6
+  },
+  "abs": {
+   "id": 3,
+   "title": "Journée froide",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 4,
+   "techniques": [
+    "exhausted",
+    "ramp_plateau",
+    "ramp_shoulder",
+    "refuted",
+    "ribbon",
+    "room",
+    "share_out",
+    "single_cover",
+    "single_spot"
+   ],
+   "seconds": 0.6
+  }
+ },
+ {
+  "file": "nuit-rampe.json",
+  "index": 3,
+  "now": {
+   "id": 4,
+   "title": "Frontière ouverte",
+   "cols": 8,
+   "bent_bars": 2,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "column_sum",
+    "length",
+    "price_cap",
+    "program",
+    "ramp_plateau",
+    "record",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 4,
+   "title": "Frontière ouverte",
+   "cols": 8,
+   "bent_bars": 2,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "price_cap",
+    "record",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-rampe.json",
+  "index": 4,
+  "now": {
+   "id": 5,
+   "title": "Le surplus de midi",
+   "cols": 8,
+   "bent_bars": 2,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "ramp_plateau",
+    "ramp_shoulder",
+    "room",
+    "single_cover",
+    "single_spot"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 5,
+   "title": "Le surplus de midi",
+   "cols": 8,
+   "bent_bars": 2,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-rampe.json",
+  "index": 5,
+  "now": {
+   "id": 6,
+   "title": "Un jour tranquille",
+   "cols": 8,
+   "bent_bars": 12,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 6,
+   "title": "Un jour tranquille",
+   "cols": 8,
+   "bent_bars": 12,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-rampe.json",
+  "index": 6,
+  "now": {
+   "id": 7,
+   "title": "Échanges du jour",
+   "cols": 12,
+   "bent_bars": 8,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "price_cap",
+    "program",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 7,
+   "title": "Échanges du jour",
+   "cols": 12,
+   "bent_bars": 8,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-rampe.json",
+  "index": 7,
+  "now": {
+   "id": 8,
+   "title": "Ligne chargée",
+   "cols": 8,
+   "bent_bars": 6,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 4,
+   "techniques": [
+    "exhausted",
+    "ramp_plateau",
+    "ramp_shoulder",
+    "record",
+    "refuted",
+    "ribbon",
+    "room",
+    "share_out",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.1
+  },
+  "abs": {
+   "id": 8,
+   "title": "Ligne chargée",
+   "cols": 8,
+   "bent_bars": 6,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "ramp_plateau",
+    "ramp_shoulder",
+    "record",
+    "refuted",
+    "ribbon",
+    "room",
+    "share_out",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-rampe.json",
+  "index": 8,
+  "now": {
+   "id": 9,
+   "title": "Trop de soleil",
+   "cols": 12,
+   "bent_bars": 8,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "price_cap",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 9,
+   "title": "Trop de soleil",
+   "cols": 12,
+   "bent_bars": 8,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "room"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-rampe.json",
+  "index": 9,
+  "now": {
+   "id": 10,
+   "title": "Réveil et dîner",
+   "cols": 12,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "exhausted",
+    "just_enough",
+    "ramp_plateau",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover",
+    "single_spot"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 10,
+   "title": "Réveil et dîner",
+   "cols": 12,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "exhausted",
+    "record",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-rampe.json",
+  "index": 10,
+  "now": {
+   "id": 11,
+   "title": "Plein soleil",
+   "cols": 8,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 3,
+   "techniques": [
+    "exhausted",
+    "program",
+    "ramp_plateau",
+    "room",
+    "share_out",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 11,
+   "title": "Plein soleil",
+   "cols": 8,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-rampe.json",
+  "index": 11,
+  "now": {
+   "id": 12,
+   "title": "Le creux de midi",
+   "cols": 6,
+   "bent_bars": 8,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "price_cap",
+    "program",
+    "record",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 12,
+   "title": "Le creux de midi",
+   "cols": 6,
+   "bent_bars": 8,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-rampe.json",
+  "index": 12,
+  "now": {
+   "id": 13,
+   "title": "Deux pointes",
+   "cols": 12,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "record",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 13,
+   "title": "Deux pointes",
+   "cols": 12,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "room"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-rampe.json",
+  "index": 13,
+  "now": {
+   "id": 14,
+   "title": "La courbe en canard",
+   "cols": 8,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "price_cap",
+    "program",
+    "ramp_plateau",
+    "ramp_shoulder",
+    "ribbon",
+    "room",
+    "single_cover",
+    "top_price"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 14,
+   "title": "La courbe en canard",
+   "cols": 8,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "price_cap",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-rampe.json",
+  "index": 14,
+  "now": {
+   "id": 15,
+   "title": "Rafales nocturnes",
+   "cols": 8,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "carbon",
+    "price_cap",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 15,
+   "title": "Rafales nocturnes",
+   "cols": 8,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-rampe.json",
+  "index": 15,
+  "now": {
+   "id": 16,
+   "title": "La soirée sous tension",
+   "cols": 12,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 4,
+   "techniques": [
+    "exhausted",
+    "ramp_plateau",
+    "record",
+    "refuted",
+    "ribbon",
+    "room",
+    "share_out",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.5
+  },
+  "abs": {
+   "id": 16,
+   "title": "La soirée sous tension",
+   "cols": 12,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "exhausted",
+    "record",
+    "refuted",
+    "room"
+   ],
+   "seconds": 0.3
+  }
+ },
+ {
+  "file": "nuit-rampe.json",
+  "index": 16,
+  "now": {
+   "id": 17,
+   "title": "Le pic de 19 heures",
+   "cols": 12,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "price_cap",
+    "program",
+    "ramp_plateau",
+    "ramp_shoulder",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover",
+    "top_price"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 17,
+   "title": "Le pic de 19 heures",
+   "cols": 12,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 2,
+   "matches_reference": false,
+   "deduction": "stuck",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "price_cap",
+    "record",
+    "refuted",
+    "ribbon",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.1
+  }
+ },
+ {
+  "file": "nuit-rampe.json",
+  "index": 17,
+  "now": {
+   "id": 18,
+   "title": "Vent de nuit",
+   "cols": 8,
+   "bent_bars": 6,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "length",
+    "price_cap",
+    "program",
+    "ramp_plateau",
+    "ramp_shoulder",
+    "record",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 18,
+   "title": "Vent de nuit",
+   "cols": 8,
+   "bent_bars": 6,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "price_cap",
+    "record",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-rampe.json",
+  "index": 18,
+  "now": {
+   "id": 19,
+   "title": "Grand froid",
+   "cols": 8,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "ramp_plateau",
+    "ribbon",
+    "single_cover",
+    "top_price"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 19,
+   "title": "Grand froid",
+   "cols": 8,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-rampe.json",
+  "index": 19,
+  "now": {
+   "id": 20,
+   "title": "Midi en excédent",
+   "cols": 12,
+   "bent_bars": 6,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 4,
+   "techniques": [
+    "ramp_lone",
+    "refuted",
+    "ribbon",
+    "room",
+    "share_out",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.1
+  },
+  "abs": {
+   "id": 20,
+   "title": "Midi en excédent",
+   "cols": 12,
+   "bent_bars": 6,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "ramp_lone",
+    "refuted",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.1
+  }
+ },
+ {
+  "file": "nuit-rejeu-notees.json",
+  "index": 0,
+  "now": {
+   "id": 8,
+   "title": "Facile",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "flow",
+    "record",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 8,
+   "title": "Facile",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "flow",
+    "record",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-rejeu-notees.json",
+  "index": 1,
+  "now": {
+   "id": 9,
+   "title": "Moyen",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "column_sum",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 9,
+   "title": "Moyen",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "column_sum",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-rejeu-notees.json",
+  "index": 2,
+  "now": {
+   "id": 10,
+   "title": "Difficile",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 3,
+   "techniques": [
+    "record",
+    "room",
+    "share_out",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 10,
+   "title": "Difficile",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 3,
+   "techniques": [
+    "record",
+    "room",
+    "share_out",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "nuit-rejeu-notees.json",
+  "index": 3,
+  "now": {
+   "id": 11,
+   "title": "Expert",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "record",
+    "room",
+    "silhouette"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 11,
+   "title": "Expert",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "record",
+    "room",
+    "silhouette"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo-01.json",
+  "index": 0,
+  "now": {
+   "id": 1,
+   "title": "Tout le monde rentre",
+   "cols": 8,
+   "bent_bars": 2,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "length",
+    "price_cap",
+    "program",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 1,
+   "title": "Tout le monde rentre",
+   "cols": 8,
+   "bent_bars": 2,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "exhausted",
+    "price_cap",
+    "program",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo-01.json",
+  "index": 1,
+  "now": {
+   "id": 2,
+   "title": "Le charbon prend son temps",
+   "cols": 8,
+   "bent_bars": 2,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 2,
+   "title": "Le charbon prend son temps",
+   "cols": 8,
+   "bent_bars": 2,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "exhausted"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo-01.json",
+  "index": 2,
+  "now": {
+   "id": 3,
+   "title": "Ligne chargée",
+   "cols": 12,
+   "bent_bars": 5,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "room",
+    "silhouette",
+    "single_cover",
+    "single_spot"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 3,
+   "title": "Ligne chargée",
+   "cols": 12,
+   "bent_bars": 5,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo-01.json",
+  "index": 3,
+  "now": {
+   "id": 4,
+   "title": "Deux pointes",
+   "cols": 8,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "price_cap",
+    "program",
+    "ramp_plateau",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover",
+    "top_price"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 4,
+   "title": "Deux pointes",
+   "cols": 8,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo-01.json",
+  "index": 4,
+  "now": {
+   "id": 5,
+   "title": "Le surplus de midi",
+   "cols": 8,
+   "bent_bars": 2,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "column_sum",
+    "exhausted",
+    "ramp_plateau",
+    "ramp_shoulder",
+    "room",
+    "single_spot"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 5,
+   "title": "Le surplus de midi",
+   "cols": 8,
+   "bent_bars": 2,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo-01.json",
+  "index": 5,
+  "now": {
+   "id": 6,
+   "title": "Deux bosses",
+   "cols": 8,
+   "bent_bars": 7,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "column_sum",
+    "price_cap",
+    "program",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 6,
+   "title": "Deux bosses",
+   "cols": 8,
+   "bent_bars": 7,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo-01.json",
+  "index": 6,
+  "now": {
+   "id": 7,
+   "title": "La courbe en canard",
+   "cols": 8,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "price_cap",
+    "program",
+    "ramp_plateau",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover",
+    "top_price"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 7,
+   "title": "La courbe en canard",
+   "cols": 8,
+   "bent_bars": 4,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo-01.json",
+  "index": 7,
+  "now": {
+   "id": 8,
+   "title": "Matin et soir",
+   "cols": 8,
+   "bent_bars": 8,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "price_cap",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 8,
+   "title": "Matin et soir",
+   "cols": 8,
+   "bent_bars": 8,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": false,
+   "deduction": "solved",
+   "deduction_ok": false,
+   "rating": 4,
+   "techniques": [
+    "price_cap",
+    "record",
+    "refuted",
+    "ribbon",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo-01.json",
+  "index": 8,
+  "now": {
+   "id": 9,
+   "title": "Midi déborde",
+   "cols": 8,
+   "bent_bars": 6,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 9,
+   "title": "Midi déborde",
+   "cols": 8,
+   "bent_bars": 6,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "room"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo-01.json",
+  "index": 9,
+  "now": {
+   "id": 10,
+   "title": "Rafales nocturnes",
+   "cols": 8,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "exhausted",
+    "ramp_plateau",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover",
+    "single_spot"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 10,
+   "title": "Rafales nocturnes",
+   "cols": 8,
+   "bent_bars": 5,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "exhausted",
+    "record",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo-01.json",
+  "index": 10,
+  "now": {
+   "id": 11,
+   "title": "Frontière ouverte",
+   "cols": 8,
+   "bent_bars": 7,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "exhausted",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 11,
+   "title": "Frontière ouverte",
+   "cols": 8,
+   "bent_bars": 7,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo-01.json",
+  "index": 11,
+  "now": {
+   "id": 12,
+   "title": "Le ruban tient",
+   "cols": 8,
+   "bent_bars": 12,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "flow",
+    "room"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 12,
+   "title": "Le ruban tient",
+   "cols": 8,
+   "bent_bars": 12,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "flow"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo-01.json",
+  "index": 12,
+  "now": {
+   "id": 13,
+   "title": "Montée en charge",
+   "cols": 12,
+   "bent_bars": 7,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 4,
+   "techniques": [
+    "exhausted",
+    "flow",
+    "ramp_plateau",
+    "ramp_shoulder",
+    "record",
+    "refuted",
+    "room",
+    "silhouette",
+    "single_cover",
+    "single_spot"
+   ],
+   "seconds": 1.2
+  },
+  "abs": {
+   "id": 13,
+   "title": "Montée en charge",
+   "cols": 12,
+   "bent_bars": 7,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "flow"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo-01.json",
+  "index": 13,
+  "now": {
+   "id": 14,
+   "title": "Plein soleil",
+   "cols": 8,
+   "bent_bars": 9,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "record",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 14,
+   "title": "Plein soleil",
+   "cols": 8,
+   "bent_bars": 9,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "exhausted",
+    "record",
+    "room"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo-01.json",
+  "index": 14,
+  "now": {
+   "id": 15,
+   "title": "Plateau d'hiver",
+   "cols": 12,
+   "bent_bars": 6,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 4,
+   "techniques": [
+    "column_sum",
+    "exhausted",
+    "ramp_lone",
+    "record",
+    "refuted",
+    "ribbon",
+    "room",
+    "silhouette"
+   ],
+   "seconds": 0.3
+  },
+  "abs": {
+   "id": 15,
+   "title": "Plateau d'hiver",
+   "cols": 12,
+   "bent_bars": 6,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "exhausted",
+    "record",
+    "room"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo-01.json",
+  "index": 15,
+  "now": {
+   "id": 16,
+   "title": "Une journée sans relief",
+   "cols": 12,
+   "bent_bars": 15,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "flow",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 16,
+   "title": "Une journée sans relief",
+   "cols": 12,
+   "bent_bars": 15,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "flow",
+    "room"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo-01.json",
+  "index": 16,
+  "now": {
+   "id": 17,
+   "title": "Échanges du jour",
+   "cols": 8,
+   "bent_bars": 8,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "exhausted",
+    "just_enough",
+    "program",
+    "ribbon",
+    "room",
+    "silhouette"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 17,
+   "title": "Échanges du jour",
+   "cols": 8,
+   "bent_bars": 8,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "exhausted",
+    "refuted",
+    "ribbon",
+    "room"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo-01.json",
+  "index": 17,
+  "now": {
+   "id": 18,
+   "title": "Le creux de midi",
+   "cols": 6,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "column_sum",
+    "exhausted",
+    "room",
+    "silhouette",
+    "single_cover",
+    "single_spot"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 18,
+   "title": "Le creux de midi",
+   "cols": 6,
+   "bent_bars": 3,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo-01.json",
+  "index": 18,
+  "now": {
+   "id": 19,
+   "title": "Pointe du soir",
+   "cols": 8,
+   "bent_bars": 7,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 19,
+   "title": "Pointe du soir",
+   "cols": 8,
+   "bent_bars": 7,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo-01.json",
+  "index": 19,
+  "now": {
+   "id": 20,
+   "title": "Le charbon à deux étages",
+   "cols": 12,
+   "bent_bars": 5,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "flow",
+    "length",
+    "price_cap",
+    "program",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 20,
+   "title": "Le charbon à deux étages",
+   "cols": 12,
+   "bent_bars": 5,
+   "surplus": true,
+   "engaged_bent": 0,
+   "compositions": 0,
+   "matches_reference": false,
+   "deduction": "contradiction",
+   "deduction_ok": null,
+   "rating": null,
+   "techniques": [
+    "flow",
+    "price_cap",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo.json",
+  "index": 0,
+  "now": {
+   "id": 1001,
+   "title": "Facile",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "flow",
+    "record",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 1001,
+   "title": "Facile",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "exhausted",
+    "flow",
+    "record",
+    "room",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo.json",
+  "index": 1,
+  "now": {
+   "id": 1002,
+   "title": "Moyen",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "column_sum",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 1002,
+   "title": "Moyen",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 2,
+   "techniques": [
+    "column_sum",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo.json",
+  "index": 2,
+  "now": {
+   "id": 1003,
+   "title": "Difficile",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 3,
+   "techniques": [
+    "record",
+    "room",
+    "share_out",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 1003,
+   "title": "Difficile",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 3,
+   "techniques": [
+    "record",
+    "room",
+    "share_out",
+    "silhouette",
+    "single_cover"
+   ],
+   "seconds": 0.0
+  }
+ },
+ {
+  "file": "demo.json",
+  "index": 3,
+  "now": {
+   "id": 1004,
+   "title": "Expert",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "record",
+    "room",
+    "silhouette"
+   ],
+   "seconds": 0.0
+  },
+  "abs": {
+   "id": 1004,
+   "title": "Expert",
+   "cols": 8,
+   "bent_bars": 0,
+   "surplus": false,
+   "engaged_bent": 0,
+   "compositions": 1,
+   "matches_reference": true,
+   "deduction": "solved",
+   "deduction_ok": true,
+   "rating": 1,
+   "techniques": [
+    "record",
+    "room",
+    "silhouette"
+   ],
+   "seconds": 0.0
+  }
+ }
+]
