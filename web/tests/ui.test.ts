@@ -14,7 +14,7 @@ import {
   ProgressStore, STORAGE_KEY, emptyProgress, isPlayState, nextGrid, parseProgress,
   playOrder, recordState, statusOf, gridFingerprint, savedBoard, type KeyValueStore,
 } from '../src/ui/progress';
-import { bandPlan, boardLead, boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard, stepTagLabels } from '../src/ui/board';
+import { bandPlan, boardLead, recordLayout, boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard, stepTagLabels } from '../src/ui/board';
 import {
   applyLockedExports, boardMessage, bulletinTag, displayTitle, exportTap, initialState, isInitialState, newlyBroken, nextExportValue,
   poseMessage, techniqueLine,
@@ -911,6 +911,41 @@ describe('board card: fixed layout, price row, export rows', () => {
     const { svg } = renderBoard({ grid: g, state: s0, ev: broken, style: 'A', cell: 44 });
     expect(svg.match(/class="mark bad"/g)?.length).toBe(1);
     expect(svg).not.toMatch(/height="21" rx="10.5"/);
+  });
+
+  it('desktop records: bare chips centred on the slot, wrapped past their slot, apart from every other clue', () => {
+    const rec = recordLayout({ N: 2, G: 1, T: 1 }, 60);
+    expect(new Set(rec.chips.map((c) => c.dy))).toEqual(new Set([0]));
+    expect(rec.h).toBe(18);
+    const four = recordLayout({ N: 2, G: 1, T: 1, B: 12 }, 60);
+    expect(four.chips.filter((c) => c.dy > 0).length).toBeGreaterThan(0);
+    expect(four.h).toBeGreaterThan(18);
+    for (const g of grids) {
+      for (const cell of [30, 44, 50, 60]) {
+        const plan = bandPlan(g, cell, 'A', true);
+        const recs = plan.items.filter((it) => it.kind === 'column');
+        expect(recs.length).toBe(g.clues.filter((c) => c.type === 'column').length);
+        for (const it of recs) {
+          expect(it.rec).toBeTruthy();
+          expect(it.x1).toBeGreaterThanOrEqual(boardLead(g));
+          expect(it.x2).toBeLessThanOrEqual(boardLead(g) + g.columns.length * cell);
+        }
+        // Items on one lane never overlap; a lane is as tall as its tallest record.
+        for (const a of plan.items) for (const b of plan.items) {
+          if (a === b || a.lane !== b.lane) continue;
+          expect(a.x2 <= b.x1 || b.x2 <= a.x1, `grid ${g.id}, cell ${cell}`).toBe(true);
+        }
+        const tops = [...new Set(plan.items.map((it) => it.top))].sort((x, y) => x - y);
+        tops.forEach((t, i) => { if (i) expect(t - tops[i - 1]!).toBeGreaterThanOrEqual(26); });
+        const sol = solutionState(g);
+        const { svg, geo } = renderBoard({ grid: g, state: sol, ev: evaluate(g, sol), style: 'A', cell, recordChips: true });
+        expect(svg.match(/class="tag record-chips"/g)?.length ?? 0).toBe(recs.length);
+        expect(geo.bandHeight).toBe(plan.height);
+      }
+    }
+    // Without the option (phone, paper) records stay pills.
+    const g = grids.find((x) => x.clues.some((c) => c.type === 'column'))!;
+    expect(renderBoard({ grid: g, state: initialState(g), ev: null, style: 'A', cell: 44 }).svg).not.toContain('record-chips');
   });
 
   it('an exported or pumped cell keeps its dashed outline under a piece', () => {

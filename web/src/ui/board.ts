@@ -12,6 +12,8 @@
  *   programme is a thin coloured line right under the grid on its range, packed on as few lanes as
  *   possible; on paper its name also stands in the band. Each neighbor has a row of cells under the
  *   band, headed by its id in a left gutter, and a tap on a cell exports a block in that slot.
+ * - Records: a pill of colour squares and counts; with `recordChips` (desktop), a bare group of colour
+ *   chips holding the counts, centred on the slot, three to a line at most before wrapping.
  * - A clue's state is one mark on the top right corner of its pill (or cell, or programme line end):
  *   a green tick once verified, a red "!" once contradicted.
  * - An exported or pumped cell keeps its dashed outline when a piece covers it.
@@ -55,6 +57,42 @@ export interface BoardInput {
   stepMode?: boolean;
   /** Interactive pills (neighbors, STEP) get focus and button roles. */
   interactive?: boolean;
+  /** Records drawn as bare colour chips (desktop screen); otherwise as a pill. */
+  recordChips?: boolean;
+}
+
+/** One chip of a record group, relative to the group's top-left corner. */
+export interface RecordChip { key: string; value: number; dx: number; dy: number; w: number }
+/** Record drawn as colour chips: group size and chips. */
+export interface RecordLayout { w: number; h: number; chips: RecordChip[] }
+
+const DIGIT = 5.9;
+const CHIP_GAP = 2;
+const CHIP_PAD = 3;
+const CHIP_ROW = 15;
+/**
+ * Record as bare colour chips, each holding its count: one line while it fits its slot (at most
+ * three chips on most cells), then the chips wrap; every line is centred on the group.
+ */
+export function recordLayout(counts: Record<string, number>, cell: number): RecordLayout {
+  const entries = Object.entries(counts);
+  const cw = (v: number) => Math.max(13, String(v).length * DIGIT + 5);
+  const line = (list: [string, number][]) => list.reduce((a, [, v], j) => a + cw(v) + (j ? CHIP_GAP : 0), 0);
+  const room = cell - 4 - 2 * CHIP_PAD;
+  const rows: [string, number][][] = [];
+  let cur: [string, number][] = [];
+  for (const e of entries) {
+    if (cur.length && line([...cur, e]) > room) { rows.push(cur); cur = []; }
+    cur.push(e);
+  }
+  if (cur.length) rows.push(cur);
+  const w = Math.max(19, Math.max(...rows.map(line)) + 2 * CHIP_PAD);
+  const chips: RecordChip[] = [];
+  rows.forEach((r, i) => {
+    let dx = (w - line(r)) / 2;
+    for (const [key, value] of r) { chips.push({ key, value, dx, dy: i * CHIP_ROW, w: cw(value) }); dx += cw(value) + CHIP_GAP; }
+  });
+  return { w, h: 18 + (rows.length - 1) * CHIP_ROW, chips };
 }
 
 /** Export flow clues fix the export of one column: `country:col` -> value. */
@@ -144,6 +182,8 @@ export interface BandItem {
   lane: number;
   /** Programme: its range (user units). */
   range?: [number, number];
+  /** Record drawn as chips (`recordChips`): its layout. */
+  rec?: RecordLayout;
 }
 
 /** A programme line under the grid (screen): its clue, range and lane (0 right under the grid). */
@@ -164,7 +204,7 @@ export interface BandPlan {
  * whatever the play state (the state mark sits on the corner). Screen programmes are only lines
  * under the grid: two that share no slot share a lane. The lines push the hours and the band down.
  */
-export function bandPlan(grid: Grid, cell: number, style: BoardStyle = 'A'): BandPlan {
+export function bandPlan(grid: Grid, cell: number, style: BoardStyle = 'A', recordChips = false): BandPlan {
   const X0 = boardLead(grid);
   const xs = (c: number) => X0 + c * cell;
   const minX = X0;
@@ -186,6 +226,11 @@ export function bandPlan(grid: Grid, cell: number, style: BoardStyle = 'A'): Ban
       const mid = xs(cl.col) + cell / 2;
       const [x1, x2] = extent(mid, w);
       raw.push({ kind: 'price', index, label, w, mid, x1, x2 });
+    } else if (cl.type === 'column' && recordChips && style === 'A') {
+      const rec = recordLayout(cl.counts, cell);
+      const mid = xs(cl.col) + cell / 2;
+      const [x1, x2] = extent(mid, rec.w);
+      raw.push({ kind: 'column', index, label: '', w: rec.w, mid, x1, x2, rec });
     } else if (cl.type === 'column') {
       const narrow = cell < 44;
       const count = Object.keys(cl.counts).length;
@@ -215,21 +260,26 @@ export function bandPlan(grid: Grid, cell: number, style: BoardStyle = 'A'): Ban
   const offset = lineEnds.length ? barDrop(style) + (lineEnds.length - 1) * LINE_PITCH
     : raw.some((r) => r.kind === 'bar') ? barDrop(style) : 0;
   const ends: number[] = [];
+  // A lane is as tall as its tallest item (a wrapped record takes more than one line).
+  const laneH: number[] = [];
   for (const m of [...raw].sort((a, b) => a.x1 - b.x1 || a.index - b.index)) {
     let lane = ends.findIndex((e) => e + 4 <= m.x1);
-    if (lane < 0) { lane = ends.length; ends.push(0); }
+    if (lane < 0) { lane = ends.length; ends.push(0); laneH.push(BAND_PITCH); }
     ends[lane] = m.x2;
-    items.push({ ...m, lane, top: offset + lane * BAND_PITCH });
+    laneH[lane] = Math.max(laneH[lane]!, (m.rec?.h ?? 18) + 8);
+    items.push({ ...m, lane, top: 0 });
   }
+  const laneTop = laneH.map((_, l) => offset + laneH.slice(0, l).reduce((a, b) => a + b, 0));
+  for (const it of items) it.top = laneTop[it.lane]!;
   lines.sort((a, b) => a.index - b.index);
-  return { items, lines, height: ends.length ? offset + ends.length * BAND_PITCH : offset, offset };
+  return { items, lines, height: offset + laneH.reduce((a, b) => a + b, 0), offset };
 }
 
 /**
  * Board sizes. The row count covers the highest the silhouette can go (exports up to the line
  * capacity, STEP pairs), so the rows under the grid never move while the player exports.
  */
-export function boardGeometry(grid: Grid, style: BoardStyle, cell: number): BoardGeometry {
+export function boardGeometry(grid: Grid, style: BoardStyle, cell: number, recordChips = false): BoardGeometry {
   const n = grid.columns.length;
   const res = residual(grid);
   const weather = grid.columns.map((_, c) => (grid.weather.R[c] ?? 0) + (grid.weather.F[c] ?? 0));
@@ -249,7 +299,7 @@ export function boardGeometry(grid: Grid, style: BoardStyle, cell: number): Boar
   const tops = style === 'B' ? res.map(() => rows) : colMax;
   const need = Math.max(0, ...tags.map((k, c) => (k ? k * 22 + 6 - (rows - tops[c]!) * cell : 0)));
   const topPad = Math.max(8, need);
-  const bandHeight = bandPlan(grid, cell, style).height;
+  const bandHeight = bandPlan(grid, cell, style, recordChips).height;
   // Export rows (one per neighbor); STEP: chosen from the order book on screen, a row of boxes on paper.
   const bottomRows = grid.neighbors.length + (grid.step && style === 'B' ? 1 : 0);
   const lead = boardLead(grid);
@@ -335,8 +385,9 @@ let uid = 0;
 export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometry } {
   const { grid, state, ev, style, cell } = input;
   const A = style === 'A';
-  const geo = boardGeometry(grid, style, cell);
-  const plan = bandPlan(grid, cell, style);
+  const chips = !!input.recordChips && A;
+  const geo = boardGeometry(grid, style, cell, chips);
+  const plan = bandPlan(grid, cell, style, chips);
   const { n, rows: H, weather } = geo;
   const ink = A ? INK_A : INK_B;
   const soft = A ? SOFT_A : SOFT_B;
@@ -590,6 +641,17 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     if (cl.type === 'price') {
       const py = bandY + it.top + 3;
       s += `<g class="tag">${pill(it.mid, py, it.w, A ? fill(cl.piece) : '#fff', A ? null : ink, (tc) => T(tc, py + 12.5, it.label), st)}</g>`;
+    } else if (cl.type === 'column' && it.rec) {
+      // Bare chips centred on the slot; the state mark on the group's top right corner.
+      const rec = it.rec;
+      const py = bandY + it.top + 3;
+      const px = Math.min(Math.max(it.mid - rec.w / 2, minX), Math.max(minX, maxX - rec.w));
+      s += `<g class="tag record-chips">${rec.chips.map((e) => {
+        const p = e.key.startsWith('I:') ? 'I' : e.key;
+        const ex = px + e.dx;
+        const ey = py + e.dy;
+        return `<rect x="${ex}" y="${ey + 2.5}" width="${e.w}" height="13" rx="4" fill="${fill(p)}"/>` + T(ex + e.w / 2, ey + 12.5, String(e.value), { size: 9 });
+      }).join('')}${clueMark(Math.min(px + rec.w - 2, maxX - 4), py + 1, st)}</g>`;
     } else if (cl.type === 'column') {
       const entries = Object.entries(cl.counts);
       const py = bandY + it.top + 3;
