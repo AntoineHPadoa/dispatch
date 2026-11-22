@@ -71,7 +71,7 @@ export function renderHome(root: HTMLElement, grids: readonly Grid[], progress: 
   const prev = previousBulletins(grids, today);
   const list = dossiers(grids);
   root.innerHTML = `<div class="m home">
-    ${siteHead(`<div class="head-actions"><a class="ghost" href="#/imprimer/tout">${icon('print')}${esc(UI.printAll)}</a><button type="button" class="ghost" aria-expanded="false" aria-controls="rules" data-rules>${esc(UI.bulletin.howTo)}</button></div>`)}
+    ${siteHead(`<div class="head-actions"><a class="ghost print-all" href="#/imprimer/tout" aria-label="${esc(UI.printAll)}" title="${esc(UI.printAll)}">${icon('print')}<span class="label">${esc(UI.printAll)}</span></a><button type="button" class="ghost" aria-expanded="false" aria-controls="rules" data-rules>${esc(UI.bulletin.howTo)}</button></div>`)}
     <h1 class="sr-only">${esc(UI.appName)}</h1>
     <section class="card rules" id="rules" hidden><h2 class="ct">${esc(UI.rulesTitle)}</h2><p class="rtag">${esc(UI.tagline)}</p><ol>${UI.rules.map((r) => `<li>${esc(r)}</li>`).join('')}</ol></section>
     <div class="hgrid">
