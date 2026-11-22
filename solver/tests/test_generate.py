@@ -11,6 +11,7 @@ from conftest import FIXTURES
 from dispatch_solver import cli, exact
 from dispatch_solver.board import reference_composition
 from dispatch_solver.deduce import deduce
+from dispatch_solver.deduce.trace import decisions
 from dispatch_solver.generate.bulletin import TEMPLATES, make_bulletin
 from dispatch_solver.generate.lot import Quotas, _attempt, check_lot, make_candidate, run_lot
 from dispatch_solver.generate.silhouettes import FAMILIES, draw_day, sky
@@ -130,8 +131,12 @@ def test_bulletin_peaks_and_plateau():
 
 
 def test_bulletin_only_uses_visible_traits():
-    g = first({"cols": 12, "neighbors": 2, "co2_cap": "auto"})
-    assert g["co2_cap"] > 0
+    g = next(
+        g
+        for seed in range(40)
+        for g in [make_candidate({"cols": 12, "neighbors": 2, "co2_cap": "auto"}, seed)[0]]
+        if g is not None and g["co2_cap"]
+    )
     b = make_bulletin(g, g["lab"]["family"], random.Random(1))
     titles = TEMPLATES["titles"][g["lab"]["family"]] + [x for v in TEMPLATES["trait_titles"].values() for x in v]
     assert b["title"] in titles
@@ -303,3 +308,77 @@ def test_small_lot():
     st = extra["stats"]
     assert st["kept"] == 3 and st["attempts"] >= 3
     assert {"ramp_grids", "ramp_grids_with_technique", "ramp_techniques", "seconds_per_kept_grid"} <= set(st)
+
+
+def test_dead_mechanics_are_cleaned():
+    """C1: every neighbor left trades in the reference; a CO2 cap left is used by a carbon step."""
+    seen = {"neighbors": 0, "co2_cap": 0, "kept_cap": 0}
+    for cfg in ({"cols": 8, "neighbors": 3}, {"cols": 8, "inventory": "exact", "co2_cap": "auto", "neighbors": 1}):
+        for seed in range(12):
+            g, _why, _ = make_candidate(cfg, seed)
+            if g is None:
+                continue
+            sol = g["solution"]
+            live = set(sol["exports"]) | {p["country"] for p in sol["placements"] if p["piece"] == "I"}
+            assert {nb["id"] for nb in g["neighbors"]} <= live
+            assert not set(g["lab"]["cleaned"].get("neighbors", [])) & {nb["id"] for nb in g["neighbors"]}
+            seen["neighbors"] += len(g["lab"]["cleaned"].get("neighbors", []))
+            res = deduce(g)
+            assert res.solved and exact.count(g).count == 1
+            if g["co2_cap"] is not None:
+                assert any(s.rule == "carbon" for s in res.steps) and g["lab"]["decisions"].get("carbon")
+                seen["kept_cap"] += 1
+            seen["co2_cap"] += "co2_cap" in g["lab"]["cleaned"]
+            assert ("co2" in g["lab"]["mechanics"]) == (g["co2_cap"] is not None)
+    assert seen["neighbors"] and seen["co2_cap"]
+
+
+def test_decisions_measure_and_no_decision_reject():
+    """A grid without any decision is filling (reject no_decision); min_decisions 0 lets it through."""
+    reasons, kinds = set(), set()
+    for seed in range(30):
+        g, why, _ = make_candidate({"cols": 8}, seed)
+        reasons.add(why)
+        if g is not None:
+            dec = g["lab"]["decisions"]
+            assert sum(dec.values()) >= 1 and dec == decisions(g, deduce(g).steps)
+            assert set(g["lab"]["live_mechanics"]) == set(dec) - {"price"}
+            assert g["lab"]["bars"] == sum(1 for p in g["solution"]["placements"] if p["piece"] != "I")
+            kinds |= set(dec)
+    assert "no_decision" in reasons
+    filling = [
+        g
+        for seed in range(30)
+        for g in [make_candidate({"cols": 8, "min_decisions": 0}, seed)[0]]
+        if g is not None and not g["lab"]["decisions"]
+    ]
+    assert filling
+    _lot, errors = check_lot({"lot": "x", "size": 2, "mix": [{"cols": 8, "min_decisions": -1}]})
+    assert errors and "min_decisions" in errors[0]
+
+
+def test_a_published_flow_is_not_a_decision():
+    g = first({"cols": 8, "neighbors": 1, "inventory": "exact"}, seeds=range(80))
+    dec = g["lab"]["decisions"]
+    found = [(k, c) for k, v in g["solution"]["exports"].items() for c, x in enumerate(v) if x]
+    if not found or not dec.get("exchange"):
+        pytest.skip("no export decision in this draw")
+    k, c = found[0]
+    flow = {"type": "flow", "col": c, "country": k, "dir": "export", "value": g["solution"]["exports"][k][c]}
+    h = {**g, "clues": g["clues"] + [flow]}
+    assert decisions(h, deduce(h).steps).get("exchange", 0) == dec["exchange"] - 1
+
+
+def _dgrid(fam: str, r: int, dec: dict) -> dict:
+    g = _qgrid(fam, r, [1, 2 + 3 * len(fam) + len(dec)])  # distinct residual shapes: no duplicate
+    g["lab"]["decisions"] = dec
+    return g
+
+
+def test_single_decision_quota():
+    q = Quotas(10, {"min_per_rating": 0, "max_same_family": 10, "max_same_single_decision": 1})
+    q.add(_dgrid("a", 1, {"exchange": 2}))
+    assert q.check(_dgrid("bb", 1, {"exchange": 1})) == "quota:single_decision"
+    assert q.check(_dgrid("ccc", 1, {"exchange": 1, "tall": 1})) is None  # two types: not a single-type grid
+    assert q.check(_dgrid("dddd", 1, {"step": 1})) is None
+    assert Quotas(10, {"min_per_rating": 0}).check(_dgrid("eeeee", 1, {"exchange": 1})) is None  # no limit by default

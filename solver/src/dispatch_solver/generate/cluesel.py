@@ -1,4 +1,4 @@
-"""Clue selection: the smallest set of market clues that makes a grid deducible (§8.2, §8.3, §10 step 4).
+"""Clue selection: the smallest set of market clues that makes a grid deducible (§8.2, §8.3, §10 step 5).
 
 - clue_pool(): every clue the reference solution can publish, for the allowed types: price per column,
   record per column and key, flow per column and neighbor, program per bar, running length per plant and

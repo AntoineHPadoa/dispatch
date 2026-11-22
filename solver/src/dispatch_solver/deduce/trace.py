@@ -10,6 +10,8 @@
   exchanges it fixed ({country: {"export": [[col, value]]}, "step": [[pump, turbine]]}) and `scope: "day"`
   when a day total was used.
 - Result.summary(): the measures kept for the lab and the difficulty calibration.
+- decisions(): the choices the deduction must settle and that change the solution, by type (DECISION_TYPES),
+  from the reference solution, the clues and the trace; a grid without any is "filling" (lab.decisions).
 """
 
 from __future__ import annotations
@@ -245,3 +247,86 @@ class Result:
         if self.composition is not None:
             out["composition"] = self.composition
         return out
+
+
+# A decision is a choice of the reference solution that the deduction has to settle (no clue states it,
+# the empty board does not force it) and that changes the solution. One unit per item:
+# - exchange: a (neighbor, slot) with a non-zero export or import. An export counts when a step other than
+#   `flow` fixes its value (an export never fixed by a step is forced from the start) and no flow clue
+#   publishes it. An import bar counts when a step other than `flow` lays it and no flow clue or column
+#   record of that neighbor gives it; an import only found by counting the columns at the end is filling.
+# - step: a pumping / turbining pair of the reference, when a step fixes the STEP option.
+# - tall: a coal bar laid 2 high (the tall piece may be 1 or 2), unless an engaged clue lays it.
+# - ramp: a coal ramp bar (trap / stair), unless an engaged clue lays it.
+# - carbon: 1 when the CO2 cap removes something (a `carbon` step).
+# - stock: 1 when the dam's stock (max_cells, free inventory) is all used and an `exhausted` step applies it.
+# - price: a price clue that forces its plant into a single cell (`top_price` step), per clue.
+DECISION_TYPES = ("exchange", "step", "tall", "ramp", "carbon", "stock", "price")
+MECHANIC_TYPES = ("exchange", "step", "tall", "ramp", "carbon", "stock")  # live mechanics (C3): price excluded
+
+
+def decisions(g: dict[str, Any], steps: list[Step]) -> dict[str, int]:
+    """{type: count} of the decisions of grid g (its reference solution) under the trace `steps`."""
+    sol = g["solution"]
+    clues = g.get("clues", [])
+    out: dict[str, int] = {}
+
+    def add(kind: str, k: int = 1) -> None:
+        if k:
+            out[kind] = out.get(kind, 0) + k
+
+    flows = {(c["country"], c["col"], c.get("dir", "export")) for c in clues if c["type"] == "flow"}
+    records = {(k[2:], c["col"]) for c in clues if c["type"] == "column" for k in c["counts"] if k.startswith("I:")}
+    fixed_by: dict[tuple[str, int], str] = {}
+    step_rule: str | None = None
+    for s in steps:
+        for nid, ex in s.exchanges.items():
+            if nid == "step":
+                step_rule = step_rule or s.rule
+                continue
+            for c, _v in ex.get("export", []):
+                fixed_by.setdefault((nid, c), s.rule)
+    for nid, values in sol.get("exports", {}).items():
+        for c, v in enumerate(values):
+            if v and (nid, c, "export") not in flows and fixed_by.get((nid, c), "flow") != "flow":
+                add("exchange")
+    placed_by: dict[tuple[str, int], str] = {}
+    for s in steps:
+        for p in s.placed:
+            if p["piece"] == "I":
+                placed_by.setdefault((p["country"], p["col"]), s.rule)
+    imports = {(p["country"], p["col"]) for p in sol["placements"] if p["piece"] == "I"}
+    add(
+        "exchange",
+        sum(
+            1
+            for x in imports
+            if (*x, "import") not in flows and x not in records and placed_by.get(x, "given") not in ("given", "flow")
+        ),
+    )
+    if sol.get("step") and step_rule is not None:
+        add("step", len(sol["step"]))
+    engaged = {(c["piece"], c["row"], c["col"], c["len"]) for c in clues if c["type"] == "engaged"}
+    coal = g["pieces"].get("C", {})
+    for p in sol["placements"]:
+        if p["piece"] != "C" or (p["piece"], p["row"], p["col"], p["len"]) in engaged:
+            continue
+        if coal.get("shape", "rect") != "rect":
+            add("ramp")
+        elif p.get("height", 1) == 2:
+            add("tall")
+    if any(s.rule == "carbon" for s in steps):
+        add("carbon")
+    inv = g.get("inventory", {})
+    cap = inv.get("pieces", {}).get("B", {}).get("max_cells")
+    if cap is not None and inv.get("level") == "none":
+        used = sum(p["len"] for p in sol["placements"] if p["piece"] == "B")
+        if used == cap and any(s.rule == "exhausted" and any(r["piece"] == "B" for r in s.removed) for s in steps):
+            add("stock")
+    add("price", len({i for s in steps if s.rule == "top_price" for i in s.clues}))
+    return dict(sorted(out.items(), key=lambda kv: DECISION_TYPES.index(kv[0])))
+
+
+def live_mechanics(dec: dict[str, int]) -> list[str]:
+    """Mechanics that change the solution and that the deduction must find (C3): decision types but price."""
+    return [k for k in MECHANIC_TYPES if dec.get(k)]
