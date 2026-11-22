@@ -341,11 +341,12 @@ export function validateGrid(raw: unknown): ValidationResult {
     if (d && d.shape !== undefined && d.shape !== 'rect') return height === 1; // a ramp has a fixed profile
     return !!d && Array.isArray(d.height) && d.height.includes(height);
   };
-  /** Geometry of a laid bar: allowed width and height, inside the grid. */
+  /** Geometry of a laid bar: allowed width and height, inside the grid, off the weather. */
   const checkBarGeometry = (at: string, id: PieceId, p: Obj) => {
     if (isPos(p.len) && !allowsLen(id, p.len)) err(`${at}.len: width not allowed for ${id}`);
     if (isNat(p.col) && isPos(p.len) && p.col + p.len > n) err(`${at}: goes past the last column`);
     if (!allowsHeight(id, p.height ?? 1)) err(`${at}.height: height not allowed for ${id}`);
+    checkWeather(at, p);
   };
   /** Weather cells at the bottom of column `c` (F + R), 0 while the weather is malformed. */
   const weatherAt = (c: number): number => {
@@ -354,7 +355,7 @@ export function validateGrid(raw: unknown): ValidationResult {
   };
   /** A placement's cells all start on its row (every profile has a flat base): none may sit on the weather. */
   const checkWeather = (at: string, p: Obj) => {
-    if (!isNat(p.row) || !isCol(p.col) || !isPos(p.len)) return;
+    if (!isNat(p.row) || !isNat(p.col) || !isPos(p.len)) return;
     for (let c = p.col; c < Math.min(n, p.col + p.len); c++) {
       if (p.row < weatherAt(c)) { err(`${at}: covers a weather cell at ${String(cols[c])}`); return; }
     }
@@ -494,7 +495,6 @@ export function validateGrid(raw: unknown): ValidationResult {
           if (!isNat(cl.row)) err(`${at}.row: integer >= 0 expected`);
           if (cl.height !== undefined && !isPos(cl.height)) err(`${at}.height: positive integer expected`);
           else if (isPieceId(cl.piece) && pieceIds.has(cl.piece)) checkBarGeometry(at, cl.piece, cl);
-          checkWeather(at, cl);
           break;
       }
     });
@@ -544,10 +544,10 @@ export function validateGrid(raw: unknown): ValidationResult {
           if (isPos(p.len) && p.len !== 1) err(`${at}.len: an import is one cell`);
           if ((p.height ?? 1) !== 1) err(`${at}.height: an import is one cell`);
           if (isNat(p.col) && isPos(p.len) && p.col + p.len > n) err(`${at}: goes past the last column`);
+          checkWeather(at, p);
         } else if (isPieceId(p.piece) && pieceIds.has(p.piece)) {
           checkBarGeometry(at, p.piece, p);
         }
-        checkWeather(at, p);
       });
     }
   }

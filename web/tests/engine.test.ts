@@ -160,6 +160,18 @@ describe('weather cells (imposed bricks, absolute rows)', () => {
     expect(errors).toContain('solution.placements[1]: covers a weather cell at 12h');
     expect(errors.filter((e) => e.includes('weather cell'))).toHaveLength(2);
   });
+
+  it('like the Python validator, an unknown piece or a bad height gets no weather error', () => {
+    const bad = makeGrid({
+      ...g,
+      clues: [{ type: 'engaged', piece: 'T', row: 1, col: 3, len: 1, height: 0 }],
+      solution: { exports: {}, step: [], placements: [{ piece: 'C', row: 1, col: 2, len: 3 }] },
+    });
+    const errors = validateGrid(bad).errors;
+    expect(errors).toContain('solution.placements[0].piece: not a grid piece');
+    expect(errors).toContain('clues[0].height: positive integer expected');
+    expect(errors.filter((e) => e.includes('weather cell'))).toEqual([]);
+  });
 });
 
 describe('placement rules (one invalid case per rule)', () => {

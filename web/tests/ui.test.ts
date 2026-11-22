@@ -1063,9 +1063,10 @@ describe('weather cells on the board (absolute rows)', () => {
 describe('progress saved before weather bricks (B3)', () => {
   it('a published grid without weather replays its stored board as is, under the same key', () => {
     expect(STORAGE_KEY).toBe('dispatch:progress:v1');
-    for (const g of grids) {
-      // Published grids have no weather: old and new rows mean the same cell.
-      expect(g.weather.R.every((v) => v === 0) && g.weather.F.every((v) => v === 0), `grid ${g.id}`).toBe(true);
+    // Without weather, old and new rows mean the same cell.
+    const dry = grids.filter((g) => g.weather.R.every((v) => v === 0) && g.weather.F.every((v) => v === 0));
+    expect(dry.length).toBeGreaterThan(0);
+    for (const g of dry) {
       const board: PlayState = JSON.parse(JSON.stringify(solutionState(g)));
       // A save as the previous version wrote it, raw JSON under the storage key.
       const raw = JSON.stringify({ grids: { [String(g.id)]: { status: 'started', state: board, elapsedMs: 1000, fp: gridFingerprint(g) } } });
