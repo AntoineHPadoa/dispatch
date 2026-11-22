@@ -159,9 +159,9 @@ describe('published grids', () => {
     expect(solutionErrors(h).join()).toMatch(/clue 0/);
   });
 
-  it('tutorial grids keep their intro and introduced technique', () => {
+  it('tutorial grids keep their introduced technique and have no intro (the lore line replaces it)', () => {
     for (const g of grids.filter((x) => x.section === 'tutorial')) {
-      expect(g.intro).toBeTruthy();
+      expect(g.intro).toBeUndefined();
       expect(g.teaches?.length).toBeGreaterThan(0);
     }
   });

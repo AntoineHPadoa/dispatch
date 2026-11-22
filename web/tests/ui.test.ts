@@ -21,6 +21,7 @@ import {
 } from '../src/ui/game';
 import { MSG, TUTORIAL_LORE, durationText } from '../src/i18n/fr';
 import { STEP_KEY, bookEntries, inventoryExchanges, isDayClue, orderClues, withInventoryExchanges, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, richClueText, shownClueCount, co2Costs } from '../src/ui/panels';
+import { esc } from '../src/ui/palette';
 import { renderSheet, slotLegend } from '../src/ui/print';
 import { OK, PIECE_COLORS } from '../src/ui/palette';
 import { stepArrowAction, stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from '../src/ui/step';
@@ -1194,6 +1195,12 @@ describe('order book without exchanges line; exchanges in the clue card', () => 
     for (const id of [8, 9, 10, 11]) expect(inventoryExchanges(byId(id))).toBeNull();
   });
 
+
+  it('a tutorial sheet prints its lore line, without any technique name', () => {
+    const sheet = renderSheet(byId(3), 3);
+    expect(sheet).toContain(`<p class="lead">${esc(TUTORIAL_LORE[3]!)}</p>`);
+    expect(sheet).not.toContain('Carnet juste.');
+  });
   it('the paper day list carries the exchanges line, and the card has one name', () => {
     const sheet = renderSheet(byId(6), 6);
     expect(sheet).toContain('Aujourd’hui');
