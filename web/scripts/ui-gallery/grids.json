@@ -394,5 +394,44 @@
       ]
     },
     "difficulty": {"rating": 4, "label": "Expert", "techniques": ["column_sum", "exhausted", "refuted", "room", "share_out", "single_cover"]}
+  },
+  {
+    "id": 911,
+    "title": "Galerie · Ligne chargée",
+    "section": "rated",
+    "intro": "Grille fictive de galerie, reprise du candidat 17 du lot v3-jouer-a : une limite de 4 points de CO₂, deux cases de TAC et deux voisins dont les imports coûtent 1 point par case.",
+    "columns": ["0h", "2h", "4h", "6h", "8h", "10h", "12h", "14h", "16h", "18h", "20h", "22h"],
+    "demand": [3, 3, 3, 5, 6, 5, 6, 5, 6, 5, 3, 3],
+    "pieces": {
+      "N": {"len": [3, 4, 5, 6], "height": [1], "rank": 1, "co2": 0},
+      "T": {"len": [1], "height": [1], "rank": 5, "co2": 2}
+    },
+    "weather": {"R": [0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0], "F": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]},
+    "neighbors": [{"id": "UK", "name": "Royaume-Uni", "cap": 1, "co2": 1}, {"id": "BE", "name": "Belgique", "cap": 1, "co2": 1}],
+    "step": false,
+    "co2_cap": 4,
+    "inventory": {"level": "exact", "pieces": {"N": {"bars": [6, 6, 5, 5, 5, 4, 4, 4, 3, 3, 3, 3]}, "T": {"cells": 2}}, "exports": {"UK": 2, "BE": 1}, "imports": {"UK": 0, "BE": 0}},
+    "clues": [{"type": "column", "col": 10, "counts": {"N": 4}}, {"type": "flow", "col": 10, "country": "BE", "dir": "export", "value": 0}, {"type": "flow", "col": 5, "country": "UK", "dir": "export", "value": 1}],
+    "solution": {
+      "exports": {"UK": [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0], "BE": [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]},
+      "step": [],
+      "placements": [
+        {"piece": "N", "row": 0, "col": 0, "len": 4},
+        {"piece": "N", "row": 1, "col": 0, "len": 5},
+        {"piece": "N", "row": 2, "col": 0, "len": 6},
+        {"piece": "N", "row": 3, "col": 3, "len": 3},
+        {"piece": "N", "row": 4, "col": 3, "len": 3},
+        {"piece": "N", "row": 5, "col": 4, "len": 5},
+        {"piece": "T", "row": 0, "col": 5, "len": 1},
+        {"piece": "N", "row": 1, "col": 5, "len": 3},
+        {"piece": "N", "row": 2, "col": 6, "len": 6},
+        {"piece": "N", "row": 3, "col": 6, "len": 5},
+        {"piece": "N", "row": 4, "col": 6, "len": 4},
+        {"piece": "T", "row": 0, "col": 7, "len": 1},
+        {"piece": "N", "row": 1, "col": 8, "len": 4},
+        {"piece": "N", "row": 0, "col": 9, "len": 3}
+      ]
+    },
+    "difficulty": {"rating": 2, "label": "Moyen", "techniques": ["exhausted", "flow", "record", "ribbon", "room", "silhouette", "single_cover"]}
   }
 ]

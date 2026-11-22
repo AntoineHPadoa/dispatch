@@ -20,7 +20,7 @@ import {
   poseMessage,
 } from '../src/ui/game';
 import { MSG, TUTORIAL_LORE, durationText } from '../src/i18n/fr';
-import { STEP_KEY, bookEntries, inventoryExchanges, isDayClue, orderClues, withInventoryExchanges, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, richClueText, shownClueCount } from '../src/ui/panels';
+import { STEP_KEY, bookEntries, inventoryExchanges, isDayClue, orderClues, withInventoryExchanges, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, richClueText, shownClueCount, co2Costs } from '../src/ui/panels';
 import { renderSheet, slotLegend } from '../src/ui/print';
 import { PIECE_COLORS } from '../src/ui/palette';
 import { stepArrowAction, stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from '../src/ui/step';
@@ -430,8 +430,9 @@ describe('print sheet', () => {
     expect(renderCo2(g, s)).not.toContain('plafond');
     const open = renderClues(g, evaluate(g, s).clues, s);
     expect(open).toContain('Limite CO₂');
-    expect(open).toContain('points de CO₂ au plus');
-    expect(open).toContain('Par case :');
+    // The publication keeps the limit only; the points per cell are the gauge's legend.
+    expect(open).toContain('Aujourd’hui : <span class="slot">9</span> points de CO₂ au plus.</span>');
+    expect(open).not.toContain('Par case');
     expect(open).toMatch(/Limite CO₂.*?class="state "/s);
     expect(renderClues(g, evaluate(g, s).clues, s, true)).toMatch(/Limite CO₂.*?class="state ok"/s);
     const over = { ...g, co2_cap: 0 };
@@ -441,15 +442,26 @@ describe('print sheet', () => {
     expect(shownClueCount(g)).toBe(shownClueCount({ ...g, co2_cap: null }) + 1);
   });
 
-  it('the CO2 publication lists points per cell, highest first: plants, then imports', () => {
+  it('the CO2 card: continuous track, points left, legend of the layable emitters, most points first', () => {
     const g = rich();
     g.pieces = { ...g.pieces, C: { len: [3], height: [1], rank: 3, co2: 3 }, G: { len: [2, 3], height: [1], rank: 4, co2: 1 }, T: { ...g.pieces.T!, co2: 2 } };
     g.inventory = { level: 'none', pieces: { N: {}, C: {}, G: {}, T: {} } };
-    g.neighbors = [{ id: 'GB', name: 'Royaume-Uni', cap: 1, co2: 1 }, { id: 'DE', name: 'Allemagne', cap: 1, co2: 3 }];
+    g.neighbors = [{ id: 'GB', name: 'Royaume-Uni', cap: 1, co2: 1 }, { id: 'DE', name: 'Allemagne', cap: 1, co2: 3 }, { id: 'ES', name: 'Espagne', cap: 1, co2: 0 }];
     const s = initialState(g);
-    expect(renderClues(g, evaluate(g, s).clues, s)).toContain(
-      'Par case : charbon <span class="slot">3</span>, TAC <span class="slot">2</span>, gaz <span class="slot">1</span>, '
-      + 'import d’Allemagne <span class="slot">3</span>, import du Royaume-Uni <span class="slot">1</span>.');
+    const html = renderCo2(g, s);
+    expect(html).toContain('<div class="track">');
+    expect(html).toMatch(/<span class="soft">\d+ restants?<\/span>/);
+    // Ties keep the book order: plants, then import lines; a line at 0 point is left out.
+    const names = [...html.matchAll(/<\/i>([^<]+) <span class="per">(\d+)<\/span>/g)].map((m) => `${m[1]} ${m[2]}`);
+    expect(names).toEqual(['Charbon 3', 'Import d’Allemagne 3', 'TAC 2', 'Gaz 1', 'Import du Royaume-Uni 1']);
+    expect(html).not.toMatch(/<b>\d/); // numbers in normal weight
+    // No import possible today: no import in the legend, no CO2 under the neighbor rows.
+    g.clues = [...g.clues, { type: 'exchanges', imports: { '*': 0 } }];
+    expect(co2Costs(g).map((c) => c.name)).toEqual(['Charbon', 'TAC', 'Gaz']);
+    const svg = renderBoard({ grid: g, state: s, ev: evaluate(g, s), style: 'A', cell: 50 }).svg;
+    expect(svg).not.toContain('CO₂');
+    const g2 = { ...g, clues: g.clues.slice(0, -1) };
+    expect(renderBoard({ grid: g2, state: s, ev: evaluate(g2, s), style: 'A', cell: 50 }).svg).toContain(UI.co2PerCell(3));
   });
 
   it('book by width: one glyph per width with its width and its own counter', () => {
