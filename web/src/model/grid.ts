@@ -3,7 +3,7 @@
  * - Types describe one puzzle: silhouette (demand - weather), pieces, neighbors, STEP, CO2 cap,
  *   inventory, market clues, reference solution, difficulty and the optional market bulletin.
  * - validateGrid() checks structure, cross-references (columns, pieces, countries) and geometry of the
- *   laid pieces (allowed width, height and ramp shape, inside the grid, STEP order, line capacity); it does not
+ *   laid pieces (allowed width, height and ramp shape, inside the grid, off the weather cells, STEP order, line capacity); it does not
  *   check that the solution satisfies the rules (that is the engine's job).
  */
 
@@ -158,7 +158,7 @@ export const CLUE_TYPES: readonly ClueType[] = [
   'price', 'bar', 'length', 'column', 'flow', 'exchanges', 'engaged',
 ];
 
-/** A laid piece. Rows count from 0 at the bottom (a ramp's base row); `height` defaults to 1. */
+/** A laid piece. Rows count from 0 at the bottom of the grid, weather cells included (a ramp's base row); `height` defaults to 1. */
 export interface Placement {
   piece: PlacementPiece;
   row: number;
@@ -347,6 +347,18 @@ export function validateGrid(raw: unknown): ValidationResult {
     if (isNat(p.col) && isPos(p.len) && p.col + p.len > n) err(`${at}: goes past the last column`);
     if (!allowsHeight(id, p.height ?? 1)) err(`${at}.height: height not allowed for ${id}`);
   };
+  /** Weather cells at the bottom of column `c` (F + R), 0 while the weather is malformed. */
+  const weatherAt = (c: number): number => {
+    if (!isObj(g.weather) || !isIntArray(g.weather.R, n) || !isIntArray(g.weather.F, n)) return 0;
+    return (g.weather.R[c] ?? 0) + (g.weather.F[c] ?? 0);
+  };
+  /** A placement's cells all start on its row (every profile has a flat base): none may sit on the weather. */
+  const checkWeather = (at: string, p: Obj) => {
+    if (!isNat(p.row) || !isCol(p.col) || !isPos(p.len)) return;
+    for (let c = p.col; c < Math.min(n, p.col + p.len); c++) {
+      if (p.row < weatherAt(c)) { err(`${at}: covers a weather cell at ${String(cols[c])}`); return; }
+    }
+  };
   const neighborCap = (id: unknown): number | null => {
     if (!Array.isArray(g.neighbors)) return null;
     const nb = g.neighbors.find((x) => isObj(x) && x.id === id);
@@ -482,6 +494,7 @@ export function validateGrid(raw: unknown): ValidationResult {
           if (!isNat(cl.row)) err(`${at}.row: integer >= 0 expected`);
           if (cl.height !== undefined && !isPos(cl.height)) err(`${at}.height: positive integer expected`);
           else if (isPieceId(cl.piece) && pieceIds.has(cl.piece)) checkBarGeometry(at, cl.piece, cl);
+          checkWeather(at, cl);
           break;
       }
     });
@@ -534,6 +547,7 @@ export function validateGrid(raw: unknown): ValidationResult {
         } else if (isPieceId(p.piece) && pieceIds.has(p.piece)) {
           checkBarGeometry(at, p.piece, p);
         }
+        checkWeather(at, p);
       });
     }
   }

@@ -15,7 +15,7 @@ import {
 import { checkShape, checkSilhouette } from './rules';
 import {
   co2Total, exportsAt, importsAt, pieceCells, pieceKey, rawSilhouette,
-  solutionState, totalExports, totalImports, type EngineError, type PlacedBar, type PlayState,
+  solutionState, totalExports, totalImports, weatherCells, type EngineError, type PlacedBar, type PlayState,
 } from './state';
 import { cellCount, cellsOf, cellsInColumn } from '../model/shapes';
 
@@ -48,8 +48,10 @@ export interface Composition {
 }
 
 export interface Evaluation {
-  /** Height to fill per column (0 when the surplus is not absorbed). */
+  /** Height to fill per column (0 when the surplus is not absorbed), above the weather. */
   silhouette: number[];
+  /** Weather cells per column: the first row to fill (rows are absolute). */
+  floor: number[];
   /** Broken rules, in French. */
   errors: EngineError[];
   /** Indexes of bars breaking a rule (outside the silhouette, overlapping, wrong shape). */
@@ -301,9 +303,10 @@ export function evaluate(grid: Grid, state: PlayState): Evaluation {
     }
     own.forEach((k) => covered.add(k));
   });
+  const floor = weatherCells(grid);
   const missingByCol = sil.map((h, c) => {
     let m = 0;
-    for (let r = 0; r < h; r++) if (!covered.has(`${r},${c}`)) m++;
+    for (let r = floor[c]!; r < floor[c]! + h; r++) if (!covered.has(`${r},${c}`)) m++;
     return m;
   });
   const missing = missingByCol.reduce((a, b) => a + b, 0);
@@ -336,7 +339,7 @@ export function evaluate(grid: Grid, state: PlayState): Evaluation {
   if (unmet.length === 0 && !matchesReference) add(TODO.otherSolution());
 
   return {
-    silhouette: sil, errors, invalidBars, missing, missingByCol, co2, clues, inventory, composition: comp,
+    silhouette: sil, floor, errors, invalidBars, missing, missingByCol, co2, clues, inventory, composition: comp,
     matchesReference, unmet, solved: unmet.length === 0,
   };
 }

@@ -5,9 +5,9 @@
 import { describe, expect, it } from 'vitest';
 import gridsJson from '../src/data/grids.json';
 import type { Grid } from '../src/model/grid';
-import { evaluate, newGame, place, rawSilhouette, solutionState } from '../src/engine';
+import { evaluate, newGame, place, rawSilhouette, solutionState, type PlayState } from '../src/engine';
 import {
-  alongShape, cancel, idle, isFlat, isSingleCell, moveTo, press, previewRect, rectBetween, release, tap, type Shape,
+  alongShape, cancel, idle, isFlat, isSingleCell, moveCursor, moveTo, press, previewRect, rectBetween, release, tap, type Shape,
 } from '../src/ui/gesture';
 import { canUndo, MAX_PAST, push, reset, start, undo } from '../src/ui/history';
 import {
@@ -22,6 +22,7 @@ import {
 import { MSG, durationText } from '../src/i18n/fr';
 import { STEP_KEY, bookEntries, inventoryExchanges, isDayClue, orderClues, withInventoryExchanges, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, richClueText, shownClueCount } from '../src/ui/panels';
 import { renderSheet, slotLegend } from '../src/ui/print';
+import { PIECE_COLORS } from '../src/ui/palette';
 import { stepArrowAction, stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from '../src/ui/step';
 import { UI } from '../src/i18n/fr';
 import { currentBulletin } from '../src/model/bulletin';
@@ -406,7 +407,7 @@ describe('print sheet', () => {
   it('on screen, the CO2 gauge counts points and flags an overflow', () => {
     const g = rich();
     const s = initialState(g);
-    const r = place(g, s, { piece: 'T', row: 0, col: 0, len: 1 });
+    const r = place(g, s, { piece: 'T', row: 1, col: 0, len: 1 });
     expect(r.ok).toBe(true);
     const html = renderCo2(g, r.ok ? r.state : s);
     expect(html).toContain('4 points sur 9');
@@ -1006,5 +1007,72 @@ describe('saved board and grid version (review S8 B M14)', () => {
     expect(savedBoard(saved, changed)).toBeUndefined();
     // an older save without fingerprint is kept
     expect(savedBoard({ status: 'started', state: s }, changed)).toEqual(s);
+  });
+});
+
+describe('weather cells on the board (absolute rows)', () => {
+  /** Grid 1 with a weather step: 1, 1, 2, 3, 1, 1 at the bottom, and the demand raised above it. */
+  function stepped(): Grid {
+    const g = byId(1);
+    const R = g.columns.map((_, c) => [0, 0, 1, 2][c] ?? 0);
+    g.weather = { R, F: g.columns.map(() => 1) };
+    g.demand = g.demand.map((d, c) => d + 2 + R[c]!);
+    return g;
+  }
+
+  it('hit-testing gives the grid row, weather rows included', () => {
+    const g = stepped();
+    const geo = boardGeometry(g, 'A', 50);
+    expect(cellAt(geo, geo.lead + 1, (geo.rows - 1) * 50 + 1)).toEqual({ row: 0, col: 0 });
+    expect(cellAt(geo, geo.lead + 50 * 3 + 1, (geo.rows - 4) * 50 + 1)).toEqual({ row: 3, col: 3 });
+  });
+
+  it('a bar above a weather step is drawn as one straight rectangle', () => {
+    const g = stepped();
+    const r = place(g, newGame(g), { piece: 'N', row: 3, col: 0, len: 6 });
+    expect(r.ok).toBe(true);
+    const state = r.ok ? r.state : newGame(g);
+    const { svg, geo } = renderBoard({ grid: g, state, ev: evaluate(g, state), style: 'A', cell: 50 });
+    const re = new RegExp(`<rect x="([\\d.]+)" y="([\\d.]+)" width="([\\d.]+)" height="([\\d.]+)" rx="\\d+" fill="${PIECE_COLORS.N.a}"`, 'g');
+    const rects = [...svg.matchAll(re)];
+    const bars = rects;
+    // One rectangle, six cells wide, on row 3 of the grid.
+    expect(bars).toHaveLength(1);
+    expect(Number(bars[0]![3])).toBe(6 * 50 - 3);
+    expect(Number(bars[0]![2])).toBe((geo.rows - 4) * 50 + 1.5);
+  });
+
+  it('the weather keeps its hatching', () => {
+    const g = stepped();
+    const { svg } = renderBoard({ grid: g, state: newGame(g), ev: evaluate(g, newGame(g)), style: 'A', cell: 50 });
+    const weather = g.columns.reduce((a, _, c) => a + g.weather.R[c]! + g.weather.F[c]!, 0);
+    expect(svg.match(/fill="url\(#h[RF]\d+\)"/g)).toHaveLength(weather);
+  });
+
+  it('the keyboard cursor never goes below the weather of its column', () => {
+    const floor = [1, 1, 2, 3, 1, 1];
+    expect(moveCursor({ row: 1, col: 0 }, -1, 0, floor, 5)).toEqual({ row: 1, col: 0 });
+    expect(moveCursor({ row: 1, col: 1 }, 0, 1, floor, 5)).toEqual({ row: 2, col: 2 });
+    expect(moveCursor({ row: 2, col: 2 }, 0, 1, floor, 5)).toEqual({ row: 3, col: 3 });
+    expect(moveCursor({ row: 3, col: 3 }, 0, 1, floor, 5)).toEqual({ row: 3, col: 4 });
+    expect(moveCursor({ row: 5, col: 4 }, 1, 0, floor, 5)).toEqual({ row: 5, col: 4 });
+    expect(moveCursor({ row: 1, col: 5 }, 0, 1, floor, 5)).toEqual({ row: 1, col: 5 });
+  });
+});
+
+describe('progress saved before weather bricks (B3)', () => {
+  it('a published grid without weather replays its stored board as is, under the same key', () => {
+    expect(STORAGE_KEY).toBe('dispatch:progress:v1');
+    for (const g of grids) {
+      // Published grids have no weather: old and new rows mean the same cell.
+      expect(g.weather.R.every((v) => v === 0) && g.weather.F.every((v) => v === 0), `grid ${g.id}`).toBe(true);
+      const board: PlayState = JSON.parse(JSON.stringify(solutionState(g)));
+      // A save as the previous version wrote it, raw JSON under the storage key.
+      const raw = JSON.stringify({ grids: { [String(g.id)]: { status: 'started', state: board, elapsedMs: 1000, fp: gridFingerprint(g) } } });
+      const kv: KeyValueStore = { getItem: (k) => (k === 'dispatch:progress:v1' ? raw : null), setItem: () => undefined };
+      const replay = savedBoard(new ProgressStore(() => kv).get().grids[String(g.id)], g);
+      expect(replay, `grid ${g.id}`).toEqual(board);
+      expect(evaluate(g, replay!).solved, `grid ${g.id}`).toBe(true);
+    }
   });
 });

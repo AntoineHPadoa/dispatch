@@ -160,6 +160,7 @@ export const MSG = {
   rampLength: (lens: number[]) => `Une rampe de charbon fait ${lenText(lens)}.`,
   height: (name: string, heights: number[]) => `La barre ${name} doit faire ${heights.join(' ou ')} GW de haut.`,
   silhouette: (col: string) => `Hors de la silhouette à ${col}.`,
+  weather: (col: string) => `La météo occupe déjà cette case à ${col}.`,
   overlap: () => 'Case déjà occupée.',
   unavailable: (of: string) => `Pas de centrale ${of} dans cette grille.`,
   unknownCountry: () => 'Ce pays n’est pas relié à la grille.',

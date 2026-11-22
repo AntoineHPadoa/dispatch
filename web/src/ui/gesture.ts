@@ -10,6 +10,7 @@
  *   (`alongShape`), so a vertical swipe never previews a bar.
  * - A coal ramp is laid like a bar: the touched row is its base, the drag gives its total width;
  *   the board draws the plateau above it.
+ * - Rows are absolute (0 at the bottom of the grid); the keyboard cursor stays above the weather.
  *
  * Example:
  *   let g = idle();
@@ -133,4 +134,14 @@ export function previewRect(state: GestureState, shape: Shape): Rect | null {
   }
   if (state.anchor && state.hover && !same(state.anchor, state.hover)) return rectBetween(state.anchor, state.hover, shape);
   return null;
+}
+
+/**
+ * Keyboard cursor after a move of (`dRow`, `dCol`): it stays in the columns, at most on row `top`,
+ * and never below the weather of its column (`floor[col]`, its first free row).
+ */
+export function moveCursor(cell: Cell, dRow: number, dCol: number, floor: readonly number[], top: number): Cell {
+  const col = Math.min(floor.length - 1, Math.max(0, cell.col + dCol));
+  const row = Math.max(floor[col] ?? 0, Math.min(top, cell.row + dRow));
+  return { row, col };
 }

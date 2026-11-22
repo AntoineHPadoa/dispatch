@@ -162,17 +162,19 @@
       "exports": {},
       "step": [],
       "placements": [
-        {"piece": "N", "row": 0, "col": 0, "len": 6, "height": 2},
-        {"piece": "G", "row": 0, "col": 6, "len": 2, "height": 2},
+        {"piece": "N", "row": 3, "col": 2, "len": 4, "height": 2},
+        {"piece": "G", "row": 1, "col": 6, "len": 2, "height": 2},
+        {"piece": "G", "row": 1, "col": 0, "len": 2},
         {"piece": "B", "row": 2, "col": 0, "len": 1},
         {"piece": "B", "row": 2, "col": 1, "len": 1},
-        {"piece": "C", "row": 2, "col": 2, "len": 4},
-        {"piece": "G", "row": 2, "col": 6, "len": 2},
-        {"piece": "C", "row": 3, "col": 2, "len": 3},
-        {"piece": "G", "row": 3, "col": 5, "len": 3},
-        {"piece": "T", "row": 4, "col": 4, "len": 1},
-        {"piece": "T", "row": 4, "col": 5, "len": 1},
-        {"piece": "T", "row": 4, "col": 6, "len": 1}
+        {"piece": "G", "row": 3, "col": 0, "len": 2},
+        {"piece": "C", "row": 5, "col": 3, "len": 3, "height": 2},
+        {"piece": "G", "row": 3, "col": 6, "len": 2, "height": 2},
+        {"piece": "T", "row": 2, "col": 2, "len": 1},
+        {"piece": "T", "row": 2, "col": 5, "len": 1},
+        {"piece": "T", "row": 5, "col": 2, "len": 1},
+        {"piece": "T", "row": 7, "col": 4, "len": 1},
+        {"piece": "T", "row": 5, "col": 6, "len": 1}
       ]
     },
     "difficulty": {"rating": 2, "label": "Moyen", "techniques": []}
@@ -198,7 +200,7 @@
     "co2_cap": null,
     "inventory": {
       "level": "exact",
-      "pieces": {"N": {"bars": [4, 3]}, "G": {"bars": [2]}, "T": {"cells": 1}},
+      "pieces": {"N": {"bars": [3, 3]}, "G": {"bars": [2]}, "T": {"cells": 2}},
       "exports": {"DE": 1},
       "imports": {"BE": 1},
       "step": 1
@@ -211,11 +213,12 @@
       "exports": {"DE": [0, 0, 0, 0, 1, 0, 0, 0], "BE": [0, 0, 0, 0, 0, 0, 0, 0]},
       "step": [{"pump": 3, "turbine": 6}],
       "placements": [
-        {"piece": "N", "row": 0, "col": 0, "len": 3},
-        {"piece": "N", "row": 0, "col": 4, "len": 4},
+        {"piece": "N", "row": 2, "col": 0, "len": 3},
         {"piece": "I", "country": "BE", "row": 1, "col": 0, "len": 1},
+        {"piece": "N", "row": 2, "col": 5, "len": 3},
         {"piece": "T", "row": 1, "col": 1, "len": 1},
-        {"piece": "G", "row": 1, "col": 6, "len": 2}
+        {"piece": "G", "row": 1, "col": 6, "len": 2},
+        {"piece": "T", "row": 4, "col": 4, "len": 1}
       ]
     },
     "difficulty": {"rating": 2, "label": "Moyen", "techniques": []}

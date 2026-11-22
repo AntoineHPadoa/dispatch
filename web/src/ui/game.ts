@@ -20,7 +20,7 @@ import { MSG, TECHNIQUES, UI, columnLabel, countryTo, durationText, placementLab
 import { siteHead } from './home-art';
 import { boardLead, lockedExports, renderBoard, cellAt, type BoardGeometry } from './board';
 import {
-  alongShape, cancel, idle, isFlat, moveTo, press, previewRect, release, tap, type Cell, type GestureState, type Rect, type Shape,
+  alongShape, cancel, idle, isFlat, moveCursor, moveTo, press, previewRect, release, tap, type Cell, type GestureState, type Rect, type Shape,
 } from './gesture';
 import { canUndo, push, reset, start, undo, type History } from './history';
 import { STEP_KEY, bookEntries, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, shownClueCount, type BookEntry } from './panels';
@@ -439,9 +439,12 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     const s0 = history.present;
     const pumps = s0.step.filter((p) => p.pump === c.col).length;
     const turbs = s0.step.filter((p) => p.turbine === c.col).length;
-    const top = ev.silhouette[c.col] ?? 0;
+    const top = (ev.floor[c.col] ?? 0) + (ev.silhouette[c.col] ?? 0);
     return (pumps > 0 && c.row >= top - pumps && c.row < top) || (turbs > 0 && c.row >= top && c.row < top + turbs);
   }
+
+  /** Keyboard cursor at first focus: the first free cell of the first column, above the weather. */
+  const startCursor = (): Cell => ({ row: ev.floor[0] ?? 0, col: 0 });
 
   // ---- pointer input
   function cellFromEvent(ev: PointerEvent | MouseEvent): Cell | null {
@@ -572,14 +575,13 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       return;
     }
     if (e.target !== wrap) return;
-    const n = grid.columns.length;
-    const c = cursor ?? { row: 0, col: 0 };
+    const c = cursor ?? startCursor();
     const moves: Record<string, [number, number]> = { ArrowLeft: [0, -1], ArrowRight: [0, 1], ArrowUp: [1, 0], ArrowDown: [-1, 0] };
     const mv = moves[e.key];
     if (mv) {
       e.preventDefault();
-      const top = Math.max(1, ...ev.silhouette) - 1;
-      cursor = { row: Math.min(top, Math.max(0, c.row + mv[0])), col: Math.min(n - 1, Math.max(0, c.col + mv[1])) };
+      const top = Math.max(1, ...ev.silhouette.map((h, k) => (ev.floor[k] ?? 0) + h)) - 1;
+      cursor = moveCursor(c, mv[0], mv[1], ev.floor, top);
       gesture = moveTo(gesture, cursor);
       drawBoard();
       scrollCursorIntoView();
@@ -665,7 +667,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     if (row) select(row.getAttribute('data-piece') ?? '');
   }
 
-  function onWrapFocus() { keyboard = wrap.matches(':focus-visible'); if (!cursor) cursor = { row: 0, col: 0 }; drawBoard(); }
+  function onWrapFocus() { keyboard = wrap.matches(':focus-visible'); if (!cursor) cursor = startCursor(); drawBoard(); }
   /** Losing focus only hides the keyboard cursor: no redraw when it was not shown. */
   function onWrapBlur() { if (keyboard && cursor) drawBoard(); }
 

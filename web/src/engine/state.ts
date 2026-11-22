@@ -4,6 +4,8 @@
  *   return a new state.
  * - Board measures: residual demand, effective silhouette (exports, pumping, turbining, several
  *   neighbors), cell counts per column, exchange totals, CO2.
+ * - Rows are absolute (0 at the bottom of the grid): the weather fills the bottom of each column
+ *   (weatherCells), and the cells to fill sit right above it, `silhouette` of them.
  * - A piece's cells come from its shape (model/shapes.ts): rectangle or coal ramp.
  */
 import {
@@ -23,7 +25,7 @@ export interface PlayState {
 }
 
 export type ErrorCode =
-  | 'unavailable' | 'country' | 'length' | 'height' | 'bounds' | 'silhouette' | 'overlap'
+  | 'unavailable' | 'country' | 'length' | 'height' | 'bounds' | 'weather' | 'silhouette' | 'overlap'
   | 'inventory' | 'stock' | 'line' | 'export' | 'surplus'
   | 'step_none' | 'step_reversed' | 'step_count' | 'co2' | 'locked' | 'empty';
 
@@ -67,6 +69,11 @@ export const covers = (grid: Grid, b: Placement, row: number, col: number) =>
 /** Composition key of a bar: piece id, or `I:<country>` for imports. */
 export const pieceKey = (b: Placement) => (b.piece === IMPORT_PIECE ? `I:${b.country ?? ''}` : b.piece);
 
+/** Weather cells at the bottom of each column (run-of-river F, then renewables R): imposed, never covered. */
+export function weatherCells(grid: Grid): number[] {
+  return grid.columns.map((_, c) => (grid.weather.R[c] ?? 0) + (grid.weather.F[c] ?? 0));
+}
+
 /** Demand left to the dispatchable plants: demand - renewables - run-of-river (may be negative). */
 export function residual(grid: Grid): number[] {
   return grid.demand.map((d, c) => d - (grid.weather.R[c] ?? 0) - (grid.weather.F[c] ?? 0));
@@ -83,7 +90,7 @@ export function rawSilhouette(grid: Grid, state: PlayState): number[] {
   return h;
 }
 
-/** Effective silhouette: a negative height (unabsorbed surplus) counts as 0 cells. */
+/** Effective silhouette: cells to fill per column, above the weather; a negative height (unabsorbed surplus) counts as 0. */
 export function silhouette(grid: Grid, state: PlayState): number[] {
   return rawSilhouette(grid, state).map((v) => Math.max(0, v));
 }

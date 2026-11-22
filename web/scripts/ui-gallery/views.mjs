@@ -7,7 +7,7 @@
  *   | { t: 'hold', from, to } (pointer held mid-drag, finger held by CDP touch events; without `to`: first tap only) | { t: 'export', country, col }
  *   (solution: `to` lays placements [0, to), `skip` leaves out some, `swap` exchanges two plants)
  *   | { t: 'stepTap', col } | { t: 'tool', name } | { t: 'tapCell', row, col } | { t: 'scrollBoard' }.
- *   Rows count from the bottom of the dispatchable part (weather cells below row 0), as in grids.json.
+ *   Rows count from the bottom of the grid (weather cells included), as in grids.json.
  */
 
 /** Progress seeds: grids done with their solution, grids started (n first placements); `clock` starts the view's grid at 12 min 34 s. */

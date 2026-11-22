@@ -142,20 +142,18 @@ async function tapAct(p, sel) {
   await tapXY(p, r.x + r.width / 2, r.y + r.height / 2);
 }
 
-const belowOf = (g) => g.columns.map((_, c) => (g.weather?.R?.[c] ?? 0) + (g.weather?.F?.[c] ?? 0));
-
-async function lay(p, g, bar) {
-  const below = belowOf(g);
-  const a = await cellPoint(p, bar.row + below[bar.col], bar.col);
+/** Lays one bar by its absolute rows (0 at the bottom of the grid, weather included). */
+async function lay(p, bar) {
+  const a = await cellPoint(p, bar.row, bar.col);
   const h = (bar.height ?? 1) - 1;
   if (bar.len === 1 && !h) return tapXY(p, a.x, a.y);
   const end = bar.col + bar.len - 1;
   if (p.touch) {
     await tapXY(p, a.x, a.y);
-    const b = await cellPoint(p, bar.row + h + below[end], end);
+    const b = await cellPoint(p, bar.row + h, end);
     return tapXY(p, b.x, b.y);
   }
-  const b = await cellPoint(p, bar.row + h + below[end], end);
+  const b = await cellPoint(p, bar.row + h, end);
   await p.mouse.move(a.x, a.y);
   await p.mouse.down();
   await p.mouse.move((a.x + b.x) / 2, b.y, { steps: 4 });
@@ -191,7 +189,7 @@ async function laySolution(p, g, { to, swap, skip = [] } = {}) {
   for (const bar of bars.slice(0, to ?? bars.length).filter((_, i) => !skip.includes(i))) {
     if (engaged.has(`${bar.piece}:${bar.row}:${bar.col}`)) continue;
     await select(p, pieceKey(bar));
-    await lay(p, g, bar);
+    await lay(p, bar);
   }
 }
 
@@ -200,20 +198,19 @@ async function run(p, view) {
   for (const a of view.actions ?? []) {
     if (a.t === 'click') { await p.locator(a.sel).first().click(); await p.waitForTimeout(150); }
     else if (a.t === 'select') await select(p, a.piece);
-    else if (a.t === 'lay') for (const bar of a.bars) { await select(p, pieceKey(bar)); await lay(p, g, bar); }
+    else if (a.t === 'lay') for (const bar of a.bars) { await select(p, pieceKey(bar)); await lay(p, bar); }
     else if (a.t === 'solution') await laySolution(p, g, a);
     else if (a.t === 'export') await tapAct(p, `.board-svg [data-act="export"][data-country="${a.country}"][data-col="${a.col}"]`);
     else if (a.t === 'stepTap') await tapAct(p, `.board-svg [data-act="step-arrow"][data-col="${a.col}"]`);
     else if (a.t === 'tool') { await p.locator(`.tools [data-tool="${a.name}"]:visible, .chips [data-tool="${a.name}"]:visible`).first().click(); await p.waitForTimeout(120); }
-    else if (a.t === 'tapCell') { const c = await cellPoint(p, a.row + belowOf(g)[a.col], a.col); await tapXY(p, c.x, c.y); }
+    else if (a.t === 'tapCell') { const c = await cellPoint(p, a.row, a.col); await tapXY(p, c.x, c.y); }
     else if (a.t === 'scrollBoard') {
       await p.evaluate(() => { const s = document.querySelector('.board-scroll'); s.scrollLeft = s.scrollWidth; s.dispatchEvent(new Event('scroll')); });
       await p.waitForTimeout(150);
     } else if (a.t === 'hold') {
-      const below = belowOf(g);
-      const s = await cellPoint(p, a.from.row + below[a.from.col], a.from.col);
+      const s = await cellPoint(p, a.from.row, a.from.col);
       if (!a.to) { await tapXY(p, s.x, s.y); continue; }
-      const e = await cellPoint(p, a.to.row + below[a.to.col], a.to.col);
+      const e = await cellPoint(p, a.to.row, a.to.col);
       if (p.touch) {
         // Finger held mid-drag: touchStart then touchMoves, no touchEnd.
         const cdp = await p.context().newCDPSession(p);

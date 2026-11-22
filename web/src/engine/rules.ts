@@ -1,6 +1,6 @@
 /*
  * Placement rules and player actions (pure; each action returns a new state or a French reason).
- * - checkPlacement: shape (piece, width, height or ramp profile, bounds), silhouette, overlap, inventory, stock,
+ * - checkPlacement: shape (piece, width, height or ramp profile, bounds), weather cells, silhouette, overlap, inventory, stock,
  *   line capacity and CO2 cap, for a live preview or before laying a bar.
  * - Actions: place, remove, setExport, addStep, removeStep.
  *
@@ -10,7 +10,7 @@
 import { ANY_COUNTRY, IMPORT_PIECE, type Grid, type Placement, type StepPair } from '../model/grid';
 import { MSG, columnLabel, countryFrom, countryTo, ofPiece } from '../i18n/fr';
 import {
-  barHeight, barIndexAt, co2PerCell, co2Total, exportsAt, importsAt, pieceCells, silhouette, totalExports,
+  barHeight, barIndexAt, co2PerCell, co2Total, exportsAt, importsAt, pieceCells, silhouette, totalExports, weatherCells,
   totalImports, type EngineError, type ErrorCode, type PlacedBar, type PlayState,
 } from './state';
 import { cellCount, cellsOf, isRamp, shapeKind, topIn } from '../model/shapes';
@@ -47,10 +47,17 @@ export function checkShape(grid: Grid, bar: Placement): Check {
   return OK;
 }
 
-/** Every cell of the bar lies under the silhouette `sil`. */
+/**
+ * Every cell of the bar lies above the weather and under the silhouette `sil` (cells to fill per
+ * column, counted from the top of the weather). Rows are absolute.
+ */
 export function checkSilhouette(grid: Grid, sil: readonly number[], bar: Placement): Check {
+  const floor = weatherCells(grid);
+  for (const [r, c] of cellsOf(grid, bar)) {
+    if (r < (floor[c] ?? 0)) return fail('weather', MSG.weather(columnLabel(grid, c)));
+  }
   for (let c = bar.col; c < bar.col + bar.len; c++) {
-    if (topIn(grid, bar, c) > (sil[c] ?? 0)) return fail('silhouette', MSG.silhouette(columnLabel(grid, c)));
+    if (topIn(grid, bar, c) > (floor[c] ?? 0) + (sil[c] ?? 0)) return fail('silhouette', MSG.silhouette(columnLabel(grid, c)));
   }
   return OK;
 }

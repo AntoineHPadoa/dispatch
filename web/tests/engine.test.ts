@@ -4,10 +4,10 @@
  */
 import { describe, expect, it } from 'vitest';
 import gridsJson from '../src/data/grids.json';
-import type { Clue, Grid, PieceId, Placement } from '../src/model/grid';
+import { validateGrid, type Clue, type Grid, type PieceId, type Placement } from '../src/model/grid';
 import {
   addStep, checkPlacement, clueText, evaluate, newGame, place, remove, removeStep, residual, setExport,
-  silhouette, solutionState, type ActionResult, type PlayState,
+  silhouette, solutionState, weatherCells, type ActionResult, type PlayState,
 } from '../src/engine';
 
 const grids = gridsJson as unknown as Grid[];
@@ -104,6 +104,61 @@ describe('silhouette', () => {
     s = ok(setExport(g, s, 'UK', 1, 1));
     s = ok(addStep(g, s, 0, 2));
     expect(silhouette(g, s)).toEqual([3, 4, 2, 3, 2, 1]);
+  });
+});
+
+describe('weather cells (imposed bricks, absolute rows)', () => {
+  // Weather 1, 1, 2, 3, 1, 1 at the bottom; 3, 3, 3, 3, 3, 1 cells to fill above it.
+  const g = makeGrid({
+    demand: [4, 4, 5, 6, 4, 2],
+    weather: { R: [0, 0, 1, 2, 0, 0], F: [1, 1, 1, 1, 1, 1] },
+    inventory: { level: 'none', pieces: { N: {}, B: {}, G: {}, T: {} } },
+    neighbors: [],
+    step: false,
+  });
+  const s0 = newGame(g);
+
+  it('the cells to fill start right above the weather', () => {
+    expect(weatherCells(g)).toEqual([1, 1, 2, 3, 1, 1]);
+    expect(silhouette(g, s0)).toEqual([3, 3, 3, 3, 3, 1]);
+    const ev = evaluate(g, s0);
+    expect(ev.floor).toEqual([1, 1, 2, 3, 1, 1]);
+    expect(ev.missingByCol).toEqual([3, 3, 3, 3, 3, 1]);
+  });
+
+  it('a bar on a weather cell is refused, at the first column it covers', () => {
+    expect(refused(place(g, s0, N(1, 0, 3)))).toEqual({ code: 'weather', message: 'La météo occupe déjà cette case à 8h.' });
+    expect(refused(place(g, s0, N(0, 0, 3)))).toEqual({ code: 'weather', message: 'La météo occupe déjà cette case à 0h.' });
+    expect(refused(place(g, s0, { piece: 'T', row: 2, col: 3, len: 1 })).code).toBe('weather');
+  });
+
+  it('a straight bar above a weather step is laid on one row, never folded', () => {
+    const s = ok(place(g, s0, N(3, 0, 4)));
+    expect(s.bars).toEqual([{ piece: 'N', row: 3, col: 0, len: 4 }]);
+    const ev = evaluate(g, s);
+    expect(ev.errors).toEqual([]);
+    // Row 3 is the top cell of columns 0 and 1, the middle of 8h and the bottom of 12h.
+    expect(ev.missingByCol).toEqual([2, 2, 2, 2, 3, 1]);
+    // The top of the silhouette still binds: row 4 is out at 0h.
+    expect(refused(place(g, s0, N(4, 0, 4)))).toEqual({ code: 'silhouette', message: 'Hors de la silhouette à 0h.' });
+  });
+
+  it('a saved bar on the weather is reported, not removed', () => {
+    const ev = evaluate(g, { ...s0, bars: [N(1, 0, 3)] });
+    expect(ev.invalidBars).toEqual([0]);
+    expect(ev.errors).toContainEqual({ code: 'weather', message: 'La météo occupe déjà cette case à 8h.' });
+  });
+
+  it('the validator refuses a placement or an engaged plant on the weather', () => {
+    const bad = makeGrid({
+      ...g,
+      clues: [{ type: 'engaged', piece: 'T', row: 1, col: 3, len: 1 }],
+      solution: { exports: {}, step: [], placements: [N(3, 0, 4), N(2, 2, 3)] },
+    });
+    const errors = validateGrid(bad).errors;
+    expect(errors).toContain('clues[0]: covers a weather cell at 12h');
+    expect(errors).toContain('solution.placements[1]: covers a weather cell at 12h');
+    expect(errors.filter((e) => e.includes('weather cell'))).toHaveLength(2);
   });
 });
 
