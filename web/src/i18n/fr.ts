@@ -407,6 +407,8 @@ export const UI = {
   co2ClueKind: 'Limite CO₂',
   co2Clue: (cap: number) => `Aujourd’hui : ${cap} points de CO₂ au plus.`,
   neighborLine: (name: string, cap: number) => `${name} · ${cap} ${cap > 1 ? 'blocs' : 'bloc'} par créneau`,
+  /** Day's exchanges under a neighbor row: "→ 1/2", or "→ 0" when none is allowed. */
+  exchangeCount: (arrow: string, got: number, want: number) => (want === 0 && got === 0 ? `${arrow} 0` : `${arrow} ${got}/${want}`),
   stepLine: 'STEP · pompage ▲ puis turbinage ▼',
   stepLineNumbered: 'STEP · pompage ▲ puis turbinage ▼ · numérote les paires : ▲1 ▼1, ▲2 ▼2…',
   stepName: 'STEP',
