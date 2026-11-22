@@ -1,0 +1,175 @@
+<title>Dispatch papier</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400&family=Manrope:wght@400;700;800&display=swap">
+<style>
+/* Layout: one reading column for the notes, captures at their natural pixel size in scrollable frames. */
+:root {
+  --bg: #f3f6f5; --surface: #ffffff; --ink: #1d2826; --soft: #5d6e69; --line: #d5dfdc;
+  --accent: #0d6e63; --accent-ink: #ffffff; --fictive: #8a4b00; --fictive-bg: #fdecd3; --frame: #e4ebe9;
+  --f-title: "Outfit", "Avenir Next", system-ui, sans-serif;
+  --f-ui: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121816; --surface: #1a2220; --ink: #e3ebe8; --soft: #9aaba6; --line: #2e3a37;
+  --accent: #5cc4b5; --accent-ink: #0b1513; --fictive: #ffc27a; --fictive-bg: #3a2810; --frame: #0c1110; color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #121816; --surface: #1a2220; --ink: #e3ebe8; --soft: #9aaba6; --line: #2e3a37;
+  --accent: #5cc4b5; --accent-ink: #0b1513; --fictive: #ffc27a; --fictive-bg: #3a2810; --frame: #0c1110; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1360px; margin: 0 auto; padding-block: 32px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 32px; }
+header { display: grid; gap: 10px; max-width: 70ch; }
+.eyebrow { font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--soft); }
+h1 { font-family: var(--f-title); font-weight: 300; font-size: clamp(32px, 6vw, 48px); line-height: 1.05; margin: 0; letter-spacing: -.02em; text-wrap: balance; }
+h2 { font-family: var(--f-title); font-weight: 400; font-size: 26px; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+code { font-family: var(--f-mono); font-size: .88em; overflow-wrap: anywhere; }
+.note { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; display: grid; gap: 8px; max-width: 80ch; }
+.note ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+nav { display: grid; gap: 14px; }
+.toc { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px 24px; }
+.toc section { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.toc h3 { margin: 0; font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--soft); }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.toc a { color: var(--ink); text-decoration: none; display: grid; grid-template-columns: 52px 1fr; gap: 8px; padding: 2px 0; }
+.toc a:hover span:last-child, .toc a:focus-visible span:last-child { text-decoration: underline; }
+.toc a span:first-child { font-family: var(--f-mono); font-size: 13px; color: var(--accent); font-variant-numeric: tabular-nums; }
+.cat { display: grid; gap: 28px; }
+.cat > h2 { border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+figure { margin: 0; display: grid; gap: 12px; scroll-margin-top: 16px; }
+.head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; }
+.vid { font-family: var(--f-mono); font-weight: 700; font-size: 18px; color: var(--accent); }
+.tag { font-size: 12px; font-weight: 700; border: 1px solid var(--line); border-radius: 999px; padding: 1px 9px; color: var(--soft); background: var(--surface); }
+.tag.fictive { color: var(--fictive); background: var(--fictive-bg); border-color: transparent; }
+.shows { font-size: 16px; max-width: 75ch; }
+.facts { display: grid; grid-template-columns: max-content 1fr; gap: 2px 12px; font-size: 13px; color: var(--soft); max-width: 110ch; }
+.facts dt { font-weight: 700; }
+.facts dd { margin: 0; min-width: 0; }
+.frame { overflow-x: auto; background: var(--frame); border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+.frame button { display: block; padding: 0; border: 0; background: none; cursor: zoom-in; }
+.frame button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.frame img { display: block; max-width: none; box-shadow: 0 1px 4px rgb(0 0 0 / .18); }
+dialog { padding: 0; border: 0; max-width: 100vw; max-height: 100vh; width: 100vw; height: 100vh; background: rgb(10 14 13 / .92); }
+dialog .bar { position: sticky; top: 0; display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 10px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px)); color: #fff; background: rgb(10 14 13 / .9); }
+dialog .bar button { font: inherit; font-weight: 700; border: 1px solid #fff6; background: none; color: #fff; border-radius: 6px; padding: 4px 12px; cursor: pointer; }
+dialog .zoom { overflow: auto; height: calc(100vh - 52px); padding: 16px; }
+dialog .zoom img { max-width: none; display: block; margin: 0 auto; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+<div class="wrap">
+<header>
+  <span class="eyebrow">Galerie UI · 14 vues</span>
+  <h1>Dispatch sur papier</h1>
+  <p>Les fiches A4 imprimées depuis le jeu (PDF de Chrome, page entière), et l’aperçu d’impression à l’écran. Chaque image est une capture du vrai jeu, rejouée par <code>web/scripts/ui-gallery.mjs</code> ; aucune n’est retouchée. Cliquer une capture l’agrandit en pleine résolution.</p>
+</header>
+<aside class="note" aria-label="Périmètre">
+  <b>Hors périmètre</b>
+  <ul>
+    <li>Animations et gestes : seul l’état figé d’un geste est capturé (glisser maintenu, premier toucher).</li>
+    <li>Le lab, la tablette et le mode sombre ne sont pas montrés.</li>
+    <li>7 vues portent le badge « grille fictive » : grille écrite pour la galerie (ids 901+), jamais publiée. Le verdict juste n’est montré que sur de vraies grilles.</li>
+    <li>Date du jeu figée après le dernier bulletin : la fiche du jour est le dernier bulletin publié.</li>
+  </ul>
+</aside>
+<nav aria-label="Sommaire"><span class="eyebrow">Sommaire</span><div class="toc"><section><h3><a href="#cat-apercu-d-impression" style="display:inline;color:inherit">Aperçu d’impression</a></h3><ol><li><a href="#P-01"><span>P-01</span><span>Aperçu d’impression à l’écran</span></a></li><li><a href="#P-02"><span>P-02</span><span>Aperçu d’impression sur téléphone</span></a></li></ol></section><section><h3><a href="#cat-fiches-a4" style="display:inline;color:inherit">Fiches A4</a></h3><ol><li><a href="#P-03"><span>P-03</span><span>Tutoriel 1</span></a></li><li><a href="#P-04"><span>P-04</span><span>Tutoriel 7</span></a></li><li><a href="#P-05"><span>P-05</span><span>Tutoriel des rampes de charbon</span></a></li><li><a href="#P-06"><span>P-06</span><span>Fiche notée Facile</span></a></li><li><a href="#P-07"><span>P-07</span><span>Fiche du jour Expert</span></a></li><li><a href="#P-08"><span>P-08</span><span>Programmes</span></a></li><li><a href="#P-09"><span>P-09</span><span>Prix et relevés empilés sur un créneau</span></a></li><li><a href="#P-10"><span>P-10</span><span>Trois voisins</span></a></li><li><a href="#P-11"><span>P-11</span><span>Les cinq centrales</span></a></li><li><a href="#P-12"><span>P-12</span><span>Surplus</span></a></li><li><a href="#P-13"><span>P-13</span><span>Grande grille de 12 créneaux</span></a></li><li><a href="#P-14"><span>P-14</span><span>Grille haute de six créneaux</span></a></li></ol></section></div></nav>
+<section class="cat" id="cat-apercu-d-impression"><h2>Aperçu d’impression</h2><figure id="P-01">
+  <div class="head"><span class="vid">P-01</span><span class="tag">1280 px</span></div>
+  <p class="shows">Aperçu d’impression à l’écran (1280 px) : barre de retour et bouton Imprimer au-dessus de la fiche.</p>
+  <dl class="facts"><dt>Route</dt><dd><code>#/imprimer/7</code></dd><dt>Grille</dt><dd>7 · 7. Pompage, relevé et programme</dd><dt>Actions</dt><dd>—</dd></dl>
+  <div class="frame"><button type="button" data-zoom="P-01 · Aperçu d’impression à l’écran (1280 px) : barre de retour et bouton Imprimer au-dessus de la fiche." aria-label="Agrandir P-01"><img src="img/P-01.png" width="1280" height="1239" alt="P-01 : Aperçu d’impression à l’écran (1280 px) : barre de retour et bouton Imprimer au-dessus de la fiche." loading="lazy"></button></div>
+</figure>
+<figure id="P-02">
+  <div class="head"><span class="vid">P-02</span><span class="tag">375 px</span></div>
+  <p class="shows">Aperçu d’impression sur téléphone (375 px).</p>
+  <dl class="facts"><dt>Route</dt><dd><code>#/imprimer/7</code></dd><dt>Grille</dt><dd>7 · 7. Pompage, relevé et programme</dd><dt>Actions</dt><dd>—</dd></dl>
+  <div class="frame"><button type="button" data-zoom="P-02 · Aperçu d’impression sur téléphone (375 px)." aria-label="Agrandir P-02"><img src="img/P-02.png" width="375" height="812" alt="P-02 : Aperçu d’impression sur téléphone (375 px)." loading="lazy"></button></div>
+</figure></section>
+<section class="cat" id="cat-fiches-a4"><h2>Fiches A4</h2><figure id="P-03">
+  <div class="head"><span class="vid">P-03</span><span class="tag">A4 (PDF, 192 dpi)</span></div>
+  <p class="shows">Tutoriel 1 : carnet d’ordres exact, sans indice.</p>
+  <dl class="facts"><dt>Route</dt><dd><code>#/imprimer/1</code></dd><dt>Grille</dt><dd>1 · 1. Poser l’inventaire</dd><dt>Actions</dt><dd>—</dd></dl>
+  <div class="frame"><button type="button" data-zoom="P-03 · Tutoriel 1 : carnet d’ordres exact, sans indice." aria-label="Agrandir P-03"><img src="img/P-03.png" width="794" height="1123" alt="P-03 : Tutoriel 1 : carnet d’ordres exact, sans indice." loading="lazy"></button></div>
+</figure>
+<figure id="P-04">
+  <div class="head"><span class="vid">P-04</span><span class="tag">A4 (PDF, 192 dpi)</span></div>
+  <p class="shows">Tutoriel 7 : flux, programme, relevé, prix, cases d’échanges et de STEP à remplir.</p>
+  <dl class="facts"><dt>Route</dt><dd><code>#/imprimer/7</code></dd><dt>Grille</dt><dd>7 · 7. Pompage, relevé et programme</dd><dt>Actions</dt><dd>—</dd></dl>
+  <div class="frame"><button type="button" data-zoom="P-04 · Tutoriel 7 : flux, programme, relevé, prix, cases d’échanges et de STEP à remplir." aria-label="Agrandir P-04"><img src="img/P-04.png" width="794" height="1123" alt="P-04 : Tutoriel 7 : flux, programme, relevé, prix, cases d’échanges et de STEP à remplir." loading="lazy"></button></div>
+</figure>
+<figure id="P-05">
+  <div class="head"><span class="vid">P-05</span><span class="tag">A4 (PDF, 192 dpi)</span></div>
+  <p class="shows">Tutoriel des rampes de charbon.</p>
+  <dl class="facts"><dt>Route</dt><dd><code>#/imprimer/13</code></dd><dt>Grille</dt><dd>13 · 9. Deux épaules se relaient</dd><dt>Actions</dt><dd>—</dd></dl>
+  <div class="frame"><button type="button" data-zoom="P-05 · Tutoriel des rampes de charbon." aria-label="Agrandir P-05"><img src="img/P-05.png" width="794" height="1123" alt="P-05 : Tutoriel des rampes de charbon." loading="lazy"></button></div>
+</figure>
+<figure id="P-06">
+  <div class="head"><span class="vid">P-06</span><span class="tag">A4 (PDF, 192 dpi)</span></div>
+  <p class="shows">Fiche notée Facile : barrage au stock limité, flux et échanges du jour.</p>
+  <dl class="facts"><dt>Route</dt><dd><code>#/imprimer/8</code></dd><dt>Grille</dt><dd>8 · Facile</dd><dt>Actions</dt><dd>—</dd></dl>
+  <div class="frame"><button type="button" data-zoom="P-06 · Fiche notée Facile : barrage au stock limité, flux et échanges du jour." aria-label="Agrandir P-06"><img src="img/P-06.png" width="794" height="1123" alt="P-06 : Fiche notée Facile : barrage au stock limité, flux et échanges du jour." loading="lazy"></button></div>
+</figure>
+<figure id="P-07">
+  <div class="head"><span class="vid">P-07</span><span class="tag">A4 (PDF, 192 dpi)</span></div>
+  <p class="shows">Fiche du jour Expert : sans inventaire, relevés, échanges du jour.</p>
+  <dl class="facts"><dt>Route</dt><dd><code>#/imprimer/11</code></dd><dt>Grille</dt><dd>11 · Expert</dd><dt>Actions</dt><dd>—</dd></dl>
+  <div class="frame"><button type="button" data-zoom="P-07 · Fiche du jour Expert : sans inventaire, relevés, échanges du jour." aria-label="Agrandir P-07"><img src="img/P-07.png" width="794" height="1123" alt="P-07 : Fiche du jour Expert : sans inventaire, relevés, échanges du jour." loading="lazy"></button></div>
+</figure>
+<figure id="P-08">
+  <div class="head"><span class="vid">P-08</span><span class="tag">A4 (PDF, 192 dpi)</span><span class="tag fictive">grille fictive</span></div>
+  <p class="shows">Programmes, durées de marche et centrale engagée.</p>
+  <dl class="facts"><dt>Route</dt><dd><code>#/imprimer/901</code></dd><dt>Grille</dt><dd>901 · Galerie · Programmes, durées et centrale engagée</dd><dt>Actions</dt><dd>—</dd></dl>
+  <div class="frame"><button type="button" data-zoom="P-08 · Programmes, durées de marche et centrale engagée." aria-label="Agrandir P-08"><img src="img/P-08.png" width="794" height="1123" alt="P-08 : Programmes, durées de marche et centrale engagée." loading="lazy"></button></div>
+</figure>
+<figure id="P-09">
+  <div class="head"><span class="vid">P-09</span><span class="tag">A4 (PDF, 192 dpi)</span><span class="tag fictive">grille fictive</span></div>
+  <p class="shows">Prix et relevés empilés sur un créneau.</p>
+  <dl class="facts"><dt>Route</dt><dd><code>#/imprimer/902</code></dd><dt>Grille</dt><dd>902 · Galerie · Prix et relevés empilés</dd><dt>Actions</dt><dd>—</dd></dl>
+  <div class="frame"><button type="button" data-zoom="P-09 · Prix et relevés empilés sur un créneau." aria-label="Agrandir P-09"><img src="img/P-09.png" width="794" height="1123" alt="P-09 : Prix et relevés empilés sur un créneau." loading="lazy"></button></div>
+</figure>
+<figure id="P-10">
+  <div class="head"><span class="vid">P-10</span><span class="tag">A4 (PDF, 192 dpi)</span><span class="tag fictive">grille fictive</span></div>
+  <p class="shows">Trois voisins, flux, échanges par pays et règle du plafond CO₂.</p>
+  <dl class="facts"><dt>Route</dt><dd><code>#/imprimer/903</code></dd><dt>Grille</dt><dd>903 · Galerie · Trois voisins sous plafond CO₂</dd><dt>Actions</dt><dd>—</dd></dl>
+  <div class="frame"><button type="button" data-zoom="P-10 · Trois voisins, flux, échanges par pays et règle du plafond CO₂." aria-label="Agrandir P-10"><img src="img/P-10.png" width="794" height="1123" alt="P-10 : Trois voisins, flux, échanges par pays et règle du plafond CO₂." loading="lazy"></button></div>
+</figure>
+<figure id="P-11">
+  <div class="head"><span class="vid">P-11</span><span class="tag">A4 (PDF, 192 dpi)</span><span class="tag fictive">grille fictive</span></div>
+  <p class="shows">Les cinq centrales, pièces hautes, renouvelables et fil de l’eau.</p>
+  <dl class="facts"><dt>Route</dt><dd><code>#/imprimer/904</code></dd><dt>Grille</dt><dd>904 · Galerie · Toutes les centrales et la météo</dd><dt>Actions</dt><dd>—</dd></dl>
+  <div class="frame"><button type="button" data-zoom="P-11 · Les cinq centrales, pièces hautes, renouvelables et fil de l’eau." aria-label="Agrandir P-11"><img src="img/P-11.png" width="794" height="1123" alt="P-11 : Les cinq centrales, pièces hautes, renouvelables et fil de l’eau." loading="lazy"></button></div>
+</figure>
+<figure id="P-12">
+  <div class="head"><span class="vid">P-12</span><span class="tag">A4 (PDF, 192 dpi)</span><span class="tag fictive">grille fictive</span></div>
+  <p class="shows">Surplus, STEP, export et import imposés par un carnet exact.</p>
+  <dl class="facts"><dt>Route</dt><dd><code>#/imprimer/905</code></dd><dt>Grille</dt><dd>905 · Galerie · Surplus, stockage et carnet chargé</dd><dt>Actions</dt><dd>—</dd></dl>
+  <div class="frame"><button type="button" data-zoom="P-12 · Surplus, STEP, export et import imposés par un carnet exact." aria-label="Agrandir P-12"><img src="img/P-12.png" width="794" height="1123" alt="P-12 : Surplus, STEP, export et import imposés par un carnet exact." loading="lazy"></button></div>
+</figure>
+<figure id="P-13">
+  <div class="head"><span class="vid">P-13</span><span class="tag">A4 (PDF, 192 dpi)</span><span class="tag fictive">grille fictive</span></div>
+  <p class="shows">Grande grille de 12 créneaux, onze indices.</p>
+  <dl class="facts"><dt>Route</dt><dd><code>#/imprimer/906</code></dd><dt>Grille</dt><dd>906 · Galerie · Grande journée d’hiver sur douze créneaux, avec trois pointes et l’Espagne en renfort</dd><dt>Actions</dt><dd>—</dd></dl>
+  <div class="frame"><button type="button" data-zoom="P-13 · Grande grille de 12 créneaux, onze indices." aria-label="Agrandir P-13"><img src="img/P-13.png" width="794" height="1123" alt="P-13 : Grande grille de 12 créneaux, onze indices." loading="lazy"></button></div>
+</figure>
+<figure id="P-14">
+  <div class="head"><span class="vid">P-14</span><span class="tag">A4 (PDF, 192 dpi)</span><span class="tag fictive">grille fictive</span></div>
+  <p class="shows">Grille haute de six créneaux.</p>
+  <dl class="facts"><dt>Route</dt><dd><code>#/imprimer/907</code></dd><dt>Grille</dt><dd>907 · Galerie · Pointe haute sur six créneaux</dd><dt>Actions</dt><dd>—</dd></dl>
+  <div class="frame"><button type="button" data-zoom="P-14 · Grille haute de six créneaux." aria-label="Agrandir P-14"><img src="img/P-14.png" width="794" height="1123" alt="P-14 : Grille haute de six créneaux." loading="lazy"></button></div>
+</figure></section>
+</div>
+<dialog id="zoom" aria-label="Capture agrandie"><div class="bar"><span data-cap></span><button type="button" data-close>Fermer</button></div><div class="zoom"><img alt=""></div></dialog>
+<script>
+const dlg = document.getElementById('zoom');
+const img = dlg.querySelector('img');
+const cap = dlg.querySelector('[data-cap]');
+document.querySelectorAll('[data-zoom]').forEach((b) => b.addEventListener('click', () => {
+  const src = b.querySelector('img');
+  img.src = src.src; img.alt = src.alt; img.width = src.naturalWidth; cap.textContent = b.dataset.zoom;
+  dlg.showModal();
+}));
+dlg.querySelector('[data-close]').addEventListener('click', () => dlg.close());
+dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+</script>
