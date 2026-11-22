@@ -287,7 +287,7 @@
     "id": 908,
     "title": "Galerie · Carnet chargé",
     "section": "rated",
-    "intro": "Grille fictive de galerie : un carnet d’ordres exact qui réunit trois barres de nucléaire de deux longueurs, des pièces de 2 GW, une rampe de charbon, du barrage, des pointes et des imports.",
+    "intro": "Grille fictive de galerie : un carnet d’ordres exact qui réunit trois barres de nucléaire de deux longueurs, des pièces de 2 GW, un charbon par paliers, du barrage, des pointes et des imports.",
     "columns": ["0h", "3h", "6h", "9h", "12h", "15h", "18h", "21h"],
     "demand": [4, 4, 4, 4, 4, 5, 4, 4],
     "pieces": {
