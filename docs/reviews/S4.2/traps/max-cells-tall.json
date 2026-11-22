@@ -1,0 +1,132 @@
+{
+ "grid": {
+  "id": 1,
+  "title": "trap",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "demand": [
+   2,
+   1,
+   1,
+   1,
+   1,
+   1
+  ],
+  "pieces": {
+   "B": {
+    "len": [
+     1
+    ],
+    "height": [
+     1,
+     2
+    ],
+    "rank": 2,
+    "co2": 0
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "B": {
+     "max_cells": 2
+    },
+    "T": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 0,
+    "counts": {
+     "T": 0
+    }
+   },
+   {
+    "type": "column",
+    "col": 1,
+    "counts": {
+     "T": 1
+    }
+   },
+   {
+    "type": "column",
+    "col": 2,
+    "counts": {
+     "T": 1
+    }
+   },
+   {
+    "type": "column",
+    "col": 3,
+    "counts": {
+     "T": 1
+    }
+   },
+   {
+    "type": "column",
+    "col": 4,
+    "counts": {
+     "T": 1
+    }
+   },
+   {
+    "type": "column",
+    "col": 5,
+    "counts": {
+     "T": 1
+    }
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": []
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": []
+  }
+ },
+ "brute_compositions": 1,
+ "exact": 1
+}

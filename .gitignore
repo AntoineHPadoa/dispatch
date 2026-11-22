@@ -16,3 +16,10 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 *.pyc
+
+# Review captures stay local: reports (.md), scripts and mockups (.html) are versioned, images and PDFs are not
+docs/reviews/**/*.png
+docs/reviews/**/*.jpg
+docs/reviews/**/*.jpeg
+docs/reviews/**/*.webp
+docs/reviews/**/*.pdf

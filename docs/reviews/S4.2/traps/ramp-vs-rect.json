@@ -1,0 +1,95 @@
+{
+ "grid": {
+  "id": 1,
+  "title": "trap",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "demand": [
+   1,
+   2,
+   2,
+   1,
+   0,
+   0
+  ],
+  "pieces": {
+   "C": {
+    "shape": "trap",
+    "len": [
+     4
+    ],
+    "rank": 3,
+    "co2": 3
+   },
+   "G": {
+    "len": [
+     2
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "C": {},
+    "G": {},
+    "T": {}
+   }
+  },
+  "clues": [],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": []
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": []
+  }
+ },
+ "brute_compositions": 10,
+ "exact": 10
+}

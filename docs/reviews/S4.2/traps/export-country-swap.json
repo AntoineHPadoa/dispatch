@@ -1,0 +1,184 @@
+{
+ "grid": {
+  "id": 1,
+  "title": "trap",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "demand": [
+   1,
+   1,
+   0,
+   1,
+   1,
+   1
+  ],
+  "pieces": {
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "DE",
+    "name": "Allemagne",
+    "cap": 1,
+    "co2": 3
+   },
+   {
+    "id": "ES",
+    "name": "Espagne",
+    "cap": 1,
+    "co2": 0
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "T": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "price",
+    "col": 0,
+    "piece": "T"
+   },
+   {
+    "type": "price",
+    "col": 1,
+    "piece": "T"
+   },
+   {
+    "type": "price",
+    "col": 3,
+    "piece": "T"
+   },
+   {
+    "type": "price",
+    "col": 4,
+    "piece": "T"
+   },
+   {
+    "type": "price",
+    "col": 5,
+    "piece": "T"
+   },
+   {
+    "type": "flow",
+    "col": 0,
+    "country": "DE",
+    "dir": "export",
+    "value": 0
+   },
+   {
+    "type": "flow",
+    "col": 0,
+    "country": "ES",
+    "dir": "export",
+    "value": 0
+   },
+   {
+    "type": "flow",
+    "col": 1,
+    "country": "DE",
+    "dir": "export",
+    "value": 0
+   },
+   {
+    "type": "flow",
+    "col": 1,
+    "country": "ES",
+    "dir": "export",
+    "value": 0
+   },
+   {
+    "type": "flow",
+    "col": 3,
+    "country": "DE",
+    "dir": "export",
+    "value": 0
+   },
+   {
+    "type": "flow",
+    "col": 3,
+    "country": "ES",
+    "dir": "export",
+    "value": 0
+   },
+   {
+    "type": "flow",
+    "col": 4,
+    "country": "DE",
+    "dir": "export",
+    "value": 0
+   },
+   {
+    "type": "flow",
+    "col": 4,
+    "country": "ES",
+    "dir": "export",
+    "value": 0
+   },
+   {
+    "type": "flow",
+    "col": 5,
+    "country": "DE",
+    "dir": "export",
+    "value": 0
+   },
+   {
+    "type": "flow",
+    "col": 5,
+    "country": "ES",
+    "dir": "export",
+    "value": 0
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": []
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": []
+  }
+ },
+ "brute_compositions": 3,
+ "exact": 3
+}
