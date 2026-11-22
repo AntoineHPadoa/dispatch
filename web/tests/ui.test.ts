@@ -458,23 +458,23 @@ describe('print sheet', () => {
     const nuclear = row(renderBook(g, initialState(g), null), 'N');
     // 4 x 4 and 3 x 3: two glyphs, longest first, each with its width and counter; no counter for the whole line.
     expect([...nuclear.matchAll(/<em class="mb-w">(\d+)<\/em>/g)].map((m) => m[1])).toEqual(['4', '3']);
-    expect([...nuclear.matchAll(/<span class="count">([^<]+)<\/span>/g)].map((m) => m[1])).toEqual(['0 / 4', '0 / 3']);
+    expect([...nuclear.matchAll(/<span class="gcount">([^<]+)<\/span>/g)].map((m) => m[1])).toEqual(['0 / 4', '0 / 3']);
     expect(nuclear).not.toContain('mb used');
     // Every bar of 3 laid: that width is struck, the other one counts on.
     const threes = g.solution.placements.filter((b) => b.piece === 'N' && b.len === 3);
     const laid = row(renderBook(g, { ...initialState(g), bars: threes }, null), 'N');
-    expect([...laid.matchAll(/<span class="count">([^<]+)<\/span>/g)].map((m) => m[1])).toEqual(['0 / 4', '3 / 3']);
+    expect([...laid.matchAll(/<span class="gcount">([^<]+)<\/span>/g)].map((m) => m[1])).toEqual(['0 / 4', '3 / 3']);
     expect(laid.match(/class="mb used"/g)).toHaveLength(1);
     // A width the inventory lacks shows as over.
     const odd = row(renderBook(g, { ...initialState(g), bars: [{ piece: 'N', row: 1, col: 0, len: 5 }] }, null), 'N');
-    expect(odd).toMatch(/<em class="mb-w">5<\/em><\/span><span class="count over">1 \/ 0<\/span>/);
+    expect(odd).toMatch(/<em class="mb-w">5<\/em><\/span><span class="gcount over">1 \/ 0<\/span>/);
   });
 
   it('book by width: cells and imports are one square with their counter', () => {
     const g1 = byId(1);
     const tac = renderBook(g1, initialState(g1), null).split('data-piece="T"')[1]!.split('</button>')[0]!;
     expect(tac.match(/<span class="mb/g)).toHaveLength(1);
-    expect(tac).toContain('<span class="count">0 / 2</span>');
+    expect(tac).toContain('<span class="gcount">0 / 2</span>');
     const g7 = byId(7);
     const imp = renderBook(g7, initialState(g7), null).split('data-piece="I:DE"')[1]!.split('</button>')[0]!;
     expect(imp.match(/<span class="mb/g)).toHaveLength(1);
