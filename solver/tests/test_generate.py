@@ -13,7 +13,7 @@ from dispatch_solver.board import reference_composition
 from dispatch_solver.deduce import deduce
 from dispatch_solver.deduce.trace import decisions
 from dispatch_solver.generate.bulletin import TEMPLATES, make_bulletin
-from dispatch_solver.generate.lot import Quotas, _attempt, check_lot, make_candidate, run_lot
+from dispatch_solver.generate.lot import Quotas, _attempt, _draw, check_lot, config_types, make_candidate, run_lot
 from dispatch_solver.generate.silhouettes import FAMILIES, draw_day, sky
 from dispatch_solver.grid import WEATHER_KINDS, validate
 
@@ -382,3 +382,76 @@ def test_single_decision_quota():
     assert q.check(_dgrid("ccc", 1, {"exchange": 1, "tall": 1})) is None  # two types: not a single-type grid
     assert q.check(_dgrid("dddd", 1, {"step": 1})) is None
     assert Quotas(10, {"min_per_rating": 0}).check(_dgrid("eeeee", 1, {"exchange": 1})) is None  # no limit by default
+
+
+def test_type_ceiling_counts_presence():
+    """max_with_type counts the grids holding a type, whatever else they hold."""
+    q = Quotas(10, {"min_per_rating": 0, "max_same_family": 10, "max_with_type": {"exchange": 1}})
+    q.add(_dgrid("a", 1, {"exchange": 1, "tall": 1}))
+    assert q.check(_dgrid("bb", 1, {"exchange": 2, "step": 1})) == "quota:with_type"
+    assert q.check(_dgrid("ccc", 1, {"step": 1})) is None
+
+
+def test_type_floor_reserves_slots():
+    """min_with_type reserves the last slots for the types still missing; one grid may fill several."""
+    q = Quotas(3, {"min_per_rating": 0, "max_same_family": 10, "min_with_type": {"carbon": 1, "stock": 1}})
+    assert q.missing_types() == ["carbon", "stock"]
+    assert q.check(_dgrid("a", 1, {"exchange": 1})) is None  # 2 slots left for a deficit of 2
+    q.add(_dgrid("a", 1, {"exchange": 1}))
+    assert q.check(_dgrid("bb", 1, {"exchange": 1})) == "quota:type_floor"
+    assert q.check(_dgrid("ccc", 1, {"carbon": 1, "stock": 1})) is None
+    q.add(_dgrid("ccc", 1, {"carbon": 1, "stock": 1}))
+    assert q.type_deficit() == 0 and q.check(_dgrid("dddd", 1, {"exchange": 1})) is None
+
+
+def test_type_quotas_are_checked():
+    _lot, errors = check_lot({"lot": "x", "size": 4, "mix": [{"cols": 8}], "quotas": {"min_with_type": {"exchang": 1}}})
+    assert errors and "min_with_type" in errors[0]
+    _lot, errors = check_lot(
+        {
+            "lot": "x",
+            "size": 4,
+            "mix": [{"cols": 8}],
+            "quotas": {"min_with_type": {"step": 3}, "max_with_type": {"step": 2}},
+        }
+    )
+    assert errors and "above max_with_type" in errors[0]
+    lot, errors = check_lot({"lot": "x", "size": 4, "mix": [{"cols": 8}], "quotas": {"max_with_type": {"step": 2}}})
+    assert not errors and lot["quotas"]["max_with_type"] == {"step": 2}
+
+
+def test_draws_aim_at_missing_types():
+    """Entries able to give a type under its floor are drawn more, entries giving a capped type less."""
+    mix = [{"cols": 8, "neighbors": 1}, {"cols": 8, "step": 1, "co2_cap": "auto"}]
+    q = Quotas(20, {"min_per_mix": 0, "min_with_type": {"carbon": 3}, "max_with_type": {"exchange": 1}})
+    q.with_type["exchange"] = 1
+    rng = random.Random(3)
+    picks = [_draw(rng, mix, [1, 1], q)[2] for _ in range(400)]
+    assert picks.count(1) > 300
+    assert config_types(mix[1]) == {"step", "carbon"}
+
+
+def test_type_floor_is_reserved_with_the_ratings():
+    """Rating and type deficits share the slots: the last slot never needs a rare pair (rating + type)."""
+    q = Quotas(3, {"min_per_rating": 0, "max_same_family": 10, "min_with_type": {"stock": 1}})
+    q.q["min_per_rating"] = 1
+    q.rating = {1: 1, 2: 1}  # ratings 3 and 4 missing, plus stock: 3 for 3 slots
+    assert q.check(_dgrid("a", 3, {"exchange": 1})) is None  # fills rating 3: 2 left for 2
+    q.add(_dgrid("a", 3, {"exchange": 1}))
+    assert q.check(_dgrid("bb", 1, {"exchange": 1})) == "quota:type_floor"
+    assert q.check(_dgrid("ccc", 1, {"stock": 1})) is None
+    assert q.check(_dgrid("dddd", 4, {"exchange": 1})) is None
+
+
+def test_combined_type_keys():
+    """ "a+b" counts the grids holding both types, "a|b" those holding either; draws aim at them too."""
+    q = Quotas(10, {"min_per_rating": 0, "max_same_family": 10, "min_with_type": {"step+carbon": 1, "step|carbon": 2}})
+    q.add(_dgrid("a", 1, {"step": 1}))
+    assert q.with_type == {"step": 1, "step|carbon": 1}
+    assert q.missing_types() == ["step+carbon", "step|carbon"]
+    q.add(_dgrid("bb", 1, {"step": 1, "carbon": 1, "exchange": 1}))
+    assert q.missing_types() == [] and q.with_type["step+carbon"] == 1
+    assert q.keys({"carbon"}) == {"carbon", "step|carbon"}
+    for key, ok in (("step+carbon", True), ("step|carbon", True), ("step+carbon|tall", False), ("steps", False)):
+        _lot, errors = check_lot({"lot": "x", "size": 4, "mix": [{"cols": 8}], "quotas": {"min_with_type": {key: 1}}})
+        assert not errors if ok else errors

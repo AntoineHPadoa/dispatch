@@ -10,9 +10,10 @@
   fewer than `min_decisions` is the reject `no_decision`, "filling"), write the bulletin draft and the
   `lab` block (decisions, live mechanics, bars, nuclear prices: measures only).
 - run_lot(): keeps the worker processes busy (rolling queue), accepts in draw order under the quotas
-  (silhouette family, mechanics, clue profile, grids whose decisions are all of one type, minimum per
-  rating and per mix entry). Draws aim at the ratings still missing; finished grids refused by the rating
-  reservation wait in a reserve.
+  (silhouette family, mechanics, clue profile, grids whose decisions are all of one type, grids holding
+  a decision type: ceiling max_with_type and floor min_with_type, minimum per rating and per mix entry).
+  Draws aim at the ratings still missing and at the mix entries able to give a type under its floor;
+  finished grids refused by a reservation (rating, mix, type floor) wait in a reserve.
 
 Example: grids, stats = run_lot(json.load(open("lab/lots/demo-01.json")))
 """
@@ -66,7 +67,10 @@ QUOTAS = {
     "min_per_rating": 2,
     "min_per_mix": 1,
     "max_same_single_decision": None,  # grids whose decisions are all of one type, per type (None: no limit)
+    "max_with_type": {},  # {decision type: n}: at most n grids holding that type, whatever else they hold
+    "min_with_type": {},  # {decision type: n}: at least n grids holding that type (slots reserved, draws aimed)
 }
+TYPE_QUOTAS = ("max_with_type", "min_with_type")
 QUOTA_ALIASES = {"max_same_silhouette": "max_same_family"}
 LOT_KEYS = ("lot", "size", "seed", "mix", "quotas", "max_attempts", "comment")
 CLUE_TYPES = ("price", "column", "flow", "bar", "length", "exchanges")
@@ -95,16 +99,30 @@ def check_lot(lot: Any) -> tuple[dict[str, Any], list[str]]:
     if not isinstance(quotas, dict):
         errors.append("quotas: object expected")
         quotas = {}
-    norm_q: dict[str, int] = {}
+    norm_q: dict[str, Any] = {}
     for k, v in quotas.items():
         key = QUOTA_ALIASES.get(k, k)
         if key not in QUOTAS:
             errors.append(f"quotas: unknown key {k!r} (expected one of {', '.join(QUOTAS)})")
+        elif key in TYPE_QUOTAS:
+            if not isinstance(v, dict) or any(not _type_key(t) or not _nat(n) for t, n in v.items()):
+                errors.append(
+                    f"quotas.{k}: object {{decision type: integer >= 0}} expected ({', '.join(DECISION_TYPES)};"
+                    ' "a+b": both types, "a|b": either)'
+                )
+            else:
+                norm_q[key] = dict(v)
         elif not _nat(v):
             errors.append(f"quotas.{k}: integer >= 0 expected")
         else:
             norm_q[key] = v
     out["quotas"] = norm_q
+    lo, hi = norm_q.get("min_with_type", {}), norm_q.get("max_with_type", {})
+    for t, n in lo.items():
+        if t in hi and n > hi[t]:
+            errors.append(f"quotas: min_with_type.{t} ({n}) above max_with_type.{t} ({hi[t]})")
+        if _nat(lot.get("size")) and n > lot["size"]:
+            errors.append(f"quotas: min_with_type.{t} ({n}) above the lot size")
     mix = lot.get("mix")
     if not isinstance(mix, list) or not mix:
         errors.append("mix: non-empty list of configurations expected")
@@ -383,6 +401,43 @@ def _signatures(g: dict[str, Any]) -> set[tuple[Any, ...]]:
     return out
 
 
+def _type_key(key: Any) -> bool:
+    """A type quota key: one decision type, "a+b" (all of them) or "a|b" (any of them)."""
+    if not isinstance(key, str) or ("+" in key and "|" in key):
+        return False
+    return all(t in DECISION_TYPES for t in re.split(r"[+|]", key))
+
+
+def key_matches(key: str, kinds: set[str]) -> bool:
+    """Whether a grid (or a mix entry) holding the decision types `kinds` counts for a type quota key."""
+    if "|" in key:
+        return any(t in kinds for t in key.split("|"))
+    return all(t in kinds for t in key.split("+"))
+
+
+def decision_types(lab: dict[str, Any]) -> set[str]:
+    """Decision types present in a grid (count > 0)."""
+    return {k for k, v in lab.get("decisions", {}).items() if v}
+
+
+def config_types(cfg: dict[str, Any]) -> set[str]:
+    """Decision types a mix entry can produce (its mechanics); price is left out, never aimed at."""
+    out = set()
+    if cfg.get("neighbors") or cfg.get("surplus"):
+        out.add("exchange")
+    if cfg.get("step"):
+        out.add("step")
+    if cfg.get("tall"):
+        out.add("tall")
+    if cfg.get("ramp"):
+        out.add("ramp")
+    if cfg.get("co2_cap") is not None:
+        out.add("carbon")
+    if cfg.get("stock"):
+        out.add("stock")
+    return out
+
+
 def single_decision_type(lab: dict[str, Any]) -> str | None:
     """The decision type of a grid whose decisions are all of one type, else None (none, or several types)."""
     kinds = [k for k, v in lab.get("decisions", {}).items() if v]
@@ -399,6 +454,7 @@ class Quotas:
         self.profile: dict[tuple[str, ...], int] = {}
         self.rating: dict[int, int] = {}
         self.single: dict[str, int] = {}
+        self.with_type: dict[str, int] = {}
         self.seen: set[tuple[Any, ...]] = set()
         self.titles: set[str] = set()
         self.kept = 0
@@ -414,6 +470,7 @@ class Quotas:
         missing_r = sum(max(0, need_r - self.rating.get(x, 0)) for x in (1, 2, 3, 4) if x != r)
         missing_m = sum(max(0, need_m - self.mix.get(x, 0)) for x in range(self.mixes) if x != m)
         left = self.size - self.kept - 1
+        kinds = self.keys(decision_types(lab))
         # A mix entry still under its minimum when only reserved slots remain wins over the diversity quotas.
         last_call = 0 <= m < self.mixes and self.mix.get(m, 0) < need_m and left <= max(missing_r, missing_m)
         if not last_call:
@@ -427,12 +484,39 @@ class Quotas:
             cap = self.q["max_same_single_decision"]
             if one is not None and cap is not None and self.single.get(one, 0) >= cap:
                 return "quota:single_decision"
+            if any(self.with_type.get(t, 0) >= n for t, n in self.q["max_with_type"].items() if t in kinds):
+                return "quota:with_type"
         # Reserve the slots still needed for the minimum per rating and per mix entry.
         if left < missing_r and self.rating.get(r, 0) >= need_r:
             return "quota:rating"
         if left < missing_r + missing_m and self.rating.get(r, 0) >= need_r and self.mix.get(m, 0) >= need_m:
             return "quota:mix"
+        # Floors per decision type, reserved jointly with the ratings (a grid may fill a rating and types at
+        # once): once the deficits fit in the slots left, a grid must keep them fitting; before, it must
+        # reduce them. Separate reservations let the last slot need a rare pair (a Difficile with stock).
+        if self.q["min_with_type"]:
+            r_now = sum(max(0, need_r - self.rating.get(x, 0)) for x in (1, 2, 3, 4))
+            r_after = r_now - (self.rating.get(r, 0) < need_r)
+            t_now = self.type_deficit()
+            t_after = t_now - len(kinds & set(self.missing_types()))
+            d_now, d_after = r_now + t_now, r_after + t_after
+            if d_after > left and (d_now <= left + 1 or d_after >= d_now):
+                return "quota:type_floor" if t_after == t_now else "quota:rating"
         return None
+
+    def keys(self, kinds: set[str]) -> set[str]:
+        """Decision types, plus the combined quota keys ("step+carbon", "step|carbon") they match."""
+        combined = {k for q in TYPE_QUOTAS for k in self.q[q] if not k.isalpha()}
+        return kinds | {k for k in combined if key_matches(k, kinds)}
+
+    def missing_types(self) -> list[str]:
+        return [t for t, n in self.q["min_with_type"].items() if self.with_type.get(t, 0) < n]
+
+    def capped_types(self) -> list[str]:
+        return [t for t, n in self.q["max_with_type"].items() if self.with_type.get(t, 0) >= n]
+
+    def type_deficit(self) -> int:
+        return sum(max(0, n - self.with_type.get(t, 0)) for t, n in self.q["min_with_type"].items())
 
     def missing_ratings(self) -> list[int]:
         return [x for x in (1, 2, 3, 4) if self.rating.get(x, 0) < self.q["min_per_rating"]]
@@ -447,6 +531,8 @@ class Quotas:
         one = single_decision_type(lab)
         if one is not None:
             self.single[one] = self.single.get(one, 0) + 1
+        for t in self.keys(decision_types(lab)):
+            self.with_type[t] = self.with_type.get(t, 0) + 1
         r = g["difficulty"]["rating"]
         self.rating[r] = self.rating.get(r, 0) + 1
         self.mix[lab.get("mix", -1)] = self.mix.get(lab.get("mix", -1), 0) + 1
@@ -457,9 +543,17 @@ def _draw(
     rng: random.Random, mix: list[dict[str, Any]], weights: list[float], quotas: Quotas
 ) -> tuple[dict[str, Any], int, int, int]:
     """(config, seed, mix index, aim) of the next attempt, oriented to what the lot still misses."""
-    # Entries still under their minimum are drawn five times more often.
+    # Entries still under their minimum, or able to give a decision type still under its floor, are drawn five
+    # times more often; entries that give a type already at its ceiling, five times less.
     need = quotas.q["min_per_mix"]
-    boosted = [w * (5 if quotas.mix.get(j, 0) < need else 1) for j, w in enumerate(weights)]
+    missing, capped = set(quotas.missing_types()), set(quotas.capped_types())
+    boosted = []
+    for j, w in enumerate(weights):
+        kinds = quotas.keys(config_types(mix[j]))
+        w *= 5 if quotas.mix.get(j, 0) < need else 1
+        w *= 5 if kinds & missing else 1
+        w /= 5 if kinds & capped else 1
+        boosted.append(w)
     i = rng.choices(range(len(mix)), boosted)[0]
     cfg = {k: v for k, v in mix[i].items() if k != "weight"}
     if cfg.get("family", "any") == "any" and not cfg.get("surplus"):
@@ -518,7 +612,7 @@ def run_lot(lot: dict[str, Any], workers: int = 6, log: Any = None) -> tuple[lis
             log(
                 f"kept {len(kept)}/{size}: {g['lab']['family']} {g['lab']['mechanics']} "
                 f"rating {g['difficulty']['rating']} (aim {g['lab']['aim']}) clues {len(g['clues'])} "
-                f"{g['lab']['seconds']}s"
+                f"{g['lab']['seconds']}s; missing ratings {quotas.missing_ratings()} types {quotas.missing_types()}"
             )
 
     pending: deque[tuple[Future, dict[str, Any], int, int]] = deque()
@@ -539,7 +633,7 @@ def run_lot(lot: dict[str, Any], workers: int = 6, log: Any = None) -> tuple[lis
                 if g is not None:
                     g["lab"]["mix"] = mi
                     reason = quotas.check(g)
-                    if reason in ("quota:rating", "quota:mix"):
+                    if reason in ("quota:rating", "quota:mix", "quota:type_floor"):
                         reserve.append(g)
                 if reason is None and len(kept) < size:
                     accept(g)
@@ -574,6 +668,8 @@ def run_lot(lot: dict[str, Any], workers: int = 6, log: Any = None) -> tuple[lis
             "by_type": {t: sum(g["lab"]["decisions"].get(t, 0) for g in kept) for t in DECISION_TYPES},
             "grids_with_type": {t: sum(1 for g in kept if g["lab"]["decisions"].get(t)) for t in DECISION_TYPES},
             "single_type": dict(sorted(quotas.single.items())),
+            "type_quotas": {k: quotas.q[k] for k in TYPE_QUOTAS if quotas.q[k]},
+            "grids_with_key": dict(sorted(quotas.with_type.items())),
             "per_grid": dict(
                 sorted(
                     {

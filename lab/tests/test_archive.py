@@ -6,6 +6,7 @@ Run: solver/.venv/bin/python -m pytest lab/tests/test_archive.py -q
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -73,13 +74,13 @@ def test_archived_sessions_are_not_listed(api, archived):
 
 
 def test_shipped_archive_is_hidden_and_live_lots_are_v3(tmp_path):
-    """The repo's own lab/: old lots are archived, every live lot is v3-*, v3g1-* or the replay lot."""
+    """The repo's own lab/: old lots are archived, every live lot is v3-*, v3g<N>-* or the replay lot."""
     import lab_server
     shutil.copytree(ROOT / "lab" / "candidates", tmp_path / "candidates")
     shutil.copytree(ROOT / "lab" / "sessions", tmp_path / "sessions")
     lab = lab_server.Lab(tmp_path, tmp_path / "grids.json")
     live = [l["lot"] for l in lab.lots()]
-    assert live and all(n.startswith(("v3-", "v3g1-")) or n == "nuit-rejeu-notees" for n in live)
+    assert live and all(re.match(r"v3(g\d+)?-", n) or n == "nuit-rejeu-notees" for n in live)
     for name in ("demo", "demo-01", "nuit-jouer-a", "nuit-jouer-b", "nuit-jouer-c", "nuit-rampe"):
         assert lab.archived(name) and name not in live
     assert "v3-session-1" not in [s["id"] for s in lab.sessions()]
