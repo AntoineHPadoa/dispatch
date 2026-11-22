@@ -1,0 +1,6209 @@
+[
+ {
+  "id": 1,
+  "title": "Vent de nuit",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   5,
+   6,
+   5,
+   5,
+   5,
+   7,
+   7,
+   6
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   }
+  },
+  "weather": {
+   "R": [
+    4,
+    5,
+    0,
+    1,
+    1,
+    0,
+    0,
+    5
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "ES",
+    "name": "Espagne",
+    "cap": 1,
+    "co2": 0
+   }
+  ],
+  "step": true,
+  "co2_cap": 2,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "G": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "exchanges",
+    "step": 1
+   },
+   {
+    "type": "column",
+    "col": 2,
+    "counts": {
+     "N": 5
+    }
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 4,
+    "len": 4
+   },
+   {
+    "type": "flow",
+    "col": 7,
+    "country": "ES",
+    "dir": "export",
+    "value": 0
+   },
+   {
+    "type": "price",
+    "col": 5,
+    "piece": "G"
+   }
+  ],
+  "solution": {
+   "exports": {
+    "ES": [
+     0,
+     0,
+     0,
+     1,
+     1,
+     0,
+     0,
+     0
+    ]
+   },
+   "step": [
+    {
+     "pump": 2,
+     "turbine": 5
+    }
+   ],
+   "placements": [
+    {
+     "piece": "I",
+     "row": 4,
+     "col": 0,
+     "len": 1,
+     "country": "ES"
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 1,
+     "len": 3
+    },
+    {
+     "piece": "I",
+     "row": 0,
+     "col": 2,
+     "len": 1,
+     "country": "ES"
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 2,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 2,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 2,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 2,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "G",
+     "row": 0,
+     "col": 5,
+     "len": 2
+    },
+    {
+     "piece": "I",
+     "row": 6,
+     "col": 6,
+     "len": 1,
+     "country": "ES"
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 4,
+   "label": "Expert",
+   "techniques": [
+    "carbon",
+    "column_sum",
+    "flow",
+    "price_cap",
+    "program",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 626620498,
+   "aim": 1,
+   "family": "vent_nocturne",
+   "mechanics": [
+    "neighbors:1",
+    "step",
+    "co2",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "bar",
+    "column",
+    "exchanges",
+    "flow",
+    "price"
+   ],
+   "trace_summary": {
+    "steps": 32,
+    "level2_steps": 10,
+    "single_effect_steps": 13,
+    "order": [
+     "flow",
+     "room",
+     "price_cap",
+     "record",
+     "single_cover",
+     "program",
+     "silhouette",
+     "ribbon",
+     "carbon",
+     "column_sum"
+    ],
+    "techniques": {
+     "flow": 3,
+     "room": 9,
+     "price_cap": 1,
+     "record": 1,
+     "single_cover": 3,
+     "program": 1,
+     "silhouette": 4,
+     "ribbon": 8,
+     "carbon": 1,
+     "column_sum": 1
+    },
+    "shape_steps": {},
+    "technique_level": 2,
+    "coupled_globals": [
+     "step",
+     "carbon"
+    ]
+   },
+   "ramp_techniques": {},
+   "decisions": {
+    "exchange": 5,
+    "step": 1,
+    "carbon": 1
+   },
+   "live_mechanics": [
+    "exchange",
+    "step",
+    "carbon"
+   ],
+   "coupled_globals": [
+    "step",
+    "carbon"
+   ],
+   "compactness": 1.1,
+   "demand_prices": 0,
+   "bars": 7,
+   "nuclear_prices": 0,
+   "cleaned": {},
+   "bulletin": {
+    "title": "Vent de nuit",
+    "text": "Le vent souffle la nuit et soulage la base. Pas plus de 2 points de CO₂ aujourd'hui.",
+    "weather": [
+     "wind",
+     "wind",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "wind"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 3.92,
+   "mix": 0,
+   "lot": "v3g3-jouer-b",
+   "index": 0
+  }
+ },
+ {
+  "id": 2,
+  "title": "Carbone compté",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   2,
+   2,
+   4,
+   4,
+   2,
+   3,
+   5,
+   2
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    1,
+    1,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "BE",
+    "name": "Belgique",
+    "cap": 1,
+    "co2": 1
+   }
+  ],
+  "step": false,
+  "co2_cap": 6,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "G": {},
+    "T": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "exchanges",
+    "imports": {
+     "BE": 0
+    }
+   },
+   {
+    "type": "flow",
+    "col": 5,
+    "country": "BE",
+    "dir": "export",
+    "value": 0
+   },
+   {
+    "type": "column",
+    "col": 1,
+    "counts": {
+     "N": 2
+    }
+   },
+   {
+    "type": "flow",
+    "col": 7,
+    "country": "BE",
+    "dir": "export",
+    "value": 1
+   }
+  ],
+  "solution": {
+   "exports": {
+    "BE": [
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     1
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 2,
+     "len": 6
+    },
+    {
+     "piece": "G",
+     "row": 3,
+     "col": 2,
+     "len": 2
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 3,
+     "col": 6,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 4,
+     "col": 6,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 3,
+   "label": "Difficile",
+   "techniques": [
+    "carbon",
+    "flow",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 125941691,
+   "aim": 4,
+   "family": "deux_bosses",
+   "mechanics": [
+    "neighbors:1",
+    "co2",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "column",
+    "exchanges",
+    "flow"
+   ],
+   "trace_summary": {
+    "steps": 9,
+    "level2_steps": 3,
+    "single_effect_steps": 0,
+    "order": [
+     "flow",
+     "room",
+     "single_cover",
+     "carbon",
+     "record",
+     "silhouette",
+     "ribbon"
+    ],
+    "techniques": {
+     "flow": 1,
+     "room": 1,
+     "single_cover": 2,
+     "carbon": 1,
+     "record": 1,
+     "silhouette": 1,
+     "ribbon": 2
+    },
+    "shape_steps": {},
+    "technique_level": 2,
+    "coupled_globals": [
+     "carbon"
+    ]
+   },
+   "ramp_techniques": {},
+   "decisions": {
+    "exchange": 1,
+    "carbon": 1
+   },
+   "live_mechanics": [
+    "exchange",
+    "carbon"
+   ],
+   "coupled_globals": [
+    "carbon"
+   ],
+   "compactness": 0.5,
+   "demand_prices": 0,
+   "bars": 8,
+   "nuclear_prices": 0,
+   "cleaned": {},
+   "bulletin": {
+    "title": "Carbone compté",
+    "text": "Un premier pic le matin, un second vers 18h. La Belgique peut acheter ou vendre selon la ligne.",
+    "weather": [
+     "moon",
+     "moon",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 1.63,
+   "mix": 3,
+   "lot": "v3g3-jouer-b",
+   "index": 1
+  }
+ },
+ {
+  "id": 3,
+  "title": "Réserve d'eau",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "2h",
+   "4h",
+   "6h",
+   "8h",
+   "10h",
+   "12h",
+   "14h",
+   "16h",
+   "18h",
+   "20h",
+   "22h"
+  ],
+  "demand": [
+   4,
+   4,
+   4,
+   3,
+   4,
+   4,
+   4,
+   5,
+   5,
+   5,
+   5,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 2,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4
+    ],
+    "height": [
+     1,
+     2
+    ],
+    "rank": 3,
+    "co2": 3
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    3,
+    3,
+    3,
+    0,
+    0,
+    1,
+    1,
+    1,
+    0,
+    0,
+    3,
+    3
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "B": {
+     "max_cells": 3
+    },
+    "C": {},
+    "T": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 3,
+    "counts": {
+     "C": 2
+    }
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 4,
+    "len": 4
+   },
+   {
+    "type": "price",
+    "col": 0,
+    "piece": "N"
+   },
+   {
+    "type": "price",
+    "col": 6,
+    "piece": "N"
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 7,
+    "len": 4
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 8,
+    "len": 4
+   },
+   {
+    "type": "price",
+    "col": 4,
+    "piece": "C"
+   },
+   {
+    "type": "price",
+    "col": 8,
+    "piece": "B"
+   },
+   {
+    "type": "price",
+    "col": 9,
+    "piece": "B"
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "T",
+     "row": 0,
+     "col": 3,
+     "len": 1
+    },
+    {
+     "piece": "C",
+     "row": 1,
+     "col": 3,
+     "len": 3,
+     "height": 2
+    },
+    {
+     "piece": "B",
+     "row": 0,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 6,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 6,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 7,
+     "len": 4
+    },
+    {
+     "piece": "B",
+     "row": 0,
+     "col": 8,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 8,
+     "len": 4
+    },
+    {
+     "piece": "B",
+     "row": 0,
+     "col": 9,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": [
+    "exhausted",
+    "price_cap",
+    "program",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 194336350,
+   "aim": 2,
+   "family": "vent_nocturne",
+   "mechanics": [
+    "tall",
+    "stock",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "bar",
+    "column",
+    "price"
+   ],
+   "trace_summary": {
+    "steps": 13,
+    "level2_steps": 2,
+    "single_effect_steps": 3,
+    "order": [
+     "price_cap",
+     "exhausted",
+     "record",
+     "single_cover",
+     "room",
+     "program",
+     "ribbon"
+    ],
+    "techniques": {
+     "price_cap": 1,
+     "exhausted": 1,
+     "record": 1,
+     "single_cover": 1,
+     "room": 4,
+     "program": 3,
+     "ribbon": 2
+    },
+    "shape_steps": {
+     "price_cap:tall": 1
+    },
+    "technique_level": 2,
+    "coupled_globals": []
+   },
+   "ramp_techniques": {},
+   "decisions": {
+    "tall": 1,
+    "stock": 1
+   },
+   "live_mechanics": [
+    "tall",
+    "stock"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.27,
+   "demand_prices": 0,
+   "bars": 11,
+   "nuclear_prices": 2,
+   "cleaned": {},
+   "bulletin": {
+    "title": "Réserve d'eau",
+    "text": "Les éoliennes tournent fort la nuit, moins le jour. Une centrale à charbon tourne à 1 ou 2 GW, selon le besoin.",
+    "weather": [
+     "wind",
+     "wind",
+     "wind",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "wind",
+     "wind"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 3.76,
+   "mix": 5,
+   "lot": "v3g3-jouer-b",
+   "index": 2
+  }
+ },
+ {
+  "id": 4,
+  "title": "La nuit souffle",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   6,
+   5,
+   4,
+   4,
+   5,
+   7,
+   7,
+   5
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4
+    ],
+    "height": [
+     1,
+     2
+    ],
+    "rank": 3,
+    "co2": 3
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   }
+  },
+  "weather": {
+   "R": [
+    4,
+    3,
+    0,
+    1,
+    1,
+    0,
+    0,
+    3
+   ],
+   "F": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "BE",
+    "name": "Belgique",
+    "cap": 1,
+    "co2": 1
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "C": {},
+    "G": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "price",
+    "col": 7,
+    "piece": "C"
+   },
+   {
+    "type": "column",
+    "col": 2,
+    "counts": {
+     "N": 2
+    }
+   },
+   {
+    "type": "column",
+    "col": 4,
+    "counts": {
+     "C": 2
+    }
+   },
+   {
+    "type": "exchanges",
+    "exports": {
+     "BE": 2
+    }
+   },
+   {
+    "type": "column",
+    "col": 6,
+    "counts": {
+     "N": 2
+    }
+   },
+   {
+    "type": "exchanges",
+    "imports": {
+     "BE": 5
+    }
+   }
+  ],
+  "solution": {
+   "exports": {
+    "BE": [
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     1
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "I",
+     "row": 5,
+     "col": 0,
+     "len": 1,
+     "country": "BE"
+    },
+    {
+     "piece": "I",
+     "row": 4,
+     "col": 1,
+     "len": 1,
+     "country": "BE"
+    },
+    {
+     "piece": "I",
+     "row": 1,
+     "col": 2,
+     "len": 1,
+     "country": "BE"
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 2,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 2,
+     "len": 5
+    },
+    {
+     "piece": "C",
+     "row": 4,
+     "col": 4,
+     "len": 4,
+     "height": 2
+    },
+    {
+     "piece": "G",
+     "row": 1,
+     "col": 5,
+     "len": 2
+    },
+    {
+     "piece": "I",
+     "row": 6,
+     "col": 5,
+     "len": 1,
+     "country": "BE"
+    },
+    {
+     "piece": "I",
+     "row": 6,
+     "col": 6,
+     "len": 1,
+     "country": "BE"
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "column_sum",
+    "price_cap",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 95017095,
+   "aim": 2,
+   "family": "vent_nocturne",
+   "mechanics": [
+    "neighbors:1",
+    "tall",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "column",
+    "exchanges",
+    "price"
+   ],
+   "trace_summary": {
+    "steps": 24,
+    "level2_steps": 5,
+    "single_effect_steps": 5,
+    "order": [
+     "price_cap",
+     "single_cover",
+     "silhouette",
+     "room",
+     "record",
+     "ribbon",
+     "column_sum"
+    ],
+    "techniques": {
+     "price_cap": 1,
+     "single_cover": 4,
+     "silhouette": 4,
+     "room": 6,
+     "record": 4,
+     "ribbon": 4,
+     "column_sum": 1
+    },
+    "shape_steps": {
+     "room:tall": 1,
+     "record:tall": 1,
+     "ribbon:tall": 3
+    },
+    "technique_level": 2,
+    "coupled_globals": []
+   },
+   "ramp_techniques": {},
+   "decisions": {
+    "exchange": 5,
+    "tall": 1
+   },
+   "live_mechanics": [
+    "exchange",
+    "tall"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.78,
+   "demand_prices": 1,
+   "bars": 4,
+   "nuclear_prices": 0,
+   "cleaned": {},
+   "bulletin": {
+    "title": "La nuit souffle",
+    "text": "Le vent souffle la nuit et soulage la base. La Belgique peut acheter ou vendre selon la ligne.",
+    "weather": [
+     "wind",
+     "wind",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "wind"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 2.48,
+   "mix": 7,
+   "lot": "v3g3-jouer-b",
+   "index": 3
+  }
+ },
+ {
+  "id": 5,
+  "title": "Le barrage compte ses gouttes",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   2,
+   2,
+   2,
+   3,
+   2,
+   4,
+   5,
+   3
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 2,
+    "co2": 0
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [],
+  "step": true,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "B": {
+     "max_cells": 2
+    }
+   }
+  },
+  "clues": [
+   {
+    "type": "exchanges",
+    "step": 2
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [
+    {
+     "pump": 4,
+     "turbine": 6
+    },
+    {
+     "pump": 4,
+     "turbine": 7
+    }
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 3,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 4,
+     "len": 3
+    },
+    {
+     "piece": "B",
+     "row": 0,
+     "col": 6,
+     "len": 1
+    },
+    {
+     "piece": "B",
+     "row": 0,
+     "col": 7,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "exhausted",
+    "refuted",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 695937189,
+   "aim": 2,
+   "family": "pointe_soir",
+   "mechanics": [
+    "step",
+    "stock",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "exchanges"
+   ],
+   "trace_summary": {
+    "steps": 9,
+    "level2_steps": 3,
+    "single_effect_steps": 2,
+    "order": [
+     "room",
+     "exhausted",
+     "single_cover",
+     "silhouette",
+     "ribbon",
+     "refuted"
+    ],
+    "techniques": {
+     "room": 1,
+     "exhausted": 1,
+     "single_cover": 2,
+     "silhouette": 2,
+     "ribbon": 2,
+     "refuted": 1
+    },
+    "shape_steps": {},
+    "technique_level": 4,
+    "coupled_globals": []
+   },
+   "ramp_techniques": {},
+   "decisions": {
+    "step": 2,
+    "stock": 1
+   },
+   "live_mechanics": [
+    "step",
+    "stock"
+   ],
+   "coupled_globals": [],
+   "compactness": 1.0,
+   "demand_prices": 0,
+   "bars": 7,
+   "nuclear_prices": 0,
+   "cleaned": {},
+   "bulletin": {
+    "title": "Le barrage compte ses gouttes",
+    "text": "La consommation grimpe jusqu'à 18h. Le barrage n'a que 2 cases d'eau.",
+    "weather": [
+     "moon",
+     "moon",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 0.79,
+   "mix": 6,
+   "lot": "v3g3-jouer-b",
+   "index": 4
+  }
+ },
+ {
+  "id": 6,
+  "title": "La STEP au travail",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "2h",
+   "4h",
+   "6h",
+   "8h",
+   "10h",
+   "12h",
+   "14h",
+   "16h",
+   "18h",
+   "20h",
+   "22h"
+  ],
+  "demand": [
+   3,
+   2,
+   3,
+   4,
+   7,
+   4,
+   4,
+   3,
+   4,
+   7,
+   5,
+   2
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    2,
+    1,
+    1,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "IT",
+    "name": "Italie",
+    "cap": 1,
+    "co2": 2
+   }
+  ],
+  "step": true,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      5,
+      4,
+      4,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3
+     ]
+    },
+    "T": {
+     "cells": 1
+    }
+   },
+   "exports": {
+    "IT": 5
+   },
+   "imports": {
+    "IT": 1
+   },
+   "step": 1
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 10,
+    "counts": {
+     "N": 5
+    }
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 4,
+    "len": 3
+   }
+  ],
+  "solution": {
+   "exports": {
+    "IT": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     1,
+     1,
+     0,
+     1,
+     0,
+     1,
+     0
+    ]
+   },
+   "step": [
+    {
+     "pump": 8,
+     "turbine": 9
+    }
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 3,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 4,
+     "len": 3
+    },
+    {
+     "piece": "I",
+     "row": 5,
+     "col": 4,
+     "len": 1,
+     "country": "IT"
+    },
+    {
+     "piece": "T",
+     "row": 6,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 7,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 8,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 8,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 8,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 9,
+     "len": 3
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 3,
+   "label": "Difficile",
+   "techniques": [
+    "column_sum",
+    "exhausted",
+    "flow",
+    "program",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 590011738,
+   "aim": 3,
+   "family": "deux_bosses",
+   "mechanics": [
+    "neighbors:1",
+    "step",
+    "inventory:exact"
+   ],
+   "clue_profile": [
+    "bar",
+    "column"
+   ],
+   "trace_summary": {
+    "steps": 29,
+    "level2_steps": 7,
+    "single_effect_steps": 6,
+    "order": [
+     "room",
+     "record",
+     "single_cover",
+     "silhouette",
+     "flow",
+     "ribbon",
+     "column_sum",
+     "exhausted",
+     "program"
+    ],
+    "techniques": {
+     "room": 8,
+     "record": 1,
+     "single_cover": 4,
+     "silhouette": 4,
+     "flow": 1,
+     "ribbon": 5,
+     "column_sum": 2,
+     "exhausted": 3,
+     "program": 1
+    },
+    "shape_steps": {},
+    "technique_level": 2,
+    "coupled_globals": [
+     "step"
+    ]
+   },
+   "ramp_techniques": {},
+   "decisions": {
+    "exchange": 5,
+    "step": 1
+   },
+   "live_mechanics": [
+    "exchange",
+    "step"
+   ],
+   "coupled_globals": [
+    "step"
+   ],
+   "compactness": 0.67,
+   "demand_prices": 0,
+   "bars": 11,
+   "nuclear_prices": 0,
+   "cleaned": {},
+   "bulletin": {
+    "title": "La STEP au travail",
+    "text": "La demande monte deux fois : au réveil et vers 18h. La STEP peut stocker l'eau pour plus tard.",
+    "weather": [
+     "moon",
+     "moon",
+     "moon",
+     "cloud",
+     "cloud",
+     "cloud",
+     "sun",
+     "cloud",
+     "cloud",
+     "cloud",
+     "moon",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 4.74,
+   "mix": 2,
+   "lot": "v3g3-jouer-b",
+   "index": 5
+  }
+ },
+ {
+  "id": 7,
+  "title": "Échanges du jour",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   2,
+   3,
+   6,
+   6,
+   4,
+   5,
+   8,
+   3
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4
+    ],
+    "height": [
+     1,
+     2
+    ],
+    "rank": 3,
+    "co2": 3
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    0,
+    0
+   ],
+   "F": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "ES",
+    "name": "Espagne",
+    "cap": 1,
+    "co2": 0
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      3,
+      3
+     ]
+    },
+    "C": {
+     "bars": [
+      3
+     ]
+    },
+    "G": {
+     "bars": [
+      2,
+      2,
+      2
+     ]
+    },
+    "T": {
+     "cells": 3
+    }
+   },
+   "exports": {
+    "ES": 0
+   },
+   "imports": {
+    "ES": 5
+   }
+  },
+  "clues": [
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 5,
+    "len": 3
+   },
+   {
+    "type": "column",
+    "col": 7,
+    "counts": {
+     "I:ES": 1
+    }
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "I",
+     "row": 2,
+     "col": 1,
+     "len": 1,
+     "country": "ES"
+    },
+    {
+     "piece": "C",
+     "row": 2,
+     "col": 2,
+     "len": 3,
+     "height": 2
+    },
+    {
+     "piece": "G",
+     "row": 4,
+     "col": 2,
+     "len": 2
+    },
+    {
+     "piece": "I",
+     "row": 5,
+     "col": 2,
+     "len": 1,
+     "country": "ES"
+    },
+    {
+     "piece": "I",
+     "row": 5,
+     "col": 3,
+     "len": 1,
+     "country": "ES"
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 3,
+     "col": 5,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 4,
+     "col": 5,
+     "len": 2
+    },
+    {
+     "piece": "I",
+     "row": 1,
+     "col": 6,
+     "len": 1,
+     "country": "ES"
+    },
+    {
+     "piece": "T",
+     "row": 5,
+     "col": 6,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 6,
+     "col": 6,
+     "len": 1
+    },
+    {
+     "piece": "T",
+     "row": 7,
+     "col": 6,
+     "len": 1
+    },
+    {
+     "piece": "I",
+     "row": 1,
+     "col": 7,
+     "len": 1,
+     "country": "ES"
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "column_sum",
+    "exhausted",
+    "program",
+    "record",
+    "refuted",
+    "room",
+    "share_out",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 530761035,
+   "aim": 4,
+   "family": "deux_bosses",
+   "mechanics": [
+    "neighbors:1",
+    "tall",
+    "inventory:exact"
+   ],
+   "clue_profile": [
+    "bar",
+    "column"
+   ],
+   "trace_summary": {
+    "steps": 17,
+    "level2_steps": 6,
+    "single_effect_steps": 3,
+    "order": [
+     "room",
+     "exhausted",
+     "program",
+     "record",
+     "single_cover",
+     "share_out",
+     "refuted",
+     "column_sum"
+    ],
+    "techniques": {
+     "room": 5,
+     "exhausted": 1,
+     "program": 1,
+     "record": 1,
+     "single_cover": 3,
+     "share_out": 3,
+     "refuted": 1,
+     "column_sum": 2
+    },
+    "shape_steps": {
+     "room:tall": 2,
+     "single_cover:tall": 1
+    },
+    "technique_level": 4,
+    "coupled_globals": []
+   },
+   "ramp_techniques": {},
+   "decisions": {
+    "exchange": 1,
+    "tall": 1
+   },
+   "live_mechanics": [
+    "exchange",
+    "tall"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.21,
+   "demand_prices": 0,
+   "bars": 9,
+   "nuclear_prices": 0,
+   "cleaned": {},
+   "bulletin": {
+    "title": "Échanges du jour",
+    "text": "La demande monte deux fois : au réveil et vers 18h. La ligne vers l'Espagne reste ouverte.",
+    "weather": [
+     "moon",
+     "moon",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 3.06,
+   "mix": 7,
+   "lot": "v3g3-jouer-b",
+   "index": 6
+  }
+ },
+ {
+  "id": 8,
+  "title": "Un jour tranquille",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   7,
+   7,
+   7,
+   8,
+   8,
+   7,
+   7,
+   7
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 2,
+    "co2": 0
+   }
+  },
+  "weather": {
+   "R": [
+    1,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    1
+   ],
+   "F": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  "neighbors": [],
+  "step": true,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "B": {
+     "max_cells": 2
+    }
+   }
+  },
+  "clues": [
+   {
+    "type": "exchanges",
+    "step": 2
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 2,
+    "len": 4
+   },
+   {
+    "type": "column",
+    "col": 7,
+    "counts": {
+     "N": 3
+    }
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [
+    {
+     "pump": 2,
+     "turbine": 7
+    },
+    {
+     "pump": 5,
+     "turbine": 7
+    }
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 6,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 1,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 7,
+     "col": 2,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 3,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 6,
+     "col": 3,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "B",
+     "row": 1,
+     "col": 5,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "B",
+     "row": 1,
+     "col": 6,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": [
+    "exhausted",
+    "program",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 789437615,
+   "aim": 3,
+   "family": "nuit_plate",
+   "mechanics": [
+    "step",
+    "stock",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "bar",
+    "column",
+    "exchanges"
+   ],
+   "trace_summary": {
+    "steps": 13,
+    "level2_steps": 5,
+    "single_effect_steps": 1,
+    "order": [
+     "room",
+     "exhausted",
+     "record",
+     "single_cover",
+     "silhouette",
+     "ribbon",
+     "program"
+    ],
+    "techniques": {
+     "room": 2,
+     "exhausted": 1,
+     "record": 1,
+     "single_cover": 1,
+     "silhouette": 2,
+     "ribbon": 5,
+     "program": 1
+    },
+    "shape_steps": {},
+    "technique_level": 2,
+    "coupled_globals": []
+   },
+   "ramp_techniques": {},
+   "decisions": {
+    "step": 2,
+    "stock": 1
+   },
+   "live_mechanics": [
+    "step",
+    "stock"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.5,
+   "demand_prices": 0,
+   "bars": 14,
+   "nuclear_prices": 0,
+   "cleaned": {},
+   "bulletin": {
+    "title": "Un jour tranquille",
+    "text": "Peu de relief aujourd'hui : la base fait l'essentiel. Réserve d'eau limitée : 2 cases.",
+    "weather": [
+     "wind",
+     "moon",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "wind"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 3.56,
+   "mix": 6,
+   "lot": "v3g3-jouer-b",
+   "index": 7
+  }
+ },
+ {
+  "id": 9,
+  "title": "Midi déborde",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   3,
+   3,
+   3,
+   5,
+   5,
+   4,
+   6,
+   3
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    3,
+    5,
+    1,
+    0,
+    0
+   ],
+   "F": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "UK",
+    "name": "Royaume-Uni",
+    "cap": 1,
+    "co2": 1
+   },
+   {
+    "id": "ES",
+    "name": "Espagne",
+    "cap": 1,
+    "co2": 0
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      3,
+      3,
+      3,
+      3
+     ]
+    },
+    "G": {
+     "bars": [
+      2
+     ]
+    }
+   },
+   "exports": {
+    "UK": 1,
+    "ES": 2
+   },
+   "imports": {
+    "UK": 1,
+    "ES": 3
+   }
+  },
+  "clues": [
+   {
+    "type": "flow",
+    "col": 7,
+    "country": "ES",
+    "dir": "export",
+    "value": 0
+   },
+   {
+    "type": "column",
+    "col": 6,
+    "counts": {
+     "I:UK": 1
+    }
+   },
+   {
+    "type": "flow",
+    "col": 5,
+    "country": "ES",
+    "dir": "import",
+    "value": 0
+   }
+  ],
+  "solution": {
+   "exports": {
+    "UK": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1
+    ],
+    "ES": [
+     0,
+     0,
+     0,
+     0,
+     1,
+     1,
+     0,
+     0
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "I",
+     "row": 4,
+     "col": 3,
+     "len": 1,
+     "country": "ES"
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 4,
+     "col": 5,
+     "len": 2
+    },
+    {
+     "piece": "I",
+     "row": 1,
+     "col": 6,
+     "len": 1,
+     "country": "ES"
+    },
+    {
+     "piece": "I",
+     "row": 5,
+     "col": 6,
+     "len": 1,
+     "country": "UK"
+    },
+    {
+     "piece": "I",
+     "row": 1,
+     "col": 7,
+     "len": 1,
+     "country": "ES"
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "column_sum",
+    "exhausted",
+    "flow",
+    "ribbon",
+    "room",
+    "share_out",
+    "silhouette",
+    "single_cover",
+    "single_spot"
+   ]
+  },
+  "lab": {
+   "seed": 287285689,
+   "aim": 4,
+   "family": "surplus_midi",
+   "mechanics": [
+    "neighbors:2",
+    "surplus",
+    "inventory:exact"
+   ],
+   "clue_profile": [
+    "column",
+    "flow"
+   ],
+   "trace_summary": {
+    "steps": 25,
+    "level2_steps": 8,
+    "single_effect_steps": 6,
+    "order": [
+     "flow",
+     "room",
+     "column_sum",
+     "silhouette",
+     "ribbon",
+     "share_out",
+     "exhausted",
+     "single_cover",
+     "single_spot"
+    ],
+    "techniques": {
+     "flow": 2,
+     "room": 7,
+     "column_sum": 3,
+     "silhouette": 3,
+     "ribbon": 2,
+     "share_out": 3,
+     "exhausted": 2,
+     "single_cover": 2,
+     "single_spot": 1
+    },
+    "shape_steps": {},
+    "technique_level": 3,
+    "coupled_globals": []
+   },
+   "ramp_techniques": {},
+   "decisions": {
+    "exchange": 5
+   },
+   "live_mechanics": [
+    "exchange"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.56,
+   "demand_prices": 0,
+   "bars": 5,
+   "nuclear_prices": 0,
+   "cleaned": {},
+   "bulletin": {
+    "title": "Midi déborde",
+    "text": "Le soleil déborde à 12h : il faut écouler le surplus. Le Royaume-Uni et l'Espagne ont leurs lignes ouvertes.",
+    "weather": [
+     "moon",
+     "moon",
+     "cloud",
+     "sun",
+     "sun",
+     "cloud",
+     "cloud",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 4.85,
+   "mix": 1,
+   "lot": "v3g3-jouer-b",
+   "index": 8
+  }
+ },
+ {
+  "id": 10,
+  "title": "Frontière ouverte",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "2h",
+   "4h",
+   "6h",
+   "8h",
+   "10h",
+   "12h",
+   "14h",
+   "16h",
+   "18h",
+   "20h",
+   "22h"
+  ],
+  "demand": [
+   4,
+   3,
+   4,
+   4,
+   4,
+   5,
+   7,
+   3,
+   5,
+   6,
+   5,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 2,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4
+    ],
+    "height": [
+     1,
+     2
+    ],
+    "rank": 3,
+    "co2": 3
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    1,
+    4,
+    6,
+    4,
+    1,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "DE",
+    "name": "Allemagne",
+    "cap": 1,
+    "co2": 2
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "B": {
+     "max_cells": 3
+    },
+    "C": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "exchanges",
+    "imports": {
+     "DE": 0
+    }
+   },
+   {
+    "type": "flow",
+    "col": 4,
+    "country": "DE",
+    "dir": "export",
+    "value": 0
+   },
+   {
+    "type": "flow",
+    "col": 11,
+    "country": "DE",
+    "dir": "export",
+    "value": 0
+   },
+   {
+    "type": "column",
+    "col": 11,
+    "counts": {
+     "N": 4
+    }
+   },
+   {
+    "type": "column",
+    "col": 9,
+    "counts": {
+     "C": 2
+    }
+   },
+   {
+    "type": "column",
+    "col": 3,
+    "counts": {
+     "N": 4
+    }
+   },
+   {
+    "type": "flow",
+    "col": 1,
+    "country": "DE",
+    "dir": "export",
+    "value": 0
+   }
+  ],
+  "solution": {
+   "exports": {
+    "DE": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     1,
+     0,
+     1,
+     0
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "B",
+     "row": 3,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 2,
+     "len": 3
+    },
+    {
+     "piece": "B",
+     "row": 4,
+     "col": 5,
+     "len": 1
+    },
+    {
+     "piece": "B",
+     "row": 6,
+     "col": 6,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 8,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 8,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 8,
+     "len": 4
+    },
+    {
+     "piece": "C",
+     "row": 4,
+     "col": 8,
+     "len": 3,
+     "height": 2
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 9,
+     "len": 3
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": [
+    "exhausted",
+    "flow",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 688328094,
+   "aim": 3,
+   "family": "surplus_midi",
+   "mechanics": [
+    "neighbors:1",
+    "surplus",
+    "tall",
+    "stock",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "column",
+    "exchanges",
+    "flow"
+   ],
+   "trace_summary": {
+    "steps": 13,
+    "level2_steps": 5,
+    "single_effect_steps": 0,
+    "order": [
+     "flow",
+     "room",
+     "exhausted",
+     "record",
+     "single_cover",
+     "silhouette",
+     "ribbon"
+    ],
+    "techniques": {
+     "flow": 1,
+     "room": 1,
+     "exhausted": 1,
+     "record": 3,
+     "single_cover": 1,
+     "silhouette": 1,
+     "ribbon": 5
+    },
+    "shape_steps": {
+     "room:tall": 1,
+     "record:tall": 2,
+     "ribbon:tall": 4
+    },
+    "technique_level": 2,
+    "coupled_globals": []
+   },
+   "ramp_techniques": {},
+   "decisions": {
+    "exchange": 2,
+    "tall": 1,
+    "stock": 1
+   },
+   "live_mechanics": [
+    "exchange",
+    "tall",
+    "stock"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.42,
+   "demand_prices": 0,
+   "bars": 12,
+   "nuclear_prices": 0,
+   "cleaned": {},
+   "bulletin": {
+    "title": "Frontière ouverte",
+    "text": "Le soleil déborde à 14h : il faut écouler le surplus. Le barrage n'a que 3 cases d'eau.",
+    "weather": [
+     "moon",
+     "moon",
+     "moon",
+     "cloud",
+     "cloud",
+     "sun",
+     "sun",
+     "sun",
+     "cloud",
+     "cloud",
+     "moon",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 4.57,
+   "mix": 5,
+   "lot": "v3g3-jouer-b",
+   "index": 9
+  }
+ },
+ {
+  "id": 11,
+  "title": "Le lac remonte",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "demand": [
+   3,
+   2,
+   5,
+   5,
+   6,
+   3
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4
+    ],
+    "height": [
+     1,
+     2
+    ],
+    "rank": 3,
+    "co2": 3
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  "neighbors": [],
+  "step": true,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "C": {},
+    "G": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "exchanges",
+    "step": 1
+   },
+   {
+    "type": "column",
+    "col": 5,
+    "counts": {
+     "N": 2
+    }
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 0,
+    "len": 3
+   },
+   {
+    "type": "column",
+    "col": 3,
+    "counts": {
+     "C": 2
+    }
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [
+    {
+     "pump": 1,
+     "turbine": 4
+    }
+   ],
+   "placements": [
+    {
+     "piece": "G",
+     "row": 1,
+     "col": 0,
+     "len": 2
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "C",
+     "row": 3,
+     "col": 2,
+     "len": 3,
+     "height": 2
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 3,
+     "len": 3
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": [
+    "program",
+    "record",
+    "room",
+    "silhouette",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 728466542,
+   "aim": 1,
+   "family": "plateau_hiver",
+   "mechanics": [
+    "step",
+    "tall",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "bar",
+    "column",
+    "exchanges"
+   ],
+   "trace_summary": {
+    "steps": 11,
+    "level2_steps": 0,
+    "single_effect_steps": 5,
+    "order": [
+     "room",
+     "record",
+     "single_cover",
+     "program",
+     "silhouette"
+    ],
+    "techniques": {
+     "room": 5,
+     "record": 2,
+     "single_cover": 2,
+     "program": 1,
+     "silhouette": 1
+    },
+    "shape_steps": {
+     "room:tall": 2,
+     "record:tall": 1
+    },
+    "technique_level": 1,
+    "coupled_globals": []
+   },
+   "ramp_techniques": {},
+   "decisions": {
+    "step": 1,
+    "tall": 1
+   },
+   "live_mechanics": [
+    "step",
+    "tall"
+   ],
+   "coupled_globals": [],
+   "compactness": 1.0,
+   "demand_prices": 0,
+   "bars": 5,
+   "nuclear_prices": 0,
+   "cleaned": {
+    "neighbors": [
+     "DE"
+    ]
+   },
+   "bulletin": {
+    "title": "Le lac remonte",
+    "text": "Le froid tient la demande haute toute la journée. Le charbon peut tourner à 1 ou 2 GW.",
+    "weather": [
+     "moon",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 0.16,
+   "mix": 8,
+   "lot": "v3g3-jouer-b",
+   "index": 10
+  }
+ },
+ {
+  "id": 12,
+  "title": "Midi au soleil",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   5,
+   6,
+   5,
+   6,
+   7,
+   7,
+   8,
+   6
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    3,
+    5,
+    2,
+    0,
+    0
+   ],
+   "F": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "BE",
+    "name": "Belgique",
+    "cap": 1,
+    "co2": 1
+   }
+  ],
+  "step": true,
+  "co2_cap": 4,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "G": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "exchanges",
+    "step": 1
+   },
+   {
+    "type": "column",
+    "col": 6,
+    "counts": {
+     "G": 2
+    }
+   },
+   {
+    "type": "column",
+    "col": 0,
+    "counts": {
+     "N": 4
+    }
+   },
+   {
+    "type": "column",
+    "col": 5,
+    "counts": {
+     "N": 4
+    }
+   },
+   {
+    "type": "flow",
+    "col": 7,
+    "country": "BE",
+    "dir": "export",
+    "value": 0
+   },
+   {
+    "type": "column",
+    "col": 3,
+    "counts": {
+     "N": 3
+    }
+   },
+   {
+    "type": "flow",
+    "col": 2,
+    "country": "BE",
+    "dir": "export",
+    "value": 0
+   }
+  ],
+  "solution": {
+   "exports": {
+    "BE": [
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     0
+    ]
+   },
+   "step": [
+    {
+     "pump": 2,
+     "turbine": 6
+    }
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 1,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 6,
+     "col": 3,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 1,
+     "col": 6,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 2,
+     "col": 6,
+     "len": 2
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 4,
+   "label": "Expert",
+   "techniques": [
+    "carbon",
+    "flow",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 425723034,
+   "aim": 3,
+   "family": "midi_solaire",
+   "mechanics": [
+    "neighbors:1",
+    "step",
+    "co2",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "column",
+    "exchanges",
+    "flow"
+   ],
+   "trace_summary": {
+    "steps": 19,
+    "level2_steps": 3,
+    "single_effect_steps": 4,
+    "order": [
+     "flow",
+     "room",
+     "silhouette",
+     "carbon",
+     "record",
+     "single_cover",
+     "ribbon"
+    ],
+    "techniques": {
+     "flow": 1,
+     "room": 5,
+     "silhouette": 4,
+     "carbon": 1,
+     "record": 4,
+     "single_cover": 2,
+     "ribbon": 2
+    },
+    "shape_steps": {},
+    "technique_level": 2,
+    "coupled_globals": [
+     "step",
+     "carbon"
+    ]
+   },
+   "ramp_techniques": {},
+   "decisions": {
+    "exchange": 1,
+    "step": 1,
+    "carbon": 1
+   },
+   "live_mechanics": [
+    "exchange",
+    "step",
+    "carbon"
+   ],
+   "coupled_globals": [
+    "step",
+    "carbon"
+   ],
+   "compactness": 0.64,
+   "demand_prices": 0,
+   "bars": 11,
+   "nuclear_prices": 0,
+   "cleaned": {},
+   "bulletin": {
+    "title": "Midi au soleil",
+    "text": "À midi, les panneaux font une bonne part du travail. Le plafond carbone est serré : 4 points au plus.",
+    "weather": [
+     "moon",
+     "moon",
+     "cloud",
+     "sun",
+     "sun",
+     "sun",
+     "cloud",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 3.7,
+   "mix": 0,
+   "lot": "v3g3-jouer-b",
+   "index": 11
+  }
+ },
+ {
+  "id": 13,
+  "title": "Plateau d'hiver",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   5,
+   4,
+   7,
+   8,
+   8,
+   8,
+   7,
+   5
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "UK",
+    "name": "Royaume-Uni",
+    "cap": 1,
+    "co2": 1
+   }
+  ],
+  "step": true,
+  "co2_cap": 2,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "G": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "exchanges",
+    "step": 1
+   },
+   {
+    "type": "column",
+    "col": 2,
+    "counts": {
+     "N": 6
+    }
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 1,
+    "len": 6
+   },
+   {
+    "type": "column",
+    "col": 7,
+    "counts": {
+     "I:UK": 0
+    }
+   },
+   {
+    "type": "exchanges",
+    "exports": {
+     "UK": 1
+    }
+   }
+  ],
+  "solution": {
+   "exports": {
+    "UK": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ]
+   },
+   "step": [
+    {
+     "pump": 1,
+     "turbine": 2
+    }
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 1,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 6,
+     "col": 3,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 7,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 0,
+     "col": 6,
+     "len": 2
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 4,
+   "label": "Expert",
+   "techniques": [
+    "carbon",
+    "program",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 577647811,
+   "aim": 4,
+   "family": "plateau_hiver",
+   "mechanics": [
+    "neighbors:1",
+    "step",
+    "co2",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "bar",
+    "column",
+    "exchanges"
+   ],
+   "trace_summary": {
+    "steps": 21,
+    "level2_steps": 8,
+    "single_effect_steps": 5,
+    "order": [
+     "room",
+     "record",
+     "single_cover",
+     "silhouette",
+     "ribbon",
+     "carbon",
+     "program"
+    ],
+    "techniques": {
+     "room": 4,
+     "record": 3,
+     "single_cover": 2,
+     "silhouette": 3,
+     "ribbon": 7,
+     "carbon": 1,
+     "program": 1
+    },
+    "shape_steps": {},
+    "technique_level": 2,
+    "coupled_globals": [
+     "step",
+     "carbon"
+    ]
+   },
+   "ramp_techniques": {},
+   "decisions": {
+    "exchange": 1,
+    "step": 1,
+    "carbon": 1
+   },
+   "live_mechanics": [
+    "exchange",
+    "step",
+    "carbon"
+   ],
+   "coupled_globals": [
+    "step",
+    "carbon"
+   ],
+   "compactness": 0.54,
+   "demand_prices": 0,
+   "bars": 13,
+   "nuclear_prices": 0,
+   "cleaned": {},
+   "bulletin": {
+    "title": "Plateau d'hiver",
+    "text": "De 6h au soir, le chauffage maintient un plateau. Le Royaume-Uni peut acheter ou vendre selon la ligne.",
+    "weather": [
+     "moon",
+     "moon",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 5.72,
+   "mix": 0,
+   "lot": "v3g3-jouer-b",
+   "index": 12
+  }
+ },
+ {
+  "id": 14,
+  "title": "Midi creux",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "4h",
+   "8h",
+   "12h",
+   "16h",
+   "20h"
+  ],
+  "demand": [
+   5,
+   6,
+   6,
+   6,
+   8,
+   6
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4
+    ],
+    "height": [
+     1,
+     2
+    ],
+    "rank": 3,
+    "co2": 3
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    2,
+    5,
+    1,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "BE",
+    "name": "Belgique",
+    "cap": 1,
+    "co2": 1
+   }
+  ],
+  "step": true,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      6,
+      3,
+      3
+     ]
+    },
+    "C": {
+     "bars": [
+      3
+     ]
+    },
+    "G": {
+     "bars": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2
+     ]
+    },
+    "T": {
+     "cells": 1
+    }
+   },
+   "exports": {
+    "BE": 2
+   },
+   "imports": {
+    "BE": 0
+   },
+   "step": 1
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 3,
+    "counts": {
+     "N": 2
+    }
+   },
+   {
+    "type": "flow",
+    "col": 3,
+    "country": "BE",
+    "dir": "export",
+    "value": 1
+   },
+   {
+    "type": "column",
+    "col": 0,
+    "counts": {
+     "N": 2
+    }
+   },
+   {
+    "type": "column",
+    "col": 2,
+    "counts": {
+     "N": 2
+    }
+   }
+  ],
+  "solution": {
+   "exports": {
+    "BE": [
+     0,
+     0,
+     0,
+     1,
+     0,
+     1
+    ]
+   },
+   "step": [
+    {
+     "pump": 0,
+     "turbine": 4
+    }
+   ],
+   "placements": [
+    {
+     "piece": "G",
+     "row": 0,
+     "col": 0,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 1,
+     "col": 0,
+     "len": 2
+    },
+    {
+     "piece": "C",
+     "row": 2,
+     "col": 0,
+     "len": 3,
+     "height": 2
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 6,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 1,
+     "col": 4,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 2,
+     "col": 4,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 3,
+     "col": 4,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 4,
+     "col": 4,
+     "len": 2
+    },
+    {
+     "piece": "T",
+     "row": 0,
+     "col": 5,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 3,
+   "label": "Difficile",
+   "techniques": [
+    "column_sum",
+    "exhausted",
+    "flow",
+    "record",
+    "refuted",
+    "room",
+    "silhouette",
+    "single_cover",
+    "single_spot"
+   ]
+  },
+  "lab": {
+   "seed": 728141897,
+   "aim": 4,
+   "family": "midi_solaire",
+   "mechanics": [
+    "neighbors:1",
+    "step",
+    "tall",
+    "inventory:exact"
+   ],
+   "clue_profile": [
+    "column",
+    "flow"
+   ],
+   "trace_summary": {
+    "steps": 16,
+    "level2_steps": 2,
+    "single_effect_steps": 5,
+    "order": [
+     "flow",
+     "room",
+     "exhausted",
+     "record",
+     "single_cover",
+     "single_spot",
+     "silhouette",
+     "refuted",
+     "column_sum"
+    ],
+    "techniques": {
+     "flow": 1,
+     "room": 3,
+     "exhausted": 3,
+     "record": 1,
+     "single_cover": 2,
+     "single_spot": 1,
+     "silhouette": 3,
+     "refuted": 1,
+     "column_sum": 1
+    },
+    "shape_steps": {
+     "room:tall": 2,
+     "record:tall": 1
+    },
+    "technique_level": 4,
+    "coupled_globals": [
+     "step"
+    ]
+   },
+   "ramp_techniques": {},
+   "decisions": {
+    "exchange": 1,
+    "step": 1,
+    "tall": 1
+   },
+   "live_mechanics": [
+    "exchange",
+    "step",
+    "tall"
+   ],
+   "coupled_globals": [
+    "step"
+   ],
+   "compactness": 0.55,
+   "demand_prices": 0,
+   "bars": 11,
+   "nuclear_prices": 0,
+   "cleaned": {},
+   "bulletin": {
+    "title": "Midi creux",
+    "text": "À midi, les panneaux font une bonne part du travail. Le charbon peut tourner à 1 ou 2 GW.",
+    "weather": [
+     "moon",
+     "cloud",
+     "sun",
+     "sun",
+     "cloud",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 3.2,
+   "mix": 8,
+   "lot": "v3g3-jouer-b",
+   "index": 13
+  }
+ },
+ {
+  "id": 15,
+  "title": "Le soir s'allume",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "2h",
+   "4h",
+   "6h",
+   "8h",
+   "10h",
+   "12h",
+   "14h",
+   "16h",
+   "18h",
+   "20h",
+   "22h"
+  ],
+  "demand": [
+   3,
+   3,
+   3,
+   3,
+   4,
+   3,
+   4,
+   3,
+   6,
+   6,
+   6,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 2,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4
+    ],
+    "height": [
+     1,
+     2
+    ],
+    "rank": 3,
+    "co2": 3
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    2,
+    1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "B": {
+     "max_cells": 3
+    },
+    "C": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "price",
+    "col": 8,
+    "piece": "N"
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 3,
+    "len": 4
+   },
+   {
+    "type": "price",
+    "col": 11,
+    "piece": "N"
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 3,
+    "len": 3
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 0,
+    "len": 5
+   },
+   {
+    "type": "price",
+    "col": 7,
+    "piece": "N"
+   },
+   {
+    "type": "column",
+    "col": 0,
+    "counts": {
+     "C": 2
+    }
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "C",
+     "row": 1,
+     "col": 0,
+     "len": 3,
+     "height": 2
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 3,
+     "len": 4
+    },
+    {
+     "piece": "B",
+     "row": 3,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "B",
+     "row": 3,
+     "col": 6,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 7,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 7,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 8,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 8,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 8,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 8,
+     "len": 3
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": [
+    "price_cap",
+    "program",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 72680608,
+   "aim": 1,
+   "family": "pointe_soir",
+   "mechanics": [
+    "tall",
+    "stock",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "bar",
+    "column",
+    "price"
+   ],
+   "trace_summary": {
+    "steps": 14,
+    "level2_steps": 4,
+    "single_effect_steps": 3,
+    "order": [
+     "price_cap",
+     "single_cover",
+     "room",
+     "program",
+     "record",
+     "ribbon"
+    ],
+    "techniques": {
+     "price_cap": 1,
+     "single_cover": 1,
+     "room": 4,
+     "program": 3,
+     "record": 1,
+     "ribbon": 4
+    },
+    "shape_steps": {
+     "price_cap:tall": 1,
+     "room:tall": 3
+    },
+    "technique_level": 2,
+    "coupled_globals": []
+   },
+   "ramp_techniques": {},
+   "decisions": {
+    "tall": 1
+   },
+   "live_mechanics": [
+    "tall"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.17,
+   "demand_prices": 0,
+   "bars": 12,
+   "nuclear_prices": 3,
+   "cleaned": {},
+   "bulletin": {
+    "title": "Le soir s'allume",
+    "text": "Le pic arrive à 20h, quand tout s'allume. Le barrage n'a que 3 cases d'eau.",
+    "weather": [
+     "moon",
+     "moon",
+     "moon",
+     "cloud",
+     "cloud",
+     "cloud",
+     "sun",
+     "cloud",
+     "cloud",
+     "cloud",
+     "moon",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 2.72,
+   "mix": 5,
+   "lot": "v3g3-jouer-b",
+   "index": 14
+  }
+ },
+ {
+  "id": 16,
+  "title": "Tout le monde rentre",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "2h",
+   "4h",
+   "6h",
+   "8h",
+   "10h",
+   "12h",
+   "14h",
+   "16h",
+   "18h",
+   "20h",
+   "22h"
+  ],
+  "demand": [
+   2,
+   2,
+   3,
+   4,
+   4,
+   3,
+   3,
+   4,
+   6,
+   6,
+   6,
+   3
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 2,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4
+    ],
+    "height": [
+     1,
+     2
+    ],
+    "rank": 3,
+    "co2": 3
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    2,
+    1,
+    1,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "B": {
+     "max_cells": 3
+    },
+    "C": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 2,
+    "len": 6
+   },
+   {
+    "type": "column",
+    "col": 4,
+    "counts": {
+     "N": 3
+    }
+   },
+   {
+    "type": "column",
+    "col": 0,
+    "counts": {
+     "N": 2
+    }
+   },
+   {
+    "type": "column",
+    "col": 11,
+    "counts": {
+     "N": 3
+    }
+   },
+   {
+    "type": "column",
+    "col": 8,
+    "counts": {
+     "B": 0
+    }
+   },
+   {
+    "type": "column",
+    "col": 7,
+    "counts": {
+     "N": 3
+    }
+   },
+   {
+    "type": "column",
+    "col": 10,
+    "counts": {
+     "B": 0
+    }
+   },
+   {
+    "type": "column",
+    "col": 8,
+    "counts": {
+     "N": 3
+    }
+   },
+   {
+    "type": "column",
+    "col": 5,
+    "counts": {
+     "N": 2
+    }
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 2,
+     "len": 6
+    },
+    {
+     "piece": "B",
+     "row": 3,
+     "col": 3,
+     "len": 1
+    },
+    {
+     "piece": "B",
+     "row": 3,
+     "col": 4,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 7,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 7,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 8,
+     "len": 4
+    },
+    {
+     "piece": "C",
+     "row": 4,
+     "col": 8,
+     "len": 3,
+     "height": 2
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 9,
+     "len": 3
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": [
+    "program",
+    "record",
+    "ribbon",
+    "room",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 628264715,
+   "aim": 4,
+   "family": "pointe_soir",
+   "mechanics": [
+    "tall",
+    "stock",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "bar",
+    "column"
+   ],
+   "trace_summary": {
+    "steps": 17,
+    "level2_steps": 6,
+    "single_effect_steps": 4,
+    "order": [
+     "record",
+     "single_cover",
+     "room",
+     "program",
+     "ribbon"
+    ],
+    "techniques": {
+     "record": 7,
+     "single_cover": 1,
+     "room": 2,
+     "program": 1,
+     "ribbon": 6
+    },
+    "shape_steps": {
+     "record:tall": 4,
+     "ribbon:tall": 4
+    },
+    "technique_level": 2,
+    "coupled_globals": []
+   },
+   "ramp_techniques": {},
+   "decisions": {
+    "tall": 1
+   },
+   "live_mechanics": [
+    "tall"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.2,
+   "demand_prices": 0,
+   "bars": 10,
+   "nuclear_prices": 0,
+   "cleaned": {},
+   "bulletin": {
+    "title": "Tout le monde rentre",
+    "text": "La consommation grimpe jusqu'à 20h. Le barrage n'a que 3 cases d'eau.",
+    "weather": [
+     "moon",
+     "moon",
+     "moon",
+     "cloud",
+     "cloud",
+     "cloud",
+     "sun",
+     "cloud",
+     "cloud",
+     "cloud",
+     "moon",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 4.75,
+   "mix": 5,
+   "lot": "v3g3-jouer-b",
+   "index": 15
+  }
+ },
+ {
+  "id": 17,
+  "title": "Pomper, puis turbiner",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   7,
+   8,
+   7,
+   8,
+   8,
+   7,
+   7,
+   7
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 2,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    1,
+    0,
+    1,
+    1,
+    0,
+    0,
+    1
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [],
+  "step": true,
+  "co2_cap": null,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "B": {
+     "max_cells": 2
+    },
+    "G": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "exchanges",
+    "step": 2
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 1,
+    "len": 5
+   },
+   {
+    "type": "column",
+    "col": 1,
+    "counts": {
+     "N": 7
+    }
+   },
+   {
+    "type": "column",
+    "col": 6,
+    "counts": {
+     "N": 6
+    }
+   },
+   {
+    "type": "column",
+    "col": 4,
+    "counts": {
+     "G": 0
+    }
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [
+    {
+     "pump": 2,
+     "turbine": 7
+    },
+    {
+     "pump": 5,
+     "turbine": 7
+    }
+   ],
+   "placements": [
+    {
+     "piece": "B",
+     "row": 0,
+     "col": 0,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 6,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 7,
+     "col": 1,
+     "len": 5
+    },
+    {
+     "piece": "B",
+     "row": 0,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 6,
+     "col": 3,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 4,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 0,
+     "col": 5,
+     "len": 2
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 5,
+     "len": 3
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": [
+    "exhausted",
+    "program",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 562180695,
+   "aim": 3,
+   "family": "nuit_plate",
+   "mechanics": [
+    "step",
+    "stock",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "bar",
+    "column",
+    "exchanges"
+   ],
+   "trace_summary": {
+    "steps": 16,
+    "level2_steps": 6,
+    "single_effect_steps": 2,
+    "order": [
+     "room",
+     "exhausted",
+     "record",
+     "single_cover",
+     "silhouette",
+     "ribbon",
+     "program"
+    ],
+    "techniques": {
+     "room": 2,
+     "exhausted": 1,
+     "record": 3,
+     "single_cover": 1,
+     "silhouette": 2,
+     "ribbon": 6,
+     "program": 1
+    },
+    "shape_steps": {},
+    "technique_level": 2,
+    "coupled_globals": []
+   },
+   "ramp_techniques": {},
+   "decisions": {
+    "step": 2,
+    "stock": 1
+   },
+   "live_mechanics": [
+    "step",
+    "stock"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.44,
+   "demand_prices": 0,
+   "bars": 16,
+   "nuclear_prices": 0,
+   "cleaned": {},
+   "bulletin": {
+    "title": "Pomper, puis turbiner",
+    "text": "La demande reste presque plate toute la journée. Le lac de la STEP attend son pompage.",
+    "weather": [
+     "moon",
+     "wind",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "wind"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 12.06,
+   "mix": 6,
+   "lot": "v3g3-jouer-b",
+   "index": 16
+  }
+ },
+ {
+  "id": 18,
+  "title": "Nuit calme",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   6,
+   6,
+   6,
+   7,
+   6,
+   6,
+   6,
+   6
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    1,
+    1,
+    0,
+    1,
+    0,
+    0,
+    0,
+    1
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [],
+  "step": true,
+  "co2_cap": 2,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "T": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "exchanges",
+    "step": 2
+   },
+   {
+    "type": "column",
+    "col": 5,
+    "counts": {
+     "N": 7
+    }
+   },
+   {
+    "type": "column",
+    "col": 7,
+    "counts": {
+     "N": 3
+    }
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [
+    {
+     "pump": 4,
+     "turbine": 7
+    },
+    {
+     "pump": 5,
+     "turbine": 7
+    }
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "T",
+     "row": 0,
+     "col": 2,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 6,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 4,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 4,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 4,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 5,
+     "len": 3
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "carbon",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 406958629,
+   "aim": 3,
+   "family": "nuit_plate",
+   "mechanics": [
+    "step",
+    "co2",
+    "inventory:none"
+   ],
+   "clue_profile": [
+    "column",
+    "exchanges"
+   ],
+   "trace_summary": {
+    "steps": 12,
+    "level2_steps": 2,
+    "single_effect_steps": 0,
+    "order": [
+     "room",
+     "record",
+     "single_cover",
+     "silhouette",
+     "ribbon",
+     "carbon"
+    ],
+    "techniques": {
+     "room": 5,
+     "record": 2,
+     "single_cover": 1,
+     "silhouette": 2,
+     "ribbon": 1,
+     "carbon": 1
+    },
+    "shape_steps": {},
+    "technique_level": 2,
+    "coupled_globals": []
+   },
+   "ramp_techniques": {},
+   "decisions": {
+    "step": 2,
+    "carbon": 1
+   },
+   "live_mechanics": [
+    "step",
+    "carbon"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.69,
+   "demand_prices": 0,
+   "bars": 13,
+   "nuclear_prices": 0,
+   "cleaned": {},
+   "bulletin": {
+    "title": "Nuit calme",
+    "text": "La demande reste presque plate toute la journée. Le plafond carbone est serré : 2 points au plus.",
+    "weather": [
+     "wind",
+     "wind",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "wind"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 2.13,
+   "mix": 4,
+   "lot": "v3g3-jouer-b",
+   "index": 17
+  }
+ },
+ {
+  "id": 19,
+  "title": "La base fait tout",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   6,
+   5,
+   6,
+   7,
+   6,
+   5,
+   6,
+   6
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   }
+  },
+  "weather": {
+   "R": [
+    1,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "F": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "UK",
+    "name": "Royaume-Uni",
+    "cap": 1,
+    "co2": 1
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      5,
+      5,
+      4,
+      4,
+      4,
+      3,
+      3,
+      3
+     ]
+    },
+    "G": {
+     "bars": [
+      2
+     ]
+    }
+   },
+   "exports": {
+    "UK": 0
+   },
+   "imports": {
+    "UK": 4
+   }
+  },
+  "clues": [
+   {
+    "type": "flow",
+    "col": 6,
+    "country": "UK",
+    "dir": "import",
+    "value": 1
+   }
+  ],
+  "solution": {
+   "exports": {},
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "I",
+     "row": 5,
+     "col": 0,
+     "len": 1,
+     "country": "UK"
+    },
+    {
+     "piece": "G",
+     "row": 1,
+     "col": 1,
+     "len": 2
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 2,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "I",
+     "row": 6,
+     "col": 3,
+     "len": 1,
+     "country": "UK"
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "I",
+     "row": 5,
+     "col": 6,
+     "len": 1,
+     "country": "UK"
+    },
+    {
+     "piece": "I",
+     "row": 5,
+     "col": 7,
+     "len": 1,
+     "country": "UK"
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "exhausted",
+    "flow",
+    "just_enough",
+    "room",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 636463215,
+   "aim": 3,
+   "family": "nuit_plate",
+   "mechanics": [
+    "neighbors:1",
+    "inventory:exact"
+   ],
+   "clue_profile": [
+    "flow"
+   ],
+   "trace_summary": {
+    "steps": 7,
+    "level2_steps": 1,
+    "single_effect_steps": 1,
+    "order": [
+     "room",
+     "exhausted",
+     "single_cover",
+     "just_enough",
+     "flow"
+    ],
+    "techniques": {
+     "room": 2,
+     "exhausted": 2,
+     "single_cover": 1,
+     "just_enough": 1,
+     "flow": 1
+    },
+    "shape_steps": {},
+    "technique_level": 2,
+    "coupled_globals": []
+   },
+   "ramp_techniques": {},
+   "decisions": {
+    "exchange": 2
+   },
+   "live_mechanics": [
+    "exchange"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.15,
+   "demand_prices": 0,
+   "bars": 9,
+   "nuclear_prices": 0,
+   "cleaned": {},
+   "bulletin": {
+    "title": "La base fait tout",
+    "text": "La demande reste presque plate toute la journée. Le Royaume-Uni peut acheter ou vendre selon la ligne.",
+    "weather": [
+     "wind",
+     "moon",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "cloud",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 0.38,
+   "mix": 9,
+   "lot": "v3g3-jouer-b",
+   "index": 18
+  }
+ },
+ {
+  "id": 20,
+  "title": "Le soleil en trop",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   4,
+   4,
+   4,
+   5,
+   6,
+   6,
+   7,
+   5
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "B": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 2,
+    "co2": 0
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    4,
+    7,
+    2,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "IT",
+    "name": "Italie",
+    "cap": 1,
+    "co2": 2
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3
+     ]
+    },
+    "B": {
+     "cells": 6
+    }
+   },
+   "exports": {
+    "IT": 2
+   },
+   "imports": {
+    "IT": 0
+   }
+  },
+  "clues": [],
+  "solution": {
+   "exports": {
+    "IT": [
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     1
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "B",
+     "row": 4,
+     "col": 3,
+     "len": 1
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "B",
+     "row": 0,
+     "col": 6,
+     "len": 1
+    },
+    {
+     "piece": "B",
+     "row": 1,
+     "col": 6,
+     "len": 1
+    },
+    {
+     "piece": "B",
+     "row": 6,
+     "col": 6,
+     "len": 1
+    },
+    {
+     "piece": "B",
+     "row": 0,
+     "col": 7,
+     "len": 1
+    },
+    {
+     "piece": "B",
+     "row": 1,
+     "col": 7,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 1,
+   "label": "Facile",
+   "techniques": [
+    "exhausted",
+    "room",
+    "silhouette",
+    "single_cover"
+   ]
+  },
+  "lab": {
+   "seed": 977132523,
+   "aim": 3,
+   "family": "surplus_midi",
+   "mechanics": [
+    "neighbors:1",
+    "surplus",
+    "inventory:exact"
+   ],
+   "clue_profile": [],
+   "trace_summary": {
+    "steps": 4,
+    "level2_steps": 0,
+    "single_effect_steps": 0,
+    "order": [
+     "room",
+     "exhausted",
+     "single_cover",
+     "silhouette"
+    ],
+    "techniques": {
+     "room": 1,
+     "exhausted": 1,
+     "single_cover": 1,
+     "silhouette": 1
+    },
+    "shape_steps": {},
+    "technique_level": 1,
+    "coupled_globals": []
+   },
+   "ramp_techniques": {},
+   "decisions": {
+    "exchange": 1
+   },
+   "live_mechanics": [
+    "exchange"
+   ],
+   "coupled_globals": [],
+   "compactness": 0.07,
+   "demand_prices": 0,
+   "bars": 14,
+   "nuclear_prices": 0,
+   "cleaned": {
+    "neighbors": [
+     "BE"
+    ]
+   },
+   "bulletin": {
+    "title": "Le soleil en trop",
+    "text": "Le soleil déborde à 12h : il faut écouler le surplus. La ligne vers l'Italie reste ouverte.",
+    "weather": [
+     "moon",
+     "moon",
+     "cloud",
+     "sun",
+     "sun",
+     "sun",
+     "cloud",
+     "moon"
+    ]
+   },
+   "generator": "dispatch-solver 2.0.0",
+   "seconds": 0.02,
+   "mix": 10,
+   "lot": "v3g3-jouer-b",
+   "index": 19
+  }
+ }
+]
