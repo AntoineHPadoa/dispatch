@@ -444,7 +444,7 @@ La galerie les montre fidèlement ; ils sont à corriger dans le jeu, pas dans l
 - **Exports X-D3** : compteurs « → … ← … » sous chaque rangée de voisin, à la valeur et à la couleur annoncées, vérifiés sur W-08, W-10, W-12, W-16 à W-18, W-25 à W-27, W-29, W-34, W-35 et leurs pendants mobiles.
 - **Relevés M-3 sur téléphone** :
   - un relevé qui cite plusieurs centrales devient un marqueur « relevé » (3h et 9h sur 902, 12h sur 903, 8h et 18h sur 906) ;
-  - un relevé à une centrale reste en pastille (15h sur 902, 0h et 6h sur 911 et 910) ;
+  - un relevé à une centrale reste en pastille (15h sur 902, 0h et 6h sur 910 en M-36, 0h et 6h sur la grille 11 en M-08) ;
   - prix courts « €N », « €T », « €G », « €B » (M-09, M-10, M-28, M-30).
 - **M-37** : la page a défilé jusqu'aux « Publications du marché », et le relevé de 9h est surligné en violet. Ma capture, prise 800 ms après mon propre toucher, est identique au pixel à celle de s1.
 - **Version téléphone** :
