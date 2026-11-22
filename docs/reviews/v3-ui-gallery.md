@@ -232,3 +232,43 @@ La galerie les montre fidèlement ; ils sont à corriger dans le jeu, pas dans l
    - Il reste publié par les échanges du jour (« 1 pompage »), donc la règle est tenue, mais l'écran et le papier diffèrent.
 4. **Grille de 12 créneaux à 1280 px (W-29)** : elle ne tient pas dans son cadre. Il faut faire défiler la grille ; la bande d'indices et l'étiquette « Charbon 14h→… » sont coupées à droite.
 5. **Pas de solution sur papier** : aucune fiche n'en montre. Les cases préremplies sont les flux publiés (→1, ←1, →0) et la TAC engagée de 901, qui sont des indices.
+
+## Contre-vérification (commit `85c18d2`)
+
+### Verdict
+
+- **78 vues contrôlées sur 78** : W-01…W-30, M-01…M-34 (avec les nouvelles M-20 et M-21), P-01…P-14.
+- **78 OK, aucun écart.** Tous les écarts de la première revue sont corrigés. Le code du jeu (`web/src`, `vite.config.ts`, tests) n'a pas bougé.
+
+### Méthode
+
+- **Mêmes builds qu'au premier passage**, reconstruits depuis le worktree :
+  - prod : `dist/` de la branche, identique à `main` ;
+  - galerie : ma propre fusion, identique au `dist-gallery/` de s1 avec la nouvelle consigne de 902.
+- **Mon script de capture**, complété pour M-20 et M-21 : doigt posé par CDP `Input.dispatchTouchEvent`, un `touchStart` puis trois `touchMove`, jamais de `touchEnd`. Mon code est distinct du sien (identifiant de contact, pas, cases visées par `getScreenCTM()`).
+- **Jeu de référence** :
+  - vues sur vraie grille, accueil, dossier et aperçu d'impression : mes captures du build de prod (premier passage) ; M-20 et M-21 capturées à neuf sur la prod ;
+  - vues sur grille fictive : mes captures du build de galerie ; les cinq vues de 902 (W-09, W-23, M-09, M-23, P-09) recapturées sur le nouveau build de galerie ;
+  - fiches P-03…P-07 : capture de l'élément `.a4` en média print sur la prod ; P-08…P-14 : la même chose sur le nouveau build de galerie.
+- **Comparaison** pixel à pixel des 78 images de la galerie avec ce jeu de référence. Images de travail dans `docs/reviews/v3-ui-gallery/{prod2,gal2,a4prod,a4gal2,mine2,diff-recheck}/`.
+
+### Points demandés
+
+| Point | Résultat |
+|---|---|
+| 1. W-27, M-27 | Identiques au pixel à ma capture prod : le bouton est « Accueil » (`view/w27-new.png`). Légende complétée (« le bouton ramène à l'accueil »). |
+| 2. Vraies vues sur le build de prod | 44 vues (accueil, dossier, toutes les vues de jeu sur vraie grille, P-01, P-02) et les 5 fiches P-03…P-07 sont identiques au pixel à mes captures prod. Seule M-19 diffère, par les glyphes seulement : même zone et même nombre de pixels qu'au premier passage (police chargée à froid), sans différence de contenu. Chaque figure affiche son build (« build de prod, tel que publié » ou « build de galerie »), et les décomptes sont justes (20 / 22 / 7 vues prod, 10 / 12 / 7 galerie). |
+| 3. M-20, M-21 | Identiques au pixel à mes captures. M-20 : aperçu rouge en pointillés, message « hors de la silhouette à 0h ». M-21 : aperçu vert sur toute la ligne, gaz pâli, message « remplace 1 barre de gaz ». Les légendes sont exactes ; la doc ne dit plus que le tactile se limite à deux touchers. |
+| 4. Légendes et étiquettes | W/M-09 et P-09 (« deux créneaux, 9h et 15h »), W/M-13 (TAC non posée), W/M-17 (export = flux verrouillé) : exactes. Les 12 fiches portent « A4, rendu impression (contenu identique au PDF) », et le chapeau papier ne parle plus de PDF de Chrome. Le script pousse un `WARN` quand `pdftoppm` échoue et note la méthode à côté de l'image (`img/P-xx.json`, ici `print` partout). P-10 et P-13 signalent la troncature comme défaut du jeu. P-08, P-09, P-11 et P-14 signalent le pied « Une seule solution » faux. P-12 a un autre pied (note d'échanges), à juste titre sans mention. |
+| 5. Vues fictives | Les 18 vues de jeu et les 7 fiches sur grille fictive sont identiques au pixel à mes captures. Les cinq vues de 902 ont été comparées à ma recapture avec la nouvelle consigne (« empilés sur deux créneaux (9h et 15h) »). Les badges sont justes (10 / 12 / 7). |
+| 6. Build | `npm test` : 384 tests verts. `npm run typecheck` et `npm run build` OK. `check_unique.py` : « every grid is unique and deducible ». `diff -r` du `dist/` de la branche contre celui de `main` : aucune différence. |
+
+### Pages HTML
+
+- 30 / 34 / 14 figures pour 30 / 34 / 14 images.
+- Chaque `<img>` vaut la moitié de la taille du PNG, vérifié sur les 78 : taille naturelle, sans recadrage.
+
+### Reste ouvert
+
+- **Défauts du jeu** : la section « Défauts du jeu » plus haut reste valable (fiches 903 et 906 tronquées, récit du bulletin non imprimé, nombre de paires STEP absent du carnet papier, grille de 12 créneaux à 1280 px).
+- **`pdftoppm`** est toujours cassé sur cette machine. La galerie le dit honnêtement, mais les fiches ne sont pas des PDF rendus ; leur contenu est identique à celui du PDF (vérifié au premier passage).
