@@ -69,3 +69,10 @@
 - **Contrôles** : 427 tests verts, build OK, `check-ui.mjs` 205/205.
 
 **Nouvel écart mineur : le « 1 / 0 » n'est plus rouge plein.** Une taille posée hors carnet compte comme « terminée » (`done = laid >= allowed`, `panels.ts`, fonction `group`). La règle `.grp.done .gcount` (3 classes) l'emporte alors sur `.gcount.over` (2 classes), et le compteur rouge tombe à 45 % d'opacité. Mesure : `opacity` 0.45 et couleur `rgb(208, 86, 108)` (`over-1-gaz3-4b9ea74.png`). Le correctif annonçait pourtant « over en rouge ». Deux corrections possibles, au choix : `done = allowed !== null && laid === allowed` et `laid > 0`, ou `.grp.done .gcount.over { opacity: 1 }`. L'impact reste faible, car ce cas est inaccessible en jeu normal (voir plus haut).
+
+## Correctif relu (`55b3037`)
+
+**Corrigé.** Une taille ne compte comme terminée que si elle est posée exactement autant de fois que le carnet l'autorise (`done = allowed !== null && laid === allowed`).
+- « 1 / 0 » (grille 1, gaz de 3) : opacité 1, couleur `rgb(208, 86, 108)`, donc rouge plein.
+- Taille terminée (grille 1, 2 nucléaires de 6 posés) : « 2 / 2 » estompé à 0.45, comme le prototype.
+- 427 tests verts, build OK.
