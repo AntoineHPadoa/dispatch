@@ -50,3 +50,22 @@
 ## Remarque
 
 - Les pastilles de choix sous la grille, sur téléphone, gardent un seul compteur « posées / max » par centrale, sans détail par largeur. Signalé par l'auteur ; c'est hors K-B, qui ne porte que sur le carnet.
+
+## Corrections relues (`4b9ea74`)
+
+**Les 2 écarts sont corrigés. Le correctif en ouvre un nouveau, mineur, sur le cas « 1 / 0 ».**
+- **Alignement** : le compteur par taille passe en `.gcount`, sans marge, comme le prototype.
+- **Estompage** : `.grp.done .gcount` passe le compteur d'une taille terminée à 45 % d'opacité.
+- **Comparaison au prototype `?book=b`** : même protocole, 54 paires (grilles 7, 908, 909, 910, 1 et 12 ; 1280, 375 et 320 px ; vierge, moitié, plein).
+
+  | Passage | Paires identiques au pixel | Écart max. des autres |
+  |---|---|---|
+  | 1 | 48 / 54 | 94 à 117 sur 255 |
+  | 2 | 46 / 54 | 94 sur 255 |
+
+  - Les paires en écart ne sont pas les mêmes d'un passage à l'autre : chacune des 54 est identique au moins une fois.
+  - Les écarts touchent quelques centaines de pixels dans la colonne des noms. C'est un rendu de police instable entre deux pages, pas une différence de code.
+  - Les cas demandés (7 et 908, vierge et moitié, 1280 et 375 px) sont tous identiques au moins une fois.
+- **Contrôles** : 427 tests verts, build OK, `check-ui.mjs` 205/205.
+
+**Nouvel écart mineur : le « 1 / 0 » n'est plus rouge plein.** Une taille posée hors carnet compte comme « terminée » (`done = laid >= allowed`, `panels.ts`, fonction `group`). La règle `.grp.done .gcount` (3 classes) l'emporte alors sur `.gcount.over` (2 classes), et le compteur rouge tombe à 45 % d'opacité. Mesure : `opacity` 0.45 et couleur `rgb(208, 86, 108)` (`over-1-gaz3-4b9ea74.png`). Le correctif annonçait pourtant « over en rouge ». Deux corrections possibles, au choix : `done = allowed !== null && laid === allowed` et `laid > 0`, ou `.grp.done .gcount.over { opacity: 1 }`. L'impact reste faible, car ce cas est inaccessible en jeu normal (voir plus haut).
