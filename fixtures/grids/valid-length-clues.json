@@ -172,8 +172,8 @@
    ]
   },
   "difficulty": {
-   "rating": 2,
-   "label": "Moyen",
+   "rating": 1,
+   "label": "Facile",
    "techniques": [
     "record",
     "ribbon",
@@ -186,7 +186,7 @@
   "errors": [],
   "compositions": 1,
   "deduction": "solved",
-  "rating": 2,
+  "rating": 1,
   "techniques": [
    "record",
    "ribbon",

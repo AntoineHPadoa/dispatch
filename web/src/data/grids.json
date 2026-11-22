@@ -1185,8 +1185,8 @@
       ]
     },
     "difficulty": {
-      "rating": 2,
-      "label": "Moyen",
+      "rating": 3,
+      "label": "Difficile",
       "techniques": [
         "flow",
         "room",
@@ -1202,7 +1202,7 @@
   },
   {
     "id": 8,
-    "title": "Facile",
+    "title": "Moyen",
     "section": "rated",
     "intro": "Sans carnet exact : tu connais les centrales disponibles, pas leurs quantités. Seul le stock d’eau du barrage est connu : 2 cases au plus. Les indices du marché suffisent à déduire la seule pose.",
     "columns": [
@@ -1300,13 +1300,6 @@
         }
       },
       {
-        "type": "flow",
-        "col": 2,
-        "country": "DE",
-        "dir": "export",
-        "value": 0
-      },
-      {
         "type": "exchanges",
         "exports": {
           "DE": 2
@@ -1364,15 +1357,15 @@
       ]
     },
     "difficulty": {
-      "rating": 1,
-      "label": "Facile",
+      "rating": 2,
+      "label": "Moyen",
       "techniques": [
-        "flow",
         "room",
-        "exhausted",
-        "record",
         "single_cover",
-        "silhouette"
+        "refuted",
+        "exhausted",
+        "silhouette",
+        "record"
       ]
     },
     "bulletin": {
@@ -1625,7 +1618,7 @@
   },
   {
     "id": 10,
-    "title": "Difficile",
+    "title": "Moyen",
     "section": "rated",
     "intro": "Sans carnet exact. Il faudra répartir les barres entre les lignes.",
     "columns": [
@@ -1800,8 +1793,8 @@
       ]
     },
     "difficulty": {
-      "rating": 3,
-      "label": "Difficile",
+      "rating": 2,
+      "label": "Moyen",
       "techniques": [
         "silhouette",
         "room",
@@ -2319,8 +2312,8 @@
       ]
     },
     "difficulty": {
-      "rating": 3,
-      "label": "Difficile",
+      "rating": 2,
+      "label": "Moyen",
       "techniques": [
         "exhausted",
         "room",

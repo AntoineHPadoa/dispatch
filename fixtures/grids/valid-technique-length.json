@@ -195,8 +195,8 @@
    ]
   },
   "difficulty": {
-   "rating": 2,
-   "label": "Moyen",
+   "rating": 1,
+   "label": "Facile",
    "techniques": [
     "length",
     "record",
@@ -211,7 +211,7 @@
   "errors": [],
   "compositions": 1,
   "deduction": "solved",
-  "rating": 2,
+  "rating": 1,
   "techniques": [
    "length",
    "record",
@@ -275,6 +275,6 @@
    ]
   },
   "requires": [],
-  "note": "seed 6 of {'cols': 8, 'clue_types': ['length', 'column']}"
+  "note": "seed 6 of {'cols': 8, 'clue_types': ['length', 'column'], 'min_decisions': 0}"
  }
 }

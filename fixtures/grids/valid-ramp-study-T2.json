@@ -190,8 +190,8 @@
    ]
   },
   "difficulty": {
-   "rating": 4,
-   "label": "Expert",
+   "rating": 2,
+   "label": "Moyen",
    "techniques": [
     "exhausted",
     "price_cap",
@@ -210,7 +210,7 @@
   "requires": [
    "ramp"
   ],
-  "rating": 4,
+  "rating": 2,
   "techniques": [
    "exhausted",
    "price_cap",

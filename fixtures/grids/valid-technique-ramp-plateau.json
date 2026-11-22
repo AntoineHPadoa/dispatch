@@ -191,8 +191,8 @@
    ]
   },
   "difficulty": {
-   "rating": 2,
-   "label": "Moyen",
+   "rating": 1,
+   "label": "Facile",
    "techniques": [
     "price_cap",
     "program",
@@ -209,7 +209,7 @@
   "errors": [],
   "compositions": 1,
   "deduction": "solved",
-  "rating": 2,
+  "rating": 1,
   "techniques": [
    "price_cap",
    "program",
@@ -278,6 +278,6 @@
   "requires": [
    "ramp"
   ],
-  "note": "seed 0 of {'cols': 8, 'ramp': 'trap'}"
+  "note": "seed 0 of {'cols': 8, 'ramp': 'trap', 'min_decisions': 0}"
  }
 }

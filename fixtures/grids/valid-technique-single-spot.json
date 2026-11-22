@@ -248,6 +248,6 @@
    ]
   },
   "requires": [],
-  "note": "seed 0 of {'cols': 6, 'inventory': 'exact', 'neighbors': 1}"
+  "note": "seed 0 of {'cols': 6, 'inventory': 'exact', 'neighbors': 1, 'min_decisions': 0}"
  }
 }

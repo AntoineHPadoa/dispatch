@@ -9,7 +9,12 @@
   columns), why (clue indices), which shapes were involved (rect, tall, ramp_trap, ramp_stair), the
   exchanges it fixed ({country: {"export": [[col, value]]}, "step": [[pump, turbine]]}) and `scope: "day"`
   when a day total was used.
+- Result.rating: notation A. Techniques rated with RATING_LEVELS (ribbon 1, share_out 2, refuted 3, the
+  others at their level), capped at Moyen (TECHNIQUE_CAP), plus one step per global mechanic coupled to an
+  exchange (coupled_globals(): the STEP found or an active CO2 cap, only when the solution trades with a
+  neighbor). The rule levels themselves (loop order, max_level) are unchanged.
 - Result.summary(): the measures kept for the lab and the difficulty calibration.
+- compactness(): K = weight of the decisions / pieces laid (bars and imports), a lab measure only.
 - decisions(): the choices the deduction must settle and that change the solution, by type (DECISION_TYPES),
   from the reference solution, the clues and the trace; a grid without any is "filling" (lab.decisions).
 """
@@ -148,6 +153,28 @@ RULES = {r.id: r for r in RULE_LIST}
 RAMP_LABELS = ("ramp_plateau", "ramp_shoulder")
 RAMP_OWN = ("ramp_lone", "ramp_relay")
 RAMP_RULES = RAMP_LABELS + RAMP_OWN
+# Notation A (docs/next/v3-criteres-j2.md): technique levels for the rating, then capped at Moyen.
+RATING_LEVELS = {"ribbon": 1, "share_out": 2, "refuted": 3}
+TECHNIQUE_CAP = 2
+
+
+def coupled_globals(steps: list[Step], composition: dict[str, Any] | None) -> list[str]:
+    """Global mechanics the deduction uses (STEP option fixed by a step, CO2 cap removing a placement), kept
+    only when the solution has at least one exchange (an export or an import): without a neighbor they do
+    not make a grid hard (c n°9, felt 1)."""
+    if composition is None:
+        return []
+    traded = any(any(v) for v in composition.get("exports", {}).values()) or any(
+        k.startswith("I:") for col in composition["cells"] for k in col
+    )
+    if not traded:
+        return []
+    out = []
+    if any(composition.get("pumps", [])) and any("step" in s.exchanges for s in steps):
+        out.append("step")
+    if any(s.rule == "carbon" for s in steps):
+        out.append("carbon")
+    return out
 
 
 @dataclass
@@ -199,8 +226,19 @@ class Result:
         return self.status == "solved"
 
     @property
-    def rating(self) -> int:
+    def technique_level(self) -> int:
+        """Highest rule level used (§9 table), before notation A."""
         return max([s.level for s in self.steps] + [1])
+
+    @property
+    def coupled_globals(self) -> list[str]:
+        return coupled_globals(self.steps, self.composition)
+
+    @property
+    def rating(self) -> int:
+        """Notation A: min(techniques rated by RATING_LEVELS, Moyen) + one per coupled global mechanic."""
+        tech = max([RATING_LEVELS.get(s.rule, s.level) for s in self.steps] + [1])
+        return min(4, min(tech, TECHNIQUE_CAP) + len(self.coupled_globals))
 
     @property
     def label(self) -> str:
@@ -229,6 +267,8 @@ class Result:
             "order": order,
             "techniques": self.techniques(),
             "shape_steps": shapes,
+            "technique_level": self.technique_level,
+            "coupled_globals": self.coupled_globals,
         }
 
     def to_dict(self, steps: bool = True) -> dict[str, Any]:
@@ -325,6 +365,17 @@ def decisions(g: dict[str, Any], steps: list[Step]) -> dict[str, int]:
             add("stock")
     add("price", len({i for s in steps if s.rule == "top_price" for i in s.clues}))
     return dict(sorted(out.items(), key=lambda kv: DECISION_TYPES.index(kv[0])))
+
+
+# Weight of one decision of each type in the compactness K (v3-criteres-j2.md §2).
+DECISION_WEIGHTS = {"step": 3, "carbon": 3, "tall": 2, "ramp": 2, "exchange": 1, "stock": 1, "price": 1}
+
+
+def compactness(g: dict[str, Any], dec: dict[str, int]) -> float:
+    """K = weight of the decisions / pieces laid by the reference (bars and import bars), rounded to 0.01."""
+    pieces = len(g["solution"]["placements"])
+    weight = sum(DECISION_WEIGHTS[k] * v for k, v in dec.items())
+    return round(weight / pieces, 2) if pieces else 0.0
 
 
 def live_mechanics(dec: dict[str, int]) -> list[str]:

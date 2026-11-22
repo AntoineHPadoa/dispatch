@@ -1,8 +1,9 @@
 """Re-rate lab candidate lots after a deduction change, without drawing new grids.
 
 - For each candidate: one composition equal to the reference (CP-SAT), full deduction, then each clue
-  removed in turn (§8.3: none may be useless). Rating, techniques, lab.trace_summary and
-  lab.ramp_techniques are rewritten; the stats file gets the new ratings and ramp counts.
+  removed in turn (§8.3: none may be useless). Rating (notation A), techniques, lab.trace_summary,
+  lab.ramp_techniques and the measures lab.decisions, lab.live_mechanics, lab.coupled_globals,
+  lab.compactness and lab.demand_prices are rewritten; the stats file gets the new ratings and ramp counts.
 - Prints one line per grid whose rating changed and every grid that is no longer publishable
   (not unique, blocked, or a clue became useless). Such grids are kept and flagged in `lab.recheck`.
 
@@ -20,8 +21,8 @@ from typing import Any
 from dispatch_solver import exact
 from dispatch_solver.board import reference_composition
 from dispatch_solver.deduce import deduce
-from dispatch_solver.deduce.trace import RAMP_OWN, RAMP_RULES
-from dispatch_solver.generate.cluesel import mandatory_clues
+from dispatch_solver.deduce.trace import RAMP_OWN, RAMP_RULES, compactness, decisions, live_mechanics
+from dispatch_solver.generate.cluesel import demand_prices, mandatory_clues
 from dispatch_solver.grid import LABELS
 
 
@@ -46,6 +47,14 @@ def rerate(g: dict[str, Any]) -> dict[str, Any]:
     out["difficulty"] = {"rating": res.rating, "label": LABELS[res.rating], "techniques": sorted(res.techniques())}
     out["trace_summary"] = summary
     out["ramp_techniques"] = {k: v for k, v in summary["techniques"].items() if k in RAMP_RULES}
+    dec = decisions(g, res.steps)
+    out["measures"] = {
+        "decisions": dec,
+        "live_mechanics": live_mechanics(dec),
+        "coupled_globals": res.coupled_globals,
+        "compactness": compactness(g, dec),
+        "demand_prices": len(demand_prices(g, g["clues"])),
+    }
     return out
 
 
@@ -60,6 +69,7 @@ def main(paths: list[str]) -> None:
                 g["difficulty"] = r["difficulty"]
                 g["lab"]["trace_summary"] = r["trace_summary"]
                 g["lab"]["ramp_techniques"] = r["ramp_techniques"]
+                g["lab"].update(r["measures"])
             if r["problems"]:
                 g["lab"]["recheck"] = r["problems"]
             else:
@@ -80,7 +90,7 @@ def main(paths: list[str]) -> None:
                 1 for g in ramp if set(g["lab"]["ramp_techniques"]) & set(RAMP_OWN)
             )
             stats["ramp_techniques"] = {k: sum(g["lab"]["ramp_techniques"].get(k, 0) for g in ramp) for k in RAMP_RULES}
-            stats["rerated"] = "scripts/rerate_lots.py (deduction review S8, C1-C5)"
+            stats["rerated"] = "scripts/rerate_lots.py (notation A, S4.16)"
             stats_path.write_text(json.dumps(stats, ensure_ascii=False, indent=1) + "\n")
         print(f"{path.name}: {len(grids)} grids, ratings {stats['ratings'] if stats_path.exists() else '-'}")
 

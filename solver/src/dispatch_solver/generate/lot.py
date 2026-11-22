@@ -1,18 +1,24 @@
 """Generator: one candidate grid from a configuration, and lots with imposed diversity (§10).
 
 - Config (one entry of a lot's `mix`): cols, family, height, pieces, tall, ramp, neighbors, step, surplus,
-  co2_cap, stock, inventory, clue_types, rating, max_clues, min_decisions. See DEFAULTS; check_lot()
+  co2_cap, stock, inventory, clue_types, rating, max_clues, min_decisions, demand_price. See DEFAULTS; check_lot()
   refuses unknown keys and bad values before any draw.
 - make_candidate(): draw a day, solve the reference (merit order; ramps of drawn widths, sometimes two),
   drop the neighbors the reference never trades with (dead mechanic), write the inventory, select the
   minimal clues up to an aimed technique level, check one composition (CP-SAT) and the deduction, drop a
   CO2 cap no `carbon` step uses (checked again), rate it, count its decisions (deduce.trace.decisions;
   fewer than `min_decisions` is the reject `no_decision`, "filling"), write the bulletin draft and the
-  `lab` block (decisions, live mechanics, bars, nuclear prices: measures only).
+  `lab` block (decisions, live mechanics, bars, nuclear prices, coupled global mechanics, compactness K,
+  demand prices: measures only). `demand_price`: when the pool has a price on a dear plant in an export
+  column (D7), one such price starts the clue selection.
 - run_lot(): keeps the worker processes busy (rolling queue), accepts in draw order under the quotas
   (silhouette family, mechanics, clue profile, grids whose decisions are all of one type, grids holding
-  a decision type: ceiling max_with_type and floor min_with_type, minimum per rating and per mix entry).
-  Draws aim at the ratings still missing and at the mix entries able to give a type under its floor;
+  a decision type: ceiling max_with_type and floor min_with_type, minimum per rating and per mix entry,
+  grids with a demand price: max_demand_price). Type quotas also take the key "coupled": a global mechanic
+  (STEP or CO2) coupled to an exchange, what notation A rates. Draws aim at the ratings still missing (a
+  missing Difficile or Expert aims at the entries able to give a coupled global mechanic) and at the mix
+  entries able to give a type under its floor; while max_demand_price is not reached, half the draws seed
+  a demand price;
   finished grids refused by a reservation (rating, mix, type floor) wait in a reserve.
 
 Example: grids, stats = run_lot(json.load(open("lab/lots/demo-01.json")))
@@ -32,10 +38,10 @@ from typing import Any
 from .. import __version__, exact
 from ..board import reference_composition
 from ..deduce import deduce
-from ..deduce.trace import DECISION_TYPES, RAMP_OWN, RAMP_RULES, decisions, live_mechanics
+from ..deduce.trace import DECISION_TYPES, RAMP_OWN, RAMP_RULES, compactness, decisions, live_mechanics
 from ..grid import LABELS, validate
 from .bulletin import make_bulletin
-from .cluesel import clue_pool, select_clues
+from .cluesel import clue_pool, demand_prices, select_clues
 from .draft import make_draft
 from .reference import fill_inventory, solve_reference
 from .silhouettes import FAMILIES, draw_day
@@ -57,6 +63,7 @@ DEFAULTS: dict[str, Any] = {
     "rating": None,
     "max_clues": None,
     "min_decisions": 1,  # 0 only for lots that may hold filling grids (tutorials)
+    "demand_price": False,  # D7: seed the clue selection with a price on a dear plant in an export column
 }
 COLUMN_COUNTS = (6, 8, 12)
 COUNTRIES = [("DE", 2), ("ES", 0), ("UK", 1), ("IT", 2), ("BE", 1)]
@@ -69,7 +76,10 @@ QUOTAS = {
     "max_same_single_decision": None,  # grids whose decisions are all of one type, per type (None: no limit)
     "max_with_type": {},  # {decision type: n}: at most n grids holding that type, whatever else they hold
     "min_with_type": {},  # {decision type: n}: at least n grids holding that type (slots reserved, draws aimed)
+    "max_demand_price": None,  # at most n grids with a demand price (D7); while under it, draws seed one
 }
+COUPLED = "coupled"  # quota key: a global mechanic (STEP or CO2) coupled to an exchange (notation A)
+QUOTA_TYPES = (*DECISION_TYPES, COUPLED)
 TYPE_QUOTAS = ("max_with_type", "min_with_type")
 QUOTA_ALIASES = {"max_same_silhouette": "max_same_family"}
 LOT_KEYS = ("lot", "size", "seed", "mix", "quotas", "max_attempts", "comment")
@@ -107,11 +117,13 @@ def check_lot(lot: Any) -> tuple[dict[str, Any], list[str]]:
         elif key in TYPE_QUOTAS:
             if not isinstance(v, dict) or any(not _type_key(t) or not _nat(n) for t, n in v.items()):
                 errors.append(
-                    f"quotas.{k}: object {{decision type: integer >= 0}} expected ({', '.join(DECISION_TYPES)};"
+                    f"quotas.{k}: object {{decision type: integer >= 0}} expected ({', '.join(QUOTA_TYPES)};"
                     ' "a+b": both types, "a|b": either)'
                 )
             else:
                 norm_q[key] = dict(v)
+        elif v is None and key == "max_demand_price":
+            norm_q[key] = None
         elif not _nat(v):
             errors.append(f"quotas.{k}: integer >= 0 expected")
         else:
@@ -192,6 +204,8 @@ def check_config(m: Any) -> tuple[dict[str, Any], list[str]]:
         errs.append("max_clues: positive integer expected")
     if "min_decisions" in m and not _nat(m["min_decisions"]):
         errs.append("min_decisions: integer >= 0 expected")
+    if "demand_price" in m and not isinstance(m["demand_price"], bool):
+        errs.append("demand_price: true or false expected")
     return cfg, errs
 
 
@@ -317,7 +331,9 @@ def make_candidate(
     types = tuple(t for t in cfg["clue_types"] if t != "exchanges" or cfg["inventory"] == "none")
     max_clues = cfg["max_clues"] if cfg["max_clues"] is not None else n
     pool = clue_pool(d, types)
-    clues = select_clues(d, pool, max_level=aim, max_clues=max_clues, rng=rng if explore else None)
+    seed_clues = demand_prices(d, pool) if cfg["demand_price"] else []
+    seed_clues = [rng.choice(seed_clues)] if seed_clues else []
+    clues = select_clues(d, pool, max_level=aim, max_clues=max_clues, rng=rng if explore else None, seed=seed_clues)
     if clues is None:
         return None, "too_many_clues", info
     d["clues"] = clues
@@ -356,6 +372,9 @@ def make_candidate(
         "ramp_techniques": {k: v for k, v in summary["techniques"].items() if k in RAMP_RULES},
         "decisions": dec,
         "live_mechanics": live_mechanics(dec),
+        "coupled_globals": res.coupled_globals,
+        "compactness": compactness(d, dec),
+        "demand_prices": len(demand_prices(d, clues)),
         "bars": sum(1 for p in sol["placements"] if p["piece"] != "I"),
         "nuclear_prices": sum(1 for c in clues if c["type"] == "price" and c["piece"] == "N")
         if d["inventory"]["level"] == "none"
@@ -402,10 +421,10 @@ def _signatures(g: dict[str, Any]) -> set[tuple[Any, ...]]:
 
 
 def _type_key(key: Any) -> bool:
-    """A type quota key: one decision type, "a+b" (all of them) or "a|b" (any of them)."""
+    """A type quota key: one decision type (or "coupled"), "a+b" (all of them) or "a|b" (any of them)."""
     if not isinstance(key, str) or ("+" in key and "|" in key):
         return False
-    return all(t in DECISION_TYPES for t in re.split(r"[+|]", key))
+    return all(t in QUOTA_TYPES for t in re.split(r"[+|]", key))
 
 
 def key_matches(key: str, kinds: set[str]) -> bool:
@@ -416,8 +435,11 @@ def key_matches(key: str, kinds: set[str]) -> bool:
 
 
 def decision_types(lab: dict[str, Any]) -> set[str]:
-    """Decision types present in a grid (count > 0)."""
-    return {k for k, v in lab.get("decisions", {}).items() if v}
+    """Decision types present in a grid (count > 0), plus "coupled" when a global mechanic is coupled."""
+    out = {k for k, v in lab.get("decisions", {}).items() if v}
+    if lab.get("coupled_globals"):
+        out.add(COUPLED)
+    return out
 
 
 def config_types(cfg: dict[str, Any]) -> set[str]:
@@ -435,6 +457,8 @@ def config_types(cfg: dict[str, Any]) -> set[str]:
         out.add("carbon")
     if cfg.get("stock"):
         out.add("stock")
+    if out & {"step", "carbon"} and "exchange" in out:
+        out.add(COUPLED)
     return out
 
 
@@ -455,6 +479,7 @@ class Quotas:
         self.rating: dict[int, int] = {}
         self.single: dict[str, int] = {}
         self.with_type: dict[str, int] = {}
+        self.demand = 0  # grids with a demand price (D7)
         self.seen: set[tuple[Any, ...]] = set()
         self.titles: set[str] = set()
         self.kept = 0
@@ -486,9 +511,19 @@ class Quotas:
                 return "quota:single_decision"
             if any(self.with_type.get(t, 0) >= n for t, n in self.q["max_with_type"].items() if t in kinds):
                 return "quota:with_type"
+            cap_d = self.q["max_demand_price"]
+            if lab.get("demand_prices") and cap_d is not None and self.demand >= cap_d:
+                return "quota:demand_price"
         # Reserve the slots still needed for the minimum per rating and per mix entry.
         if left < missing_r and self.rating.get(r, 0) >= need_r:
             return "quota:rating"
+        # Notation A: a Difficile or an Expert holds a coupled global mechanic. Under a "coupled" ceiling, a
+        # coupled grid that fills no missing hard rating must leave room for the hard ratings still missing.
+        cap_c = self.q["max_with_type"].get(COUPLED)
+        if cap_c is not None and COUPLED in kinds and not (r >= 3 and self.rating.get(r, 0) < need_r):
+            hard = sum(max(0, need_r - self.rating.get(x, 0)) for x in (3, 4))
+            if cap_c - self.with_type.get(COUPLED, 0) - 1 < hard:
+                return "quota:rating"
         if left < missing_r + missing_m and self.rating.get(r, 0) >= need_r and self.mix.get(m, 0) >= need_m:
             return "quota:mix"
         # Floors per decision type, reserved jointly with the ratings (a grid may fill a rating and types at
@@ -533,6 +568,8 @@ class Quotas:
             self.single[one] = self.single.get(one, 0) + 1
         for t in self.keys(decision_types(lab)):
             self.with_type[t] = self.with_type.get(t, 0) + 1
+        if lab.get("demand_prices"):
+            self.demand += 1
         r = g["difficulty"]["rating"]
         self.rating[r] = self.rating.get(r, 0) + 1
         self.mix[lab.get("mix", -1)] = self.mix.get(lab.get("mix", -1), 0) + 1
@@ -547,12 +584,16 @@ def _draw(
     # times more often; entries that give a type already at its ceiling, five times less.
     need = quotas.q["min_per_mix"]
     missing, capped = set(quotas.missing_types()), set(quotas.capped_types())
+    hard = {3, 4} & set(quotas.missing_ratings())
+    if hard and COUPLED not in capped:
+        missing.add(COUPLED)  # notation A: Difficile and Expert need a global mechanic coupled to an exchange
     boosted = []
     for j, w in enumerate(weights):
         kinds = quotas.keys(config_types(mix[j]))
         w *= 5 if quotas.mix.get(j, 0) < need else 1
         w *= 5 if kinds & missing else 1
         w /= 5 if kinds & capped else 1
+        w *= 5 if 4 in hard and {"step", "carbon", "exchange"} <= kinds else 1  # an Expert needs both, coupled
         boosted.append(w)
     i = rng.choices(range(len(mix)), boosted)[0]
     cfg = {k: v for k, v in mix[i].items() if k != "weight"}
@@ -566,11 +607,15 @@ def _draw(
     missing = quotas.missing_ratings()
     aim = rng.choice(missing) if missing and rng.random() < 0.7 else rng.choice([1, 2, 2, 3, 4])
     if aim >= 3:
-        # Measured recipe for Difficile / Expert: exact inventory, no price clue (unless the entry says).
-        if "inventory" not in mix[i]:
+        # Measured recipe for levels 3-4: exact inventory, no price clue (unless the entry says). A CO2 cap or a
+        # dam stock keeps its free inventory: in an exact one, it is dead.
+        if "inventory" not in mix[i] and mix[i].get("co2_cap") is None and not mix[i].get("stock"):
             cfg["inventory"] = "exact"
         if "clue_types" not in mix[i]:
             cfg["clue_types"] = [t for t in DEFAULTS["clue_types"] if t != "price"]
+    cap_d = quotas.q["max_demand_price"]
+    if cap_d is not None and "demand_price" not in mix[i] and quotas.demand < cap_d and rng.random() < 0.5:
+        cfg["demand_price"] = True
     return cfg, rng.randint(0, 10**9), i, aim
 
 
@@ -670,6 +715,11 @@ def run_lot(lot: dict[str, Any], workers: int = 6, log: Any = None) -> tuple[lis
             "single_type": dict(sorted(quotas.single.items())),
             "type_quotas": {k: quotas.q[k] for k in TYPE_QUOTAS if quotas.q[k]},
             "grids_with_key": dict(sorted(quotas.with_type.items())),
+            "coupled_globals": {
+                "grids": sum(1 for g in kept if g["lab"]["coupled_globals"]),
+                "step": sum(1 for g in kept if "step" in g["lab"]["coupled_globals"]),
+                "carbon": sum(1 for g in kept if "carbon" in g["lab"]["coupled_globals"]),
+            },
             "per_grid": dict(
                 sorted(
                     {
@@ -687,6 +737,8 @@ def run_lot(lot: dict[str, Any], workers: int = 6, log: Any = None) -> tuple[lis
                 )
             ),
         },
+        "demand_price_grids": quotas.demand,
+        "compactness": _spread([g["lab"]["compactness"] for g in kept]),
         "cleaned": {
             "neighbors": sum(len(g["lab"]["cleaned"].get("neighbors", [])) for g in kept),
             "co2_cap": sum(1 for g in kept if "co2_cap" in g["lab"]["cleaned"]),
@@ -705,3 +757,13 @@ def run_lot(lot: dict[str, Any], workers: int = 6, log: Any = None) -> tuple[lis
         "errors": errors_seen,
     }
     return kept, {"stats": stats, "blocked": copy.deepcopy(blocked)}
+
+
+def _spread(values: list[float]) -> dict[str, float]:
+    """Median, min and max of a measure (empty lot: {})."""
+    if not values:
+        return {}
+    v = sorted(values)
+    mid = len(v) // 2
+    median = v[mid] if len(v) % 2 else (v[mid - 1] + v[mid]) / 2
+    return {"median": round(median, 2), "min": v[0], "max": v[-1]}
