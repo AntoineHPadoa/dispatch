@@ -242,11 +242,11 @@ const stateDot = (st: ClueReport['status'] | null) => (st === null ? ''
   : `<span class="state ${st === 'ok' ? 'ok' : st === 'broken' ? 'bad' : ''}" role="img" aria-label="${esc(UI.clueState[st])}"></span>`);
 
 /** One clue list item. */
-export function clueItem(grid: Grid, clue: Clue, status: ClueReport['status'] | null, paper = false): string {
+export function clueItem(grid: Grid, clue: Clue, status: ClueReport['status'] | null, paper = false, index = -1): string {
   const kind = esc(CLUE_KIND[clue.type]);
   const txt = richClueText(grid, clue);
   if (paper) return `<li class="clue"><span><span class="kind">${kind}</span><span class="txt">${txt}</span></span></li>`;
-  return `<li class="clue"><span class="ico">${icon(CLUE_ICON[clue.type] ?? 'price')}</span>`
+  return `<li class="clue"${index >= 0 ? ` data-clue="${index}"` : ''}><span class="ico">${icon(CLUE_ICON[clue.type] ?? 'price')}</span>`
     + `<span><span class="kind">${kind}</span><span class="txt">${txt}</span></span>${stateDot(status)}</li>`;
 }
 
@@ -342,7 +342,7 @@ export function renderClues(grid: Grid, boardReports: readonly ClueReport[], sta
   const ok = reports.filter((r) => r.status === 'ok').length + (co2?.status === 'ok' ? 1 : 0);
   const n = reports.length + (co2 ? 1 : 0);
   const title = UI.cluesTitle;
-  const list = `<ul class="clues">${co2?.html ?? ''}${orderClues(reports).map((r) => clueItem(grid, r.clue, r.status)).join('')}</ul>`;
+  const list = `<ul class="clues">${co2?.html ?? ''}${orderClues(reports).map((r) => clueItem(grid, r.clue, r.status, false, grid.clues.indexOf(r.clue))).join('')}</ul>`;
   return `<section class="card" aria-label="${esc(title)}"><h2 class="ct">${esc(title)} <small>${esc(UI.cluesChecked(ok, n))}</small></h2>${list}</section>`;
 }
 

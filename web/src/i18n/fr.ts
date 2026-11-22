@@ -412,6 +412,7 @@ export const UI = {
   stepLine: 'STEP · pompage ▲ puis turbinage ▼',
   stepLineNumbered: 'STEP · pompage ▲ puis turbinage ▼ · numérote les paires : ▲1 ▼1, ▲2 ▼2…',
   stepName: 'STEP',
+  recordJump: (col: string) => `Relevé de ${col} : lire la publication`,
   stepTagLabel: (pump: string, turbine: string) => `Paire STEP : pompage à ${pump}, turbinage à ${turbine}. Touche pour la retirer.`,
   hintStep: 'STEP : touche ▲ au-dessus du créneau où l’on pompe. Touche une étiquette ▲ ou ▼ posée pour retirer la paire.',
   stepArrowPump: (col: string) => `Pomper à ${col}`,

@@ -15,6 +15,8 @@
  *   it (screen), the day's exchanges against what is laid ("→ 1/2  ← 0/2"), then the neighbor caption.
  * - Records: a pill of colour squares and counts; with `recordChips` (desktop), a bare group of colour
  *   chips holding the counts, centred on the slot, three to a line at most before wrapping.
+ * - Records on a narrow screen (pill style, cells under RECORD_MARKER_CELL): a record of several plants
+ *   is a small marker with the record icon; a tap scrolls to its publication. One plant stays in clear.
  * - A clue's state is one mark on the top right corner of its pill (or cell, or programme line end):
  *   a green tick once verified, a red "!" once contradicted.
  * - An exported or pumped cell keeps its dashed outline when a piece covers it.
@@ -198,7 +200,14 @@ export interface BandItem {
   range?: [number, number];
   /** Record drawn as chips (`recordChips`): its layout. */
   rec?: RecordLayout;
+  /** Record folded to a marker (narrow cells): a tap jumps to its publication. */
+  marker?: boolean;
 }
+
+/** Below this cell size (phones), a record of several plants folds to a marker. */
+export const RECORD_MARKER_CELL = 48;
+/** Width of a record marker. */
+const MARKER_W = 26;
 
 /** A programme line under the grid (screen): its clue, range and lane (0 right under the grid). */
 export interface ProgrammeLine { index: number; range: [number, number]; lane: number }
@@ -245,6 +254,10 @@ export function bandPlan(grid: Grid, cell: number, style: BoardStyle = 'A', reco
       const mid = xs(cl.col) + cell / 2;
       const [x1, x2] = extent(mid, rec.w);
       raw.push({ kind: 'column', index, label: '', w: rec.w, mid, x1, x2, rec });
+    } else if (cl.type === 'column' && style === 'A' && cell < RECORD_MARKER_CELL && Object.keys(cl.counts).length > 1) {
+      const mid = xs(cl.col) + cell / 2;
+      const [x1, x2] = extent(mid, MARKER_W);
+      raw.push({ kind: 'column', index, label: '', w: MARKER_W, mid, x1, x2, marker: true });
     } else if (cl.type === 'column') {
       const narrow = cell < 44;
       const count = Object.keys(cl.counts).length;
@@ -664,6 +677,17 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
         const ey = py + e.dy;
         return `<rect x="${ex}" y="${ey + 2.5}" width="${e.w}" height="13" rx="4" fill="${fill(p)}"/>` + T(ex + e.w / 2, ey + 12.5, String(e.value), { size: 9 });
       }).join('')}${clueMark(Math.min(px + rec.w - 2, maxX - 4), py + 1, st)}</g>`;
+    } else if (cl.type === 'column' && it.marker) {
+      // Record marker: the record icon in a small pill, its mark on the corner; a slot-high hit area
+      // around it (inside the band, clear of the grid) takes the tap.
+      const py = bandY + it.top + 3;
+      const px = Math.min(Math.max(it.mid - it.w / 2, minX), Math.max(minX, maxX - it.w));
+      const act = input.interactive
+        ? ` data-act="record-jump" data-col="${cl.col}" data-clue="${it.index}" tabindex="0" role="button" aria-label="${esc(UI.recordJump(columnLabel(grid, cl.col)))}"` : '';
+      s += `<g class="tag record-marker${act ? ' act' : ''}"${act}>`
+        + `<rect class="hit" x="${px - 2}" y="${py - 4}" width="${it.w + 4}" height="26" fill="transparent"/>`
+        + pill(it.mid, py, it.w, '#fff', '#d9cbd3', (tc) => `<g transform="translate(${tc - 6} ${py + 3}) scale(.6)" fill="none" stroke="${ink}" stroke-width="2.2" stroke-linecap="round">${ICONS.rel}</g>`, st)
+        + '</g>';
     } else if (cl.type === 'column') {
       const entries = Object.entries(cl.counts);
       const py = bandY + it.top + 3;
