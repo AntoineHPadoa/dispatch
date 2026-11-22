@@ -160,6 +160,8 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   let message: { text: string; tone: Tone } | null = null;
   let cell = MAX_CELL;
   let geo: BoardGeometry | null = null;
+  /** Records as bare colour chips: desktop only (set by fit()). */
+  let recordChips = !window.matchMedia('(max-width: 860px)').matches;
   let longPress: number | undefined;
   let longPressFired = false;
   /** Last HTML written to the message slot. */
@@ -252,7 +254,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       grid, state: history.present, ev, style: 'A', cell,
       preview: pv ? { rect: pv.rect, piece: pv.bar.piece, valid: pv.check.ok, replacing: pv.check.ok ? pv.check.replaced : [] } : null,
       anchor: gesture.anchor, cursor: keyboard && document.activeElement === wrap ? cursor : null, stepPending,
-      stepMode: stepModeOn(), interactive: true,
+      stepMode: stepModeOn(), interactive: true, recordChips,
     });
     geo = out.geo;
     scroll.innerHTML = out.svg;
@@ -660,12 +662,20 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   // ---- size
   function fit() {
     // Desktop: the board column is as wide as the board, so measure what the side column leaves.
-    const oneColumn = window.matchMedia('(max-width: 860px)').matches;
-    // The board sits in a card (30 px of border and padding on desktop); its left gutter holds the neighbor ids.
-    const avail = (oneColumn ? wrap.clientWidth : gameEl.clientWidth - 340 - 30 - 48 - 30) - 6 - boardLead(grid);
+    // When even the smallest cells do not fit there, the panels go under the board (stacked).
+    const narrow = window.matchMedia('(max-width: 860px)').matches;
     const n = grid.columns.length;
+    // The board sits in a card (30 px of border and padding on desktop); its left gutter holds the neighbor ids.
+    const beside = gameEl.clientWidth - 340 - 30 - 48 - 30 - 6 - boardLead(grid);
+    const stacked = !narrow && Math.floor(beside / n) < MIN_CELL;
+    gameEl.classList.toggle('stacked', stacked);
+    const avail = narrow || stacked ? wrap.clientWidth - 6 - boardLead(grid) : beside;
     const next = Math.max(MIN_CELL, Math.min(MAX_CELL, Math.floor(avail / n)));
-    if (next !== cell || !geo) { cell = next; drawBoard(); } else syncSlider();
+    // Beside the panels, the board column is exactly the board card (svg plus 30 of padding and
+    // border), so the side column never takes the room the board was sized for.
+    if (narrow || stacked) gameEl.style.removeProperty('--board-col');
+    else gameEl.style.setProperty('--board-col', `${boardLead(grid) + n * next + 4 + 30}px`);
+    if (next !== cell || recordChips === narrow || !geo) { cell = next; recordChips = !narrow; drawBoard(); } else syncSlider();
   }
   const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(fit) : null;
   ro?.observe(gameEl);

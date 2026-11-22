@@ -1,6 +1,7 @@
 /*
  * Screen styles, style A "Dragée": light pastel palette, Outfit titles, Manrope text.
- * - Desktop: board column and side column; below 860px: one column (board, tools, book, clues).
+ * - Desktop: board column and side column, or one column (`.game.stacked`) when the board does not fit
+ *   beside the panels; below 860px: one column (board, tools, book, clues).
  * - The page never scrolls horizontally: a wide board scrolls inside its frame.
  */
 :root {
@@ -44,7 +45,7 @@ button { font: inherit; color: inherit; }
 .backlink:hover { color: var(--ink); }
 
 /* ---- game layout ---- */
-.game { display: grid; grid-template-columns: auto minmax(340px, 520px); justify-content: start; grid-template-areas: "head head" "play ttl" "play intro" "play side"; grid-template-rows: auto auto auto 1fr; gap: 18px 30px; align-items: start; }
+.game { display: grid; grid-template-columns: var(--board-col, auto) minmax(340px, 520px); justify-content: start; grid-template-areas: "head head" "play ttl" "play intro" "play side"; grid-template-rows: auto auto auto 1fr; gap: 18px 30px; align-items: start; }
 .game > .site-head { grid-area: head; margin-bottom: 22px; position: relative; z-index: 2; }
 .game > .ttl { grid-area: ttl; display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; }
 .game h1 { font-family: var(--f-title); font-weight: 300; font-size: 1.75rem; letter-spacing: -.02em; margin: 0; line-height: 1.1; }
@@ -248,6 +249,10 @@ body.print-preview #print-root .a4 { box-shadow: 0 2px 18px rgba(59, 51, 64, .12
 .chip svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .erase-chip { flex: none; padding: 5px 9px; color: var(--soft); }
 .erase-chip.sel { color: var(--ink); border-color: var(--ink); background: var(--card); }
+
+/* Desktop board too wide to stand beside the panels: one column, panels under the board. */
+.game.stacked { grid-template-columns: minmax(0, 1fr); grid-template-areas: none; grid-template-rows: none; }
+.game.stacked > .site-head, .game.stacked > .ttl, .game.stacked > .intro, .game.stacked > .play, .game.stacked > .side { grid-area: auto; }
 
 /* ---- one column ---- */
 @media (max-width: 860px) {
