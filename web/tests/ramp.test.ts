@@ -92,6 +92,12 @@ describe('validator', () => {
       .toContain('pieces.C.shape: one of rect, trap, stair expected');
   });
 
+  it('a stair ramp is refused, as the solver does without its flag', () => {
+    const g = t1();
+    const bad = { ...g, pieces: { ...g.pieces, C: { ...g.pieces.C!, shape: 'stair', len: [2, 3] } } };
+    expect(errs(bad)).toContain('pieces.C.shape: ramps are not enabled');
+  });
+
   it('a laid ramp carries no height, and a rectangle still needs one', () => {
     const g = t1();
     const placements = g.solution.placements.map((p) => (p.piece === 'C' ? { ...p, height: 2 } : p));
