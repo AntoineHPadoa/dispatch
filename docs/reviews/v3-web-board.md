@@ -1,6 +1,6 @@
 # Relecture — v3-web-board (S6.3 : R17-R21)
 
-- Branche `v3-web-board`, commit `93ba96f`, auteur s7. Relecteur : s8. R22 hors périmètre : il attend le choix de l'artifact Pastilles.
+- Branche `v3-web-board`, commits `93ba96f` (R17-R21) et `cf1ebff` (R22, relu en complément : voir la section R22), auteur s7. Relecteur : s8.
 - Référence : retours R17-R21 (`plan/rev-6.md` § S4). Pas de texte joueur nouveau : `fr.ts` et `grids.json` sont inchangés.
 - Fichiers locaux dans `docs/reviews/v3-web-board/` du worktree `spot-elec-v3-reviews` : captures 1280 px (`W-*-apres.png`), relevé du slider (`survey-board.txt`), comparaison sous 861 px (`narrow-main.txt`, `narrow-board.txt`) et script de relevé (`survey.mjs`). Ils ne sont pas versionnés.
 
@@ -64,9 +64,29 @@
 - Les pastilles ne s'élargissent plus de 10 px pour la coche, qui va toujours au coin. Signalé par l'auteur ; c'est l'effet attendu de R21.
 - Le chemin `.stacked` n'est vérifié que par lecture du code (voir R17). Une grille de 14 créneaux ou plus, ou de très grands créneaux, l'exercerait.
 
+## R22 : relevés en O-E sur ordinateur (complément, `cf1ebff`)
+
+**OK, sans écart.** Référence : le choix de l'humain (O-E sur ordinateur, rendu actuel gardé sous 861 px) et le prototype de s4 (`v3-pills-proto` `d5e44f3`, `?pills=e`).
+
+- **Rendu** : à partir de 861 px, un relevé est un groupe de pastilles de couleur nues, une par centrale, qui portent leur chiffre, sans contour ni fond. Le groupe est centré sur sa colonne (`recordLayout`, `board.ts`).
+- **Retour à la ligne** : même règle que le prototype, qui part de la place disponible (`room = cell - 10`) : 3 pastilles par ligne à partir de cellules de 53 px, 2 en dessous. La note de l'orchestrateur à s7 disait « au-delà de trois centrales » ; le code suit le prototype validé, ce qui revient au même aux tailles usuelles. W-29 (grille 906) : 5 centrales réparties 3 + 2.
+- **Marque R21** : au coin haut droit du groupe, par `clueMark`. Sur W-23, le relevé « 0 » contredit à 15h porte le « ! » rouge.
+- **Rangées de la bande** : elles s'adaptent à la hauteur d'un relevé replié.
+- **Sous 861 px et papier** : la pastille de relevé est inchangée.
+
+| Contrôle | Résultat |
+|---|---|
+| `npm test` | 418 tests verts |
+| typecheck, build | OK |
+| `check-ui.mjs` | 205/205 OK |
+| Slider, 861 à 1441 px, 13 grilles plus 902 et 906 | 465 mesures, 0 slider, 0 `.stacked` |
+| Sous 861 px (375, 500, 700, 860 px), comparé à `93ba96f` | identique |
+| Passage de la frontière de 861 px dans les deux sens (grilles 7, 902, 906) | pastilles nues à 861 px et plus, pastille de relevé à 860 px et moins ; la bascule se fait au redimensionnement, sans recharger |
+
 ## Fusion avec v3-web-home et v3-web-panel
 
 Essai sur `main` (à jour, `v3-meteo-c` compris), dans l'ordre `v3-web-home`, `v3-web-panel`, `v3-web-board` :
 - **`v3-web-home` puis `v3-web-panel`** : un seul conflit, `web/tests/ramp.test.ts`, déjà signalé dans `v3-web-home.md`. Résolution : garder le bloc de `v3-web-panel` (pas d'indication à l'écran, un picto par largeur) et remplacer l'attendu papier `'rampe de 3 à 5 créneaux'` par `'à paliers, 3 à 5 créneaux'`. Ne pas prendre le fichier entier d'un seul côté : `--theirs` fait échouer 4 tests qui portent sur les textes de `v3-web-home`.
 - **`v3-web-board`** : aucun conflit. Fusion automatique de `app.css`, `board.ts`, `game.ts` et `ui.test.ts`.
 - **Arbre fusionné** : 418 tests verts, typecheck OK, build OK, `check-ui.mjs` 205/205.
+- **Refait avec R22 (`cf1ebff`)** : toujours aucun conflit pour `v3-web-board` ; 419 tests verts, typecheck OK.
