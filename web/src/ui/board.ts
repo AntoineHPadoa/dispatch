@@ -27,6 +27,7 @@ import {
 } from '../engine';
 import { UI, columnLabel, priceTag, priceTagShort, programLabel } from '../i18n/fr';
 import type { Cell, Rect } from './gesture';
+import { bookEntries } from './panels';
 import {
   BAD, ICONS, INK_A, INK_B, OK, PIECE_COLORS, SOFT_A, SOFT_B, ACCENT, colorKey, esc,
 } from './palette';
@@ -689,7 +690,9 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   const cgap = 3;
   grid.neighbors.forEach((nb, k) => {
     const ry = baseY + k * pitch;
-    const cap = W < 240 ? nb.name : `${UI.neighborLine(nb.name, nb.cap)}${grid.co2_cap !== null ? ` · ${UI.co2PerCell(nb.co2)}` : ''}`;
+    // The CO2 of an import line shows only when that import is possible today.
+    const importable = grid.co2_cap !== null && bookEntries(grid).some((e) => e.key === `I:${nb.id}`);
+    const cap = W < 240 ? nb.name : `${UI.neighborLine(nb.name, nb.cap)}${importable ? ` · ${UI.co2PerCell(nb.co2)}` : ''}`;
     s += T(X0 - 5, ry + rowH / 2 + 3.5, nb.id, { anchor: 'end', w: 800, size: 9.5, color: soft });
     s += T(X0, ry + rowH + 13, cap, { anchor: 'start', w: 700, size: 9, color: soft });
     for (let c = 0; c < n; c++) {

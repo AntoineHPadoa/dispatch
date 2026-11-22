@@ -399,12 +399,13 @@ export const UI = {
   co2Points: (k: number, cap: number) => `${k} ${k > 1 ? 'points' : 'point'} sur ${cap}`,
   co2Left: (k: number) => (k >= 0 ? `${k} ${k > 1 ? 'restants' : 'restant'}` : `${-k} de trop`),
   co2PerCell: (k: number) => `CO₂ ${k} par case`,
-  co2Detail: (parts: string[]) => parts.join(' · '),
+  /** Accessible name of the legend under the CO2 gauge (plant, points per cell). */
+  co2LegendLabel: 'Points de CO₂ par case',
   co2Rule: (cap: number, per: string) => `${cap} points au plus ; points par case : ${per}.`,
   co2Kind: 'Plafond CO₂',
   /** CO2 publication generated from `co2_cap`, listed with the market publications. */
   co2ClueKind: 'Limite CO₂',
-  co2Clue: (cap: number, per: string) => `Aujourd’hui : ${cap} points de CO₂ au plus.${per ? ` Par case : ${per}.` : ''}`,
+  co2Clue: (cap: number) => `Aujourd’hui : ${cap} points de CO₂ au plus.`,
   neighborLine: (name: string, cap: number) => `${name} · ${cap} ${cap > 1 ? 'blocs' : 'bloc'} par créneau`,
   stepLine: 'STEP · pompage ▲ puis turbinage ▼',
   stepLineNumbered: 'STEP · pompage ▲ puis turbinage ▼ · numérote les paires : ▲1 ▼1, ▲2 ▼2…',

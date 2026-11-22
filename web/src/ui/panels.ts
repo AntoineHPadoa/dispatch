@@ -328,7 +328,7 @@ export function co2ClueItem(grid: Grid, state: PlayState, full: boolean): { html
   if (cap === null) return null;
   const total = [...co2Parts(grid, state).values()].reduce((a, b) => a + b, 0);
   const status: ClueStatus = total > cap ? 'broken' : full ? 'ok' : 'open';
-  const txt = esc(UI.co2Clue(cap, co2PerCellText(grid))).replace(/(^|\s)(\d+)(?=[\s,.]|$)/g, '$1<span class="slot">$2</span>');
+  const txt = esc(UI.co2Clue(cap)).replace(/(^|\s)(\d+)(?=[\s,.]|$)/g, '$1<span class="slot">$2</span>');
   const html = `<li class="clue"><span class="ico">${icon('co2')}</span>`
     + `<span><span class="kind">${esc(UI.co2ClueKind)}</span><span class="txt">${txt}</span></span>${stateDot(status)}</li>`;
   return { html, status };
@@ -346,7 +346,28 @@ export function renderClues(grid: Grid, boardReports: readonly ClueReport[], sta
   return `<section class="card" aria-label="${esc(title)}"><h2 class="ct">${esc(title)} <small>${esc(UI.cluesChecked(ok, n))}</small></h2>${list}</section>`;
 }
 
-/** CO2 gauge in cells, split by plant (only when the grid has a cap). */
+/** CO2 points per cell of a book entry (plant or import line; 0 for the STEP). */
+function co2Of(grid: Grid, e: BookEntry): number {
+  if (e.piece === IMPORT_PIECE) return grid.neighbors.find((nb) => nb.id === e.country)?.co2 ?? 0;
+  if (e.piece === STEP_KEY) return 0;
+  return grid.pieces[e.piece as PieceId]?.co2 ?? 0;
+}
+
+/** Emitting lines the player can lay today, most points per cell first (ties keep the book order). */
+export function co2Costs(grid: Grid): { color: string; name: string; per: number }[] {
+  return bookEntries(grid).map((e) => ({ e, per: co2Of(grid, e) })).filter(({ per }) => per > 0)
+    .sort((a, b) => b.per - a.per)
+    .map(({ e, per }) => ({
+      color: PIECE_COLORS[colorKey(e.piece === IMPORT_PIECE ? 'I' : e.piece)].a,
+      name: e.piece === IMPORT_PIECE ? UI.importOf(countryFrom(grid, e.country ?? '')) : PIECE_WORDS[e.piece as PieceId].name,
+      per,
+    }));
+}
+
+/**
+ * CO2 card (only when the grid has a limit): points spent and left, a continuous track split by
+ * plant colour, then the legend of the points per cell of every emitting line the player can lay.
+ */
 export function renderCo2(grid: Grid, state: PlayState): string {
   const cap = grid.co2_cap;
   if (cap === null) return '';
@@ -355,13 +376,12 @@ export function renderCo2(grid: Grid, state: PlayState): string {
   const scale = Math.max(cap, total) || 1;
   const segs = [...parts.entries()].filter(([, v]) => v > 0)
     .map(([k, v]) => `<i style="width:${(100 * v) / scale}%;background:${PIECE_COLORS[colorKey(k)].a}"></i>`).join('');
-  const detail = [...parts.entries()].filter(([, v]) => v > 0)
-    .map(([k, v]) => `${k === 'I' ? UI.importWord : PIECE_WORDS[k as PieceId].name.toLowerCase()} ${v}`);
+  const legend = co2Costs(grid).map((c) => `<span><i class="sw" style="background:${c.color}"></i>${esc(c.name)} <span class="per">${c.per}</span></span>`).join('');
   const over = total > cap;
   return `<section class="card gauge${over ? ' over' : ''}" aria-label="${esc(UI.co2Kind)}">
-    <div class="lbl"><span><b>${esc(UI.co2)}</b> ${esc(UI.co2Points(total, cap))}</span></div>
+    <div class="lbl"><span><b>${esc(UI.co2)}</b> ${esc(UI.co2Points(total, cap))}</span><span class="soft">${esc(UI.co2Left(cap - total))}</span></div>
     <div class="track">${segs}</div>
-    <div class="lbl small soft"><span>${esc(UI.co2Detail(detail))}</span><span>${esc(UI.co2Left(cap - total))}</span></div></section>`;
+    ${legend ? `<div class="co2-legend" aria-label="${esc(UI.co2LegendLabel)}">${legend}</div>` : ''}</section>`;
 }
 
 /** CO2 rule for the paper list: "24 cases au plus (charbon 3, TAC 2, gaz 1)." */

@@ -225,7 +225,7 @@ describe('ramp details: gauge, validator, sheet, messages', () => {
     expect(co2Total(g, s)).toBe(14);
     const html = renderCo2(g, s);
     expect(html).toContain(UI.co2Points(14, 20));
-    expect(html).toContain('charbon 12');
+    expect(html).toContain('width:60%'); // 12 of the 20 points, coal colour
   });
 
   it('shape: null is refused, as in Python', () => {
