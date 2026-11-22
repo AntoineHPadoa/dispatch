@@ -455,3 +455,73 @@ def test_combined_type_keys():
     for key, ok in (("step+carbon", True), ("step|carbon", True), ("step+carbon|tall", False), ("steps", False)):
         _lot, errors = check_lot({"lot": "x", "size": 4, "mix": [{"cols": 8}], "quotas": {"min_with_type": {key: 1}}})
         assert not errors if ok else errors
+
+
+def test_an_entry_with_neighbors_keeps_one():
+    """v3g3 A: an entry with neighbors never gives a grid without any; the lab measures are those of the
+    cleaned grid (decisions, coupled globals, live mechanics), so the quotas see what the player plays."""
+    reasons = set()
+    kept = 0
+    for seed in range(30):
+        g, why, _ = make_candidate({"cols": 8, "step": 1, "neighbors": 1}, seed)
+        reasons.add(why)
+        if g is None:
+            continue
+        kept += 1
+        assert g["neighbors"] and "neighbors:1" in g["lab"]["mechanics"]
+        res = deduce(g)
+        dec = decisions(g, res.steps)
+        assert g["lab"]["decisions"] == dec and g["lab"]["coupled_globals"] == res.coupled_globals
+        assert g["lab"]["live_mechanics"] == [k for k in dec if k != "price"]
+    assert kept >= 10 and reasons <= {None, "one_plant", "too_many_clues", "dead_neighbors", "trivial", "no_decision"}
+
+
+def test_per_mix_and_slot_ceilings():
+    """Near-twins: at most max_per_mix grids per mix entry, at most max_with_cols[n] grids of n slots."""
+    q = Quotas(10, {"min_per_rating": 0, "max_same_family": 10, "max_per_mix": 1, "max_with_cols": {12: 1}}, mixes=3)
+    a = _qgrid("a", 1)
+    a["lab"]["mix"] = 0
+    q.add(a)
+    b = _qgrid("bb", 1)
+    b["lab"]["mix"] = 0
+    assert q.check(b) == "quota:per_mix"
+    b["lab"]["mix"] = 1
+    assert q.check(b) is None
+    long_day = {**_qgrid("ccc", 1), "columns": ["x"] * 12, "weather": {"R": [0] * 12, "F": [0] * 12}}
+    long_day["demand"] = [3] * 11 + [4]
+    long_day["lab"] = {**long_day["lab"], "mix": 1}
+    q.add(long_day)
+    other = {**long_day, "demand": [3] * 10 + [5, 4], "lab": {**long_day["lab"], "mix": 2, "family": "dddd"}}
+    assert q.check(other) == "quota:cols"
+    mix = [{"cols": 8}, {"cols": 12}, {"cols": 6}]
+    rng = random.Random(1)
+    picks = [_draw(rng, mix, [1, 1, 1], q)[2] for _ in range(300)]
+    assert picks.count(0) < 20 and picks.count(1) < 20  # entry 0 at its max, entry 1 on 12 slots at its ceiling
+    lot, errors = check_lot(
+        {"lot": "x", "size": 4, "mix": [{"cols": 8}] * 2, "quotas": {"max_per_mix": 2, "max_with_cols": {"12": 1}}}
+    )
+    assert not errors and lot["quotas"]["max_with_cols"] == {12: 1}
+    for quotas, word in (
+        ({"max_per_mix": 1}, "below the lot size"),
+        ({"max_with_cols": {"10": 1}}, "max_with_cols"),
+        ({"max_per_mix": 2, "min_per_mix": 3}, "below min_per_mix"),
+    ):
+        _lot, errors = check_lot({"lot": "x", "size": 4, "mix": [{"cols": 8}] * 2, "quotas": quotas})
+        assert errors and word in " ".join(errors)
+
+
+def test_a_ramp_given_by_a_clue_is_no_decision():
+    """A ramp bar is a decision when the deduction settles it, not when an engaged or a program clue gives it."""
+    g = first({"cols": 8, "ramp": "trap"}, seeds=range(60))
+    res = deduce(g)
+    n = decisions(g, res.steps)["ramp"]
+    bars = [p for p in g["solution"]["placements"] if p["piece"] == "C"]
+    assert n >= 1 and sum(g["lab"]["ramp_settled_by"].values()) == n
+    p = bars[0]
+    for clue in (
+        {"type": "bar", "piece": "C", "col": p["col"], "len": p["len"]},
+        {"type": "engaged", "piece": "C", "row": p["row"], "col": p["col"], "len": p["len"]},
+    ):
+        h = {**g, "clues": g["clues"] + [clue]}
+        r = deduce(h)
+        assert r.solved and decisions(h, r.steps).get("ramp", 0) == n - 1

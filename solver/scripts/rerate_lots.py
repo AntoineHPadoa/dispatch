@@ -3,7 +3,7 @@
 - For each candidate: one composition equal to the reference (CP-SAT), full deduction, then each clue
   removed in turn (§8.3: none may be useless). Rating (notation A), techniques, lab.trace_summary,
   lab.ramp_techniques and the measures lab.decisions, lab.live_mechanics, lab.coupled_globals,
-  lab.compactness and lab.demand_prices are rewritten; the stats file gets the new ratings and ramp counts.
+  lab.compactness, lab.demand_prices and lab.ramp_settled_by are rewritten; the stats file gets the new ratings and ramp counts.
 - Prints one line per grid whose rating changed and every grid that is no longer publishable
   (not unique, blocked, or a clue became useless). Such grids are kept and flagged in `lab.recheck`.
 
@@ -21,7 +21,7 @@ from typing import Any
 from dispatch_solver import exact
 from dispatch_solver.board import reference_composition
 from dispatch_solver.deduce import deduce
-from dispatch_solver.deduce.trace import RAMP_OWN, RAMP_RULES, compactness, decisions, live_mechanics
+from dispatch_solver.deduce.trace import RAMP_OWN, RAMP_RULES, compactness, decisions, live_mechanics, ramp_settled_by
 from dispatch_solver.generate.cluesel import demand_prices, mandatory_clues
 from dispatch_solver.grid import LABELS
 
@@ -54,6 +54,7 @@ def rerate(g: dict[str, Any]) -> dict[str, Any]:
         "coupled_globals": res.coupled_globals,
         "compactness": compactness(g, dec),
         "demand_prices": len(demand_prices(g, g["clues"])),
+        "ramp_settled_by": ramp_settled_by(g, res.steps),
     }
     return out
 

@@ -17,6 +17,7 @@
 - compactness(): K = weight of the decisions / pieces laid (bars and imports), a lab measure only.
 - decisions(): the choices the deduction must settle and that change the solution, by type (DECISION_TYPES),
   from the reference solution, the clues and the trace; a grid without any is "filling" (lab.decisions).
+- ramp_steps() / ramp_settled_by(): which rule lays each ramp bar (None when a clue gives it).
 """
 
 from __future__ import annotations
@@ -297,7 +298,9 @@ class Result:
 #   record of that neighbor gives it; an import only found by counting the columns at the end is filling.
 # - step: a pumping / turbining pair of the reference, when a step fixes the STEP option.
 # - tall: a coal bar laid 2 high (the tall piece may be 1 or 2), unless an engaged clue lays it.
-# - ramp: a coal ramp bar (trap / stair), unless an engaged clue lays it.
+# - ramp: a coal ramp bar (trap / stair) whose place or width the deduction settles. A clue that gives it is
+#   no decision: an engaged clue or a program (`bar`) naming it, or a step reading a clue (`given`,
+#   `program`, `length`) that lays it. ramp_steps() says which rule laid each ramp decision.
 # - carbon: 1 when the CO2 cap removes something (a `carbon` step).
 # - stock: 1 when the dam's stock (max_cells, free inventory) is all used and an `exhausted` step applies it.
 # - price: a price clue that forces its plant into a single cell (`top_price` step), per clue.
@@ -348,11 +351,12 @@ def decisions(g: dict[str, Any], steps: list[Step]) -> dict[str, int]:
         add("step", len(sol["step"]))
     engaged = {(c["piece"], c["row"], c["col"], c["len"]) for c in clues if c["type"] == "engaged"}
     coal = g["pieces"].get("C", {})
+    ramps = ramp_steps(g, steps)
     for p in sol["placements"]:
         if p["piece"] != "C" or (p["piece"], p["row"], p["col"], p["len"]) in engaged:
             continue
         if coal.get("shape", "rect") != "rect":
-            add("ramp")
+            add("ramp", int(ramps.get((p["row"], p["col"], p["len"])) is not None))
         elif p.get("height", 1) == 2:
             add("tall")
     if any(s.rule == "carbon" for s in steps):
@@ -365,6 +369,42 @@ def decisions(g: dict[str, Any], steps: list[Step]) -> dict[str, int]:
             add("stock")
     add("price", len({i for s in steps if s.rule == "top_price" for i in s.clues}))
     return dict(sorted(out.items(), key=lambda kv: DECISION_TYPES.index(kv[0])))
+
+
+CLUE_RULES = ("given", "program", "length")  # steps that lay what a clue states
+
+
+def ramp_steps(g: dict[str, Any], steps: list[Step]) -> dict[tuple[int, int, int], str | None]:
+    """{(row, col, len): rule} for each ramp bar of the reference: the rule of the step that lays it,
+    "eliminated" when no step lays it (every other place was excluded), or None when a clue gives it (engaged,
+    a program naming it, or a step of CLUE_RULES). Rectangle coal: {}."""
+    if g["pieces"].get("C", {}).get("shape", "rect") == "rect":
+        return {}
+    clues = g.get("clues", [])
+    given = {(c["row"], c["col"], c["len"]) for c in clues if c["type"] == "engaged" and c["piece"] == "C"}
+    programs = {(c["col"], c["len"]) for c in clues if c["type"] == "bar" and c["piece"] == "C"}
+    laid: dict[tuple[int, int, int], str] = {}
+    for s in steps:
+        for p in s.placed:
+            if p["piece"] == "C":
+                laid.setdefault((p["row"], p["col"], p["len"]), s.rule)
+    out: dict[tuple[int, int, int], str | None] = {}
+    for p in g["solution"]["placements"]:
+        if p["piece"] != "C":
+            continue
+        key = (p["row"], p["col"], p["len"])
+        rule = laid.get(key)
+        out[key] = None if key in given or key[1:] in programs or rule in CLUE_RULES else rule or "eliminated"
+    return out
+
+
+def ramp_settled_by(g: dict[str, Any], steps: list[Step]) -> dict[str, int]:
+    """{rule: ramp decisions it settles} (lab measure): ramp_* techniques or the generic ones."""
+    out: dict[str, int] = {}
+    for rule in ramp_steps(g, steps).values():
+        if rule is not None:
+            out[rule] = out.get(rule, 0) + 1
+    return dict(sorted(out.items()))
 
 
 # Weight of one decision of each type in the compactness K (v3-criteres-j2.md §2).

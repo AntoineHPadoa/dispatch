@@ -1,0 +1,107 @@
+{
+ "lot": "v3g4-rampe",
+ "size": 20,
+ "seed": 5404,
+ "max_attempts": 4000,
+ "comment": "Coal ramp lot (trapezoid 1-2-1 only), generator v3-gen-4: mix of v3-rampe plus three entries (ramp + STEP + neighbour, ramp + STEP + CO2 + neighbour for the hard ratings, ramp + dam stock). Current rules: decisions in the broad sense (a ramp bar given by a clue is no decision), reject no_decision, dead mechanics cleaned, an entry with neighbors keeps one, notation A. Two ramps relaying each other are drawn in one reference out of three. Diversity: at most 2 grids per mix entry, at most 5 on 12 slots, at most 8 grids whose decisions are all ramps.",
+ "mix": [
+  {
+   "weight": 3,
+   "cols": 8,
+   "ramp": "trap"
+  },
+  {
+   "weight": 3,
+   "cols": 12,
+   "ramp": "trap"
+  },
+  {
+   "weight": 2,
+   "cols": 8,
+   "ramp": "trap",
+   "neighbors": 1
+  },
+  {
+   "weight": 2,
+   "cols": 12,
+   "ramp": "trap",
+   "neighbors": 1
+  },
+  {
+   "weight": 2,
+   "cols": 8,
+   "ramp": "trap",
+   "neighbors": 1,
+   "inventory": "exact",
+   "clue_types": [
+    "column",
+    "flow",
+    "bar",
+    "length"
+   ]
+  },
+  {
+   "weight": 1,
+   "cols": 12,
+   "ramp": "trap",
+   "step": 1,
+   "neighbors": 1
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "ramp": "trap",
+   "co2_cap": "auto",
+   "neighbors": 1
+  },
+  {
+   "weight": 1,
+   "cols": 6,
+   "ramp": "trap"
+  },
+  {
+   "weight": 1,
+   "cols": 12,
+   "ramp": "trap",
+   "pieces": "NBCGT",
+   "surplus": true,
+   "neighbors": 1
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "ramp": "trap",
+   "step": 1,
+   "neighbors": 1
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "ramp": "trap",
+   "step": 1,
+   "co2_cap": "auto",
+   "neighbors": 1,
+   "inventory": "none"
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "ramp": "trap",
+   "pieces": "NBCGT",
+   "stock": 2,
+   "inventory": "none"
+  }
+ ],
+ "quotas": {
+  "max_same_family": 3,
+  "max_same_mechanics": 4,
+  "max_same_clue_profile": 5,
+  "max_same_single_decision": 8,
+  "min_per_rating": 1,
+  "min_per_mix": 1,
+  "max_per_mix": 2,
+  "max_with_cols": {
+   "12": 5
+  }
+ }
+}

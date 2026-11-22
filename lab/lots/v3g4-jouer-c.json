@@ -1,0 +1,119 @@
+{
+ "lot": "v3g4-jouer-c",
+ "size": 20,
+ "seed": 5303,
+ "max_attempts": 4000,
+ "comment": "Play lot C, generator v3-gen-4: mix of v3g2-jouer-c (short and long days, reduced clue types, stock and tall coal with STEP or CO2), its STEP + CO2 entry without neighbour lowered to 1 as in v3g3, plus two v3g3 entries (CO2 + 1 neighbour, STEP + 2 neighbours). Quotas of v3g3 (notation A, coupled 4..6, demand price at most 5) plus the fixes of the v3g3 review: an entry with neighbors keeps one; at most 2 grids per mix entry, at most 5 grids (1/4) on 12 slots.",
+ "mix": [
+  {
+   "weight": 2,
+   "cols": 8,
+   "neighbors": 1,
+   "step": 1,
+   "co2_cap": "auto",
+   "inventory": "none"
+  },
+  {
+   "weight": 1,
+   "cols": 6,
+   "neighbors": 1,
+   "step": 1
+  },
+  {
+   "weight": 1,
+   "cols": 12,
+   "neighbors": 1,
+   "pieces": "NCGT",
+   "tall": true
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "step": 1,
+   "co2_cap": "auto",
+   "inventory": "none"
+  },
+  {
+   "weight": 2,
+   "cols": 6,
+   "pieces": "NBGT",
+   "stock": 2,
+   "step": 1,
+   "inventory": "none"
+  },
+  {
+   "weight": 2,
+   "cols": 8,
+   "pieces": "NBCGT",
+   "tall": true,
+   "stock": 2,
+   "inventory": "none"
+  },
+  {
+   "weight": 1,
+   "cols": 12,
+   "pieces": "NCGT",
+   "tall": true,
+   "co2_cap": "auto",
+   "inventory": "none"
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "clue_types": [
+    "column",
+    "length",
+    "bar"
+   ],
+   "pieces": "NCGT",
+   "tall": true
+  },
+  {
+   "weight": 1,
+   "cols": 12,
+   "surplus": true,
+   "neighbors": 2
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "neighbors": 3
+  },
+  {
+   "weight": 2,
+   "cols": 8,
+   "co2_cap": "auto",
+   "neighbors": 1,
+   "inventory": "none"
+  },
+  {
+   "weight": 1,
+   "cols": 8,
+   "step": 1,
+   "neighbors": 2
+  }
+ ],
+ "quotas": {
+  "max_same_family": 3,
+  "max_same_mechanics": 3,
+  "max_same_clue_profile": 4,
+  "max_same_single_decision": 6,
+  "max_with_type": {
+   "exchange": 10,
+   "coupled": 6
+  },
+  "min_with_type": {
+   "coupled": 4,
+   "step": 4,
+   "tall": 4,
+   "stock": 2
+  },
+  "max_demand_price": 5,
+  "min_per_rating": 2,
+  "min_per_mix": 1,
+  "max_per_mix": 2,
+  "max_with_cols": {
+   "12": 5
+  }
+ }
+}

@@ -4,17 +4,19 @@
   co2_cap, stock, inventory, clue_types, rating, max_clues, min_decisions, demand_price. See DEFAULTS; check_lot()
   refuses unknown keys and bad values before any draw.
 - make_candidate(): draw a day, solve the reference (merit order; ramps of drawn widths, sometimes two),
+  with one export imposed when it trades with none of the entry's neighbors (else reject `dead_neighbors`),
   drop the neighbors the reference never trades with (dead mechanic), write the inventory, select the
   minimal clues up to an aimed technique level, check one composition (CP-SAT) and the deduction, drop a
   CO2 cap no `carbon` step uses (checked again), rate it, count its decisions (deduce.trace.decisions;
   fewer than `min_decisions` is the reject `no_decision`, "filling"), write the bulletin draft and the
   `lab` block (decisions, live mechanics, bars, nuclear prices, coupled global mechanics, compactness K,
-  demand prices: measures only). `demand_price`: when the pool has a price on a dear plant in an export
+  demand prices, ramp_settled_by: measures only, all taken on the cleaned grid). `demand_price`: when the pool has a price on a dear plant in an export
   column (D7), one such price starts the clue selection.
 - run_lot(): keeps the worker processes busy (rolling queue), accepts in draw order under the quotas
   (silhouette family, mechanics, clue profile, grids whose decisions are all of one type, grids holding
   a decision type: ceiling max_with_type and floor min_with_type, minimum per rating and per mix entry,
-  grids with a demand price: max_demand_price). Type quotas also take the key "coupled": a global mechanic
+  grids with a demand price: max_demand_price; near-twins: max_per_mix grids per entry, max_with_cols grids
+  per slot count). Type quotas also take the key "coupled": a global mechanic
   (STEP or CO2) coupled to an exchange, what notation A rates. Draws aim at the ratings still missing (a
   missing Difficile or Expert aims at the entries able to give a coupled global mechanic) and at the mix
   entries able to give a type under its floor; while max_demand_price is not reached, half the draws seed
@@ -38,7 +40,15 @@ from typing import Any
 from .. import __version__, exact
 from ..board import reference_composition
 from ..deduce import deduce
-from ..deduce.trace import DECISION_TYPES, RAMP_OWN, RAMP_RULES, compactness, decisions, live_mechanics
+from ..deduce.trace import (
+    DECISION_TYPES,
+    RAMP_OWN,
+    RAMP_RULES,
+    compactness,
+    decisions,
+    live_mechanics,
+    ramp_settled_by,
+)
 from ..grid import LABELS, validate
 from .bulletin import make_bulletin
 from .cluesel import clue_pool, demand_prices, select_clues
@@ -77,6 +87,8 @@ QUOTAS = {
     "max_with_type": {},  # {decision type: n}: at most n grids holding that type, whatever else they hold
     "min_with_type": {},  # {decision type: n}: at least n grids holding that type (slots reserved, draws aimed)
     "max_demand_price": None,  # at most n grids with a demand price (D7); while under it, draws seed one
+    "max_per_mix": None,  # at most n grids per mix entry (None: no limit)
+    "max_with_cols": {},  # {slot count: n}: at most n grids of that many slots (e.g. {"12": 5})
 }
 COUPLED = "coupled"  # quota key: a global mechanic (STEP or CO2) coupled to an exchange (notation A)
 QUOTA_TYPES = (*DECISION_TYPES, COUPLED)
@@ -122,7 +134,16 @@ def check_lot(lot: Any) -> tuple[dict[str, Any], list[str]]:
                 )
             else:
                 norm_q[key] = dict(v)
-        elif v is None and key == "max_demand_price":
+        elif key == "max_with_cols":
+            if not isinstance(v, dict) or any(
+                str(c) not in map(str, COLUMN_COUNTS) or not _nat(n) for c, n in v.items()
+            ):
+                errors.append(
+                    f"quotas.{k}: object {{slot count ({', '.join(map(str, COLUMN_COUNTS))}): integer >= 0}} expected"
+                )
+            else:
+                norm_q[key] = {int(c): n for c, n in v.items()}
+        elif v is None and key in ("max_demand_price", "max_per_mix"):
             norm_q[key] = None
         elif not _nat(v):
             errors.append(f"quotas.{k}: integer >= 0 expected")
@@ -139,6 +160,11 @@ def check_lot(lot: Any) -> tuple[dict[str, Any], list[str]]:
     if not isinstance(mix, list) or not mix:
         errors.append("mix: non-empty list of configurations expected")
         mix = []
+    cap_m = norm_q.get("max_per_mix")
+    if cap_m is not None and _nat(lot.get("size")) and cap_m * len(mix) < lot["size"]:
+        errors.append(f"quotas: max_per_mix ({cap_m}) x {len(mix)} mix entries is below the lot size")
+    if cap_m is not None and cap_m < norm_q.get("min_per_mix", QUOTAS["min_per_mix"]):
+        errors.append(f"quotas: max_per_mix ({cap_m}) below min_per_mix")
     out["mix"] = []
     for j, m in enumerate(mix):
         cfg, errs = check_config(m)
@@ -292,19 +318,32 @@ def make_candidate(
     bonus = rng.choice([0, 100, 200, 300]) if cfg["ramp"] else 0
     count = rng.choice([1, 1, 2]) if cfg["ramp"] else 1
     cost = rng.choice([3, 4, 6, 6])
-    sol = None
-    for cnt in sorted({count, 1}, reverse=True):
-        sol = solve_reference(
-            d, rng, exports=exports, import_cost=cost, require=require, min_count=cnt, ramp_bonus=bonus
-        )
-        if sol is None and exports:
-            sol = solve_reference(d, rng, import_cost=6, require=require, min_count=cnt, ramp_bonus=bonus)
-        if sol is not None:
-            break
+
+    def reference(ex: dict[str, int] | None, fallback: bool = True) -> dict[str, Any] | None:
+        """Merit-order reference, two ramps first when drawn; `fallback`: without the exports if they fail."""
+        for cnt in sorted({count, 1}, reverse=True):
+            out = solve_reference(
+                d, rng, exports=ex, import_cost=cost, require=require, min_count=cnt, ramp_bonus=bonus
+            )
+            if out is None and ex and fallback:
+                out = solve_reference(d, rng, import_cost=6, require=require, min_count=cnt, ramp_bonus=bonus)
+            if out is not None:
+                return out
+        return None
+
+    sol = reference(exports)
     if sol is None:
         return None, "infeasible", info
+    if cfg["neighbors"] and not _live(sol):
+        # An entry with neighbors keeps at least one (v3g3 A): a reference trading with none of them is solved
+        # again with one export imposed; if none holds, the draw is the reject `dead_neighbors`, never a grid
+        # without neighbor filed under an entry that has some.
+        k = rng.choice([nb["id"] for nb in d["neighbors"]])
+        sol = next((x for v in rng.sample([1, 2], 2) if (x := reference({k: v}, fallback=False))), None)
+        if sol is None:
+            return None, "dead_neighbors", info
     # Dead mechanic (C1): a neighbor the reference never trades with is dropped before the clue selection.
-    live = set(sol["exports"]) | {p["country"] for p in sol["placements"] if p["piece"] == "I"}
+    live = _live(sol)
     cleaned: dict[str, Any] = {}
     dead = [nb["id"] for nb in d["neighbors"] if nb["id"] not in live]
     if dead:
@@ -370,6 +409,7 @@ def make_candidate(
         "clue_profile": sorted({c["type"] for c in clues}),
         "trace_summary": summary,
         "ramp_techniques": {k: v for k, v in summary["techniques"].items() if k in RAMP_RULES},
+        "ramp_settled_by": ramp_settled_by(d, res.steps),
         "decisions": dec,
         "live_mechanics": live_mechanics(dec),
         "coupled_globals": res.coupled_globals,
@@ -388,6 +428,11 @@ def make_candidate(
     if errors:
         return None, "invalid: " + "; ".join(errors), info
     return d, None, info
+
+
+def _live(sol: dict[str, Any]) -> set[str]:
+    """Neighbors the reference trades with (an export or an import bar)."""
+    return set(sol["exports"]) | {p["country"] for p in sol["placements"] if p["piece"] == "I"}
 
 
 def _attempt(
@@ -473,6 +518,7 @@ class Quotas:
         self.size, self.q = size, {**QUOTAS, **{QUOTA_ALIASES.get(k, k): v for k, v in q.items()}}
         self.mixes = mixes
         self.mix: dict[int, int] = {}
+        self.cols: dict[int, int] = {}
         self.family: dict[str, int] = {}
         self.mech: dict[tuple[str, ...], int] = {}
         self.profile: dict[tuple[str, ...], int] = {}
@@ -514,6 +560,13 @@ class Quotas:
             cap_d = self.q["max_demand_price"]
             if lab.get("demand_prices") and cap_d is not None and self.demand >= cap_d:
                 return "quota:demand_price"
+            cap_n = self.q["max_with_cols"].get(len(g["columns"]))
+            if cap_n is not None and self.cols.get(len(g["columns"]), 0) >= cap_n:
+                return "quota:cols"
+        # Near-twins (v3g3 B): no mix entry gives more than max_per_mix grids, even at the end of the lot.
+        cap_m = self.q["max_per_mix"]
+        if cap_m is not None and m >= 0 and self.mix.get(m, 0) >= cap_m:
+            return "quota:per_mix"
         # Reserve the slots still needed for the minimum per rating and per mix entry.
         if left < missing_r and self.rating.get(r, 0) >= need_r:
             return "quota:rating"
@@ -573,6 +626,7 @@ class Quotas:
         r = g["difficulty"]["rating"]
         self.rating[r] = self.rating.get(r, 0) + 1
         self.mix[lab.get("mix", -1)] = self.mix.get(lab.get("mix", -1), 0) + 1
+        self.cols[len(g["columns"])] = self.cols.get(len(g["columns"]), 0) + 1
         self.kept += 1
 
 
@@ -593,6 +647,10 @@ def _draw(
         w *= 5 if quotas.mix.get(j, 0) < need else 1
         w *= 5 if kinds & missing else 1
         w /= 5 if kinds & capped else 1
+        # Entries at their max_per_mix, or whose slot count is at its ceiling, are almost never drawn.
+        cap_m, cap_n = quotas.q["max_per_mix"], quotas.q["max_with_cols"].get(mix[j].get("cols", DEFAULTS["cols"]))
+        w /= 25 if cap_m is not None and quotas.mix.get(j, 0) >= cap_m else 1
+        w /= 25 if cap_n is not None and quotas.cols.get(mix[j].get("cols", DEFAULTS["cols"]), 0) >= cap_n else 1
         w *= 5 if 4 in hard and {"step", "carbon", "exchange"} <= kinds else 1  # an Expert needs both, coupled
         boosted.append(w)
     i = rng.choices(range(len(mix)), boosted)[0]
@@ -749,6 +807,9 @@ def run_lot(lot: dict[str, Any], workers: int = 6, log: Any = None) -> tuple[lis
         "ramp_techniques": dict(
             sorted({k: sum(g["lab"]["ramp_techniques"].get(k, 0) for g in ramp) for k in RAMP_RULES}.items())
         ),
+        "ramp_settled_by": _merge([g["lab"].get("ramp_settled_by", {}) for g in ramp]),
+        "ramp_relays": sum(1 for g in ramp if sum(1 for p in g["solution"]["placements"] if p["piece"] == "C") >= 2),
+        "cols": {str(k): v for k, v in sorted(quotas.cols.items())},
         "seconds": round(time.perf_counter() - t0, 1),
         "seconds_per_kept_grid": round((time.perf_counter() - t0) / max(1, len(kept)), 1),
         "workers": workers,
@@ -757,6 +818,14 @@ def run_lot(lot: dict[str, Any], workers: int = 6, log: Any = None) -> tuple[lis
         "errors": errors_seen,
     }
     return kept, {"stats": stats, "blocked": copy.deepcopy(blocked)}
+
+
+def _merge(counts: list[dict[str, int]]) -> dict[str, int]:
+    out: dict[str, int] = {}
+    for c in counts:
+        for k, v in c.items():
+            out[k] = out.get(k, 0) + v
+    return dict(sorted(out.items()))
 
 
 def _spread(values: list[float]) -> dict[str, float]:
