@@ -6,7 +6,8 @@
 //   by pdftoppm (WARN and a print-media screenshot of the sheet when pdftoppm is missing or fails).
 //   A finger held mid-drag (touch views with `hold … to`) uses CDP Input.dispatchTouchEvent without touchEnd.
 // - Writes docs/ui-gallery/{web,mobile,papier}/img/<id>.png and index.html, and the view table of docs/next/ui-gallery.md.
-// - Usage (from web/): node scripts/ui-gallery.mjs [--only W-03,M-07] [--skip-build] [--port 4179] (gallery build on port + 1)
+// - Usage (from web/): node scripts/ui-gallery.mjs [--kinds web,mobile,papier] [--only W-03,M-07] [--skip-build] [--port 4179]
+//   (gallery build on port + 1). --kinds limits the pages written and their sections of the view table.
 //   CHROME=/path/to/chrome overrides the browser. Exit code 1 when a view fails.
 import { chromium } from 'playwright-core';
 import { spawn, spawnSync } from 'node:child_process';
@@ -29,6 +30,7 @@ const PORT = Number(arg('port', '4179'));
 const PROD = `http://127.0.0.1:${PORT}/dispatch/`;
 const GALLERY = `http://127.0.0.1:${PORT + 1}/dispatch/`;
 const ONLY = (arg('only', '') || '').split(',').filter(Boolean);
+const KINDS = (arg('kinds', 'web,mobile,papier') || '').split(',').filter(Boolean);
 const CHROME = process.env.CHROME ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const STORAGE_KEY = 'dispatch:progress:v1';
 /** Fixed clock: elapsed times shown by the game do not depend on how fast the script plays. */
@@ -268,7 +270,7 @@ async function capture(view, file) {
 // ---- main
 let failed = 0;
 const pages = {};
-for (const [kind, views] of Object.entries(VIEWS)) {
+for (const [kind, views] of Object.entries(VIEWS).filter(([k]) => KINDS.includes(k))) {
   const dir = path.join(OUT, kind, 'img');
   fs.mkdirSync(dir, { recursive: true });
   pages[kind] = [];
@@ -328,7 +330,13 @@ const between = (text, name, body) => {
   const start = `<!-- ${name}:start -->`, end = `<!-- ${name}:end -->`;
   return `${text.slice(0, text.indexOf(start) + start.length)}\n\n${body}\n\n${text.slice(text.indexOf(end))}`;
 };
-fs.writeFileSync(DOC, between(between(fs.readFileSync(DOC, 'utf8'), 'views', table), 'slider', sliderTable));
+// Sections of kinds not run this time are kept as they are.
+const docText = fs.readFileSync(DOC, 'utf8');
+const oldBlock = docText.slice(docText.indexOf('<!-- views:start -->') + '<!-- views:start -->'.length, docText.indexOf('<!-- views:end -->'));
+const oldSections = Object.fromEntries(oldBlock.split(/^(?=### )/m).filter((x) => x.startsWith('### ')).map((x) => [x.slice(4, x.indexOf('\n')).trim(), x.trim()]));
+const newSections = Object.fromEntries(table.split(/^(?=### )/m).map((x) => [x.slice(4, x.indexOf('\n')).trim(), x.trim()]));
+const fullTable = Object.keys(VIEWS).map((k) => newSections[k] ?? oldSections[k]).filter(Boolean).join('\n\n');
+fs.writeFileSync(DOC, between(between(docText, 'views', fullTable), 'slider', sliderTable));
 const count = Object.fromEntries(Object.entries(pages).map(([k, l]) => [k, l.length]));
 console.log(`views: ${JSON.stringify(count)}${failed ? `, ${failed} failed` : ''} -> ${OUT}`);
 process.exit(failed ? 1 : 0);

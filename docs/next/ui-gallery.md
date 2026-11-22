@@ -42,6 +42,7 @@ node scripts/ui-gallery.mjs --only W-03,M-07 --skip-build   # quelques vues seul
 - **Catégories** : accueil, dossier, tutoriel, grille notée, une vue par famille d'indices, une par famille de centrales, états d'interaction, verdicts, grilles extrêmes ; aperçu d'impression et fiches A4 pour le papier.
 - **Vraies grilles d'abord** : une grille fictive ne sert que là où les grilles publiées ne couvrent pas le cas (durée de marche, centrale engagée, plusieurs voisins, plafond CO₂, météo, pièces hautes, charbon rectangle, surplus, 12 colonnes).
 - **Web et mobile** ont les mêmes vues aux mêmes numéros (W-09 et M-09 montrent le même état). Seul écart : W-19 montre un glisser à la souris, M-19 la pose en deux touchers (premier toucher posé). Les aperçus pendant un glisser au doigt (M-20, M-21) sont tenus par des événements tactiles CDP sans `touchEnd`.
+- **Galerie web refaite sur le jeu après les corrections R1 à R22** : les 33 vues web se rejouent toutes, aucune n'est retirée. Leurs légendes (`showsW` dans `views.mjs`) décrivent les nouvelles images ; les légendes mobiles restent celles de l'ancienne version jusqu'à la refonte de la galerie mobile, qui n'est pas régénérée (`--kinds web`).
 - **Témoins 320 px** : accueil, grande grille, verdict (M-32 à M-34).
 - **Hors périmètre** : animations, gestes (seul leur état figé est montré), lab, tablette, mode sombre.
 
@@ -49,35 +50,26 @@ node scripts/ui-gallery.mjs --only W-03,M-07 --skip-build   # quelques vues seul
 
 - Quand la grille est plus large que son cadre, le jeu affiche sous la grille un slider de défilement (`input.board-slider`, `web/src/ui/game.ts`, mis à jour par `syncSlider()`).
 - Tableau mesuré par le script sur le build de prod, pour chaque grille publiée : le slider est-il visible à l'ouverture, et de combien de pixels la grille défile.
-- **Résultat** : aucune vraie grille ne l'affiche à 1280, 375 ou 320 px, ni entre 320 et 860 px. Il apparaît à 861 px, quand le jeu passe à la mise en page en deux colonnes, et disparaît à un seuil qui dépend de la grille (largeur de fenêtre utile, mesures de la revue S3.2) :
-
-| Grilles | Créneaux | Slider visible de … à … |
-|---|---|---|
-| 1, 2, 12 | 6 | 861 à 975 px |
-| 3, 4, 5, 6 | 6 | 861 à 997 px |
-| 13 | 8 | 861 à 1095 px |
-| 7, 8, 9, 10, 11 | 8 | 861 à 1117 px |
-
-- **Appareils** : en plus d'une fenêtre d'ordinateur réduite, les grands téléphones couchés (Pixel 7 en 915 × 412, iPhone 15 Pro Max en 932 × 430) l'affichent sur les 13 grilles, et l'iPad mini en paysage (1024 × 768) sur les grilles 7 à 11 et 13. Aucun téléphone en portrait, ni écran d'ordinateur en plein écran (1280 px et plus).
-- **Vues** : W-31 à W-33 le montrent sur de vraies grilles (1024 et 960 px) ; W-29, M-29, M-31 et M-33 sur la grille fictive de 12 créneaux, la seule qui le déclenche à 1280, 375 et 320 px.
+- **Résultat** : aucune grille publiée ne l'affiche, à aucune des largeurs mesurées. Sur ordinateur, le jeu reste sur une seule colonne (panneaux sous la grille) tant que la grille entière ne tient pas à côté (R17) ; sous 861 px, aucune grille publiée ne déborde de son cadre.
+- **Vues** : W-31 à W-33 montrent de vraies grilles à 1024 et 960 px, sans slider ; W-29 la grille fictive de 12 créneaux, qui tient aussi à 1280 px. Les vues mobiles M-29, M-31 et M-33 datent d'avant ce changement et seront refaites avec la galerie mobile.
 
 <!-- slider:start -->
 
 | Grille | Créneaux | 1280 px | 1024 px | 960 px | 375 px | 320 px |
 |---|---|---|---|---|---|---|
-| 1 · 1. Poser l’inventaire | 6 | non | non | oui (16 px à défiler) | non | non |
-| 2 · 2. Le prix plafonne la colonne | 6 | non | non | oui (16 px à défiler) | non | non |
-| 3 · 3. Inventaire juste | 6 | non | non | oui (38 px à défiler) | non | non |
-| 4 · 4. Le creux coupe le ruban | 6 | non | non | oui (38 px à défiler) | non | non |
-| 5 · 5. Flux publié et compter la colonne | 6 | non | non | oui (38 px à défiler) | non | non |
-| 6 · 6. La case la plus chère | 6 | non | non | oui (38 px à défiler) | non | non |
-| 7 · 7. Pompage, relevé et programme | 8 | non | oui (94 px à défiler) | oui (158 px à défiler) | non | non |
-| 8 · Facile | 8 | non | oui (94 px à défiler) | oui (158 px à défiler) | non | non |
-| 9 · Moyen | 8 | non | oui (94 px à défiler) | oui (158 px à défiler) | non | non |
-| 10 · Difficile | 8 | non | oui (94 px à défiler) | oui (158 px à défiler) | non | non |
-| 11 · Expert | 8 | non | oui (94 px à défiler) | oui (158 px à défiler) | non | non |
-| 12 · 8. La rampe de charbon | 6 | non | non | oui (16 px à défiler) | non | non |
-| 13 · 9. Deux épaules se relaient | 8 | non | oui (72 px à défiler) | oui (136 px à défiler) | non | non |
+| 1 · 1. Poser le carnet | 6 | non | non | non | non | non |
+| 2 · 2. Le prix plafonne la colonne | 6 | non | non | non | non | non |
+| 3 · 3. Carnet juste | 6 | non | non | non | non | non |
+| 4 · 4. Le creux coupe le ruban | 6 | non | non | non | non | non |
+| 5 · 5. Flux publié et compter la colonne | 6 | non | non | non | non | non |
+| 6 · 6. La case la plus chère | 6 | non | non | non | non | non |
+| 7 · 7. Pompage, relevé et programme | 8 | non | non | non | non | non |
+| 8 · Facile | 8 | non | non | non | non | non |
+| 9 · Moyen | 8 | non | non | non | non | non |
+| 10 · Difficile | 8 | non | non | non | non | non |
+| 11 · Expert | 8 | non | non | non | non | non |
+| 12 · 8. Le charbon par paliers | 6 | non | non | non | non | non |
+| 13 · 9. Deux bords se relaient | 8 | non | non | non | non | non |
 
 <!-- slider:end -->
 
@@ -89,39 +81,39 @@ node scripts/ui-gallery.mjs --only W-03,M-07 --skip-build   # quelques vues seul
 
 | Vue | Catégorie | Grille | Route | Largeur | Actions | Ce qu’elle montre |
 |---|---|---|---|---|---|---|
-| W-01 | Accueil | — | `#/` | 1280 px | — | Accueil au premier passage : fiche du jour (dernier bulletin) non jouée, donc bouton plein « Prendre le quart » (il devient « Revoir le quart » à contour une fois la grille bouclée, voir la vue 03) ; quarts précédents, dossier « Premiers pas » à 0 sur 9, lien « Imprimer toutes les grilles ». |
-| W-02 | Accueil | — | `#/` | 1280 px | ouvre « Comment jouer » | Accueil avec les règles du jeu dépliées. |
-| W-03 | Accueil | — | `#/` | 1280 px | progression : grilles 1, 2, 3, 9, 11 terminées ; grilles 10 commencées | Accueil d’un joueur avancé : fiche du jour bouclée (tampon, solution en couleurs) : le bouton devient « Revoir le quart », à contour, au lieu du bouton plein « Prendre le quart » d’une grille non jouée ; un quart précédent bouclé, dossier à 3 sur 9. |
-| W-04 | Dossier | — | `#/dossier/premiers-pas` | 1280 px | — | Dossier « Premiers pas » neuf : les neuf fiches du tutoriel, la première marquée « à jouer ensuite ». |
-| W-05 | Dossier | — | `#/dossier/premiers-pas` | 1280 px | progression : grilles 1, 2, 3 terminées ; grilles 4 commencées | Dossier en cours : trois fiches terminées, la quatrième en cours et marquée « à jouer ensuite ». |
-| W-06 | Tutoriel | 1 · 1. Poser l’inventaire | `#/grille/1` | 1280 px | — | Premier tutoriel à vide : technique du jour, carnet d’ordres exact (nucléaire, gaz, TAC), aucun indice. |
-| W-07 | Tutoriel | 12 · 8. La rampe de charbon | `#/grille/12` | 1280 px | — | Tutoriel de la rampe de charbon à vide : carnet avec les rampes 1 → 2 → 1. |
-| W-08 | Grille notée | 11 · Expert | `#/grille/11` | 1280 px | — | Fiche du jour (Expert) à vide : bulletin en sur-titre, sans inventaire, relevés sur la grille, échanges du jour en liste. |
-| W-09 | Indices | 902 · Galerie · Prix et relevés empilés (fictive) | `#/grille/902` | 1280 px | — | Prix et relevés : quatre prix, trois relevés, un prix et un relevé empilés sur deux créneaux (9h et 15h) ; barrage au stock limité. |
-| W-10 | Indices | 7 · 7. Pompage, relevé et programme | `#/grille/7` | 1280 px | — | Flux publiés (exports verrouillés à 0h et 6h), programme, relevé et prix réunis sur un tutoriel, avec la STEP. |
-| W-11 | Indices | 901 · Galerie · Programmes, durées et centrale engagée (fictive) | `#/grille/901` | 1280 px | — | Programmes (nucléaire, charbon, gaz, dont deux qui se touchent), durées de marche et TAC déjà engagée. |
-| W-12 | Indices | 903 · Galerie · Trois voisins sous plafond CO₂ (fictive) | `#/grille/903` | 1280 px | pose les 6 premières pièces de la solution (avec ses échanges et sa STEP) | Trois voisins sous plafond CO₂ : flux import et export, échanges du jour par pays, jauge CO₂ en cours de remplissage. |
-| W-13 | Centrales | 904 · Galerie · Toutes les centrales et la météo (fictive) | `#/grille/904` | 1280 px | pose les 8 premières pièces de la solution (avec ses échanges et sa STEP) | Les cinq centrales au carnet (nucléaire, charbon et gaz permis en 2 GW de haut) ; quatre sont posées, dont nucléaire et gaz de 2 GW, la TAC ne l’est pas ; au-dessus des renouvelables et du fil de l’eau. |
-| W-14 | Centrales | 13 · 9. Deux épaules se relaient | `#/grille/13` | 1280 px | pose la solution sauf les poses 4 | Deux rampes de charbon posées (trapèzes 1 → 2 → 1) qui se relaient, la TAC encore à poser. |
-| W-15 | Centrales | 7 · 7. Pompage, relevé et programme | `#/grille/7` | 1280 px | choisit STEP ; touche ▲ col. 3 | STEP choisie, pompage ▲ choisi à 9h : flèches ▼ sur les créneaux où turbiner, le message attend le turbinage. |
-| W-16 | Centrales | 7 · 7. Pompage, relevé et programme | `#/grille/7` | 1280 px | pose les 4 premières pièces de la solution (avec ses échanges et sa STEP) | Paire STEP posée (pompage ▲ à 9h, turbinage ▼ à 12h), exports et imports d’Allemagne posés. |
-| W-17 | Centrales | 905 · Galerie · Surplus, stockage et carnet chargé (fictive) | `#/grille/905` | 1280 px | — | Surplus de renouvelables à 9h (message d’erreur), carnet exact chargé : barres, TAC, import et paire STEP ; l’export de 12h est un flux verrouillé sous la grille. |
-| W-18 | Centrales | 905 · Galerie · Surplus, stockage et carnet chargé (fictive) | `#/grille/905` | 1280 px | pose les 3 premières pièces de la solution (avec ses échanges et sa STEP) | Surplus absorbé par la STEP, export verrouillé, import de Belgique posé. |
-| W-19 | Interactions | 1 · 1. Poser l’inventaire | `#/grille/1` | 1280 px | choisit N ; maintient un glisser de (0, 0) à (0, 5) | Pose à la souris en cours : nucléaire choisi, aperçu valide de 6 créneaux pendant le glisser (le pointeur n’apparaît pas sur la capture). |
-| W-20 | Interactions | 1 · 1. Poser l’inventaire | `#/grille/1` | 1280 px | choisit N ; maintient un glisser de (3, 0) à (3, 3) | Aperçu refusé (rouge) : la barre dépasse de la silhouette, le message dit pourquoi. |
-| W-21 | Interactions | 1 · 1. Poser l’inventaire | `#/grille/1` | 1280 px | pose G ligne 0 col. 0 ×2 ; choisit N ; maintient un glisser de (0, 0) à (0, 5) | Pose par-dessus : l’aperçu du nucléaire remplace le gaz déjà posé (gaz pâli). |
-| W-22 | Interactions | 1 · 1. Poser l’inventaire | `#/grille/1` | 1280 px | pose N ligne 3 col. 0 ×3 | Pose refusée : message rouge sous la grille, rien n’est posé. |
-| W-23 | Interactions | 902 · Galerie · Prix et relevés empilés (fictive) | `#/grille/902` | 1280 px | pose les 6 premières pièces de la solution (avec ses échanges et sa STEP) ; pose T ligne 1 col. 5 ×1 | Indices satisfaits (pastilles vertes) ; la TAC posée à 15h contredit le prix et le relevé de 15h (pastilles rouges, message). |
-| W-24 | Interactions | 1 · 1. Poser l’inventaire | `#/grille/1` | 1280 px | pose les 3 premières pièces de la solution (avec ses échanges et sa STEP) ; outil erase | Gomme active sur une grille à moitié posée. |
-| W-25 | Interactions | 903 · Galerie · Trois voisins sous plafond CO₂ (fictive) | `#/grille/903` | 1280 px | touche l’export GB col. 0 ; pose T ligne 2 col. 0 ×1 ; touche l’export GB col. 0 ; touche l’export GB col. 0 | Centrale invalide hachurée : l’export qui portait la TAC à 0h a été retiré. |
-| W-26 | Verdict | 7 · 7. Pompage, relevé et programme | `#/grille/7` | 1280 px | chrono amorcé à 12 min 34 s ; pose toute la solution | Verdict juste sur un vrai tutoriel : bandeau « Programme bouclé », temps, bouton « Grille suivante ». |
-| W-27 | Verdict | 11 · Expert | `#/grille/11` | 1280 px | chrono amorcé à 12 min 34 s ; pose toute la solution | Verdict juste sur la fiche du jour (grille notée) : dernière grille notée, le bouton ramène à l’accueil. |
-| W-28 | Verdict | 2 · 2. Le prix plafonne la colonne | `#/grille/2` | 1280 px | pose la solution en échangeant les poses 2 et 3 | Verdict faux : grille pleine mais le prix de 16h est contredit (barrage et TAC échangés). |
-| W-29 | Grilles extrêmes | 906 · Galerie · Grande journée d’hiver sur douze créneaux, avec trois pointes et l’Espagne en renfort (fictive) | `#/grille/906` | 1280 px | — | Grande grille de 12 créneaux, titre et relevé très longs, onze indices ; elle déborde de son cadre, d’où le slider de défilement sous la grille. À 1280 px, seule une grille de 12 créneaux le fait apparaître ; les vraies grilles l’affichent entre 861 px et 975 à 1117 px de large selon la grille (fenêtre d’ordinateur réduite, grand téléphone ou tablette en paysage ; vues W-31 à W-33). |
+| W-01 | Accueil | — | `#/` | 1280 px | — | Accueil au premier passage : fiche du jour n° 214 non jouée (tampon « À servir », bouton à contour « Prendre le quart », sans pastilles de centrales) ; quarts précédents, dossier « Premiers pas » à 0 / 9 ; « Imprimer toutes les grilles » en haut, à côté de « Comment jouer ». |
+| W-02 | Accueil | — | `#/` | 1280 px | ouvre « Comment jouer » | Accueil avec « Règle du jeu » dépliée au-dessus de la fiche du jour. |
+| W-03 | Accueil | — | `#/` | 1280 px | progression : grilles 1, 2, 3, 9, 11 terminées ; grilles 10 commencées | Accueil d’un joueur avancé : fiche du jour bouclée (tampon « Bouclé », solution en couleurs, bouton à contour « Revoir le quart », même style que « Prendre le quart ») ; quart n° 212 bouclé, dossier à 3 / 9. |
+| W-04 | Dossier | — | `#/dossier/premiers-pas` | 1280 px | — | Dossier « Premiers pas » neuf : titre sans description, neuf cartes avec une ligne de récit, boutons à contour « Jouer » ; la première marquée « à jouer ensuite ». |
+| W-05 | Dossier | — | `#/dossier/premiers-pas` | 1280 px | progression : grilles 1, 2, 3 terminées ; grilles 4 commencées | Dossier en cours : trois cartes terminées (« Revoir »), la quatrième « En cours » et marquée « à jouer ensuite » (« Reprendre »), boutons à contour. |
+| W-06 | Tutoriel | 1 · 1. Poser le carnet | `#/grille/1` | 1280 px | — | Premier tutoriel « Poser le carnet » à vide : ligne de récit en italique, carnet d’ordres sans texte d’aide (nucléaire 0 / 2, gaz 0 / 1, TAC 0 / 2), aucun indice ; outils Gomme, Annuler, Recommencer. |
+| W-07 | Tutoriel | 12 · 8. Le charbon par paliers | `#/grille/12` | 1280 px | — | Tutoriel « Le charbon par paliers » à vide : ligne de récit, charbon dessiné en paliers dans le carnet (0 / 1). |
+| W-08 | Grille notée | 11 · Expert | `#/grille/11` | 1280 px | — | Fiche du jour (Expert) à vide : sur-titre « sans carnet exact », nucléaire « 0 / ∞ », pas de ligne d’import ; relevés en pastilles de couleur sous la grille, échanges du jour en liste. |
+| W-09 | Indices | 902 · Galerie · Prix et relevés empilés (fictive) | `#/grille/902` | 1280 px | — | Prix et relevés : quatre prix en pastilles « € » et trois relevés en pastilles de couleur, prix et relevé empilés à 9h et 15h ; compteurs « 0 / ∞ », barrage « 0 / 3 ». |
+| W-10 | Indices | 7 · 7. Pompage, relevé et programme | `#/grille/7` | 1280 px | — | Flux publiés (exports verrouillés à 0h et 6h, ✓ vert en coin de pastille), programme en ligne colorée sous les cases de 15h à 24h, relevé et prix sur la même grille ; carnet avec import d’Allemagne et STEP. |
+| W-11 | Indices | 901 · Galerie · Programmes, durées et centrale engagée (fictive) | `#/grille/901` | 1280 px | — | Programmes en lignes colorées sous les cases (nucléaire, charbon, gaz, sur deux lignes, sans pastille de texte), deux durées de marche et TAC déjà engagée (cadenas). |
+| W-12 | Indices | 903 · Galerie · Trois voisins sous plafond CO₂ (fictive) | `#/grille/903` | 1280 px | pose les 6 premières pièces de la solution (avec ses échanges et sa STEP) | Trois voisins sous limite CO₂ : publication « Limite CO₂ » en tête de liste, flux import et export (✓ en coin), échanges du jour par pays, jauge CO₂ à 19 points sur 28 ; une ligne d’import par voisin dans le carnet. |
+| W-13 | Centrales | 904 · Galerie · Toutes les centrales et la météo (fictive) | `#/grille/904` | 1280 px | pose les 8 premières pièces de la solution (avec ses échanges et sa STEP) | Les cinq centrales, dont nucléaire, charbon et gaz de 2 GW de haut, posées au-dessus des renouvelables (R) et du fil de l’eau (F), cases imposées hachurées ; la TAC n’est pas posée, barrage 2 / 2. |
+| W-14 | Centrales | 13 · 9. Deux bords se relaient | `#/grille/13` | 1280 px | pose la solution sauf les poses 4 | Deux charbons par paliers posés qui se relaient, une case encore vide pour la TAC ; nucléaire 3 / 3 et charbon 2 / 2 barrés dans le carnet. |
+| W-15 | Centrales | 7 · 7. Pompage, relevé et programme | `#/grille/7` | 1280 px | choisit STEP ; touche ▲ col. 3 | STEP choisie, pompage ▲ choisi à 9h : flèches ▼ au-dessus des créneaux suivants, le message attend le turbinage. |
+| W-16 | Centrales | 7 · 7. Pompage, relevé et programme | `#/grille/7` | 1280 px | pose les 4 premières pièces de la solution (avec ses échanges et sa STEP) | Paire STEP posée (▲ à 9h, ▼ à 12h, sans mots) et barrée dans le carnet (1 / 1) ; import d’Allemagne posé à 18h et 21h, exports verrouillés à 0h et 6h. |
+| W-17 | Centrales | 905 · Galerie · Surplus, stockage et carnet chargé (fictive) | `#/grille/905` | 1280 px | — | Surplus de renouvelables à 9h (case R bordée de rouge, message d’erreur) ; carnet d’ordres exact : nucléaire, gaz, TAC, import de Belgique et STEP ; l’export de 12h est un flux verrouillé sous la grille. |
+| W-18 | Centrales | 905 · Galerie · Surplus, stockage et carnet chargé (fictive) | `#/grille/905` | 1280 px | pose les 3 premières pièces de la solution (avec ses échanges et sa STEP) | Surplus absorbé par la STEP (▲ à 9h, ▼ à 18h), export verrouillé à 12h, import de Belgique posé à 0h ; nucléaire, import et STEP barrés dans le carnet. |
+| W-19 | Interactions | 1 · 1. Poser le carnet | `#/grille/1` | 1280 px | choisit N ; maintient un glisser de (0, 0) à (0, 5) | Pose à la souris en cours : nucléaire choisi, aperçu valide (vert) de 6 créneaux pendant le glisser ; le pointeur n’apparaît pas sur la capture. |
+| W-20 | Interactions | 1 · 1. Poser le carnet | `#/grille/1` | 1280 px | choisit N ; maintient un glisser de (3, 0) à (3, 3) | Aperçu refusé (rouge) : la barre dépasse de la silhouette, le message dit pourquoi. |
+| W-21 | Interactions | 1 · 1. Poser le carnet | `#/grille/1` | 1280 px | pose G ligne 0 col. 0 ×2 ; choisit N ; maintient un glisser de (0, 0) à (0, 5) | Pose par-dessus : l’aperçu du nucléaire remplace le gaz déjà posé (gaz pâli), message « remplace 1 barre de gaz ». |
+| W-22 | Interactions | 1 · 1. Poser le carnet | `#/grille/1` | 1280 px | pose N ligne 3 col. 0 ×3 | Pose refusée : message rouge sous la grille, rien n’est posé. |
+| W-23 | Interactions | 902 · Galerie · Prix et relevés empilés (fictive) | `#/grille/902` | 1280 px | pose les 6 premières pièces de la solution (avec ses échanges et sa STEP) ; pose T ligne 1 col. 5 ×1 | Indices satisfaits (✓ vert en coin de pastille et dans la liste) ; la TAC posée à 15h contredit le prix et le relevé de 15h (petite icône rouge en coin, ! rouge dans la liste, message). |
+| W-24 | Interactions | 1 · 1. Poser le carnet | `#/grille/1` | 1280 px | pose les 3 premières pièces de la solution (avec ses échanges et sa STEP) ; outil erase | Gomme active (bouton à contour foncé) sur une grille à moitié posée : message « Gomme : touche une centrale pour la retirer », nucléaire et gaz barrés dans le carnet. |
+| W-25 | Interactions | 903 · Galerie · Trois voisins sous plafond CO₂ (fictive) | `#/grille/903` | 1280 px | touche l’export GB col. 0 ; pose T ligne 2 col. 0 ×1 ; touche l’export GB col. 0 ; touche l’export GB col. 0 | Centrale invalide hachurée en rouge : l’export qui portait la TAC à 0h a été retiré. |
+| W-26 | Verdict | 7 · 7. Pompage, relevé et programme | `#/grille/7` | 1280 px | chrono amorcé à 12 min 34 s ; pose toute la solution | Verdict juste sur un vrai tutoriel : bandeau « Programme bouclé », 12 min 34 s, bouton « Grille suivante » seul ; ✓ en coin de chaque pastille, cases exportées en contour pointillé dans le nucléaire, carnet barré. |
+| W-27 | Verdict | 11 · Expert | `#/grille/11` | 1280 px | chrono amorcé à 12 min 34 s ; pose toute la solution | Verdict juste sur la fiche du jour : dernière grille notée, bouton « Accueil » seul ; ✓ en coin des relevés, cases exportées en contour pointillé. |
+| W-28 | Verdict | 2 · 2. Le prix plafonne la colonne | `#/grille/2` | 1280 px | pose la solution en échangeant les poses 2 et 3 | Verdict faux : grille pleine, mais le prix de 16h est contredit (barrage et TAC échangés) : icône rouge en coin de la pastille, ! dans la liste, message. |
+| W-29 | Grilles extrêmes | 906 · Galerie · Grande journée d’hiver sur douze créneaux, avec trois pointes et l’Espagne en renfort (fictive) | `#/grille/906` | 1280 px | — | Grande grille de 12 créneaux, titre et relevé très longs, onze indices : à 1280 px la grille entière tient à côté du panneau, sans slider de défilement ; pastilles de relevé empilées sous les créneaux. |
 | W-30 | Grilles extrêmes | 907 · Galerie · Pointe haute sur six créneaux (fictive) | `#/grille/907` | 1280 px | — | Grille étroite et haute : six créneaux, pointe à 12 GW. |
-| W-31 | Slider de défilement | 11 · Expert | `#/grille/11` | 1024 px | — | Vraie grille de 8 créneaux dans une fenêtre de 1024 px : elle déborde de son cadre, le slider de défilement sous la grille apparaît, au début. |
-| W-32 | Slider de défilement | 11 · Expert | `#/grille/11` | 1024 px | fait défiler la grille à droite | La même grille défilée vers la droite : slider de défilement sous la grille poussé au bout, premiers créneaux masqués. |
-| W-33 | Slider de défilement | 1 · 1. Poser l’inventaire | `#/grille/1` | 960 px | — | Vraie grille de 6 créneaux dans une fenêtre de 960 px : slider de défilement sous la grille, au début. |
+| W-31 | Slider de défilement | 11 · Expert | `#/grille/11` | 1024 px | — | Vraie grille de 8 créneaux dans une fenêtre de 1024 px : elle tient entière à côté du panneau, il n’y a plus de slider de défilement sous la grille. |
+| W-32 | Slider de défilement | 11 · Expert | `#/grille/11` | 1024 px | fait défiler la grille à droite | La même grille après avoir poussé son défilement au bout à droite : rien ne bouge, aucun créneau n’est masqué et aucun slider n’apparaît. |
+| W-33 | Slider de défilement | 1 · 1. Poser le carnet | `#/grille/1` | 960 px | — | Vraie grille de 6 créneaux dans une fenêtre de 960 px : elle tient entière à côté du carnet, sans slider de défilement. |
 
 ### mobile
 
