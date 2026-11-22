@@ -199,6 +199,7 @@ async function run(p, view) {
   const g = view.grid ? gridById(view.grid) : null;
   for (const a of view.actions ?? []) {
     if (a.t === 'click') { await p.locator(a.sel).first().click(); await p.waitForTimeout(150); }
+    else if (a.t === 'tapSel') { await tapAct(p, a.sel); await p.waitForTimeout(a.wait ?? 150); }
     else if (a.t === 'select') await select(p, a.piece);
     else if (a.t === 'lay') for (const bar of a.bars) { await select(p, pieceKey(bar)); await lay(p, bar); }
     else if (a.t === 'solution') await laySolution(p, g, a);
@@ -257,9 +258,9 @@ async function capture(view, file) {
     view.footUnique = await p.evaluate(() => /Une seule solution/.test(document.querySelector('#print-root .a4 .foot')?.textContent ?? ''));
   } else {
     await run(p, view);
-    if (!view.actions?.some((a) => a.t === 'hold' || a.t === 'scrollBoard')) await p.evaluate(() => window.scrollTo(0, 0));
+    if (!view.viewport && !view.actions?.some((a) => a.t === 'hold' || a.t === 'scrollBoard')) await p.evaluate(() => window.scrollTo(0, 0));
     await p.waitForTimeout(250);
-    await p.screenshot({ path: file, fullPage: true });
+    await p.screenshot({ path: file, fullPage: !view.viewport });
   }
   const hscroll = await p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   const errors = p.errors;
