@@ -10,7 +10,7 @@ const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 const META = {
   web: { title: 'Dispatch web', h1: 'Dispatch à l’écran', lead: 'Le jeu à 1280 px, joué à la souris.' },
   mobile: { title: 'Dispatch mobile', h1: 'Dispatch sur téléphone', lead: 'Le jeu à 375 px, joué au toucher, avec trois vues témoins à 320 px.' },
-  papier: { title: 'Dispatch papier', h1: 'Dispatch sur papier', lead: 'Les fiches A4 imprimées depuis le jeu (PDF de Chrome, page entière), et l’aperçu d’impression à l’écran.' },
+  papier: { title: 'Dispatch papier', h1: 'Dispatch sur papier', lead: 'Les fiches A4 imprimées depuis le jeu, page entière, et l’aperçu d’impression à l’écran.' },
 };
 
 const STYLE = `
@@ -88,14 +88,15 @@ dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
 function figure(v) {
   const w = Math.round(v.size.w / 2);
   const h = Math.round(v.size.h / 2);
-  const width = v.width === 'A4' ? 'A4 (PDF, 192 dpi)' : `${v.width} px`;
+  const width = v.width !== 'A4' ? `${v.width} px` : v.method === 'pdf' ? 'A4, PDF de Chrome rendu à 192 dpi' : 'A4, rendu impression (contenu identique au PDF)';
   const tags = [`<span class="tag">${esc(width)}</span>`];
   if (v.fictive) tags.push('<span class="tag fictive">grille fictive</span>');
+  const shows = v.paper && v.fictive && v.footUnique ? `${v.shows} Le pied « Une seule solution » est faux pour cette grille fictive.` : v.shows;
   return `<figure id="${v.id}">
   <div class="head"><span class="vid">${v.id}</span>${tags.join('')}</div>
-  <p class="shows">${esc(v.shows)}</p>
-  <dl class="facts"><dt>Route</dt><dd><code>${esc(v.route)}</code></dd>${v.gridTitle ? `<dt>Grille</dt><dd>${esc(v.gridTitle)}</dd>` : ''}<dt>Actions</dt><dd>${esc(v.actionsText)}</dd></dl>
-  <div class="frame"><button type="button" data-zoom="${esc(`${v.id} · ${v.shows}`)}" aria-label="Agrandir ${v.id}"><img src="${v.img}" width="${w}" height="${h}" alt="${esc(`${v.id} : ${v.shows}`)}" loading="lazy"></button></div>
+  <p class="shows">${esc(shows)}</p>
+  <dl class="facts"><dt>Route</dt><dd><code>${esc(v.route)}</code></dd><dt>Build</dt><dd>${v.build === 'gallery' ? 'build de galerie (grilles fictives ajoutées, date figée)' : 'build de prod, tel que publié'}</dd>${v.gridTitle ? `<dt>Grille</dt><dd>${esc(v.gridTitle)}</dd>` : ''}<dt>Actions</dt><dd>${esc(v.actionsText)}</dd></dl>
+  <div class="frame"><button type="button" data-zoom="${esc(`${v.id} · ${shows}`)}" aria-label="Agrandir ${v.id}"><img src="${v.img}" width="${w}" height="${h}" alt="${esc(`${v.id} : ${shows}`)}" loading="lazy"></button></div>
 </figure>`;
 }
 
@@ -126,7 +127,8 @@ export function renderPage(kind, views) {
     <li>Animations et gestes : seul l’état figé d’un geste est capturé (glisser maintenu, premier toucher).</li>
     <li>Le lab, la tablette et le mode sombre ne sont pas montrés.</li>
     <li>${fictive} vue${fictive > 1 ? 's portent' : ' porte'} le badge « grille fictive » : grille écrite pour la galerie (ids 901+), jamais publiée. Le verdict juste n’est montré que sur de vraies grilles.</li>
-    <li>Date du jeu figée après le dernier bulletin : la fiche du jour est le dernier bulletin publié.</li>
+    <li>Les vues sur une vraie grille, l’accueil et le dossier sont prises sur le build de prod, tel que publié le jour de la capture. Seules les grilles fictives passent par un build de galerie, à la date figée après le dernier bulletin.</li>
+    ${kind === 'papier' ? `<li>Fiches A4 : ${views.some((v) => v.paper && v.method !== 'pdf') ? 'rendu impression de la fiche (média print), au contenu identique au PDF de Chrome' : 'PDF A4 de Chrome rendu à 192 dpi'} ; la méthode de chaque fiche est sur son étiquette.</li>` : ''}
   </ul>
 </aside>
 <nav aria-label="Sommaire"><span class="eyebrow">Sommaire</span><div class="toc">${toc}</div></nav>

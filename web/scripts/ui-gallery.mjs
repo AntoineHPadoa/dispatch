@@ -1,10 +1,12 @@
 // UI gallery: captures every view of scripts/ui-gallery/views.mjs from the real game and writes the three gallery pages.
-// - Builds the gallery build (published grids + scripts/ui-gallery/grids.json, DISPATCH_GRIDS -> dist-gallery/),
-//   serves it with vite preview, replays each view in Chrome (playwright-core, deviceScaleFactor 2):
+// - Builds the production build (dist/) and the gallery build (published grids + scripts/ui-gallery/grids.json,
+//   DISPATCH_GRIDS -> dist-gallery/) and serves both with vite preview. Views on a fictitious grid (901+) use the
+//   gallery build, every other view the production build. Each view is replayed in Chrome (playwright-core, deviceScaleFactor 2):
 //   web at 1280 px with the mouse, mobile at 375/320 px by touch, paper as the A4 PDF of #/imprimer/<id> rasterised
-//   by pdftoppm (print-media screenshot of the sheet when pdftoppm is missing).
+//   by pdftoppm (WARN and a print-media screenshot of the sheet when pdftoppm is missing or fails).
+//   A finger held mid-drag (touch views with `hold … to`) uses CDP Input.dispatchTouchEvent without touchEnd.
 // - Writes docs/ui-gallery/{web,mobile,papier}/img/<id>.png and index.html, and the view table of docs/next/ui-gallery.md.
-// - Usage (from web/): node scripts/ui-gallery.mjs [--only W-03,M-07] [--skip-build] [--port 4179]
+// - Usage (from web/): node scripts/ui-gallery.mjs [--only W-03,M-07] [--skip-build] [--port 4179] (gallery build on port + 1)
 //   CHROME=/path/to/chrome overrides the browser. Exit code 1 when a view fails.
 import { chromium } from 'playwright-core';
 import { spawn, spawnSync } from 'node:child_process';
@@ -24,7 +26,8 @@ const ROOT = path.resolve(WEB, '..');
 const OUT = path.join(ROOT, 'docs/ui-gallery');
 const DOC = path.join(ROOT, 'docs/next/ui-gallery.md');
 const PORT = Number(arg('port', '4179'));
-const BASE = `http://127.0.0.1:${PORT}/dispatch/`;
+const PROD = `http://127.0.0.1:${PORT}/dispatch/`;
+const GALLERY = `http://127.0.0.1:${PORT + 1}/dispatch/`;
 const ONLY = (arg('only', '') || '').split(',').filter(Boolean);
 const CHROME = process.env.CHROME ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const STORAGE_KEY = 'dispatch:progress:v1';
@@ -42,16 +45,24 @@ const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ui-gallery-'));
 const merged = path.join(tmp, 'grids.json');
 fs.writeFileSync(merged, JSON.stringify(GRIDS));
 if (!process.argv.includes('--skip-build')) {
-  const b = spawnSync('npx', ['vite', 'build'], { cwd: WEB, env: { ...process.env, DISPATCH_GRIDS: merged }, stdio: 'inherit' });
-  if (b.status !== 0) { console.error('gallery build failed'); process.exit(1); }
+  const env = { ...process.env };
+  delete env.DISPATCH_GRIDS;
+  for (const [name, extra] of [['production', {}], ['gallery', { DISPATCH_GRIDS: merged }]]) {
+    const b = spawnSync('npx', ['vite', 'build'], { cwd: WEB, env: { ...env, ...extra }, stdio: 'inherit' });
+    if (b.status !== 0) { console.error(`${name} build failed`); process.exit(1); }
+  }
 }
-const server = spawn('npx', ['vite', 'preview', '--outDir', 'dist-gallery', '--port', String(PORT), '--strictPort'], { cwd: WEB, stdio: 'ignore', detached: true });
-const stopServer = () => { try { process.kill(-server.pid); } catch { /* already gone */ } };
+const servers = [['dist', PORT, PROD], ['dist-gallery', PORT + 1, GALLERY]].map(([dir, port, url]) => ({
+  url, proc: spawn('npx', ['vite', 'preview', '--outDir', dir, '--port', String(port), '--strictPort'], { cwd: WEB, stdio: 'ignore', detached: true }),
+}));
+const stopServer = () => { for (const s of servers) { try { process.kill(-s.proc.pid); } catch { /* already gone */ } } };
 process.on('exit', stopServer);
-for (let i = 0; ; i++) {
-  try { if ((await fetch(BASE)).ok) break; } catch { /* not up yet */ }
-  if (i > 100) { console.error('preview server did not start'); process.exit(1); }
-  await new Promise((r) => setTimeout(r, 200));
+for (const { url } of servers) {
+  for (let i = 0; ; i++) {
+    try { if ((await fetch(url)).ok) break; } catch { /* not up yet */ }
+    if (i > 100) { console.error(`preview server ${url} did not start`); process.exit(1); }
+    await new Promise((r) => setTimeout(r, 200));
+  }
 }
 
 const browser = await chromium.launch({ executablePath: CHROME });
@@ -201,8 +212,17 @@ async function run(p, view) {
     } else if (a.t === 'hold') {
       const below = belowOf(g);
       const s = await cellPoint(p, a.from.row + below[a.from.col], a.from.col);
-      if (p.touch || !a.to) { await tapXY(p, s.x, s.y); continue; }
+      if (!a.to) { await tapXY(p, s.x, s.y); continue; }
       const e = await cellPoint(p, a.to.row + below[a.to.col], a.to.col);
+      if (p.touch) {
+        // Finger held mid-drag: touchStart then touchMoves, no touchEnd.
+        const cdp = await p.context().newCDPSession(p);
+        const touch = (type, x, y) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: [{ x, y, id: 1 }] });
+        await touch('touchStart', s.x, s.y);
+        for (let k = 1; k <= 8; k++) await touch('touchMove', s.x + ((e.x - s.x) * k) / 8, s.y + ((e.y - s.y) * k) / 8);
+        await p.waitForTimeout(150);
+        continue;
+      }
       await p.mouse.move(s.x, s.y);
       await p.mouse.down();
       await p.mouse.move((s.x + e.x) / 2, e.y, { steps: 4 });
@@ -220,7 +240,7 @@ function pngSize(file) {
 
 async function capture(view, file) {
   const p = await newPage(view);
-  await p.goto(`${BASE}${view.route}`);
+  await p.goto(`${view.grid && isFictive(view.grid) ? GALLERY : PROD}${view.route}`);
   await p.waitForLoadState('networkidle');
   await p.evaluate(() => document.fonts.ready);
   await p.waitForTimeout(view.grid && !view.paper ? 300 : 150);
@@ -230,7 +250,12 @@ async function capture(view, file) {
     const pdf = path.join(tmp, `${view.id}.pdf`);
     fs.writeFileSync(pdf, await p.pdf({ format: 'A4', preferCSSPageSize: true, printBackground: true }));
     const r = spawnSync('pdftoppm', ['-png', '-r', '192', '-singlefile', pdf, file.replace(/\.png$/, '')]);
-    if (r.status !== 0) await p.locator('#print-root .a4').first().screenshot({ path: file });
+    view.method = r.status === 0 ? 'pdf' : 'print';
+    if (view.method === 'print') {
+      p.errors.push(`pdftoppm failed (${(r.stderr?.toString() || r.error?.message || `exit ${r.status}`).trim().split('\n')[0]}): print-media screenshot of the sheet instead`);
+      await p.locator('#print-root .a4').first().screenshot({ path: file });
+    }
+    view.footUnique = await p.evaluate(() => /Une seule solution/.test(document.querySelector('#print-root .a4 .foot')?.textContent ?? ''));
   } else {
     await run(p, view);
     if (!view.actions?.some((a) => a.t === 'hold' || a.t === 'scrollBoard')) await p.evaluate(() => window.scrollTo(0, 0));
@@ -264,8 +289,13 @@ for (const [kind, views] of Object.entries(VIEWS)) {
       }
     }
     if (!fs.existsSync(file)) continue;
+    // Capture facts (paper method, sheet foot) live beside the image, so a partial run (--only) keeps them.
+    const metaFile = file.replace(/\.png$/, '.json');
+    if (view.method) fs.writeFileSync(metaFile, JSON.stringify({ method: view.method, footUnique: view.footUnique }));
+    const meta = fs.existsSync(metaFile) ? JSON.parse(fs.readFileSync(metaFile, 'utf8')) : {};
     const g = view.grid ? gridById(view.grid) : null;
-    pages[kind].push({ ...view, img: `img/${view.id}.png`, size: pngSize(file), fictive: !!g && isFictive(g.id), gridTitle: g ? `${g.id} · ${g.title}` : null, actionsText: describeActions(view) });
+    const fict = !!g && isFictive(g.id);
+    pages[kind].push({ ...view, ...meta, img: `img/${view.id}.png`, size: pngSize(file), fictive: fict, build: fict ? 'gallery' : 'prod', gridTitle: g ? `${g.id} · ${g.title}` : null, actionsText: describeActions(view) });
   }
   fs.writeFileSync(path.join(OUT, kind, 'index.html'), renderPage(kind, pages[kind]));
 }

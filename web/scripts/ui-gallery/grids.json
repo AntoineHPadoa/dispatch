@@ -46,7 +46,7 @@
     "id": 902,
     "title": "Galerie · Prix et relevés empilés",
     "section": "rated",
-    "intro": "Grille fictive de galerie : quatre prix et trois relevés, dont un prix et un relevé sur le même créneau, avec un barrage au stock limité.",
+    "intro": "Grille fictive de galerie : quatre prix et trois relevés, dont un prix et un relevé empilés sur deux créneaux (9h et 15h), avec un barrage au stock limité.",
     "columns": ["0h", "3h", "6h", "9h", "12h", "15h", "18h", "21h"],
     "demand": [2, 3, 4, 4, 3, 2, 2, 2],
     "pieces": {

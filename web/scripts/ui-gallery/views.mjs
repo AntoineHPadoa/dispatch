@@ -4,7 +4,7 @@
  *   category, route, grid, width, seeded progress, the actions replayed before the capture, and what it shows.
  * - Grids 901+ are the fictitious gallery grids (scripts/ui-gallery/grids.json); the others are published.
  * - Actions: { t: 'click', sel, label } | { t: 'select', piece } | { t: 'lay', bars } | { t: 'solution', from, to, swap }
- *   | { t: 'hold', from, to } (mouse held mid-drag; touch: first tap only) | { t: 'export', country, col }
+ *   | { t: 'hold', from, to } (pointer held mid-drag, finger held by CDP touch events; without `to`: first tap only) | { t: 'export', country, col }
  *   (solution: `to` lays placements [0, to), `skip` leaves out some, `swap` exchanges two plants)
  *   | { t: 'stepTap', col } | { t: 'tool', name } | { t: 'tapCell', row, col } | { t: 'scrollBoard' }.
  *   Rows count from the bottom of the dispatchable part (weather cells below row 0), as in grids.json.
@@ -29,29 +29,29 @@ const SCREENS = [
   // Rated grid
   { n: 8, cat: 'Grille notée', grid: 11, shows: 'Fiche du jour (Expert) à vide : bulletin en sur-titre, sans inventaire, relevés sur la grille, échanges du jour en liste.' },
   // Clue families
-  { n: 9, cat: 'Indices', grid: 902, shows: 'Prix et relevés : quatre prix, trois relevés, un prix et un relevé empilés sur 9h ; barrage au stock limité.' },
+  { n: 9, cat: 'Indices', grid: 902, shows: 'Prix et relevés : quatre prix, trois relevés, un prix et un relevé empilés sur deux créneaux (9h et 15h) ; barrage au stock limité.' },
   { n: 10, cat: 'Indices', grid: 7, shows: 'Flux publiés (exports verrouillés à 0h et 6h), programme, relevé et prix réunis sur un tutoriel, avec la STEP.' },
   { n: 11, cat: 'Indices', grid: 901, shows: 'Programmes (nucléaire, charbon, gaz, dont deux qui se touchent), durées de marche et TAC déjà engagée.' },
   { n: 12, cat: 'Indices', grid: 903, actions: [{ t: 'solution', to: 6 }], shows: 'Trois voisins sous plafond CO₂ : flux import et export, échanges du jour par pays, jauge CO₂ en cours de remplissage.' },
   // Plant families
-  { n: 13, cat: 'Centrales', grid: 904, actions: [{ t: 'solution', to: 8 }], shows: 'Les cinq centrales, dont nucléaire et gaz de 2 GW de haut, au-dessus des renouvelables et du fil de l’eau.' },
+  { n: 13, cat: 'Centrales', grid: 904, actions: [{ t: 'solution', to: 8 }], shows: 'Les cinq centrales au carnet (nucléaire, charbon et gaz permis en 2 GW de haut) ; quatre sont posées, dont nucléaire et gaz de 2 GW, la TAC ne l’est pas ; au-dessus des renouvelables et du fil de l’eau.' },
   { n: 14, cat: 'Centrales', grid: 13, actions: [{ t: 'solution', skip: [4] }], shows: 'Deux rampes de charbon posées (trapèzes 1 → 2 → 1) qui se relaient, la TAC encore à poser.' },
   { n: 15, cat: 'Centrales', grid: 7, actions: [{ t: 'select', piece: 'STEP' }, { t: 'stepTap', col: 3 }], shows: 'STEP choisie, pompage ▲ choisi à 9h : flèches ▼ sur les créneaux où turbiner, le message attend le turbinage.' },
   { n: 16, cat: 'Centrales', grid: 7, actions: [{ t: 'solution', to: 4 }], shows: 'Paire STEP posée (pompage ▲ à 9h, turbinage ▼ à 12h), exports et imports d’Allemagne posés.' },
-  { n: 17, cat: 'Centrales', grid: 905, shows: 'Surplus de renouvelables à 9h (message d’erreur), carnet exact chargé : barres, TAC, export, import et paire STEP.' },
+  { n: 17, cat: 'Centrales', grid: 905, shows: 'Surplus de renouvelables à 9h (message d’erreur), carnet exact chargé : barres, TAC, import et paire STEP ; l’export de 12h est un flux verrouillé sous la grille.' },
   { n: 18, cat: 'Centrales', grid: 905, actions: [{ t: 'solution', to: 3 }], shows: 'Surplus absorbé par la STEP, export verrouillé, import de Belgique posé.' },
   // Interaction states
   { n: 19, cat: 'Interactions', grid: 1, only: 'W', actions: [{ t: 'select', piece: 'N' }, { t: 'hold', from: { row: 0, col: 0 }, to: { row: 0, col: 5 } }], shows: 'Pose à la souris en cours : nucléaire choisi, aperçu valide de 6 créneaux pendant le glisser (le pointeur n’apparaît pas sur la capture).' },
   { n: 19, cat: 'Interactions', grid: 1, only: 'M', actions: [{ t: 'select', piece: 'N' }, { t: 'hold', from: { row: 0, col: 0 } }], shows: 'Pose en deux touchers : nucléaire choisi, premier toucher posé, le message attend le second.' },
-  { n: 20, cat: 'Interactions', grid: 1, only: 'W', actions: [{ t: 'select', piece: 'N' }, { t: 'hold', from: { row: 3, col: 0 }, to: { row: 3, col: 3 } }], shows: 'Aperçu refusé (rouge) : la barre dépasse de la silhouette, le message dit pourquoi.' },
-  { n: 21, cat: 'Interactions', grid: 1, actions: [{ t: 'lay', bars: [{ piece: 'G', row: 0, col: 0, len: 2 }] }, { t: 'select', piece: 'N' }, { t: 'hold', from: { row: 0, col: 0 }, to: { row: 0, col: 5 } }], only: 'W', shows: 'Pose par-dessus : l’aperçu du nucléaire remplace le gaz déjà posé (gaz pâli).' },
+  { n: 20, cat: 'Interactions', grid: 1, actions: [{ t: 'select', piece: 'N' }, { t: 'hold', from: { row: 3, col: 0 }, to: { row: 3, col: 3 } }], shows: 'Aperçu refusé (rouge) : la barre dépasse de la silhouette, le message dit pourquoi.' },
+  { n: 21, cat: 'Interactions', grid: 1, actions: [{ t: 'lay', bars: [{ piece: 'G', row: 0, col: 0, len: 2 }] }, { t: 'select', piece: 'N' }, { t: 'hold', from: { row: 0, col: 0 }, to: { row: 0, col: 5 } }], shows: 'Pose par-dessus : l’aperçu du nucléaire remplace le gaz déjà posé (gaz pâli).' },
   { n: 22, cat: 'Interactions', grid: 1, actions: [{ t: 'lay', bars: [{ piece: 'N', row: 3, col: 0, len: 3 }] }], shows: 'Pose refusée : message rouge sous la grille, rien n’est posé.' },
   { n: 23, cat: 'Interactions', grid: 902, actions: [{ t: 'solution', to: 6 }, { t: 'lay', bars: [{ piece: 'T', row: 1, col: 5, len: 1 }] }], shows: 'Indices satisfaits (pastilles vertes) ; la TAC posée à 15h contredit le prix et le relevé de 15h (pastilles rouges, message).' },
   { n: 24, cat: 'Interactions', grid: 1, actions: [{ t: 'solution', to: 3 }, { t: 'tool', name: 'erase' }], shows: 'Gomme active sur une grille à moitié posée.' },
   { n: 25, cat: 'Interactions', grid: 903, actions: [{ t: 'export', country: 'GB', col: 0 }, { t: 'lay', bars: [{ piece: 'T', row: 2, col: 0, len: 1 }] }, { t: 'export', country: 'GB', col: 0 }, { t: 'export', country: 'GB', col: 0 }], shows: 'Centrale invalide hachurée : l’export qui portait la TAC à 0h a été retiré.' },
   // Verdict
   { n: 26, cat: 'Verdict', grid: 7, progress: CLOCK, actions: [{ t: 'solution' }], shows: 'Verdict juste sur un vrai tutoriel : bandeau « Programme bouclé », temps, bouton « Grille suivante ».' },
-  { n: 27, cat: 'Verdict', grid: 11, progress: CLOCK, actions: [{ t: 'solution' }], shows: 'Verdict juste sur la fiche du jour (grille notée).' },
+  { n: 27, cat: 'Verdict', grid: 11, progress: CLOCK, actions: [{ t: 'solution' }], shows: 'Verdict juste sur la fiche du jour (grille notée) : dernière grille notée, le bouton ramène à l’accueil.' },
   { n: 28, cat: 'Verdict', grid: 2, actions: [{ t: 'solution', swap: [2, 3] }], shows: 'Verdict faux : grille pleine mais le prix de 16h est contredit (barrage et TAC échangés).' },
   // Size extremes
   { n: 29, cat: 'Grilles extrêmes', grid: 906, shows: 'Grande grille de 12 créneaux, titre et relevé très longs, onze indices.' },
@@ -82,11 +82,11 @@ const SHEETS = [
   { grid: 8, shows: 'Fiche notée Facile : barrage au stock limité, flux et échanges du jour.' },
   { grid: 11, shows: 'Fiche du jour Expert : sans inventaire, relevés, échanges du jour.' },
   { grid: 901, shows: 'Programmes, durées de marche et centrale engagée.' },
-  { grid: 902, shows: 'Prix et relevés empilés sur un créneau.' },
-  { grid: 903, shows: 'Trois voisins, flux, échanges par pays et règle du plafond CO₂.' },
+  { grid: 902, shows: 'Prix et relevés empilés sur deux créneaux (9h et 15h).' },
+  { grid: 903, shows: 'Trois voisins, flux, échanges par pays et règle du plafond CO₂. Fiche tronquée en bas (imports du Royaume-Uni et d’Espagne et pied de page coupés) : défaut du jeu, montré tel quel.' },
   { grid: 904, shows: 'Les cinq centrales, pièces hautes, renouvelables et fil de l’eau.' },
   { grid: 905, shows: 'Surplus, STEP, export et import imposés par un carnet exact.' },
-  { grid: 906, shows: 'Grande grille de 12 créneaux, onze indices.' },
+  { grid: 906, shows: 'Grande grille de 12 créneaux, onze indices. Fiche tronquée en bas (gaz coupé, TAC, import d’Espagne et pied de page absents) : défaut du jeu, montré tel quel.' },
   { grid: 907, shows: 'Grille haute de six créneaux.' },
 ];
 
