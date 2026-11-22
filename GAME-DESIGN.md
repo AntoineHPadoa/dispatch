@@ -221,10 +221,12 @@ Une grille par technique, en inventaire exact, dans cet ordre : poser l'inventai
     {"type": "flow", "col": 7, "country": "DE", "dir": "export", "value": 1},
     {"type": "exchanges", "exports": {"DE": 1}, "imports": {"DE": 0}, "step": 1}
   ],
-  "solution": {"exports": {"DE": [0, 0, 0, 0, 0, 0, 0, 1]}, "step": [{"pump": 1, "turbine": 6}], "placements": [{"piece": "N", "row": 3, "col": 0, "len": 8}]},
+  "solution": {"exports": {"DE": [0, 0, 0, 0, 0, 0, 0, 1]}, "step": [{"pump": 1, "turbine": 6}], "placements": [{"piece": "N", "row": 3, "col": 2, "len": 5}]},
   "difficulty": {"rating": 3, "label": "Difficile", "techniques": ["ribbon", "share_out"]}
 }
 ```
+
+Dans l'exemple, `solution.placements` est un extrait : la seule barre N annoncée par l'indice `bar`, posée au-dessus de la météo.
 
 Champs de la grille complète, en plus de l'exemple ci-dessus :
 

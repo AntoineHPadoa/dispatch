@@ -327,7 +327,8 @@ def _attempt(
     try:
         return make_candidate(cfg, seed, aim)
     except Exception as exc:  # noqa: BLE001 - one bad draw must not lose the lot
-        return None, f"error:{type(exc).__name__}", {"seed": seed, "error": str(exc)[:200]}
+        family = "surplus_midi" if cfg.get("surplus") else cfg.get("family", "any")  # as drawn, before draw_day
+        return None, f"error:{type(exc).__name__}", {"seed": seed, "family": family, "error": str(exc)[:200]}
 
 
 def _signatures(g: dict[str, Any]) -> set[tuple[Any, ...]]:
@@ -449,7 +450,10 @@ def run_lot(lot: dict[str, Any], workers: int = 6, log: Any = None) -> tuple[lis
     reserve: list[dict[str, Any]] = []  # finished grids refused only by the rating / mix reservation
     blocked: list[dict[str, Any]] = []
     rejects: dict[str, int] = {}
-    by_family: dict[str, dict[str, int]] = {}  # family -> {"attempts": n, reject reason: n}
+    # family -> {"attempts": n, reject reason: n}: generator rejects only (infeasible, one_plant, trivial, too_many_clues…).
+    # Quota rejects are not counted, nor the draws cancelled when the lot fills up, so its attempts sum to less than
+    # `attempts`. A draw that raised before its day was drawn is filed under its configured family ("any" if none).
+    by_family: dict[str, dict[str, int]] = {}
     errors_seen: list[dict[str, Any]] = []
     attempts = 0
 
