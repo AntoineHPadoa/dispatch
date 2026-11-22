@@ -99,6 +99,16 @@ describe('validator', () => {
     const { height: _drop, ...noHeight } = g.pieces.N!;
     expect(errs({ ...g, pieces: { ...g.pieces, N: noHeight } })).toContain('pieces.N.height: ascending positive integers expected');
   });
+
+  it('the drawing: a cell on a ramp plateau overlaps it, an empty drawing is not checked', () => {
+    const g = t1();
+    const placements = g.solution.placements.map((p) => (p.piece === 'T' ? { ...p, col: 1 } : p));
+    expect(errs({ ...g, solution: { ...g.solution, placements } })).toEqual([
+      'solution.placements[2]: overlaps solution.placements[1] at 4h',
+      'solution: hole at 0h, row 2',
+    ]);
+    expect(errs({ ...g, solution: { ...g.solution, placements: [] } })).toEqual([]);
+  });
 });
 
 describe('engine', () => {

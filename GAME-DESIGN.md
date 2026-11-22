@@ -226,7 +226,7 @@ Une grille par technique, en inventaire exact, dans cet ordre : poser l'inventai
 }
 ```
 
-Dans l'exemple, `solution.placements` est un extrait : la seule barre N annoncée par l'indice `bar`, posée au-dessus de la météo.
+Dans l'exemple, `solution.placements` est un extrait : la seule barre N annoncée par l'indice `bar`, posée au-dessus de la météo. Une vraie grille donne toutes ses poses (voir le contrôle du dessin plus bas).
 
 Champs de la grille complète, en plus de l'exemple ci-dessus :
 
@@ -238,6 +238,13 @@ Champs de la grille complète, en plus de l'exemple ci-dessus :
 - **`inventory.pieces.<id>.max_cells`** : stock maximal en cases d'une pièce, connu du joueur même au niveau `none` (ex. l'eau d'un barrage : `"B": {"max_cells": 2}`). Le moteur refuse une pose qui dépasse ce stock.
 
 Contrôles du validateur : de 6 à 12 colonnes ; rang et CO₂ de chaque pièce égaux à ceux du §3 ; `pieces` et `inventory.pieces` ont les mêmes clés ; `imports` ne mêle pas `"*"` et des clés par pays ; une rampe est du charbon, sans `height`, assez large ; chaque pose a une largeur et une hauteur permises (aucune hauteur pour une rampe), tient dans la grille, ne couvre aucune case de météo (message `solution.placements[i]: covers a weather cell at <libellé de la 1re colonne fautive>`, par exemple `… at 10h` ; `clues[i]: …` pour un indice `engaged`), et un import fait 1 case ; un bulletin a un numéro, un titre, un texte, un ciel par colonne et une date ISO réelle ; une grille avec STEP publie son nombre de paires (`inventory.step` en exact, `step` d'un indice `exchanges` sinon) ; dans `solution.step`, `pump` est avant `turbine` ; un flux ou un export ne dépasse pas le `cap` de la ligne.
+
+Dessin de la solution, contrôlé seulement sur une grille sans autre erreur :
+- **Chevauchement** : deux poses de `solution.placements` ne partagent aucune case. Message `solution.placements[i]: overlaps solution.placements[j] at <libellé>` (j < i, 1re colonne commune), un par paire.
+- **Couverture** : dans chaque colonne, la météo et les poses remplissent exactement les lignes 0 à sommet − 1, avec sommet = `demand` + exports + pompages − turbinages (`solution.exports`, `solution.step`). Un message par colonne mal couverte, sur sa ligne fautive la plus basse :
+  - `solution: hole at <libellé>, row <r>` : case vide sous le sommet ;
+  - `solution: cell above the silhouette at <libellé>, row <r>` : case de pose, ou brique météo d'un surplus non absorbé, au-dessus du sommet.
+- Une liste `solution.placements` vide veut dire « pas de dessin de référence » (grille à plusieurs compositions, grille de galerie) : la couverture n'est pas contrôlée. Une grille publiée a toujours son dessin : `check_unique.py` compare sa composition à celle que trouve le solveur.
 
 - **`bulletin`** (facultatif) : le bulletin du marché publié avec la grille, `{"number", "title", "text", "weather", "published"}`.
   - `number` : numéro du bulletin (entier > 0, unique d'une grille à l'autre) ; `title` et `text` : titre et court texte de contexte (non vides).

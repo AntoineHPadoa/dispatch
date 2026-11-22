@@ -1,4 +1,4 @@
-"""Weather bricks: absolute rows, no placement on a weather cell, a weather step cuts the row."""
+"""Weather bricks: absolute rows, no placement on a weather cell, a weather step cuts the row, surplus coverage."""
 
 from dispatch_solver import exact
 from dispatch_solver.board import Puzzle
@@ -49,3 +49,17 @@ def test_validator_refuses_a_bar_on_a_brick():
         "clues[0]: covers a weather cell at 8h",
         "solution.placements[1]: covers a weather cell at 8h",
     ]
+
+
+def test_validator_checks_the_drawing_over_a_surplus():
+    """A brick above the demand must be covered by an export or a pump, like any cell of the drawing."""
+    g = step_grid()
+    g["demand"][2] = 0  # residual -1 at 8h: the brick at row 0 sticks out (lowest faulty row), the N ribbon too
+    assert validate(g) == ["solution: cell above the silhouette at 8h, row 0"]
+    g["solution"]["exports"] = {"DE": [0, 0, 2, 0, 0, 0]}  # two exports absorb the brick and lift the top to 2
+    g["neighbors"] = [{"id": "DE", "name": "Allemagne", "cap": 2, "co2": 3}]
+    assert validate(g) == []
+    g["solution"]["placements"].append({"piece": "G", "row": 1, "col": 1, "len": 2})  # on the N ribbon
+    assert validate(g) == ["solution.placements[3]: overlaps solution.placements[1] at 4h"]
+    g["solution"]["placements"] = []
+    assert validate(g) == []
