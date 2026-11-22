@@ -16,7 +16,7 @@ export interface Reveal {
 /** Who is looking: drives what the server reveals. */
 export const viewer = { player: '', creation: false };
 export interface LotInfo { lot: string; count: number; stats: { kept?: number; attempts?: number; rejects?: Record<string, number>; seconds?: number } | null }
-export interface Note { kept?: boolean; felt?: Record<string, number>; comment?: Record<string, string>; bulletin?: Bulletin; promoted?: unknown }
+export interface Note { kept?: Record<string, boolean>; felt?: Record<string, number>; comment?: Record<string, string>; bulletin?: Bulletin; promoted?: unknown }
 export interface Job { id: string; lot: string; status: 'running' | 'done' | 'partial' | 'failed'; log: string[]; kept?: number; size?: number }
 export interface Suggestion { id: number; number: number; published: string }
 
@@ -56,7 +56,8 @@ export const api = {
   session: (id: string, player?: string) => call<SessionData>('GET', `/session/${encodeURIComponent(id)}?${viewerQuery(player)}`),
   /** Draw a session from a lot (blind: lot and index only); `player`'s played grids are left out. */
   createSession: (lot: string, size: number, player: string) => call<SessionData>('POST', '/sessions', { lot, size, player }),
-  note: (lot: string, index: number, patch: Partial<Note>) => call<Note>('PUT', `/notes/${lot}/${index}`, patch),
+  /** Star (`kept`) and comment belong to `player`; a bulletin edit needs none. */
+  note: (lot: string, index: number, patch: { kept?: boolean; comment?: string; bulletin?: Bulletin; player?: string }) => call<Note>('PUT', `/notes/${lot}/${index}`, patch),
   suggest: () => call<Suggestion>('GET', '/suggest'),
   promote: (lot: string, index: number, number: number, published: string) =>
     call<Suggestion>('POST', '/promote', { lot, index, number, published }),

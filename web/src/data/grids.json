@@ -1830,7 +1830,7 @@
   },
   {
     "id": 11,
-    "title": "Expert",
+    "title": "Facile",
     "section": "rated",
     "intro": "Sans carnet exact. Une hypothèse se réfute en quelques coups : laquelle ?",
     "columns": [
@@ -2003,13 +2003,12 @@
       ]
     },
     "difficulty": {
-      "rating": 4,
-      "label": "Expert",
+      "rating": 1,
+      "label": "Facile",
       "techniques": [
         "record",
-        "silhouette",
-        "ribbon",
-        "refuted"
+        "room",
+        "silhouette"
       ]
     },
     "bulletin": {

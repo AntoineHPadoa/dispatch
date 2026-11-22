@@ -8,7 +8,7 @@ Local tool to generate, play, rate and promote candidate grids. Launch: `lab/run
 - `candidates/archive/<lot>.json`: lots set aside (a rule change made their grids invalid). Not listed by the lab and read-only: their `lot:index` keys still resolve for notes, plays and sessions (a session item there shows as not playable), but they cannot be played, drawn into a session or promoted, and their names are never reused (server and `dispatch-solver generate` both refuse them). `sessions/archive/` holds abandoned sessions, not listed.
 - `sessions/<id>.json`: an ordered list of candidates to play in a row: `{"title": …, "items": [{"lot": …, "index": …, "hold"?: "text"}, …]}` (`index` from 0). An item with `hold` is shown with that text and cannot be launched. Page: `#/session` (lists every session, newest first), `#/session/<id>`. A session is written by hand or drawn from a lot (below).
 - `plays.jsonl`: one JSON line per game (below).
-- `notes.json`: per `lot:index`: `kept`, `comment` (`{player: text}`, one per player; `""` for an older comment whose author is unknown), `felt` (first rating of each player), `bulletin` edits, `promoted`.
+- `notes.json`: per `lot:index`: `kept` (`{player: true}`, the ★ of each player; an older boolean is read as « Joueur 1 »'s), `comment` (`{player: text}`, one per player; `""` for an older comment whose author is unknown), `felt` (first rating of each player), `bulletin` edits, `promoted`.
 
 ## `plays.jsonl` format (schema 1)
 
@@ -52,10 +52,17 @@ Listens on 127.0.0.1. Every request must carry a local `Host`; a request with an
 
 ### Nouvelle session (tirage)
 
-- Page: on the lot list, « Nouvelle session » with an editable size (16 by default, capped to the lot size) draws a session, writes it and opens it in the « Session » tab.
+- Page: on the lot list, « Nouvelle session » with an editable size (6 by default, a casual player's session; capped to the lot size) draws a session, writes it and opens it in the « Session » tab.
 - Server: `POST /api/sessions` with `{lot, size?, player?}` writes `lab/sessions/<lot>-<n>.json` (`n` = last number used for the lot + 1, remembered in `lab/sessions/.counters.json` and not only read from the files: a name is never reused, even after deleting the latest session) and returns the session as `GET /api/session/<id>` does.
 - Draw (`draw_session`), deterministic (seed = `<lot>:<n>`): playable candidates only (no staircase), minus those the `player` has already played (a non-phantom play, `attempt >= 1`; without `player`, nothing is excluded).
   - Balance: same count per solver rating when possible (round-robin, a rating short of candidates gives its share to the others), then within a rating the candidate that adds the least to the families and mechanics already drawn.
-  - Order: a random permutation (same seed), the only constraint being an easiest grid first. No rule on neighbouring ratings: any pattern in the order would reveal the rating of the next grid once the player has seen the previous ones.
+  - Order: a random permutation (same seed) under two constraints: a short grid first (8 slots; the easiest of the short ones drawn; any grid if none is short), then never two long grids (12 slots or more) in a row when the drawn grids allow it. No rule on neighbouring ratings: any pattern in the order would reveal the rating of the next grid once the player has seen the previous ones.
   - Candidates without a solver rating are left out (they cannot be balanced).
 - Blind: the rating is used on the server only. The file holds `title`, `created` (epoch seconds) and `items: [{lot, index}]`; the answer has no rating, technique or draft title.
+
+## ★ per player
+
+- `PUT /api/notes/<lot>/<i>` with `{"kept": true|false, "player": "Joueur 2"}` sets or clears the ★ of that player only (a known player is required, like for a comment). `notes.json` keeps `kept: {player: true}`; a boolean `kept` from an older file is read as Joueur 1's (`lab_server.LEGACY_PLAYER`) and rewritten on the next note update.
+- Blind, like the other measures: a player always sees their own ★; another player's ★ shows only once the viewer has rated the grid (or in creation mode). The candidate list carries `kept` (own ★, used by the star column and the « gardée » filter) and `kept_any` (someone's ★, once visible).
+- Promotion: a grid is kept, and listed in « Gardées », as soon as one player has kept it (`kept_any`).
+- Migration of an existing `notes.json` (legacy ★ to Joueur 1; Joueur 2 starred the grids of `sessions/v3-joueur2.json` he solved; run it with the lab server stopped): `solver/.venv/bin/python lab/scripts/migrate_stars.py` from the repository root (`--dry-run` first; the old file is saved as `notes.json.bak`; idempotent). Tests: `lab/tests/test_migrate_stars.py`.

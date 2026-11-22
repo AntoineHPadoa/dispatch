@@ -10,11 +10,6 @@ from dispatch_solver.api import check_published
 from dispatch_solver.board import reference_composition
 from dispatch_solver.deduce import deduce
 
-# Published grids whose stored rating predates a deduction fix, kept until the human decides (S8.3):
-# id -> rating the deduction gives now. G11: room checks a bar against the day's export total (review C1).
-RATING_PENDING = {11: 1}
-
-
 @pytest.mark.parametrize("g", published(), ids=lambda g: str(g["id"]))
 def test_published_grid(g):
     ex = exact.count(g)
@@ -23,7 +18,7 @@ def test_published_grid(g):
     res = deduce(g)
     assert res.solved
     assert res.composition == reference_composition(g)
-    assert res.rating == RATING_PENDING.get(g["id"], g["difficulty"]["rating"])
+    assert res.rating == g["difficulty"]["rating"]
 
 
 def test_check_published_reports_ok():

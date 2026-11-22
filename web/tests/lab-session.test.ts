@@ -56,8 +56,8 @@ describe('hash', () => {
 
 describe('size of a new session', () => {
   it('defaults to 16, capped to the lot', () => {
-    expect(sessionSize('', 40)).toBe(16);
-    expect(sessionSize('  ', 10)).toBe(10);
+    expect(sessionSize('', 40)).toBe(6);
+    expect(sessionSize('  ', 4)).toBe(4);
   });
   it('accepts an integer from 1 and caps it to the lot size', () => {
     expect(sessionSize('8', 40)).toBe(8);

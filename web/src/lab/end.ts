@@ -28,7 +28,7 @@ export async function renderEnd(root: HTMLElement, ctx: LabCtx, lot: string, ind
   const note: Note = notes[`${lot}:${index}`] ?? {};
   let felt = rec.felt ?? 0;
   let revealed = felt > 0;
-  let kept = !!note.kept;
+  let kept = !!note.kept?.[player];
   let items: SessionItem[] = [];
   let current: SessionItem | undefined;
   if (sessionId) {
@@ -106,7 +106,7 @@ export async function renderEnd(root: HTMLElement, ctx: LabCtx, lot: string, ind
       await draw();
     } else if (t.id === 'lab-keep') {
       kept = !kept;
-      await api.note(lot, index, { kept });
+      await api.note(lot, index, { kept, player });
       t.textContent = kept ? '★ Gardée' : '☆ Garder cette grille';
     }
   };

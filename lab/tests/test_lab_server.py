@@ -249,9 +249,10 @@ def test_felt_is_stored_with_the_play_and_locked(api, lab):
 
 def test_notes_keep_and_comment(api):
     code, note = api("PUT", "/api/notes/t/0", {"kept": True, "comment": "ok", "player": "Joueur 1"})
-    assert code == 200 and note == {"kept": True, "comment": {"Joueur 1": "ok"}}
-    cand = api("GET", "/api/candidates?lot=t")[1][0]
-    assert cand["kept"]
+    assert code == 200 and note == {"kept": {"Joueur 1": True}, "comment": {"Joueur 1": "ok"}}
+    cand = api("GET", "/api/candidates?lot=t&player=Joueur%201")[1][0]
+    assert cand["kept"] and cand["kept_any"]
+    assert api("PUT", "/api/notes/t/0", {"kept": True})[0] == 400  # a star needs a known player
     assert api("PUT", "/api/notes/t/0", {"bulletin": {"weather": ["rain"]}})[0] == 400
 
 
@@ -450,3 +451,50 @@ def test_writes_must_be_json_from_a_local_origin(api, lab):
     assert not (lab.dir / "plays.jsonl").exists()
     assert raw(api, "POST", "/api/plays", {**ok, "Origin": "http://localhost:5173", "Host": "localhost:5173"}, body) == 200
     assert raw(api, "GET", "/api/lots", {"Host": "127.0.0.1:5173"}) == 200
+
+
+def test_stars_are_per_player_and_blind(api, lab):
+    """A player's star is theirs: toggling it never touches another's, and another's stays hidden until the grid is rated."""
+    api("PUT", "/api/notes/t/0", {"kept": True, "player": "Joueur 2"})
+    api("PUT", "/api/notes/t/0", {"kept": True, "player": "Joueur 1"})
+    assert lab.notes()["t:0"]["kept"] == {"Joueur 1": True, "Joueur 2": True}
+    api("PUT", "/api/notes/t/0", {"kept": False, "player": "Joueur 1"})
+    assert lab.notes()["t:0"]["kept"] == {"Joueur 2": True}
+    api("PUT", "/api/notes/t/0", {"kept": False, "player": "Joueur 2"})
+    assert "kept" not in lab.notes()["t:0"]
+    api("PUT", "/api/notes/t/0", {"kept": True, "player": "Joueur 2"})
+    # Joueur 1 has not rated t:0: Joueur 2's star is hidden from them, in notes and in the list
+    assert "kept" not in api("GET", "/api/notes?player=Joueur%201")[1]["t:0"]
+    c = api("GET", "/api/candidates?lot=t&player=Joueur%201")[1][0]
+    assert not c["kept"] and not c["kept_any"]
+    # creation mode and the owner see it; once Joueur 1 has rated the grid, so do they
+    assert api("GET", "/api/notes?player=Joueur%201&creation=1")[1]["t:0"]["kept"] == {"Joueur 2": True}
+    assert api("GET", "/api/candidates?lot=t&player=Joueur%202")[1][0]["kept"]
+    rated(api, "Joueur 1", 0, felt=2)
+    c = api("GET", "/api/candidates?lot=t&player=Joueur%201")[1][0]
+    assert not c["kept"] and c["kept_any"]
+    assert api("GET", "/api/notes?player=Joueur%201")[1]["t:0"]["kept"] == {"Joueur 2": True}
+
+
+def test_older_boolean_star_belongs_to_player_1(api, lab):
+    (lab.dir / "notes.json").write_text(json.dumps({"t:0": {"kept": True}, "t:1": {"kept": False}}))
+    assert lab.notes() == {"t:0": {"kept": {"Joueur 1": True}}, "t:1": {}}
+    assert api("GET", "/api/candidates?lot=t&player=Joueur%201")[1][0]["kept"]
+    assert not api("GET", "/api/candidates?lot=t&player=Joueur%202")[1][0]["kept"]
+
+
+def test_reveal_is_per_lot_and_index(api, lab):
+    """Rating index 0 of another lot reveals nothing about t:0: not its measures, not another player's star or comment."""
+    other = [grid(0)]
+    other[0]["lab"]["lot"] = "u"
+    (lab.dir / "candidates" / "u.json").write_text(json.dumps(other))
+    api("PUT", "/api/notes/t/0", {"kept": True, "comment": "bien", "player": "Joueur 2"})
+    play = api("POST", "/api/plays", {**PLAY, "lot": "u", "index": 0})[1]
+    api("POST", f"/api/plays/{play['id']}/rate", {"felt": 2})
+    assert not lab.revealed("t", 0, "Joueur 1") and lab.revealed("u", 0, "Joueur 1")
+    note = api("GET", "/api/notes?player=Joueur%201")[1].get("t:0", {})
+    assert "kept" not in note and "comment" not in note and "felt" not in note
+    c = api("GET", "/api/candidates?lot=t&player=Joueur%201")[1][0]
+    assert not c["revealed"] and not c["kept_any"]
+    rated(api, "Joueur 1", 0, felt=3)  # rating t:0 itself reveals it
+    assert api("GET", "/api/notes?player=Joueur%201")[1]["t:0"]["kept"] == {"Joueur 2": True}

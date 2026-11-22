@@ -149,7 +149,7 @@ export async function renderList(root: HTMLElement, ctx: LabCtx): Promise<() => 
     const tr = t.closest<HTMLElement>('tr[data-i]');
     if (star) {
       const c = cands.find((x) => x.index === Number(star.dataset.star))!;
-      await api.note(ctx.lot, c.index, { kept: !c.kept });
+      await api.note(ctx.lot, c.index, { kept: !c.kept, player: ctx.player });
       await refresh();
     } else if (play) ctx.navigate(`#/partie/${ctx.lot}/${play.dataset.play}`);
     else if (th) { const k = th.dataset.k as SortKey; if (k === key) dir = dir === 1 ? -1 : 1; else { key = k; dir = 1; } draw(); }
