@@ -109,6 +109,10 @@ button.prow:hover { background: #faf4f7; }
 .mb.used::after { content: ""; position: absolute; left: -2px; right: -2px; top: 50%; border-top: 1.5px solid var(--soft); }
 .count { font-size: .7rem; color: var(--soft); font-variant-numeric: tabular-nums; margin-left: 2px; flex: none; white-space: nowrap; }
 .count.over { color: var(--bad); font-weight: 800; }
+/* Book by width: each glyph carries its width over its bottom row, then its own counter. */
+.mb .mb-w { position: absolute; left: 0; right: 0; bottom: 0; height: 11px; line-height: 11px; text-align: center; font-style: normal; font-size: .62rem; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; pointer-events: none; }
+.grp { display: inline-flex; align-items: center; gap: 5px; }
+.grp + .grp { margin-left: 6px; }
 .step-glyph { font-size: .66rem; font-weight: 800; letter-spacing: .05em; color: #4f7fb8; background: #e3eefa; border: 1px solid #bfd7f1; border-radius: 6px; padding: 1px 6px; position: relative; }
 .step-glyph.used { opacity: .45; }
 .step-glyph.used::after { content: ""; position: absolute; left: -2px; right: -2px; top: 50%; border-top: 1.5px solid var(--soft); }

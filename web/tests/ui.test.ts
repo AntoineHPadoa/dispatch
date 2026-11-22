@@ -452,11 +452,51 @@ describe('print sheet', () => {
       + 'import d’Allemagne <span class="slot">3</span>, import du Royaume-Uni <span class="slot">1</span>.');
   });
 
-  it('the counter of many bars stays beside the glyphs', () => {
+  it('book by width: one glyph per width with its width and its own counter', () => {
     const g = byId(7);
-    const nuclear = renderBook(g, initialState(g), null).split('data-piece="N"')[1]!.split('</button>')[0]!;
-    // Glyphs wrap inside their own box; the counter is the next sibling, outside it.
-    expect(nuclear).toMatch(/<span class="bars"><span class="glyphs">(<span class="mb[^>]*>(<i[^>]*><\/i>)+<\/span>)+<\/span><span class="count">0 \/ \d+<\/span><\/span>$/);
+    const row = (html: string, key: string) => html.split(`data-piece="${key}"`)[1]!.split('</button>')[0]!;
+    const nuclear = row(renderBook(g, initialState(g), null), 'N');
+    // 4 x 4 and 3 x 3: two glyphs, longest first, each with its width and counter; no counter for the whole line.
+    expect([...nuclear.matchAll(/<em class="mb-w">(\d+)<\/em>/g)].map((m) => m[1])).toEqual(['4', '3']);
+    expect([...nuclear.matchAll(/<span class="count">([^<]+)<\/span>/g)].map((m) => m[1])).toEqual(['0 / 4', '0 / 3']);
+    expect(nuclear).not.toContain('mb used');
+    // Every bar of 3 laid: that width is struck, the other one counts on.
+    const threes = g.solution.placements.filter((b) => b.piece === 'N' && b.len === 3);
+    const laid = row(renderBook(g, { ...initialState(g), bars: threes }, null), 'N');
+    expect([...laid.matchAll(/<span class="count">([^<]+)<\/span>/g)].map((m) => m[1])).toEqual(['0 / 4', '3 / 3']);
+    expect(laid.match(/class="mb used"/g)).toHaveLength(1);
+    // A width the inventory lacks shows as over.
+    const odd = row(renderBook(g, { ...initialState(g), bars: [{ piece: 'N', row: 1, col: 0, len: 5 }] }, null), 'N');
+    expect(odd).toMatch(/<em class="mb-w">5<\/em><\/span><span class="count over">1 \/ 0<\/span>/);
+  });
+
+  it('book by width: cells and imports are one square with their counter', () => {
+    const g1 = byId(1);
+    const tac = renderBook(g1, initialState(g1), null).split('data-piece="T"')[1]!.split('</button>')[0]!;
+    expect(tac.match(/<span class="mb/g)).toHaveLength(1);
+    expect(tac).toContain('<span class="count">0 / 2</span>');
+    const g7 = byId(7);
+    const imp = renderBook(g7, initialState(g7), null).split('data-piece="I:DE"')[1]!.split('</button>')[0]!;
+    expect(imp.match(/<span class="mb/g)).toHaveLength(1);
+    expect(imp).toContain('0 / 2');
+  });
+
+  it('book: optional heights are dashed rows above the filled first row, with optional widths too', () => {
+    const base = byId(1);
+    const tall = { ...structuredClone(base), pieces: { ...base.pieces, N: { ...base.pieces.N!, height: [1, 2] } } };
+    const cells = (html: string) => [...html.split('data-piece="N"')[1]!.split('</button>')[0]!.matchAll(/<i class="(d?)"/g)].map((m) => m[1]);
+    // Exact bar of 6, 1 or 2 GW: one glyph, the top row dashed, the bottom row filled.
+    const exact = cells(renderBook(tall, initialState(tall), null));
+    expect(exact).toEqual([...Array(6).fill('d'), ...Array(6).fill('')]);
+    // No inventory, 3 to 6 wide and 1 or 2 GW: one glyph "3–6", only the first three cells of the first row filled.
+    const free = { ...tall, inventory: { level: 'none' as const, pieces: { N: {}, G: {}, T: {} } } };
+    const html = renderBook(free, initialState(free), null);
+    expect(cells(html)).toEqual([...Array(6).fill('d'), '', '', '', 'd', 'd', 'd']);
+    expect(html.split('data-piece="N"')[1]!.split('</button>')[0]).toContain('<em class="mb-w">3–6</em>');
+    // Paper keeps one piece per bar and per height, without widths nor counters.
+    const paper = renderBook(tall, initialState(tall), null, true);
+    expect(paper).not.toContain('mb-w');
+    expect(paper.split('Nucléaire')[1]!.split('class="prow"')[0]!.match(/<span class="mb"/g)).toHaveLength(2);
   });
 });
 

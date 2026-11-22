@@ -282,5 +282,117 @@
     ],
     "solution": {"exports": {}, "step": [], "placements": []},
     "difficulty": {"rating": 3, "label": "Difficile", "techniques": []}
+  },
+  {
+    "id": 908,
+    "title": "Galerie · Carnet chargé",
+    "section": "rated",
+    "intro": "Grille fictive de galerie : un carnet d’ordres exact qui réunit trois barres de nucléaire de deux longueurs, des pièces de 2 GW, une rampe de charbon, du barrage, des pointes et des imports.",
+    "columns": ["0h", "3h", "6h", "9h", "12h", "15h", "18h", "21h"],
+    "demand": [4, 4, 4, 4, 4, 5, 4, 4],
+    "pieces": {
+      "N": {"len": [3, 4, 5, 6], "height": [1, 2], "rank": 1, "co2": 0},
+      "B": {"len": [1], "height": [1], "rank": 2, "co2": 0},
+      "C": {"len": [3, 4, 5], "shape": "trap", "rank": 3, "co2": 3},
+      "G": {"len": [2, 3], "height": [1], "rank": 4, "co2": 1},
+      "T": {"len": [1], "height": [1], "rank": 5, "co2": 2}
+    },
+    "weather": {"R": [0, 0, 0, 0, 0, 0, 0, 0], "F": [0, 0, 0, 0, 0, 0, 0, 0]},
+    "neighbors": [{"id": "DE", "name": "Allemagne", "cap": 1, "co2": 3}],
+    "step": false,
+    "co2_cap": null,
+    "inventory": {"level": "exact", "pieces": {"N": {"bars": [6, 4, 4]}, "B": {"cells": 2}, "C": {"bars": [3]}, "G": {"bars": [3, 2]}, "T": {"cells": 2}}, "imports": {"DE": 2}},
+    "clues": [],
+    "solution": {
+      "exports": {"DE": [0, 0, 0, 0, 0, 0, 0, 0]},
+      "step": [],
+      "placements": [
+        {"piece": "N", "row": 0, "col": 0, "len": 6},
+        {"piece": "G", "row": 0, "col": 6, "len": 2},
+        {"piece": "N", "row": 1, "col": 0, "len": 4, "height": 2},
+        {"piece": "N", "row": 1, "col": 4, "len": 4},
+        {"piece": "C", "row": 2, "col": 4, "len": 3},
+        {"piece": "G", "row": 3, "col": 0, "len": 3},
+        {"piece": "B", "row": 2, "col": 7, "len": 1},
+        {"piece": "B", "row": 3, "col": 7, "len": 1},
+        {"piece": "T", "row": 3, "col": 3, "len": 1},
+        {"piece": "T", "row": 4, "col": 5, "len": 1},
+        {"piece": "I", "country": "DE", "row": 3, "col": 4, "len": 1},
+        {"piece": "I", "country": "DE", "row": 3, "col": 6, "len": 1}
+      ]
+    },
+    "difficulty": {"rating": 2, "label": "Moyen", "techniques": []}
+  },
+  {
+    "id": 909,
+    "title": "Galerie · Largeurs à trous",
+    "section": "rated",
+    "intro": "Grille fictive de galerie : un gaz qui tourne 2 ou 4 créneaux mais jamais 3, du nucléaire de 1 ou 2 GW, un barrage au stock limité et un import possible.",
+    "columns": ["0h", "3h", "6h", "9h", "12h", "15h", "18h", "21h"],
+    "demand": [3, 3, 3, 3, 2, 3, 3, 2],
+    "pieces": {
+      "N": {"len": [3, 4, 5, 6], "height": [1, 2], "rank": 1, "co2": 0},
+      "B": {"len": [1], "height": [1], "rank": 2, "co2": 0},
+      "G": {"len": [2, 4], "height": [1], "rank": 4, "co2": 1},
+      "T": {"len": [1], "height": [1], "rank": 5, "co2": 2}
+    },
+    "weather": {"R": [0, 0, 0, 0, 0, 0, 0, 0], "F": [0, 0, 0, 0, 0, 0, 0, 0]},
+    "neighbors": [{"id": "ES", "name": "Espagne", "cap": 1, "co2": 2}],
+    "step": false,
+    "co2_cap": null,
+    "inventory": {"level": "none", "pieces": {"N": {}, "B": {"max_cells": 3}, "G": {}, "T": {}}},
+    "clues": [],
+    "solution": {
+      "exports": {"ES": [0, 0, 0, 0, 0, 0, 0, 0]},
+      "step": [],
+      "placements": [
+        {"piece": "N", "row": 0, "col": 0, "len": 4, "height": 2},
+        {"piece": "N", "row": 0, "col": 4, "len": 4},
+        {"piece": "G", "row": 1, "col": 4, "len": 4},
+        {"piece": "G", "row": 2, "col": 0, "len": 2},
+        {"piece": "B", "row": 2, "col": 2, "len": 1},
+        {"piece": "B", "row": 2, "col": 3, "len": 1},
+        {"piece": "T", "row": 2, "col": 5, "len": 1},
+        {"piece": "I", "country": "ES", "row": 2, "col": 6, "len": 1}
+      ]
+    },
+    "difficulty": {"rating": 2, "label": "Moyen", "techniques": []}
+  },
+  {
+    "id": 910,
+    "title": "Galerie · Le soleil en trop",
+    "section": "rated",
+    "intro": "Grille fictive de galerie, reprise du candidat 8 du lot v3-jouer-a : un charbon de 3 ou 4 créneaux et de 1 ou 2 GW, imposé en une barre de 3 que la solution pose sur 2 GW.",
+    "columns": ["0h", "3h", "6h", "9h", "12h", "15h", "18h", "21h"],
+    "demand": [4, 5, 4, 4, 8, 6, 7, 4],
+    "pieces": {
+      "N": {"len": [3, 4, 5, 6], "height": [1], "rank": 1, "co2": 0},
+      "C": {"len": [3, 4], "height": [1, 2], "rank": 3, "co2": 3},
+      "G": {"len": [2, 3], "height": [1], "rank": 4, "co2": 1},
+      "T": {"len": [1], "height": [1], "rank": 5, "co2": 2}
+    },
+    "weather": {"R": [0, 0, 0, 4, 6, 2, 0, 0], "F": [1, 1, 1, 1, 1, 1, 1, 1]},
+    "neighbors": [{"id": "ES", "name": "Espagne", "cap": 1, "co2": 0}],
+    "step": false,
+    "co2_cap": null,
+    "inventory": {"level": "exact", "pieces": {"N": {"bars": [3, 3, 3, 3]}, "C": {"bars": [3]}, "G": {"bars": [2, 2, 2]}, "T": {"cells": 2}}, "exports": {"ES": 4}, "imports": {"ES": 0}},
+    "clues": [{"type": "column", "col": 0, "counts": {"N": 2}}, {"type": "column", "col": 2, "counts": {"N": 2}}],
+    "solution": {
+      "exports": {"ES": [1, 0, 1, 1, 0, 0, 0, 1]},
+      "step": [],
+      "placements": [
+        {"piece": "C", "row": 1, "col": 0, "len": 3, "height": 2},
+        {"piece": "N", "row": 3, "col": 0, "len": 3},
+        {"piece": "N", "row": 4, "col": 0, "len": 3},
+        {"piece": "T", "row": 7, "col": 4, "len": 1},
+        {"piece": "N", "row": 3, "col": 5, "len": 3},
+        {"piece": "N", "row": 4, "col": 5, "len": 3},
+        {"piece": "G", "row": 5, "col": 5, "len": 2},
+        {"piece": "G", "row": 1, "col": 6, "len": 2},
+        {"piece": "G", "row": 2, "col": 6, "len": 2},
+        {"piece": "T", "row": 6, "col": 6, "len": 1}
+      ]
+    },
+    "difficulty": {"rating": 4, "label": "Expert", "techniques": ["column_sum", "exhausted", "refuted", "room", "share_out", "single_cover"]}
   }
 ]

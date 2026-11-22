@@ -1,7 +1,9 @@
 /*
  * Side panels as HTML strings: order book (exact inventory) or available plants (no inventory),
  * clue list with status, CO2 gauge, and the clue text styling (plant chips, slot values).
- * - Screen and paper share the markup; `paper` switches to style B (no usage, no counts).
+ * - Screen book: one glyph per width with the width written in it and a "laid / allowed" counter per
+ *   width; optional heights are dashed rows above the filled first row, optional widths a dashed tail.
+ * - Paper (style B): every bar drawn, shape hints under the names, no usage.
  */
 import { ANY_COUNTRY, IMPORT_PIECE, PIECE_IDS, publishedStepPairs, type Clue, type ExchangesClue, type Grid, type PieceId } from '../model/grid';
 import {
@@ -61,7 +63,7 @@ export function bookEntries(grid: Grid): BookEntry[] {
  * Mini piece at scale: `w` x `h` cells, dashed from column `dashFrom`; a ramp (`shape`) draws its
  * profile on two rows, the cells outside it left blank.
  */
-function mb(p: string, w: number, h: number, o: { used?: boolean; dashFrom?: number; paper?: boolean; label?: string; shape?: ShapeKind } = {}): string {
+function mb(p: string, w: number, h: number, o: { used?: boolean; dashFrom?: number; dashTop?: number; paper?: boolean; label?: string; shape?: ShapeKind; width?: string } = {}): string {
   const c = PIECE_COLORS[colorKey(p)];
   const prof = profile(o.shape ?? 'rect', w, h);
   const rows = Math.max(...prof.map(([b, k]) => b + k));
@@ -70,10 +72,21 @@ function mb(p: string, w: number, h: number, o: { used?: boolean; dashFrom?: num
     const row = rows - 1 - Math.floor(i / w);
     const [b, k] = prof[col] ?? [0, 0];
     if (row < b || row >= b + k) return '<i class="e"></i>';
-    const dashed = o.dashFrom !== undefined && col >= o.dashFrom;
+    const dashed = (o.dashFrom !== undefined && col >= o.dashFrom) || (o.dashTop !== undefined && row >= o.dashTop);
     return `<i class="${dashed ? 'd' : ''}" style="background:${o.paper ? c.b : c.a};--c:${c.ink}"></i>`;
   }).join('');
-  return `<span class="mb${o.used ? ' used' : ''}" style="grid-template-columns:repeat(${w},auto)"${o.label ? ` title="${esc(o.label)}"` : ''}>${cells}</span>`;
+  // The width, written over the bottom row (screen).
+  const width = o.width ? `<em class="mb-w">${esc(o.width)}</em>` : '';
+  return `<span class="mb${o.used ? ' used' : ''}" style="grid-template-columns:repeat(${w},auto)"${o.label ? ` title="${esc(o.label)}"` : ''}>${cells}${width}</span>`;
+}
+
+/** Width written in a glyph: "4", "3–6" for a range; none for a one-cell piece. */
+const widthLabel = (min: number, max = min): string | undefined => (max <= 1 ? undefined : min === max ? String(min) : `${min}–${max}`);
+
+/** One glyph and its own "laid / allowed" counter (screen book). */
+function group(glyph: string, laid: number, allowed: number | null): string {
+  const over = allowed !== null && laid > allowed;
+  return `<span class="grp">${glyph}<span class="count${over ? ' over' : ''}">${esc(UI.count(Math.min(laid, 99), allowed))}</span></span>`;
 }
 
 const name = (e: BookEntry) => (e.piece === STEP_KEY ? UI.stepName
@@ -83,13 +96,25 @@ function importCells(state: PlayState, country: string): number {
   return state.bars.filter((b) => b.piece === IMPORT_PIECE && b.country === country).reduce((a, b) => a + b.len * (b.height ?? 1), 0);
 }
 
-/** Allowed shapes as mini pieces: a dashed tail for a range of widths, one piece per width otherwise, one per extra height. */
+/**
+ * Allowed shapes as mini pieces: a dashed tail for a range of widths, one piece per width otherwise.
+ * Screen: optional heights are dashed rows on the same piece, which carries its width ("3–6" for a range).
+ * Paper: one more piece per extra height.
+ */
 function shapeGlyphs(e: BookEntry, paper: boolean): string {
   const id = e.piece;
   const minL = e.lens[0] ?? 1;
   const maxL = e.lens[e.lens.length - 1] ?? minL;
   const minH = e.heights[0] ?? 1;
   const ramp = isRamp(e.shape);
+  const gaps = e.lens.length !== maxL - minL + 1;
+  if (!paper) {
+    const maxH = ramp ? 1 : e.heights[e.heights.length - 1] ?? minH;
+    const dashTop = maxH > minH ? minH : undefined;
+    return ramp || gaps
+      ? e.lens.map((len) => mb(id, len, ramp ? 1 : maxH, { shape: e.shape, dashTop, width: widthLabel(len) })).join('')
+      : mb(id, maxL, maxH, { dashFrom: minL, dashTop, width: widthLabel(minL, maxL) });
+  }
   // A ramp draws each width (a dashed tail would cut its last shoulder); so do widths with a gap.
   let out = ramp || e.lens.length !== maxL - minL + 1
     ? e.lens.map((len) => mb(id, len, ramp ? 1 : minH, { paper, shape: e.shape })).join('')
@@ -127,10 +152,11 @@ export function renderBook(grid: Grid, state: PlayState, selected: PieceKey | nu
       } else label = UI.importOf(countryFrom(grid, country));
       const used = importCells(state, country);
       const want = inv.level === 'exact' ? inv.imports?.[country] ?? inv.imports?.[ANY_COUNTRY] : undefined;
-      if (want !== undefined) {
-        glyphs = Array.from({ length: want }, (_, i) => mb('I', 1, 1, { used: !paper && i < used, paper })).join('');
-        if (!paper) { count = UI.count(Math.min(used, 99), want); overUse = used > want; }
-        else count = UI.cells(want);
+      if (want !== undefined && !paper) {
+        glyphs = group(mb('I', 1, 1, { used: used >= want }), used, want);
+      } else if (want !== undefined) {
+        glyphs = Array.from({ length: want }, () => mb('I', 1, 1, { paper })).join('');
+        count = UI.cells(want);
       } else {
         glyphs = mb('I', 1, 1, { paper });
         if (!paper) count = UI.count(used, null);
@@ -145,21 +171,29 @@ export function renderBook(grid: Grid, state: PlayState, selected: PieceKey | nu
       const minH = e.heights[0] ?? 1;
       const used = pieceCells(grid, state, id);
       const shape = e.shape;
-      if (spec.bars) {
+      if (spec.bars && !paper) {
+        // One glyph per width, longest first, each with its counter; a laid width the inventory lacks shows as over.
+        const maxH = isRamp(shape) ? 1 : e.heights[e.heights.length - 1] ?? minH;
+        const dashTop = maxH > minH ? minH : undefined;
         const placed = new Map<number, number>();
-        let laid = 0;
-        for (const b of state.bars) if (b.piece === id) { placed.set(b.len, (placed.get(b.len) ?? 0) + 1); laid++; }
-        glyphs = [...spec.bars].sort((a, b) => b - a).map((len) => {
-          const k = placed.get(len) ?? 0;
-          if (k > 0) placed.set(len, k - 1);
-          return mb(id, len, minH, { used: !paper && k > 0, paper, shape });
+        for (const b of state.bars) if (b.piece === id) placed.set(b.len, (placed.get(b.len) ?? 0) + 1);
+        const widths = [...new Set([...spec.bars, ...placed.keys()])].sort((a, b) => b - a);
+        glyphs = widths.map((len) => {
+          const allowed = spec.bars!.filter((l) => l === len).length;
+          const laid = placed.get(len) ?? 0;
+          return group(mb(id, len, maxH, { used: allowed > 0 && laid >= allowed, shape, dashTop, width: widthLabel(len) }), laid, allowed);
         }).join('');
-        if (!paper) { count = UI.count(laid, spec.bars.length); overUse = laid > spec.bars.length; }
-      } else if (spec.cells !== undefined || spec.max_cells !== undefined) {
+      } else if (spec.bars) {
+        // Paper: every bar of the inventory, longest first.
+        glyphs = [...spec.bars].sort((a, b) => b - a).map((len) => mb(id, len, minH, { paper, shape })).join('');
+      } else if ((spec.cells !== undefined || spec.max_cells !== undefined) && !paper) {
         const total = spec.cells ?? spec.max_cells ?? 0;
-        glyphs = Array.from({ length: total }, (_, i) => mb(id, 1, 1, { used: !paper && i < used, paper })).join('');
-        count = paper ? UI.cells(total) : UI.count(used, total);
-        overUse = !paper && used > total;
+        glyphs = group(mb(id, 1, 1, { used: used >= total }), used, total);
+      } else if (spec.cells !== undefined || spec.max_cells !== undefined) {
+        // Paper: one square per cell and the cell count.
+        const total = spec.cells ?? spec.max_cells ?? 0;
+        glyphs = Array.from({ length: total }, () => mb(id, 1, 1, { paper })).join('');
+        count = UI.cells(total);
       } else {
         glyphs = shapeGlyphs(e, paper);
         if (!paper) count = UI.count(used, null);
