@@ -467,3 +467,47 @@ La galerie les montre fidèlement ; ils sont à corriger dans le jeu, pas dans l
 ### Remarque (pas un écart)
 
 - **Consigne de la grille fictive 910** (W-35, M-36) : elle cite son origine interne (« reprise du candidat 8 du lot v3-jouer-a »). C'est sans conséquence, la grille n'est pas publiée, mais ce texte apparaît tel quel sur les captures.
+
+## Contrôle galeries après v3-pub (commit `aa6e2a0`)
+
+### Verdict
+
+- **72 vues contrôlées sur 72** (W-01…W-35, M-01…M-37) : **72 OK, aucun écart.**
+- **Build** : 431 tests verts, typecheck et build OK, `check_unique.py` vert.
+- **Code** : le code du jeu de la branche est exactement celui de sa base `4241559`, qui contient v3-pub. Depuis S7.7, le script de capture n'a pas changé : seules six légendes ont été réécrites dans `views.mjs`.
+
+### Méthode
+
+- **Comme en S7.7** :
+  - mes deux builds reconstruits depuis la branche (prod, et galerie identique au `dist-gallery/` de s1) ;
+  - mon script de capture : 47 vues sur la prod, 25 sur le build de galerie ;
+  - M-37 rejouée par mon propre toucher ;
+  - comparaison pixel à pixel avec les 72 images des pages ;
+  - images de travail dans `docs/reviews/v3-ui-gallery/{v4,diff-v4}/`.
+- **Images changées depuis S7.7** : environ 35, surtout parce que la liste des publications s'est allongée (un échange par ligne).
+- **Légendes** : les six réécrites, vérifiées sur l'image. Pour les autres, j'ai vérifié qu'aucune ne décrit les échanges ni « Aujourd'hui » ; celles qui citent les publications parlent des ✓, des ! ou du marqueur de M-37, et restent exactes.
+
+### Résultats
+
+| Vues | Pixel | Légende |
+|---|---|---|
+| 66 vues | identiques | exactes |
+| W-03, W-21, W-24, W-35, M-02, M-20 | glyphes seulement (police chargée à froid), aucune différence de contenu | exactes |
+
+### Légendes réécrites
+
+- **W-08, M-08** : « Échanges du jour » sur une seule ligne, « 2 blocs exportés, aucun bloc importé. », sans « Aujourd'hui ». Le reste de la légende (barre « 3–6 », « 0 / ∞ », compteurs « → 0/2 ← 0 ») est inchangé et exact.
+- **W-12, M-12** :
+  - « Limite CO₂ » réduite à « 28 points de CO₂ au plus. » ;
+  - quatre lignes « Échanges du jour », chacune avec sa propre coche :
+    - « Aucun bloc exporté vers l'Allemagne. » ✓ ;
+    - « 1 bloc exporté vers le Royaume-Uni. » ✓ ;
+    - « 1 bloc exporté vers l'Espagne. » ✓ ;
+    - « 2 blocs importés, tous pays confondus. », pas encore cochée, puisqu'un seul import est posé ;
+  - compteur « 6 sur 10 vérifiés ».
+  - « cochées une à une » veut bien dire « chacune sa coche », et non « toutes cochées » : l'image le confirme.
+- **W-26, M-26** :
+  - deux lignes « Échanges du jour » : « 2 blocs exportés, 2 blocs importés. » et « 1 pompage. », toutes deux cochées ;
+  - « 8 sur 8 vérifiés » ;
+  - bandeau « les 8 indices sont vrais », 12 min 34 s ;
+  - « Grille suivante » seul.
