@@ -72,3 +72,6 @@ body.lab .diff { display: none; }
 .lab-remind { margin: 10px 0 0; padding: 8px 10px; border-left: 3px solid var(--accent); background: var(--wash); border-radius: 0 8px 8px 0; font-weight: 700; font-size: .85rem; }
 @media (max-width: 480px) { .lab-sess-item { flex-wrap: wrap; } .lab-sess-src { flex-basis: calc(100% - 3em); } }
 .lab-btn.off { opacity: .45; }
+.lab-newsess { display: inline-flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; margin-left: auto; }
+.lab-newsess label { display: inline-flex; gap: 6px; align-items: center; font-size: .9rem; }
+.lab-newsess input { width: 4.5em; padding: 4px 6px; border: 1px solid var(--hair); border-radius: 6px; background: var(--card); font: inherit; color: inherit; }

@@ -3,7 +3,7 @@
  * - Numbered list (lot and number small), state chip, progress "7 / 16", main button "Jouer la suivante" (first not solved).
  * - An item with a `hold` text is shown with that text and cannot be launched.
  * - A game launched from here carries the session id in its hash: its end screen offers the next grid (see end.ts).
- * - `#/session` alone opens the only session, or lists them; `#/session/<id>/fin` adds the end-of-session banner.
+ * - `#/session` alone lists every session, newest first; `#/session/<id>/fin` adds the end-of-session banner.
  * - Blind: the server sends no rating, note or draft title; this page shows none.
  */
 import { api } from './api';
@@ -20,10 +20,9 @@ const STATE: Record<SessionState, { label: string; cls: string }> = {
 export async function renderSession(root: HTMLElement, ctx: LabCtx, id: string | undefined, ended: boolean): Promise<void> {
   if (!id) {
     const all = await api.sessions();
-    if (all.length === 1) { location.replace(`#/session/${all[0]!.id}`); return; }
-    root.innerHTML = '<div class="lab-m"><h2>Sessions</h2>'
+    root.innerHTML = '<div class="lab-m"><h2>Sessions</h2><p class="lab-note">La plus récente en haut. Pour en créer une : onglet Lot, « Nouvelle session ».</p>'
       + (all.length ? `<div class="lab-card"><ul class="lab-sess-list">${all.map((s) => `<li><a href="#/session/${esc(s.id)}">${esc(s.title)}</a> <span class="lab-note">${s.count} grilles</span></li>`).join('')}</ul></div>`
-        : '<p class="lab-note">Aucune session : ajoute un fichier dans <code>lab/sessions/</code>.</p>') + '</div>';
+        : '<p class="lab-note">Aucune session : dans l\'onglet Lot, clique sur « Nouvelle session ».</p>') + '</div>';
     return;
   }
   const s = await api.session(id, ctx.player);
@@ -35,7 +34,7 @@ export async function renderSession(root: HTMLElement, ctx: LabCtx, id: string |
       ? '<div class="lab-card lab-banner ok" role="status"><b>Session terminée</b> : toutes les grilles jouables sont résolues.</div>'
       : `<div class="lab-card lab-banner" role="status"><b>Fin de la liste.</b> Il reste ${left} grille${left > 1 ? 's' : ''} à jouer ou à rejouer.</div>`)
     : '';
-  root.innerHTML = `<div class="lab-m"><div class="lab-head"><h2>${esc(s.title)}</h2><span class="lab-chip" id="lab-progress">${solved} / ${total}</span>`
+  root.innerHTML = `<div class="lab-m"><p class="lab-note"><a href="#/session">← Toutes les sessions</a></p><div class="lab-head"><h2>${esc(s.title)}</h2><span class="lab-chip" id="lab-progress">${solved} / ${total}</span>`
     + `<span class="lab-chip">Joueur : ${esc(ctx.player)}</span><span class="lab-sp"></span>`
     + (next ? `<a class="lab-btn pri" id="lab-next" href="${sessionPlayHash(id, next)}">Jouer la suivante (${next.position})</a>` : '<span class="lab-note">Rien à jouer.</span>')
     + `</div>${banner}<ol class="lab-sess">${s.items.map((it) => itemHtml(id, it, next)).join('')}</ol></div>`;

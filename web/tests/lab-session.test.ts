@@ -1,7 +1,7 @@
 // Lab session logic: progress, first and next item to play, end of session, hash.
 import { describe, expect, it } from 'vitest';
 import {
-  canPlay, firstToPlay, nextToPlay, sessionDone, sessionPlayHash, sessionProgress, toPlay, type SessionItem, type SessionState,
+  canPlay, firstToPlay, nextToPlay, sessionDone, sessionPlayHash, sessionProgress, sessionSize, toPlay, type SessionItem, type SessionState,
 } from '../src/lab/logic';
 
 const item = (position: number, state: SessionState, over: Partial<SessionItem> = {}): SessionItem => ({
@@ -52,4 +52,18 @@ describe('session done', () => {
 describe('hash', () => {
   it('carries the session id after the lot and the 0-based index', () =>
     expect(sessionPlayHash('v3-session-1', { lot: 'nuit-rampe', index: 2 })).toBe('#/partie/nuit-rampe/2/v3-session-1'));
+});
+
+describe('size of a new session', () => {
+  it('defaults to 16, capped to the lot', () => {
+    expect(sessionSize('', 40)).toBe(16);
+    expect(sessionSize('  ', 10)).toBe(10);
+  });
+  it('accepts an integer from 1 and caps it to the lot size', () => {
+    expect(sessionSize('8', 40)).toBe(8);
+    expect(sessionSize('99', 20)).toBe(20);
+  });
+  it('refuses what is not a positive integer', () => {
+    for (const bad of ['0', '-3', '2.5', 'abc']) expect(sessionSize(bad, 40)).toBeNull();
+  });
 });

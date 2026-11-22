@@ -54,6 +54,8 @@ export const api = {
   sessions: () => call<SessionInfo[]>('GET', '/sessions'),
   /** A session with the state of each item for the player (no solver data). */
   session: (id: string, player?: string) => call<SessionData>('GET', `/session/${encodeURIComponent(id)}?${viewerQuery(player)}`),
+  /** Draw a session from a lot (blind: lot and index only); `player`'s played grids are left out. */
+  createSession: (lot: string, size: number, player: string) => call<SessionData>('POST', '/sessions', { lot, size, player }),
   note: (lot: string, index: number, patch: Partial<Note>) => call<Note>('PUT', `/notes/${lot}/${index}`, patch),
   suggest: () => call<Suggestion>('GET', '/suggest'),
   promote: (lot: string, index: number, number: number, published: string) =>

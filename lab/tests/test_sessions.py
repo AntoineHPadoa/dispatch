@@ -86,3 +86,12 @@ def test_shipped_session_matches_the_sheet():
     rows = [l.split("|")[1:4] for l in sheet.read_text().splitlines() if l.startswith("| ") and l.split("|")[1].strip().isdigit() and l.split("|")[3].strip().isdigit()]
     assert [(r[1].strip(), int(r[2]) - 1) for r in rows] == [(i["lot"], i["index"]) for i in data["items"]]
     assert [i["lot"] + str(i["index"]) for i in data["items"] if "hold" in i] == ["nuit-jouer-a3"]
+
+
+def test_sessions_listed_newest_first(api, lab):
+    import os
+    for n, name in enumerate(("a", "b", "c")):
+        write_session(lab, name)
+        os.utime(lab.dir / "sessions" / f"{name}.json", (1000 + n, 1000 + n))
+    os.utime(lab.dir / "sessions" / "a.json", (2000, 2000))
+    assert [s["id"] for s in api("GET", "/api/sessions")[1]] == ["a", "c", "b"]

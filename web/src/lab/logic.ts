@@ -293,3 +293,12 @@ export const nextToPlay = (items: SessionItem[], position: number): SessionItem 
 export const sessionDone = (items: SessionItem[]): boolean => !items.some(toPlay);
 /** Hash of the game screen for an item; the session id rides along so the end screen knows where to go next. */
 export const sessionPlayHash = (id: string, it: Pick<SessionItem, 'lot' | 'index'>): string => `#/partie/${it.lot}/${it.index}/${id}`;
+
+/** Default and parsing of the size of a new session: an integer from 1, at most the lot size; null when not a number. */
+export const DEFAULT_SESSION_SIZE = 16;
+export function sessionSize(raw: string, lotCount: number): number | null {
+  if (raw.trim() === '') return Math.min(DEFAULT_SESSION_SIZE, Math.max(1, lotCount));
+  const n = Number(raw);
+  if (!Number.isInteger(n) || n < 1) return null;
+  return Math.min(n, Math.max(1, lotCount));
+}

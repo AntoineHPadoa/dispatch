@@ -7,7 +7,7 @@
 import { api, type LotInfo } from './api';
 import type { LabCtx } from './ctx';
 import {
-  displayNumber, feltAverage, filterCandidates, formatDuration, lotTemplate, techniqueLabel, nextLotName, noFilters, playStats, sortCandidates,
+  displayNumber, feltAverage, DEFAULT_SESSION_SIZE, sessionSize, filterCandidates, formatDuration, lotTemplate, techniqueLabel, nextLotName, noFilters, playStats, sortCandidates,
   type Candidate, type Filters, type Play, type SortKey,
 } from './logic';
 import { esc } from '../ui/palette';
@@ -81,7 +81,9 @@ export async function renderList(root: HTMLElement, ctx: LabCtx): Promise<() => 
     const list = sortCandidates(filterCandidates(cands, filters), key, dir);
     root.innerHTML = `<div class="lab-m"><div class="lab-head"><h2>Lot</h2>`
       + `<select id="lab-lot" aria-label="Lot">${lots.map((l) => `<option value="${esc(l.lot)}"${l.lot === ctx.lot ? ' selected' : ''}>${esc(l.lot)} · ${l.count}</option>`).join('')}</select>`
-      + `<button type="button" class="lab-btn pri" id="lab-new">Lancer un lot…</button></div>`
+      + `<button type="button" class="lab-btn pri" id="lab-new">Lancer un lot…</button>`
+      + `<span class="lab-newsess"><label>Taille <input type="number" inputmode="numeric" id="lab-sess-size" min="1" max="${cands.length || 1}" value="${Math.min(DEFAULT_SESSION_SIZE, cands.length || 1)}"></label>`
+      + `<button type="button" class="lab-btn acc" id="lab-sess-new"${cands.length ? '' : ' disabled'}>Nouvelle session</button></span></div>`
       + `<div id="lab-gen"></div>${stats()}`
       + `<div class="lab-filters"><label>Note <select data-f="rating"${ctx.creation ? '' : ' disabled title="Mode création requis : la note est cachée"'}>${opts(['1', '2', '3', '4'], filters.rating, 'toutes')}</select></label>`
       + `<label>Mécanique <select data-f="mechanic">${opts(MECHANICS, filters.mechanic, 'toutes')}</select></label>`
@@ -130,6 +132,15 @@ export async function renderList(root: HTMLElement, ctx: LabCtx): Promise<() => 
     } catch (e) { ctx.toast((e as Error).message); }
   }
 
+  async function newSession(): Promise<void> {
+    const size = sessionSize(root.querySelector<HTMLInputElement>('#lab-sess-size')!.value, cands.length);
+    if (size === null) { ctx.toast('La taille doit être un entier à partir de 1.'); return; }
+    try {
+      const s = await api.createSession(ctx.lot, size, ctx.player);
+      ctx.navigate(`#/session/${s.id}`);
+    } catch (e) { ctx.toast((e as Error).message); }
+  }
+
   root.onclick = async (e) => {
     const t = e.target as Element;
     const star = t.closest<HTMLElement>('[data-star]');
@@ -144,6 +155,7 @@ export async function renderList(root: HTMLElement, ctx: LabCtx): Promise<() => 
     else if (th) { const k = th.dataset.k as SortKey; if (k === key) dir = dir === 1 ? -1 : 1; else { key = k; dir = 1; } draw(); }
     else if (tr) { sel = Number(tr.dataset.i); draw(); }
     else if (t.id === 'lab-new') genForm();
+    else if (t.id === 'lab-sess-new') await newSession();
     else if (t.id === 'lab-cancel') root.querySelector<HTMLElement>('#lab-gen')!.innerHTML = '';
     else if (t.id === 'lab-run') await runGeneration();
   };

@@ -5,7 +5,7 @@ Local tool to generate, play, rate and promote candidate grids. Launch: `lab/run
 ## Files (all in `lab/`, versioned)
 
 - `candidates/<lot>.json`: grids written by `dispatch-solver generate`, with a `lab` block (index from 0, family, mechanics, trace summary, bulletin draft). A lot name is never reused: the server refuses an existing one, so `lot:index` always points to the same grid.
-- `sessions/<id>.json`: an ordered list of candidates to play in a row: `{"title": …, "items": [{"lot": …, "index": …, "hold"?: "text"}, …]}` (`index` from 0). An item with `hold` is shown with that text and cannot be launched. Page: `#/session` (opens the only session, else lists them), `#/session/<id>`.
+- `sessions/<id>.json`: an ordered list of candidates to play in a row: `{"title": …, "items": [{"lot": …, "index": …, "hold"?: "text"}, …]}` (`index` from 0). An item with `hold` is shown with that text and cannot be launched. Page: `#/session` (lists every session, newest first), `#/session/<id>`. A session is written by hand or drawn from a lot (below).
 - `plays.jsonl`: one JSON line per game (below).
 - `notes.json`: per `lot:index`: `kept`, `comment` (`{player: text}`, one per player; `""` for an older comment whose author is unknown), `felt` (first rating of each player), `bulletin` edits, `promoted`.
 
@@ -45,6 +45,15 @@ Listens on 127.0.0.1. Every request must carry a local `Host`; a request with an
 
 ## Sessions
 
-- Server: `GET /api/sessions` (id, title, count) and `GET /api/session/<id>?player=…`: items in order with `position`, `lot`, `index`, `number` (index + 1), `state` for that player (`solved`, `abandoned`, `todo`; stray `phantom` plays ignored, a solve wins over an abandon), `attempts`, `playable` and `hold`. Nothing else is sent: no note, rating, technique or draft title, so the blind rules hold.
+- Server: `GET /api/sessions` (id, title, count; newest file first) and `GET /api/session/<id>?player=…`: items in order with `position`, `lot`, `index`, `number` (index + 1), `state` for that player (`solved`, `abandoned`, `todo`; stray `phantom` plays ignored, a solve wins over an abandon), `attempts`, `playable` and `hold`. Nothing else is sent: no note, rating, technique or draft title, so the blind rules hold.
 - Page `#/session/<id>`: numbered list, progress « 7 / 16 », « Jouer la suivante » (first item not solved, not held, playable; an abandoned grid is played again).
 - A game started from the session has the id in its hash (`#/partie/<lot>/<i>/<session>`, then `#/fin/<lot>/<i>/<session>`). The end screen is the usual one, plus a reminder « Belle ou pas belle, et pourquoi ? », « Retour à la session » and « Grille suivante » (enabled once the rating is validated). After the last grid: `#/session/<id>/fin`, with « Session terminée » when nothing is left to play.
+
+### Nouvelle session (tirage)
+
+- Page: on the lot list, « Nouvelle session » with an editable size (16 by default, capped to the lot size) draws a session, writes it and opens it in the « Session » tab.
+- Server: `POST /api/sessions` with `{lot, size?, player?}` writes `lab/sessions/<lot>-<n>.json` (`n` = highest existing + 1: a name is never reused, even after a deletion) and returns the session as `GET /api/session/<id>` does.
+- Draw (`draw_session`), deterministic (seed = `<lot>:<n>`): playable candidates only (no staircase), minus those the `player` has already played (a non-phantom play, `attempt >= 1`; without `player`, nothing is excluded).
+  - Balance: same count per solver rating when possible (round-robin, a rating short of candidates gives its share to the others), then within a rating the candidate that adds the least to the families and mechanics already drawn.
+  - Order: starts with the lowest rating, then the rating with most candidates left that differs from the previous one (never twice in a row when possible).
+- Blind: the rating is used on the server only. The file holds `title` and `items: [{lot, index}]`; the answer has no rating, technique or draft title.
