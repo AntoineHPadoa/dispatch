@@ -335,3 +335,68 @@ La galerie les montre fidèlement ; ils sont à corriger dans le jeu, pas dans l
 
 - **Images** : les 78 vues déjà contrôlées sont identiques au pixel à mes captures de la contre-vérification. Seule M-19 diffère, par les glyphes, comme avant ; contenu identique.
 - **Build** : `npm test` 384 tests verts, `npm run typecheck` et `npm run build` OK, `diff -r` du `dist/` contre `main` sans différence.
+
+## Contrôle galerie web v2 (commit `327b569`)
+
+### Verdict
+
+- **33 vues web contrôlées sur 33** (W-01…W-33) : 33 OK, aucun écart.
+- **Mention d'un élément disparu** : aucune dans les légendes.
+- **Build** : 421 tests verts, typecheck et build OK, `check_unique.py` vert. Le code du jeu de la branche est exactement celui de sa base `a8eac44` (aucun fichier de `web/src`, `vite.config.ts`, `index.html` ni `public/` ne diffère).
+
+### Méthode
+
+- **Builds** reconstruits depuis la branche :
+  - prod : `dist/`, sans `DISPATCH_GRIDS` ;
+  - galerie : ma propre fusion, identique au `dist-gallery/` de s1.
+- **Mon script de capture**, adapté au nouveau format : les lignes de `grids.json` comptent désormais depuis le bas de la grille, météo comprise, donc plus de décalage météo. Le reste est inchangé : cases visées par `getScreenCTM()`, mes propres gestes et mes propres graines.
+- **Répartition** : 23 vues capturées sur la prod (vraies grilles, accueil, dossier), 10 sur le build de galerie (grilles 901 à 907). Mêmes largeurs : 1280 px ; 1024 px pour W-31 et W-32 ; 960 px pour W-33.
+- **Comparaison** pixel à pixel avec les 33 images de la page. Images de travail dans `docs/reviews/v3-ui-gallery/{v2,diff-v2}/`.
+- **Légendes** : chacune vérifiée sur son image, plus une recherche des termes des éléments retirés par R1 à R22 (« rampe », « épaule », « inventaire », « Technique du jour », « touche une centrale pour la choisir », « pompe » et « turbine » sur la STEP, pastilles « Réacteur … → … », bouton « Imprimer » du jeu, bouton plein).
+
+### Résultats par vue
+
+| Vues | Pixel | Légende |
+|---|---|---|
+| W-01…W-12, W-14…W-16, W-18…W-33 | identiques | exactes |
+| W-13, W-17 | glyphes seulement (police chargée à froid, premier écran de la session de galerie), aucune différence de contenu | exactes |
+
+### Points de légende vérifiés
+
+- **Accueil et dossier (R1 à R8)** :
+  - W-01 : « À servir », bouton à contour « Prendre le quart », pas de pastilles de centrales ; « Imprimer toutes les grilles » en haut, à côté de « Comment jouer ».
+  - W-03 : « Revoir le quart », même style que « Prendre le quart ».
+  - W-04, W-05 : pas de description sous le titre, une ligne de récit par carte, boutons « Jouer » et « Reprendre » à contour.
+- **Panneau de droite (R9 à R16)** :
+  - W-06, W-07, W-10, W-14 : ligne de récit en italique à la place de « Technique du jour ».
+  - Carnet sans sous-titres ni texte d'aide.
+  - Compteurs « 0 / ∞ » ou « 0 / 3 » (W-08, W-09).
+  - Pas de ligne d'import sur la grille 11 (W-08).
+  - STEP barrée une fois posée (W-16, W-18, W-26) ; flèches ▲/▼ sans mots (W-16).
+  - Publication « Limite CO₂ » en tête de liste et jauge sans « plafond » (W-12). Le mot reste dans le titre de la grille fictive 903 et dans sa consigne, ce que R16 permet.
+- **Grille (R17 à R21)** :
+  - Programmes en lignes colorées sans pastille de texte (W-10, W-11).
+  - Cases exportées en contour pointillé (W-26, W-27).
+  - ✓ vert ou icône rouge en coin de pastille (W-10, W-23, W-26, W-28).
+  - Plus de slider : W-29 montre les 12 créneaux entiers à 1280 px ; W-31 et W-33 montrent la grille entière à côté du panneau. W-32 est identique au pixel à W-31, ce qui confirme « rien ne bouge ».
+- **Absence du bouton « Imprimer »** : il ne figure dans aucune barre d'outils (Gomme, Annuler, Recommencer), ni sous le verdict (« Grille suivante » seul en W-26, « Accueil » seul en W-27).
+
+### Tableau du slider dans `docs/next/ui-gallery.md`
+
+- Toutes les cases sont à « non ».
+- Mon balayage, sur le build de prod de la branche, confirme qu'aucune vraie grille n'affiche le slider :
+  - de 320 à 1440 px par pas de 40, pour les 13 grilles publiées ;
+  - de 861 à 1120 px par pas de 7, pour les grilles 1, 7 et 13 (l'ancienne plage où il apparaissait).
+
+### Page HTML
+
+- 33 figures pour 33 images.
+- Chaque `<img>` vaut la moitié de la taille de son PNG : taille naturelle, sans recadrage.
+- Les étiquettes de largeur sont justes : 1280, 1024 et 960 px.
+- 10 badges « grille fictive ».
+- 23 vues annoncées « build de prod » et 10 « build de galerie », justes.
+
+### Remarques (pas des écarts)
+
+- **Catégorie mal nommée** : W-31 à W-33 sont rangées sous « Slider de défilement » alors qu'elles montrent son absence. Leurs légendes le disent clairement ; un intitulé du type « Fenêtres étroites » serait plus juste.
+- **Mobile et papier non régénérés** : ces deux galeries ne l'ont pas été dans ce commit, et la doc le dit pour M-29, M-31 et M-33. Elles montrent encore l'ancienne interface et sont hors de ce contrôle.
