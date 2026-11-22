@@ -8,7 +8,7 @@
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 const META = {
-  web: { title: 'Dispatch web', h1: 'Dispatch à l’écran', lead: 'Le jeu à 1280 px, joué à la souris.' },
+  web: { title: 'Dispatch web', h1: 'Dispatch à l’écran', lead: 'Le jeu à 1280 px, joué à la souris, plus trois vues dans des fenêtres plus étroites (1024 et 960 px) qui montrent le slider de défilement sous la grille.' },
   mobile: { title: 'Dispatch mobile', h1: 'Dispatch sur téléphone', lead: 'Le jeu à 375 px, joué au toucher, avec trois vues témoins à 320 px.' },
   papier: { title: 'Dispatch papier', h1: 'Dispatch sur papier', lead: 'Les fiches A4 imprimées depuis le jeu, page entière, et l’aperçu d’impression à l’écran.' },
 };
