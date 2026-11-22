@@ -90,3 +90,15 @@ Essai sur `main` (à jour, `v3-meteo-c` compris), dans l'ordre `v3-web-home`, `v
 - **`v3-web-board`** : aucun conflit. Fusion automatique de `app.css`, `board.ts`, `game.ts` et `ui.test.ts`.
 - **Arbre fusionné** : 418 tests verts, typecheck OK, build OK, `check-ui.mjs` 205/205.
 - **Refait avec R22 (`cf1ebff`)** : toujours aucun conflit pour `v3-web-board` ; 419 tests verts, typecheck OK.
+
+## Fusion finale (home `def3ced`, panel `9a0f7dd`, board `cf1ebff`)
+
+Fusion sur `main` (`7ecbace`) dans l'ordre home, panel, board.
+- **Conflit** : toujours un seul, `web/tests/ramp.test.ts` (home × panel), résolu comme décrit plus haut. `v3-web-board` passe sans conflit, y compris dans `game.ts`, que les corrections de home touchent aussi.
+- **Résultats sur l'arbre fusionné** :
+  - Vitest : 421 tests verts ;
+  - typecheck et build OK ;
+  - `check_unique.py` OK ;
+  - tests du labo (`pytest lab/tests`) : 178 verts ;
+  - `check-ui.mjs` : 205/205.
+- **Contrôle visuel à 1280 px** : grille 7 (compteur à côté des pictos, aucun bouton Imprimer) et dossier « Premiers pas » (deux-points insécables, boutons à contour).

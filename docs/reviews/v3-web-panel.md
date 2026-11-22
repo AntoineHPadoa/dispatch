@@ -56,3 +56,12 @@ Elles restent sur la fiche papier (`print.ts:36`). À l'humain de confirmer que 
 
 - « Import d'Allemagne » / « Import du Royaume-Uni » sur 2 lignes à 1280 px (colonne de nom à 96 px) : signalé par l'auteur, lisible.
 - Jauge CO₂ : le détail garde « tac » en minuscules (« tac 2 »), comme avant la branche.
+
+## Corrections relues (`9a0f7dd`)
+
+**OK : les 3 écarts sont corrigés, rien de cassé.**
+1. **Compteur à la ligne** : les pictos passent dans un bloc `.glyphs` qui se replie seul ; `.bars` ne se replie plus, et `.count` est en `flex: none` et `nowrap`. Sur la grille 7 à 1280 px, « 0 / 7 » reste sur la ligne du nucléaire, à droite des pictos. Un test couvre ce cas. check-ui ne trouve aucun défilement horizontal à 375 et 320 px.
+2. **Ordre CO₂** : les centrales, puis les imports, chacun par points décroissants ; à égalité, le tri garde l'ordre de préséance. On obtient « charbon 3, TAC 2, gaz 1, import d'Allemagne 3, import du Royaume-Uni 1 », exactement le texte validé. Un test le vérifie.
+3. **Compte d'indices du labo** : `clue_source` inclut `co2_cap` (`lab_server.py`) et `ClueSource` l'accepte (`lab/logic.ts`). Tests du labo : 178 verts ; test Vitest ajouté.
+- **Point à trancher, règles des intros de tutos absentes de l'écran** : hors de ce commit, il reste à décider.
+- **Fusion à trois** : voir `v3-web-board.md`, section « Fusion finale ».

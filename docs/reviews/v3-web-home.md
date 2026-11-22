@@ -71,3 +71,12 @@ Essai de fusion sur `main` : `v3-web-panel`, puis `v3-web-home`. Un seul conflit
 - `v3-web-home` renomme cette indication « à paliers, 3 à 5 créneaux ».
 
 La résolution consiste à garder le test de `v3-web-panel` en remplaçant la chaîne papier par « à paliers, 3 à 5 créneaux ». Aucun conflit dans `fr.ts` : la suppression de `techniqueOfDay` par `v3-web-panel` passe.
+
+## Corrections relues (`def3ced`)
+
+**OK : les écarts sont corrigés, rien de cassé.**
+- **Bouton « Imprimer » du bandeau « Bouclé »** : retiré, suivant la décision humaine q381. Le bouton, `print` de `GameContext`, `UI.tools.print`, la règle CSS `.print-tool` et le `print` du labo (`lab/play.ts`) sont supprimés ensemble ; plus aucune référence dans `web/src`. Ctrl+P et « Imprimer toutes les grilles » restent les deux chemins d'impression.
+- **Écart 1, deux-points** : `frenchSpaces(blurb)` (`home.ts`). Sur le dossier à 1280 px, la carte 8 affiche désormais « par paliers : surveille ses bords » sans « : » en début de ligne.
+- **Écart 2, champ `lead`** : supprimé de `fr.ts` et de `home.ts`.
+- **Point à trancher, en-tête sous 861 px** : inchangé par ce commit, il reste à décider.
+- **Fusion à trois** : voir `v3-web-board.md`, section « Fusion finale ».
