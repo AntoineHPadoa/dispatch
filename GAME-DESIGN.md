@@ -84,7 +84,7 @@ Chacune s'active par grille. Elles créent du choix, et c'est ce choix qui fait 
   - À chaque créneau : imports + exports avec ce pays ≤ capacité de la ligne.
   - Plusieurs voisins possibles (ex. Allemagne, Royaume-Uni, Espagne), chacun avec sa ligne.
   - Les voisins n'ont **pas de prix** : seuls la capacité et les indices comptent.
-- **Surplus** : une colonne de demande résiduelle négative doit être absorbée par des exports ou par un pompage de STEP (pas d'écrêtement) : les briques météo au-dessus de la demande sont couvertes par ces exports ou ce pompage. Un surplus casse les rubans de nucléaire, un export permet de les prolonger. Une marche de météo coupe aussi toute ligne qu'elle traverse : un ruban ne passe pas sur une brique.
+- **Surplus** : une colonne de demande résiduelle négative doit être absorbée par des exports ou par un pompage de STEP (pas d'écrêtement) : les briques météo au-dessus de la demande sont couvertes par ces exports ou ce pompage. Un surplus casse les rubans de nucléaire, un export permet de les prolonger.
 - **STEP (stockage par pompage)** : une paire pompage ▲ / turbinage ▼. Le pompage ajoute une case à remplir dans un créneau, le turbinage en retire une dans un créneau **plus tard**. Le nombre de paires est fixé par la grille. Usage typique : remplir un creux pour prolonger un ruban, raboter une pointe.
 - **Plafond CO₂** : la somme du CO₂ des cases posées ne dépasse pas le plafond. Avec plusieurs voisins, chaque pays a son **CO₂ par case importée** : sous plafond, le choix du pays devient une vraie décision. Le contrôle se fait en comptant des cases.
 
@@ -221,7 +221,7 @@ Une grille par technique, en inventaire exact, dans cet ordre : poser l'inventai
     {"type": "flow", "col": 7, "country": "DE", "dir": "export", "value": 1},
     {"type": "exchanges", "exports": {"DE": 1}, "imports": {"DE": 0}, "step": 1}
   ],
-  "solution": {"exports": {"DE": [0, 0, 0, 0, 0, 0, 0, 1]}, "step": [{"pump": 1, "turbine": 6}], "placements": [{"piece": "N", "row": 0, "col": 0, "len": 8}]},
+  "solution": {"exports": {"DE": [0, 0, 0, 0, 0, 0, 0, 1]}, "step": [{"pump": 1, "turbine": 6}], "placements": [{"piece": "N", "row": 3, "col": 0, "len": 8}]},
   "difficulty": {"rating": 3, "label": "Difficile", "techniques": ["ribbon", "share_out"]}
 }
 ```
