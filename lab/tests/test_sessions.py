@@ -95,3 +95,11 @@ def test_sessions_listed_newest_first(api, lab):
         os.utime(lab.dir / "sessions" / f"{name}.json", (1000 + n, 1000 + n))
     os.utime(lab.dir / "sessions" / "a.json", (2000, 2000))
     assert [s["id"] for s in api("GET", "/api/sessions")[1]] == ["a", "c", "b"]
+
+
+def test_sort_uses_the_stored_creation_time_over_the_file_time(api, lab):
+    import os
+    write_session(lab, "old", {**SESSION, "created": 1000})
+    write_session(lab, "new", {**SESSION, "created": 2000})
+    os.utime(lab.dir / "sessions" / "old.json", (9000, 9000))  # touched afterwards: still the older session
+    assert [s["id"] for s in api("GET", "/api/sessions")[1]] == ["new", "old"]

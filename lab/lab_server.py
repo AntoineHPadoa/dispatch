@@ -43,6 +43,7 @@ PHANTOM_MS = 10_000  # an abandon shorter than this, or without any move, is a s
 # Solver measures hidden from a player who has not rated the candidate yet.
 HIDDEN_PLAY_KEYS = ("outcome", "ms", "wall_ms", "errors", "undos", "erasers", "resets", "moves", "felt")
 DEFAULT_SESSION_SIZE = 16
+COUNTERS_FILE = ".counters.json"  # last session number per lot, in lab/sessions/ (not a session)
 UNKNOWN_AUTHOR = ""  # key of a comment written before comments were stored per player, whose author is unknown
 
 
@@ -86,7 +87,7 @@ def has_ramp(g: dict[str, Any]) -> bool:
 def draw_session(pool: list[tuple[int, dict[str, Any]]], size: int, rng: random.Random) -> list[int]:
     """Pick `size` candidate indexes from `pool` and order them (see Lab.create_session)."""
     def rating(g: dict[str, Any]) -> int:
-        return int(g.get("difficulty", {}).get("rating") or 0)
+        return int(g["difficulty"]["rating"])
 
     def tags(g: dict[str, Any]) -> list[str]:
         lab = g.get("lab", {})
@@ -111,18 +112,14 @@ def draw_session(pool: list[tuple[int, dict[str, Any]]], size: int, rng: random.
             for x in tags(best[1]):
                 seen[x] = seen.get(x, 0) + 1
             remaining -= 1
-    # Order: lowest rating first, then the rating with most left that differs from the previous one.
-    out: list[int] = []
-    previous = None
-    while any(picked.values()):
-        choices = [r for r in picked if picked[r] and r != previous] or [r for r in picked if picked[r]]
-        if previous is None:
-            r = min(choices)
-        else:
-            top = max(len(picked[c]) for c in choices)
-            r = rng.choice([c for c in choices if len(picked[c]) == top])
-        out.append(picked[r].pop(0))
-        previous = r
+    # Order: a random permutation (seeded), the only constraint being an easiest grid first. No rule on neighbours:
+    # any structure in the order would let the player guess the rating of the next grid.
+    pool_left = [i for r in picked for i in picked[r]]
+    lowest = min(r for r in picked if picked[r])
+    first = rng.choice(picked[lowest])
+    rest = [i for i in pool_left if i != first]
+    rng.shuffle(rest)
+    out = [first] + rest
     return out
 
 
@@ -248,10 +245,10 @@ class Lab:
     # ---- sessions (ordered candidates to play in a row)
     def sessions(self) -> list[dict[str, Any]]:
         out = []
-        # Most recent first (file time, then name): the newest session is at the top of the page.
-        files = sorted((self.dir / "sessions").glob("*.json"), key=lambda f: (f.stat().st_mtime_ns, f.name), reverse=True)
-        for f in files:
-            data = self._read_json(f, {})
+        loaded = [(f, self._read_json(f, {})) for f in (self.dir / "sessions").glob("*.json") if not f.name.startswith(".")]
+        # Most recent first: the creation time stored in the file, else the file time (hand-written sessions).
+        loaded.sort(key=lambda fd: (fd[1].get("created") or fd[0].stat().st_mtime, fd[0].name), reverse=True)
+        for f, data in loaded:
             out.append({"id": f.stem, "title": data.get("title", f.stem), "count": len(data.get("items", []))})
         return out
 
@@ -261,7 +258,7 @@ class Lab:
         Nothing but lot, number, state and the optional `hold` text is sent: no note, technique or draft title.
         """
         path = self.dir / "sessions" / f"{self._name(session_id)}.json"
-        if not path.exists():
+        if session_id.startswith(".") or not path.exists():
             raise LabError(f"unknown session {session_id}", 404)
         data = self._read_json(path, {})
         plays = [p for p in self.plays() if p.get("player") == player and not p.get("phantom")]
@@ -299,16 +296,20 @@ class Lab:
             played = {p["index"] for p in self.plays(lot) if p.get("player") == player and not p.get("phantom")
                       and p.get("attempt", 1) >= 1} if player else set()
             pool = [(self._index(g, pos), g) for pos, g in enumerate(grids) if not has_ramp(g)]
-            pool = [(i, g) for i, g in pool if i not in played]
+            pool = [(i, g) for i, g in pool if i not in played and g.get("difficulty", {}).get("rating")]  # unrated: cannot be balanced
             if not pool:
                 raise LabError(f"lot {lot} has no candidate left to play", 409)
             sessions_dir = self.dir / "sessions"
             used = [int(m.group(1)) for f in sessions_dir.glob(f"{lot}-*.json") if (m := re.fullmatch(rf"{re.escape(lot)}-(\d+)", f.stem))]
-            n = max(used, default=0) + 1
+            counters_path = sessions_dir / COUNTERS_FILE
+            counters = self._read_json(counters_path, {})
+            n = max(used + [int(counters.get(lot, 0))]) + 1  # the last n of a lot is remembered: a name is never handed out twice
+            counters[lot] = n
+            self._write_json(counters_path, counters)
             order = draw_session(pool, min(size, len(pool)), random.Random(f"{lot}:{n}"))
             session_id = f"{lot}-{n}"
             self._write_json(sessions_dir / f"{session_id}.json",
-                             {"title": f"Session {lot} n° {n}", "items": [{"lot": lot, "index": i} for i in order]})
+                             {"title": f"Session {lot} n° {n}", "created": time.time(), "items": [{"lot": lot, "index": i} for i in order]})
         return self.session(session_id, player)
 
     # ---- plays

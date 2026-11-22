@@ -62,11 +62,34 @@ def test_scarce_rating_is_not_blocking(api, lab):
     assert len(s["items"]) == 8 and sorted({rating_of(grids, i["index"]) for i in s["items"]}) == [1, 2, 3]
 
 
-def test_order_starts_easy_and_never_repeats_a_rating(api, lab):
+def test_order_starts_with_an_easy_grid(api, lab):
     grids = big_lot(lab)
-    ratings = [rating_of(grids, i["index"]) for i in draw(api)["items"]]
-    assert ratings[0] == 1
-    assert all(a != b for a, b in zip(ratings, ratings[1:]))
+    for n in range(5):
+        ratings = [rating_of(grids, i["index"]) for i in draw(api)["items"]]
+        assert ratings[0] == 1
+
+
+def test_order_does_not_reveal_the_ratings(lab):
+    """No structure in the order: blocks of 4 are rarely a permutation of the ratings (it was 200/200 with an alternation rule)."""
+    import lab_server, random
+    grids = big_lot(lab, count=40)
+    pool = list(enumerate(grids))
+    blocks_perm = adjacent = 0
+    for seed in range(200):
+        order = lab_server.draw_session(pool, 16, random.Random(f"big:{seed}"))
+        ratings = [rating_of(grids, i) for i in order]
+        assert ratings[0] == 1 and sorted(ratings) == [1] * 4 + [2] * 4 + [3] * 4 + [4] * 4
+        blocks_perm += all(sorted(ratings[k:k + 4]) == [1, 2, 3, 4] for k in range(0, 16, 4))
+        adjacent += any(a == b for a, b in zip(ratings, ratings[1:]))
+    assert blocks_perm / 200 < 0.10
+    assert adjacent / 200 > 0.5  # no adjacency rule either: repeats are common
+
+
+def test_unrated_candidates_are_left_out(api, lab):
+    grids = big_lot(lab, count=6)
+    del grids[0]["difficulty"]["rating"]
+    (lab.dir / "candidates" / "big.json").write_text(json.dumps(grids))
+    assert 0 not in {i["index"] for i in draw(api, size=6)["items"]}
 
 
 def test_diversity_of_families_and_mechanics(api, lab):
@@ -95,6 +118,17 @@ def test_same_draw_after_deleting_the_file_is_not_reused_but_n_grows(api, lab):
     assert draw(api)["id"] == "big-3"  # the name of a deleted session is not handed out again
 
 
+def test_deleting_the_last_session_does_not_free_its_name(api, lab):
+    big_lot(lab)
+    assert draw(api)["id"] == "big-1"
+    assert draw(api)["id"] == "big-2"
+    (lab.dir / "sessions" / "big-2.json").unlink()
+    assert draw(api)["id"] == "big-3"
+    assert draw(api, size=4)["id"] == "big-4"
+    assert api("GET", "/api/session/.counters")[0] == 404  # the counters file is not a session
+    assert all(not s["id"].startswith(".") for s in api("GET", "/api/sessions")[1])
+
+
 def test_played_grids_of_the_current_player_are_excluded(api, lab):
     big_lot(lab)
     for i in (0, 1, 2, 3):
@@ -115,7 +149,7 @@ def test_blind_file_and_answer(api, lab):
     for secret in ("rating", "difficulty", "techniques", "family", "pointe_soir", "mechanics", "step", "Pointe", "bulletin"):
         assert secret not in raw
     saved = json.loads((lab.dir / "sessions" / "big-1.json").read_text())
-    assert set(saved) == {"title", "items"} and all(set(it) == {"lot", "index"} for it in saved["items"])
+    assert set(saved) == {"title", "created", "items"} and all(set(it) == {"lot", "index"} for it in saved["items"])
 
 
 def test_errors(api, lab):

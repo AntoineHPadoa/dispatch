@@ -45,15 +45,16 @@ Listens on 127.0.0.1. Every request must carry a local `Host`; a request with an
 
 ## Sessions
 
-- Server: `GET /api/sessions` (id, title, count; newest file first) and `GET /api/session/<id>?player=…`: items in order with `position`, `lot`, `index`, `number` (index + 1), `state` for that player (`solved`, `abandoned`, `todo`; stray `phantom` plays ignored, a solve wins over an abandon), `attempts`, `playable` and `hold`. Nothing else is sent: no note, rating, technique or draft title, so the blind rules hold.
+- Server: `GET /api/sessions` (id, title, count; newest first by the `created` time stored in the file, else the file time) and `GET /api/session/<id>?player=…`: items in order with `position`, `lot`, `index`, `number` (index + 1), `state` for that player (`solved`, `abandoned`, `todo`; stray `phantom` plays ignored, a solve wins over an abandon), `attempts`, `playable` and `hold`. Nothing else is sent: no note, rating, technique or draft title, so the blind rules hold.
 - Page `#/session/<id>`: numbered list, progress « 7 / 16 », « Jouer la suivante » (first item not solved, not held, playable; an abandoned grid is played again).
 - A game started from the session has the id in its hash (`#/partie/<lot>/<i>/<session>`, then `#/fin/<lot>/<i>/<session>`). The end screen is the usual one, plus a reminder « Belle ou pas belle, et pourquoi ? », « Retour à la session » and « Grille suivante » (enabled once the rating is validated). After the last grid: `#/session/<id>/fin`, with « Session terminée » when nothing is left to play.
 
 ### Nouvelle session (tirage)
 
 - Page: on the lot list, « Nouvelle session » with an editable size (16 by default, capped to the lot size) draws a session, writes it and opens it in the « Session » tab.
-- Server: `POST /api/sessions` with `{lot, size?, player?}` writes `lab/sessions/<lot>-<n>.json` (`n` = highest existing + 1: a name is never reused, even after a deletion) and returns the session as `GET /api/session/<id>` does.
+- Server: `POST /api/sessions` with `{lot, size?, player?}` writes `lab/sessions/<lot>-<n>.json` (`n` = last number used for the lot + 1, remembered in `lab/sessions/.counters.json` and not only read from the files: a name is never reused, even after deleting the latest session) and returns the session as `GET /api/session/<id>` does.
 - Draw (`draw_session`), deterministic (seed = `<lot>:<n>`): playable candidates only (no staircase), minus those the `player` has already played (a non-phantom play, `attempt >= 1`; without `player`, nothing is excluded).
   - Balance: same count per solver rating when possible (round-robin, a rating short of candidates gives its share to the others), then within a rating the candidate that adds the least to the families and mechanics already drawn.
-  - Order: starts with the lowest rating, then the rating with most candidates left that differs from the previous one (never twice in a row when possible).
-- Blind: the rating is used on the server only. The file holds `title` and `items: [{lot, index}]`; the answer has no rating, technique or draft title.
+  - Order: a random permutation (same seed), the only constraint being an easiest grid first. No rule on neighbouring ratings: any pattern in the order would reveal the rating of the next grid once the player has seen the previous ones.
+  - Candidates without a solver rating are left out (they cannot be balanced).
+- Blind: the rating is used on the server only. The file holds `title`, `created` (epoch seconds) and `items: [{lot, index}]`; the answer has no rating, technique or draft title.
