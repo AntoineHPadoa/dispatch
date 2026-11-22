@@ -8,10 +8,13 @@
  * - Fixed layout: the card never moves while the player exports or pumps. Rows cover the highest
  *   reach of every column, so the room above the demand is reserved from the start but drawn empty:
  *   a dashed cell shows only where an export or a pumping has been laid.
- * - Slot clues (price, record, programme name) share one band under the slot hours, aligned on the
- *   columns; a programme's range is a thin bar right under the grid. Each neighbor has a row of
- *   cells under the band, headed by its id in a left gutter, and a tap on a cell exports a block
- *   in that slot.
+ * - Slot clues (price, record) share one band under the slot hours, aligned on the columns. A
+ *   programme is a thin coloured line right under the grid on its range, packed on as few lanes as
+ *   possible; on paper its name also stands in the band. Each neighbor has a row of cells under the
+ *   band, headed by its id in a left gutter, and a tap on a cell exports a block in that slot.
+ * - A clue's state is one mark on the top right corner of its pill (or cell, or programme line end):
+ *   a green tick once verified, a red "!" once contradicted.
+ * - An exported or pumped cell keeps its dashed outline when a piece covers it.
  * - Rectangles are drawn as rects; a coal ramp as one outline following its profile (rounded
  *   corners on screen, concave ones included; square on paper).
  */
@@ -120,8 +123,8 @@ const BAND_PITCH = 26;
 /** Gap under the grid for the programme bar: on paper it clears the thick demand contour (3.2 wide). */
 export const barTop = (style: BoardStyle): number => (style === 'B' ? 4 : 1);
 const barDrop = (style: BoardStyle): number => barTop(style) + 3;
-/** Width a pill takes once verified: it grows by 10 for its tick, unless that overflows its slot (tick on the corner). */
-const tickedWidth = (w: number, cell: number): number => (w + 10 > cell - 2 ? w : w + 10);
+/** Pitch of the programme lanes under the grid (a 4 high line plus its gap). */
+const LINE_PITCH = 7;
 
 type BandKind = 'price' | 'column' | 'bar';
 export interface BandItem {
@@ -143,13 +146,23 @@ export interface BandItem {
   range?: [number, number];
 }
 
-export interface BandPlan { items: BandItem[]; height: number; /** Shift of the hour labels (room for the thin programme bar). */ offset: number }
+/** A programme line under the grid (screen): its clue, range and lane (0 right under the grid). */
+export interface ProgrammeLine { index: number; range: [number, number]; lane: number }
+
+export interface BandPlan {
+  items: BandItem[];
+  /** Programme lines (screen only; on paper programmes are band items). */
+  lines: ProgrammeLine[];
+  height: number;
+  /** Shift of the hour labels (room for the programme lines). */
+  offset: number;
+}
 
 /**
- * Where each slot clue sits under the hours. Every item is centred on its slot (a programme on its
- * range) and reserves the width it takes once verified; items that would come closer than 4 go on
- * the next lane, so nothing overlaps whatever the play state. Programmes draw their range as a thin
- * bar under the grid, which pushes the hours and the band down by 4.
+ * Where each slot clue sits under the hours. Every item is centred on its slot (a paper programme
+ * on its range); items that would come closer than 4 go on the next lane, so nothing overlaps
+ * whatever the play state (the state mark sits on the corner). Screen programmes are only lines
+ * under the grid: two that share no slot share a lane. The lines push the hours and the band down.
  */
 export function bandPlan(grid: Grid, cell: number, style: BoardStyle = 'A'): BandPlan {
   const X0 = boardLead(grid);
@@ -157,13 +170,16 @@ export function bandPlan(grid: Grid, cell: number, style: BoardStyle = 'A'): Ban
   const minX = X0;
   const maxX = X0 + grid.columns.length * cell;
   const raw: Omit<BandItem, 'top' | 'lane'>[] = [];
-  const extent = (mid: number, w: number) => {
-    const tot = tickedWidth(w, cell);
+  const extent = (mid: number, tot: number) => {
     const px = Math.min(Math.max(mid - tot / 2, minX), Math.max(minX, maxX - tot));
     return [px, px + tot] as const;
   };
+  const lines: ProgrammeLine[] = [];
+  const lineEnds: number[] = [];
   grid.clues.forEach((cl, index) => {
-    if (cl.type === 'price') {
+    if (cl.type === 'bar' && style === 'A') {
+      lines.push({ index, range: [xs(cl.col) + 6, xs(cl.col + cl.len) - 6], lane: 0 });
+    } else if (cl.type === 'price') {
       const long = priceTag(cl.piece);
       const label = long.length * 5.6 + 10 > cell - 4 ? priceTagShort(cl.piece) : long;
       const w = Math.min(cell - 4, Math.max(cell - 6, label.length * 5.6 + 10));
@@ -188,8 +204,16 @@ export function bandPlan(grid: Grid, cell: number, style: BoardStyle = 'A'): Ban
       raw.push({ kind: 'bar', index, label, w, mid, x1: Math.min(p1, r1), x2: Math.max(p2, r2), range: [r1, r2] });
     }
   });
+  // Lines: greedy by start, a line goes on the first lane free before it (slots never shared).
+  for (const l of [...lines].sort((a, b) => a.range[0] - b.range[0] || a.index - b.index)) {
+    let lane = lineEnds.findIndex((e) => e < l.range[0]);
+    if (lane < 0) { lane = lineEnds.length; lineEnds.push(0); }
+    lineEnds[lane] = l.range[1];
+    l.lane = lane;
+  }
   const items: BandItem[] = [];
-  const offset = raw.some((r) => r.kind === 'bar') ? barDrop(style) : 0;
+  const offset = lineEnds.length ? barDrop(style) + (lineEnds.length - 1) * LINE_PITCH
+    : raw.some((r) => r.kind === 'bar') ? barDrop(style) : 0;
   const ends: number[] = [];
   for (const m of [...raw].sort((a, b) => a.x1 - b.x1 || a.index - b.index)) {
     let lane = ends.findIndex((e) => e + 4 <= m.x1);
@@ -197,7 +221,8 @@ export function bandPlan(grid: Grid, cell: number, style: BoardStyle = 'A'): Ban
     ends[lane] = m.x2;
     items.push({ ...m, lane, top: offset + lane * BAND_PITCH });
   }
-  return { items, height: ends.length ? offset + ends.length * BAND_PITCH : 0, offset };
+  lines.sort((a, b) => a.index - b.index);
+  return { items, lines, height: ends.length ? offset + ends.length * BAND_PITCH : offset, offset };
 }
 
 /**
@@ -288,6 +313,22 @@ export function skyline(x0: number, yBase: number, heights: readonly number[], c
   return pts;
 }
 
+/**
+ * State mark of a clue, centred on (`kx`, `ky`), a pill's top right corner: a green tick once
+ * verified, a red "!" once contradicted, nothing while open. A white ring sets it off the pill.
+ */
+export function clueMark(kx: number, ky: number, st: ClueStatus | null): string {
+  if (st !== 'ok' && st !== 'broken') return '';
+  const ring = `<circle cx="${kx}" cy="${ky}" r="6.2" fill="#fff"/>`;
+  if (st === 'ok') {
+    return `<g class="mark ok">${ring}<circle cx="${kx}" cy="${ky}" r="5" fill="${OK}"/>`
+      + `<path d="M${kx - 2.4} ${ky} l1.7 1.7 l2.9 -3.3" stroke="#fff" stroke-width="1.4" fill="none"/></g>`;
+  }
+  return `<g class="mark bad">${ring}<circle cx="${kx}" cy="${ky}" r="5" fill="${BAD}"/>`
+    + `<path d="M${kx} ${ky - 2.6} v3" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>`
+    + `<circle cx="${kx}" cy="${ky + 2.3}" r=".8" fill="#fff"/></g>`;
+}
+
 let uid = 0;
 
 /** SVG markup of the board. */
@@ -327,11 +368,15 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   // ---- cells: weather, silhouette, exports, pumping, turbined ghosts
   // Cells under an opaque bar are not drawn: their outline would show at the bar's edges.
   const hidden = new Set<string>();
+  /** Cells under any laid piece, faded ones included (their outline shows through). */
+  const hiddenAny = new Set<string>();
   if (A) {
     const fading = new Set(input.preview?.replacing ?? []);
     state.bars.forEach((b, i) => {
-      if (fading.has(i)) return;
-      for (const [r, c] of cellsOf(grid, b)) hidden.add(`${r},${c}`);
+      for (const [r, c] of cellsOf(grid, b)) {
+        hiddenAny.add(`${r},${c}`);
+        if (!fading.has(i)) hidden.add(`${r},${c}`);
+      }
     });
   }
   const box = (c: number, v: number) => ({ bx: x(c) + gap / 2, by: y(v) + gap / 2, w: cell - gap });
@@ -427,6 +472,20 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     }
   });
 
+  // ---- exported and pumped cells under a piece keep their dashed outline (drawn over the piece)
+  if (A) {
+    for (let c = 0; c < n; c++) {
+      const k = sil[c]!;
+      const e = exportsOf(c);
+      for (let r = Math.max(0, k - pumps[c]! - e); r < k; r++) {
+        if (!hiddenAny.has(`${weather[c]! + r},${c}`)) continue;
+        const { bx, by, w } = box(c, weather[c]! + r);
+        const color = r >= k - pumps[c]! ? PIECE_COLORS.B.ink : PIECE_COLORS.I.ink;
+        s += `<rect class="covered" x="${bx + 2.5}" y="${by + 2.5}" width="${w - 5}" height="${w - 5}" rx="${Math.max(0, rad - 2)}" fill="none" stroke="${color}" stroke-width="1.6" stroke-dasharray="4 3" pointer-events="none"/>`;
+      }
+    }
+  }
+
   // ---- preview, anchor, keyboard cursor
   const pv = input.preview;
   if (pv) {
@@ -462,26 +521,16 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   const stack = grid.columns.map(() => 0);
   const topOf = (c: number) => weather[c]! + sil[c]! + turbines[c]! + (input.stepPending === c ? 1 : 0);
   const tagY = (c: number) => y(topOf(c) - 1) - 24 - stack[c]!++ * 22;
-  // A pill centred on `mid`, kept inside the board; a verified pill grows by 10 to hold its tick.
-  // `content(textCentre, left)` draws what is inside.
+  // A pill centred on `mid`, kept inside the board; `content(textCentre, left)` draws what is inside.
+  // Its state mark sits on its top right corner.
   const W = n * cell;
   const minX = X0;
   const maxX = X0 + W;
-  // On narrow cells the tick sits on the pill's corner instead, so the pill keeps within its column.
   const pill = (mid: number, py: number, w: number, bg: string, stroke: string | null,
     content: (tc: number, left: number) => string, st: ClueStatus | null) => {
-    const corner = st === 'ok' && w + 10 > cell - 2;
-    const tot = w + (st === 'ok' && !corner ? 10 : 0);
-    const px = Math.min(Math.max(mid - tot / 2, minX), Math.max(minX, maxX - tot));
-    let o = `<rect x="${px}" y="${py}" width="${tot}" height="18" rx="9" fill="${bg}"${stroke ? ` stroke="${stroke}"` : ''}/>${content(px + w / 2, px)}`;
-    if (st === 'ok') {
-      const kx = corner ? Math.min(px + tot - 2, maxX - 4) : px + tot - 7;
-      const ky = corner ? py + 1 : py + 9;
-      if (corner) o += `<circle cx="${kx}" cy="${ky}" r="6.2" fill="#fff"/>`;
-      o += `<circle cx="${kx}" cy="${ky}" r="5" fill="${OK}"/><path d="M${kx - 2.4} ${ky} l1.7 1.7 l2.9 -3.3" stroke="#fff" stroke-width="1.4" fill="none"/>`;
-    }
-    if (st === 'broken') o += `<rect x="${px - 1.5}" y="${py - 1.5}" width="${tot + 3}" height="21" rx="10.5" fill="none" stroke="${BAD}" stroke-width="2"/>`;
-    return o;
+    const px = Math.min(Math.max(mid - w / 2, minX), Math.max(minX, maxX - w));
+    return `<rect x="${px}" y="${py}" width="${w}" height="18" rx="9" fill="${bg}"${stroke ? ` stroke="${stroke}"` : ''}/>${content(px + w / 2, px)}`
+      + clueMark(Math.min(px + w - 2, maxX - 4), py + 1, st);
   };
   if (A) {
     // STEP tags: "▲ pompe" over the pumped column, "▼ turbine" over the turbined one, both light blue
@@ -553,14 +602,21 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       }).join('');
       s += `<g class="tag">${pill(it.mid, py, it.w, '#fff', A ? '#d9cbd3' : ink, inner, st)}</g>`;
     } else if (cl.type === 'bar' && it.range) {
-      const color = A ? PIECE_COLORS[cl.piece as PieceId].ink : ink;
-      const stroke = st === 'broken' ? BAD : color;
+      // Paper: a thin bar right under the grid on the programme's range; its name sits in the band.
       const [r1, r2] = it.range;
-      // A thin bar right under the grid on the programme's range; its name sits in the band.
-      s += `<rect x="${r1}" y="${H * cell + barTop(style)}" width="${r2 - r1}" height="4" rx="2" fill="${stroke}"/>`;
+      s += `<rect x="${r1}" y="${H * cell + barTop(style)}" width="${r2 - r1}" height="4" rx="2" fill="${ink}"/>`;
       const py = bandY + it.top + 3;
-      s += pill(it.mid, py, it.w, A ? fill(cl.piece as PieceId) : '#fff', A ? null : ink, (tc) => T(tc, py + 12.5, it.label), st);
+      s += pill(it.mid, py, it.w, '#fff', ink, (tc) => T(tc, py + 12.5, it.label), st);
     }
+  }
+  // Screen: one coloured line per programme on its range, packed on lanes; the mark on its right end.
+  for (const l of plan.lines) {
+    const cl = grid.clues[l.index]!;
+    if (cl.type !== 'bar') continue;
+    const [r1, r2] = l.range;
+    const ly = H * cell + barTop(style) + l.lane * LINE_PITCH;
+    s += `<rect class="programme" x="${r1}" y="${ly}" width="${r2 - r1}" height="4" rx="2" fill="${PIECE_COLORS[cl.piece as PieceId].ink}"/>`
+      + clueMark(r2, ly + 2, statusOf(l.index));
   }
 
   // ---- neighbors: one row of cells per country under the grid (its id in the gutter), then STEP on paper
@@ -610,7 +666,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       if (isLocked) {
         s += `<g transform="translate(${px + 3} ${yy + (rowH - 12) / 2}) scale(.5)" fill="none" stroke="${ink}" stroke-width="2.4" stroke-linecap="round">${ICONS.lock}</g>`;
       }
-      if (fi >= 0 && st === 'broken') s += `<rect x="${px - 1.5}" y="${yy - 1.5}" width="${w + 3}" height="${rowH + 3}" rx="${rad + 1}" fill="none" stroke="${BAD}" stroke-width="2"/>`;
+      if (fi >= 0) s += clueMark(px + w - 2, yy + 1, st);
       s += '</g>';
     }
   });

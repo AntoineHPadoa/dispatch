@@ -857,7 +857,8 @@ describe('board card: fixed layout, price row, export rows', () => {
         for (const state of [initialState(g), solutionState(g)]) {
           const { svg, geo } = renderBoard({ grid: g, state, ev: evaluate(g, state), style: 'A', cell, interactive: true });
           const band = pills(svg, geo.rows * cell);
-          const count = g.clues.filter((c) => c.type === 'price' || c.type === 'column' || c.type === 'bar').length;
+          // Screen programmes have no pill, only a line under the grid.
+          const count = g.clues.filter((c) => c.type === 'price' || c.type === 'column').length;
           expect(band.length).toBe(count);
           for (const a of band) for (const b of band) {
             if (a === b || Math.abs(a.y - b.y) >= 18) continue;
@@ -872,6 +873,56 @@ describe('board card: fixed layout, price row, export rows', () => {
         }
       }
     }
+  });
+
+  it('screen programmes: one line each, no pill, packed on as few lanes as possible', () => {
+    const g = structuredClone(grids.find((x) => x.clues.some((c) => c.type === 'bar'))!);
+    const piece = (g.clues.find((c) => c.type === 'bar') as { piece: string }).piece as 'N';
+    g.clues = [
+      { type: 'bar', piece, col: 0, len: 2 },
+      { type: 'bar', piece, col: 3, len: 2 },
+      { type: 'bar', piece, col: 1, len: 3 },
+      { type: 'bar', piece, col: 2, len: 1 },
+    ];
+    const plan = bandPlan(g, 40);
+    expect(plan.items).toEqual([]);
+    // Slots 0-1, 2 and 3-4 share lane 0; 1-3 overlaps them all and takes lane 1.
+    expect(plan.lines.map((l) => l.lane)).toEqual([0, 0, 1, 0]);
+    const { svg } = renderBoard({ grid: g, state: initialState(g), ev: evaluate(g, initialState(g)), style: 'A', cell: 40 });
+    expect(svg.match(/class="programme"/g)?.length).toBe(4);
+    expect(svg).not.toMatch(/height="18" rx="9"/);
+    // Paper keeps the programme name in the band.
+    expect(bandPlan(g, 40, 'B').items.filter((it) => it.kind === 'bar').length).toBe(4);
+  });
+
+  it('clue marks: a tick once verified, a red "!" once contradicted, never a red border', () => {
+    for (const g of grids) {
+      const sol = solutionState(g);
+      const { svg } = renderBoard({ grid: g, state: sol, ev: evaluate(g, sol), style: 'A', cell: 44, interactive: true });
+      const slot = g.clues.filter((c) => c.type === 'price' || c.type === 'column' || c.type === 'bar' || c.type === 'flow').length;
+      expect(svg.match(/class="mark ok"/g)?.length ?? 0, `grid ${g.id}`).toBe(slot);
+      expect(svg).not.toContain('class="mark bad"');
+    }
+    const g = structuredClone(byId(6));
+    const price = g.clues.find((c) => c.type === 'price')!;
+    const s0 = initialState(g);
+    const ev = evaluate(g, s0);
+    const broken = { ...ev, clues: ev.clues.map((r) => (r.clue === price ? { ...r, status: 'broken' as const } : r)) };
+    const { svg } = renderBoard({ grid: g, state: s0, ev: broken, style: 'A', cell: 44 });
+    expect(svg.match(/class="mark bad"/g)?.length).toBe(1);
+    expect(svg).not.toMatch(/height="21" rx="10.5"/);
+  });
+
+  it('an exported or pumped cell keeps its dashed outline under a piece', () => {
+    let seen = 0;
+    for (const g of grids) {
+      const sol = solutionState(g);
+      const expected = Object.values(g.solution?.exports ?? {}).flat().reduce((a: number, v) => a + (v ?? 0), 0) + (g.solution?.step?.length ?? 0);
+      const { svg } = renderBoard({ grid: g, state: sol, ev: evaluate(g, sol), style: 'A', cell: 44 });
+      expect(svg.match(/class="covered"/g)?.length ?? 0, `grid ${g.id}`).toBe(expected);
+      seen += expected;
+    }
+    expect(seen).toBeGreaterThan(0);
   });
 
   it('STEP arrows and tags hang on the current top of their column; the card does not move', () => {
