@@ -3,7 +3,8 @@
  * - Style A (screen): rounded pastel cells; style B (paper): square cells, black silhouette
  *   contour, empty except what is imposed (weather, engaged plants), boxes to write exchanges in.
  * - boardGeometry() is pure (sizes, rows, hit-testing); renderBoard() returns the SVG markup.
- * - Rows count from 0 at the bottom of the dispatchable part; weather cells sit below row 0.
+ * - Rows are absolute, 0 at the bottom of the grid: the weather fills the bottom of each column
+ *   (hatched, imposed) and a piece is one straight shape on the rows above it, never folded.
  * - Fixed layout: the card never moves while the player exports or pumps. Rows cover the highest
  *   reach of every column, so the room above the demand is reserved from the start but drawn empty:
  *   a dashed cell shows only where an export or a pumping has been laid.
@@ -83,7 +84,7 @@ export interface BoardGeometry {
   cell: number;
   /** Rows drawn (visual units, weather included). */
   rows: number;
-  /** Weather cells per column (below row 0). */
+  /** Weather cells per column (the bottom rows, never covered). */
   weather: number[];
   topPad: number;
   botPad: number;
@@ -240,19 +241,7 @@ export function cellAt(geo: BoardGeometry, x: number, y: number): Cell | null {
   const col = Math.floor((x - geo.lead) / geo.cell);
   const v = geo.rows - 1 - Math.floor(y / geo.cell);
   if (col >= geo.n || v < 0) return null;
-  return { col, row: v - (geo.weather[col] ?? 0) };
-}
-
-/** Runs of contiguous columns with the same weather offset, for drawing a bar. */
-function runs(geo: BoardGeometry, col: number, len: number): { col: number; len: number; off: number }[] {
-  const out: { col: number; len: number; off: number }[] = [];
-  for (let c = col; c < col + len; c++) {
-    const off = geo.weather[c] ?? 0;
-    const last = out[out.length - 1];
-    if (last && last.off === off) last.len++;
-    else out.push({ col: c, len: 1, off });
-  }
-  return out;
+  return { col, row: v };
 }
 
 /**
@@ -369,7 +358,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       const { bx, by, w } = box(c, weather[c]! + r);
       const kind = r >= k - pumps[c]! ? 'pump' : r >= k - pumps[c]! - e ? 'exp' : 'sil';
       if (kind === 'sil') {
-        if (hidden.has(`${r},${c}`)) continue;
+        if (hidden.has(`${weather[c]! + r},${c}`)) continue;
         s += A ? `<rect x="${bx}" y="${by}" width="${w}" height="${w}" rx="${rad}" fill="#fff" stroke="#eadfe6"/>`
           : `<rect x="${bx}" y="${by}" width="${w}" height="${w}" fill="#fff" stroke="#c7d5d1" stroke-width=".8"/>`;
       } else if (kind === 'pump') {
@@ -400,25 +389,13 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
 
   // ---- pieces
   const invalid = new Set(ev?.invalidBars ?? []);
-  const drawRect = (col: number, len: number, row: number, h: number, attrs: (rx: number, ry: number, rw: number, rh: number) => string) => {
-    let out = '';
-    for (const run of runs(geo, col, len)) {
-      const rx = x(run.col) + gap / 2;
-      const ry = y(run.off + row, h) + gap / 2;
-      out += attrs(rx, ry, run.len * cell - gap, h * cell - gap);
-    }
-    return out;
-  };
-  /** A ramp, run by run: one outline per run of columns with the same weather offset. */
+  /** A rectangle: one shape on its row. */
+  const drawRect = (col: number, len: number, row: number, h: number, attrs: (rx: number, ry: number, rw: number, rh: number) => string) =>
+    attrs(x(col) + gap / 2, y(row, h) + gap / 2, len * cell - gap, h * cell - gap);
+  /** A ramp: one outline following its profile, standing on its base row. */
   const drawRamp = (b: Placement, attrs: (d: string, inset: number) => string, inset = 0) => {
-    const prof = profileOf(grid, b);
-    let out = '';
-    for (const run of runs(geo, b.col, b.len)) {
-      const heights = prof.slice(run.col - b.col, run.col - b.col + run.len).map(([, h]) => h);
-      const pts = skyline(x(run.col), y(run.off + b.row, 0), heights, cell, gap + 2 * inset);
-      out += attrs(roundedPath(pts, rad), inset);
-    }
-    return out;
+    const heights = profileOf(grid, b).map(([, h]) => h);
+    return attrs(roundedPath(skyline(x(b.col), y(b.row, 0), heights, cell, gap + 2 * inset), rad), inset);
   };
   const replacing = new Set(input.preview?.replacing ?? []);
   state.bars.forEach((b, i) => {
@@ -436,18 +413,16 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
         + (invalid.has(i) && !gone ? `<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" rx="${rad}" fill="url(#hX${id})" stroke="${BAD}" stroke-width="2"/>` : '')
         + (gone ? `<rect class="replacing" x="${rx + 1}" y="${ry + 1}" width="${rw - 2}" height="${rh - 2}" rx="${rad}" fill="${BAD}" fill-opacity=".12" stroke="${BAD}" stroke-opacity=".45" stroke-width="1.4" stroke-dasharray="3 3"/>` : ''));
     }
-    const last = runs(geo, b.col, b.len).slice(-1)[0]!;
-    const first = runs(geo, b.col, b.len)[0]!;
     if (b.locked) {
       // Top right corner of the last column (a ramp's last shoulder).
-      const lx = x(last.col + last.len) - gap / 2 - cell * 0.32;
-      const ly = y(last.off + topIn(grid, b, b.col + b.len - 1), 0) + gap / 2 + cell * 0.07;
+      const lx = x(b.col + b.len) - gap / 2 - cell * 0.32;
+      const ly = y(topIn(grid, b, b.col + b.len - 1), 0) + gap / 2 + cell * 0.07;
       s += `<g transform="translate(${lx} ${ly}) scale(${(cell * 0.0115).toFixed(3)})" fill="none" stroke="${ink}" stroke-width="2" stroke-linecap="round">${ICONS.lock}</g>`;
     }
     const label = b.piece === 'I' ? b.country ?? '' : h > 1 ? `${h} GW` : '';
     if (label) {
-      const cx = x(first.col) + (first.len * cell) / 2;
-      const cy = y(first.off + b.row, h) + (h * cell) / 2 + cell * 0.08;
+      const cx = x(b.col) + (b.len * cell) / 2;
+      const cy = y(b.row, h) + (h * cell) / 2 + cell * 0.08;
       s += T(cx, cy, label, { size: cell * 0.22, op: b.piece === 'I' ? 0.8 : 0.55 });
     }
   });
@@ -464,7 +439,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   }
   const ring = (c: Cell, color: string, dash: string) => {
     if (c.col < 0 || c.col >= n) return '';
-    const { bx, by, w } = box(c.col, weather[c.col]! + c.row);
+    const { bx, by, w } = box(c.col, c.row);
     return `<rect x="${bx - 1}" y="${by - 1}" width="${w + 2}" height="${w + 2}" rx="${rad + 1}" fill="none" stroke="${color}" stroke-width="2"${dash ? ` stroke-dasharray="${dash}"` : ''} pointer-events="none"/>`;
   };
   if (input.anchor) s += ring(input.anchor, ink, '');

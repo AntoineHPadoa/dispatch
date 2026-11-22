@@ -88,17 +88,17 @@ async function tapAct(p, sel) {
   await tapXY(p, r.x + r.width / 2, r.y + r.height / 2);
 }
 
-async function lay(p, bar, below) {
-  const a = await cellPoint(p, bar.row + below[bar.col], bar.col);
+async function lay(p, bar) {
+  const a = await cellPoint(p, bar.row, bar.col);
   const h = (bar.height ?? 1) - 1;
   if (bar.len === 1 && !h) return tapXY(p, a.x, a.y);
   const end = bar.col + bar.len - 1;
   if (p.touch) {
     await tapXY(p, a.x, a.y);
-    const b = await cellPoint(p, bar.row + h + below[end], end);
+    const b = await cellPoint(p, bar.row + h, end);
     return tapXY(p, b.x, b.y);
   }
-  const b = await cellPoint(p, bar.row + h + below[end], end);
+  const b = await cellPoint(p, bar.row + h, end);
   await p.mouse.move(a.x, a.y);
   await p.mouse.down();
   await p.mouse.move((a.x + b.x) / 2, b.y, { steps: 4 });
@@ -107,9 +107,8 @@ async function lay(p, bar, below) {
   await p.waitForTimeout(100);
 }
 
-/** Lays the reference solution: exports, STEP pairs, then every bar (rows above the weather cells). */
+/** Lays the reference solution: exports, STEP pairs, then every bar (rows are absolute, weather included). */
 async function playSolution(p, g) {
-  const below = g.columns.map((_, c) => (g.weather?.R?.[c] ?? 0) + (g.weather?.F?.[c] ?? 0));
   const locked = new Set(g.clues.filter((c) => c.type === 'flow' && c.dir === 'export' && c.value > 0).map((c) => `${c.country}:${c.col}`));
   for (const [country, values] of Object.entries(g.solution.exports ?? {})) {
     for (let c = 0; c < values.length; c++) {
@@ -125,7 +124,7 @@ async function playSolution(p, g) {
   }
   for (const bar of g.solution.placements) {
     await select(p, bar.piece === 'I' ? `I:${bar.country}` : bar.piece);
-    await lay(p, bar, below);
+    await lay(p, bar);
   }
 }
 

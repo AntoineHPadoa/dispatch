@@ -160,6 +160,7 @@ export const MSG = {
   rampLength: (lens: number[]) => `Une rampe de charbon fait ${lenText(lens)}.`,
   height: (name: string, heights: number[]) => `La barre ${name} doit faire ${heights.join(' ou ')} GW de haut.`,
   silhouette: (col: string) => `Hors de la silhouette à ${col}.`,
+  weather: (col: string) => `La météo occupe déjà cette case à ${col}.`,
   overlap: () => 'Case déjà occupée.',
   unavailable: (of: string) => `Pas de centrale ${of} dans cette grille.`,
   unknownCountry: () => 'Ce pays n’est pas relié à la grille.',
@@ -290,7 +291,7 @@ export function pieceHint(piece: PieceId, lens: number[], heights: number[], max
   return text;
 }
 
-/** "TAC à 8h, ligne 6", "Gaz de 4h à 12h, ligne 2" (rows count from 1 at the bottom). */
+/** "TAC à 8h, ligne 6", "Gaz de 4h à 12h, ligne 2" (rows count from 1 at the bottom of the grid, weather cells included: they are imposed plants). */
 export function placementLabel(grid: Grid, piece: string, country: string | undefined, row: number, col: number,
   len: number, height = 1, shape: ShapeKind = 'rect'): string {
   const name = piece === IMPORT_PIECE ? `Import ${countryFrom(grid, country ?? '')}` : PIECE_WORDS[piece as PieceId]?.name ?? piece;

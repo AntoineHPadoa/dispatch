@@ -1,6 +1,6 @@
 /*
  * Dispatch game engine: pure functions, no DOM, immutable state.
- * - State: newGame, solutionState, silhouette, residual.
+ * - State: newGame, solutionState, silhouette, residual, weatherCells (rows are absolute, 0 at the bottom of the grid).
  * - Actions: place, remove, setExport, addStep, removeStep (each returns {ok, state, error?}).
  * - Checks: checkPlacement (live preview), evaluate (errors, clues, inventory, solved).
  *
