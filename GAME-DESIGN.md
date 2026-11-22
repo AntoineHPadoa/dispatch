@@ -130,33 +130,33 @@ Note = la technique la plus avancée nécessaire, à la Sudoku. Chaque technique
 | Niveau | Technique | Phrase pour le joueur |
 |---|---|---|
 | 1 | Pas de place | Une barre ne peut ni dépasser de la silhouette ni chevaucher une barre déjà posée. |
-| 1 | Inventaire épuisé | Quand toutes les cases d'une pièce sont trouvées, elle ne va nulle part ailleurs ; une barre plus longue que ce qu'il reste ne passe plus. |
+| 1 | Carnet épuisé | Quand toutes les cases d'une pièce sont trouvées, elle ne va nulle part ailleurs ; une barre plus longue que ce qu'il reste ne passe plus. |
 | 1 | Le prix plafonne la colonne | Sous un prix publié, aucune case n'est plus chère que ce prix. |
 | 1 | Le relevé compte les cases | Un relevé atteint interdit d'autres cases de cette pièce ; s'il reste juste assez de cases possibles, elles y passent toutes. Vaut aussi pour les totaux du jour (« Échanges du jour »). |
 | 1 | Flux publié | Un flux publié fixe l'export ou l'import d'un créneau avec un pays. |
 | 1 | Une seule barre pour cette case | Une case qu'une seule barre peut encore couvrir reçoit cette barre. |
-| 1 | La barre qui ne tient qu'à un endroit | Une barre de l'inventaire qui n'a plus qu'une place possible y va. |
+| 1 | La barre qui ne tient qu'à un endroit | Une barre du carnet qui n'a plus qu'une place possible y va. |
 | 1 | Programme publié | La barre annoncée par un programme va sur la seule ligne où elle tient. |
 | 1 | Durée de marche | La barre dont on connaît la durée de marche va à la seule place où cette durée tient. |
 | 1 | La silhouette suit les barres | Un export ou un pompage qui laisserait une case impossible à couvrir est exclu. |
 | 1 | Cases interchangeables | Quand on connaît le nombre de cases de chaque pièce dans une colonne, l'ordre ne compte pas. |
-| 1 | Le plateau barre la ligne du dessus | Au-dessus de sa base, la rampe occupe aussi la ligne suivante sur tout son plateau : aucun ruban de cette ligne ne la traverse. |
-| 1 | L'épaule appelle une case | La case au-dessus d'une épaule est fermée côté plateau : seule une pièce d'une case, ou une barre qui s'arrête pile là, peut la couvrir. |
+| 1 | Le plateau barre la ligne du dessus | Au-dessus de sa base, la barre à paliers occupe aussi la ligne suivante sur tout son plateau : aucun ruban de cette ligne ne la traverse. |
+| 1 | Le bord appelle une case | La case au-dessus d'un bord est fermée côté plateau : seule une pièce d'une case, ou une barre qui s'arrête pile là, peut la couvrir. |
 | 2 | La case la plus chère | Un prix publié exige au moins une case de cette centrale dans la colonne : s'il n'y a qu'une place possible, c'est elle. |
 | 2 | Le creux coupe le ruban | Chaque ligne se découpe en rubans entre les creux : une barre qui laisserait un bout impossible à remplir est exclue. |
-| 2 | Inventaire juste | S'il reste exactement autant de cases possibles que de cases à poser pour une pièce, toutes sont à elle. |
+| 2 | Carnet juste | S'il reste exactement autant de cases possibles que de cases à poser pour une pièce, toutes sont à elle. |
 | 2 | Compter la colonne | Une colonne a autant de cases que sa hauteur : connaissant les autres pièces, on déduit celle qui reste. |
 | 2 | Plafond carbone | Une barre qui ferait dépasser le plafond CO₂ est exclue. |
-| 2 | Une case seule est une épaule | Une seule case de rampe dans une colonne, c'est une épaule : la rampe continue à deux cases d'un côté et s'arrête de l'autre. |
-| 3 | Répartition de l'inventaire | Les barres doivent toutes trouver une ligne : un découpage qui empêche les autres de se placer est exclu. |
-| 3 | Deux épaules se relaient | Deux cases de rampe sans plateau autour : une rampe s'arrête et une autre démarre sur son épaule. |
+| 2 | Une case seule est un bord | Une seule case à paliers dans une colonne, c'est un bord : la barre continue à deux cases d'un côté et s'arrête de l'autre. |
+| 3 | Répartition du carnet | Les barres doivent toutes trouver une ligne : un découpage qui empêche les autres de se placer est exclu. |
+| 3 | Deux bords se relaient | Deux cases à paliers sans plateau autour : une barre s'arrête et une autre démarre sur son bord. |
 | 4 | Hypothèse réfutée | Si un choix mène à une impasse par les règles simples, il est exclu (une seule hypothèse, jamais imbriquée). |
 
-Les quatre techniques de rampe (trapèze, `docs/next/rampe.md` §2) ne servent qu'aux grilles dont le charbon est une rampe ; leurs niveaux sont provisoires. « Le plateau barre la ligne du dessus » et « L'épaule appelle une case » sont « Pas de place » et « Une seule barre pour cette case » nommées pour une rampe : elles enseignent le geste, mais ne rendent pas une grille plus difficile. Une brique météo est une case occupée dès le départ : « Pas de place » et « Le creux coupe le ruban » la traitent comme une barre déjà posée, sans technique à part. « Pas de place » regarde aussi plusieurs colonnes à la fois : une barre qui demanderait plus d'exports (ou de pompages) que le jour n'en publie est exclue. « Cases interchangeables » ne compte que les cases sûres et les relevés de la colonne : quand il faut la hauteur de la colonne, c'est « Compter la colonne ». Les noms et phrases sont les mêmes dans `web/src/i18n/fr.ts` et dans les traces du solveur (testé).
+Les quatre techniques de rampe (trapèze, `docs/next/rampe.md` §2) ne servent qu'aux grilles dont le charbon est une rampe ; leurs niveaux sont provisoires. « Le plateau barre la ligne du dessus » et « Le bord appelle une case » sont « Pas de place » et « Une seule barre pour cette case » nommées pour une rampe : elles enseignent le geste, mais ne rendent pas une grille plus difficile. Une brique météo est une case occupée dès le départ : « Pas de place » et « Le creux coupe le ruban » la traitent comme une barre déjà posée, sans technique à part. « Pas de place » regarde aussi plusieurs colonnes à la fois : une barre qui demanderait plus d'exports (ou de pompages) que le jour n'en publie est exclue. « Cases interchangeables » ne compte que les cases sûres et les relevés de la colonne : quand il faut la hauteur de la colonne, c'est « Compter la colonne ». Les noms et phrases sont les mêmes dans `web/src/i18n/fr.ts` et dans les traces du solveur (testé).
 
 **Ce qui crée la difficulté** (constaté sur les tirages) : des choix réels, c'est-à-dire un voisin, un STEP ou l'absence d'inventaire. Sans voisin et avec un inventaire exact, les grilles sont toujours faciles.
 
-**À recalibrer en priorité** : en test humain, les grilles notées Expert et Difficile ont été jugées très faciles. Le classement des techniques (en particulier « Hypothèse réfutée » et « Répartition de l'inventaire ») ne correspond pas encore à la difficulté ressentie. Il faut le recalibrer avec des parties chronométrées de plusieurs joueurs (voir §12).
+**À recalibrer en priorité** : en test humain, les grilles notées Expert et Difficile ont été jugées très faciles. Le classement des techniques (en particulier « Hypothèse réfutée » et « Répartition du carnet ») ne correspond pas encore à la difficulté ressentie. Il faut le recalibrer avec des parties chronométrées de plusieurs joueurs (voir §12).
 
 Les techniques sont écrites pour des barres d'une case de haut, les seules du prototype. Avec des pièces verticales ou rectangulaires, elles s'étendent naturellement (« pas de place » vaut aussi en hauteur), et de nouvelles techniques apparaîtront, comme une colonne trop basse pour une centrale qui ne descend pas sous 2 GW.
 
