@@ -299,15 +299,39 @@ for (const [kind, views] of Object.entries(VIEWS)) {
   }
   fs.writeFileSync(path.join(OUT, kind, 'index.html'), renderPage(kind, pages[kind]));
 }
+// ---- scroll slider survey: is input.board-slider shown for each published grid, on the production build?
+const SLIDER_WIDTHS = [1280, 1024, 960, 375, 320];
+const slider = [];
+for (const g of published) {
+  const cells = {};
+  for (const width of SLIDER_WIDTHS) {
+    const p = await newPage({ width });
+    await p.goto(`${PROD}#/grille/${g.id}`);
+    const open = await p.waitForSelector('.board-svg', { timeout: 3000 }).then(() => true, () => false);
+    await p.waitForTimeout(250);
+    cells[width] = open ? await p.evaluate(() => {
+      const s = document.querySelector('.board-scroll');
+      return document.querySelector('.board-slider').hidden ? 'non' : `oui (${s.scrollWidth - s.clientWidth} px à défiler)`;
+    }) : 'grille non publiée ce jour';
+    await p.context().close();
+  }
+  slider.push({ g, cells });
+}
+console.log(`slider: ${slider.filter((r) => Object.values(r.cells).some((c) => c.startsWith('oui'))).map((r) => r.g.id).join(', ') || 'none'}`);
+
 await browser.close();
 stopServer();
 
 // ---- inventory table of docs/next/ui-gallery.md
 const row = (v) => `| ${v.id} | ${v.cat} | ${v.gridTitle ? `${v.gridTitle}${v.fictive ? ' (fictive)' : ''}` : '—'} | \`${v.route}\` | ${v.width === 'A4' ? 'A4' : `${v.width} px`} | ${v.actionsText} | ${v.shows} |`;
 const table = Object.entries(pages).map(([kind, list]) => `### ${kind}\n\n| Vue | Catégorie | Grille | Route | Largeur | Actions | Ce qu’elle montre |\n|---|---|---|---|---|---|---|\n${list.map(row).join('\n')}`).join('\n\n');
-const doc = fs.readFileSync(DOC, 'utf8');
-const start = '<!-- views:start -->', end = '<!-- views:end -->';
-fs.writeFileSync(DOC, `${doc.slice(0, doc.indexOf(start) + start.length)}\n\n${table}\n\n${doc.slice(doc.indexOf(end))}`);
+const sliderTable = `| Grille | Créneaux | ${SLIDER_WIDTHS.map((w) => `${w} px`).join(' | ')} |\n|---|---|${SLIDER_WIDTHS.map(() => '---').join('|')}|\n`
+  + slider.map(({ g, cells }) => `| ${g.id} · ${g.title} | ${g.columns.length} | ${SLIDER_WIDTHS.map((w) => cells[w]).join(' | ')} |`).join('\n');
+const between = (text, name, body) => {
+  const start = `<!-- ${name}:start -->`, end = `<!-- ${name}:end -->`;
+  return `${text.slice(0, text.indexOf(start) + start.length)}\n\n${body}\n\n${text.slice(text.indexOf(end))}`;
+};
+fs.writeFileSync(DOC, between(between(fs.readFileSync(DOC, 'utf8'), 'views', table), 'slider', sliderTable));
 const count = Object.fromEntries(Object.entries(pages).map(([k, l]) => [k, l.length]));
 console.log(`views: ${JSON.stringify(count)}${failed ? `, ${failed} failed` : ''} -> ${OUT}`);
 process.exit(failed ? 1 : 0);

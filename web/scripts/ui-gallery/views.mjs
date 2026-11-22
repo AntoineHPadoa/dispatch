@@ -18,9 +18,9 @@ const CLOCK = { clock: true };
 /** Views shared by the web and mobile galleries; `only` limits a view to one of them. */
 const SCREENS = [
   // Home and dossier
-  { n: 1, cat: 'Accueil', route: '#/', shows: 'Accueil au premier passage : fiche du jour (dernier bulletin), quarts précédents, dossier « Premiers pas » à 0 sur 9, lien « Imprimer toutes les grilles ».' },
+  { n: 1, cat: 'Accueil', route: '#/', shows: 'Accueil au premier passage : fiche du jour (dernier bulletin) non jouée, donc bouton plein « Prendre le quart » (il devient « Revoir le quart » à contour une fois la grille bouclée, voir la vue 03) ; quarts précédents, dossier « Premiers pas » à 0 sur 9, lien « Imprimer toutes les grilles ».' },
   { n: 2, cat: 'Accueil', route: '#/', actions: [{ t: 'click', sel: '[data-rules]', label: 'ouvre « Comment jouer »' }], shows: 'Accueil avec les règles du jeu dépliées.' },
-  { n: 3, cat: 'Accueil', route: '#/', progress: HOME_PROGRESS, shows: 'Accueil d’un joueur avancé : fiche du jour bouclée (tampon, solution en couleurs, « Revoir le quart »), un quart précédent bouclé, dossier à 3 sur 9.' },
+  { n: 3, cat: 'Accueil', route: '#/', progress: HOME_PROGRESS, shows: 'Accueil d’un joueur avancé : fiche du jour bouclée (tampon, solution en couleurs) : le bouton devient « Revoir le quart », à contour, au lieu du bouton plein « Prendre le quart » d’une grille non jouée ; un quart précédent bouclé, dossier à 3 sur 9.' },
   { n: 4, cat: 'Dossier', route: '#/dossier/premiers-pas', shows: 'Dossier « Premiers pas » neuf : les neuf fiches du tutoriel, la première marquée « à jouer ensuite ».' },
   { n: 5, cat: 'Dossier', route: '#/dossier/premiers-pas', progress: DOSSIER_PROGRESS, shows: 'Dossier en cours : trois fiches terminées, la quatrième en cours et marquée « à jouer ensuite ».' },
   // Tutorial
@@ -54,17 +54,25 @@ const SCREENS = [
   { n: 27, cat: 'Verdict', grid: 11, progress: CLOCK, actions: [{ t: 'solution' }], shows: 'Verdict juste sur la fiche du jour (grille notée) : dernière grille notée, le bouton ramène à l’accueil.' },
   { n: 28, cat: 'Verdict', grid: 2, actions: [{ t: 'solution', swap: [2, 3] }], shows: 'Verdict faux : grille pleine mais le prix de 16h est contredit (barrage et TAC échangés).' },
   // Size extremes
-  { n: 29, cat: 'Grilles extrêmes', grid: 906, shows: 'Grande grille de 12 créneaux, titre et relevé très longs, onze indices.' },
+  { n: 29, cat: 'Grilles extrêmes', grid: 906, only: 'W', shows: 'Grande grille de 12 créneaux, titre et relevé très longs, onze indices ; elle déborde de son cadre, d’où le slider de défilement sous la grille. À 1280 px, seule une grille de 12 créneaux le fait apparaître ; les vraies grilles l’affichent dans une fenêtre de 861 à 1116 px (vues W-31 à W-33).' },
+  { n: 29, cat: 'Grilles extrêmes', grid: 906, only: 'M', shows: 'Grande grille de 12 créneaux, titre et relevé très longs, onze indices ; slider de défilement sous la grille, au début. Aucune vraie grille ne l’affiche à 375 ni à 320 px.' },
   { n: 30, cat: 'Grilles extrêmes', grid: 907, shows: 'Grille étroite et haute : six créneaux, pointe à 12 GW.' },
 ];
 
 const pad = (n) => String(n).padStart(2, '0');
 
 /** Mobile extras: a scrolled wide board and the 320 px witnesses. */
+/** Web extras: the scroll slider on real grids, in desktop windows narrower than 1117 px (none shows it at 1280 px). */
+const WEB_EXTRA = [
+  { id: 'W-31', cat: 'Slider de défilement', grid: 11, width: 1024, shows: 'Vraie grille de 8 créneaux dans une fenêtre de 1024 px : elle déborde de son cadre, le slider de défilement sous la grille apparaît, au début.' },
+  { id: 'W-32', cat: 'Slider de défilement', grid: 11, width: 1024, actions: [{ t: 'scrollBoard' }], shows: 'La même grille défilée vers la droite : slider de défilement sous la grille poussé au bout, premiers créneaux masqués.' },
+  { id: 'W-33', cat: 'Slider de défilement', grid: 1, width: 960, shows: 'Vraie grille de 6 créneaux dans une fenêtre de 960 px : slider de défilement sous la grille, au début.' },
+];
+
 const MOBILE_EXTRA = [
-  { id: 'M-31', cat: 'Grilles extrêmes', grid: 906, width: 375, actions: [{ t: 'scrollBoard' }], shows: 'Grande grille défilée vers la droite avec le curseur sous la grille.' },
+  { id: 'M-31', cat: 'Grilles extrêmes', grid: 906, width: 375, actions: [{ t: 'scrollBoard' }], shows: 'Grande grille défilée vers la droite avec le slider de défilement sous la grille, poussé au bout.' },
   { id: 'M-32', cat: 'Témoins 320 px', route: '#/', width: 320, shows: 'Accueil à 320 px.' },
-  { id: 'M-33', cat: 'Témoins 320 px', grid: 906, width: 320, shows: 'Grande grille de 12 créneaux à 320 px.' },
+  { id: 'M-33', cat: 'Témoins 320 px', grid: 906, width: 320, shows: 'Grande grille de 12 créneaux à 320 px, avec le slider de défilement sous la grille.' },
   { id: 'M-34', cat: 'Témoins 320 px', grid: 7, width: 320, progress: CLOCK, actions: [{ t: 'solution' }], shows: 'Verdict juste à 320 px.' },
 ];
 
@@ -91,7 +99,7 @@ const SHEETS = [
 ];
 
 export const VIEWS = {
-  web: screen('W', 1280),
+  web: [...screen('W', 1280), ...WEB_EXTRA.map((v) => ({ ...v, route: `#/grille/${v.grid}` }))],
   mobile: [...screen('M', 375), ...MOBILE_EXTRA.map((v) => ({ ...v, route: v.route ?? `#/grille/${v.grid}` }))],
   papier: [
     { id: 'P-01', cat: 'Aperçu d’impression', grid: 7, route: '#/imprimer/7', width: 1280, shows: 'Aperçu d’impression à l’écran (1280 px) : barre de retour et bouton Imprimer au-dessus de la fiche.' },

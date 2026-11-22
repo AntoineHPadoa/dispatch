@@ -45,6 +45,33 @@ node scripts/ui-gallery.mjs --only W-03,M-07 --skip-build   # quelques vues seul
 - **Témoins 320 px** : accueil, grande grille, verdict (M-32 à M-34).
 - **Hors périmètre** : animations, gestes (seul leur état figé est montré), lab, tablette, mode sombre.
 
+## Slider de défilement
+
+- Quand la grille est plus large que son cadre, le jeu affiche sous la grille un slider de défilement (`input.board-slider`, `web/src/ui/game.ts`, mis à jour par `syncSlider()`).
+- Tableau mesuré par le script sur le build de prod, pour chaque grille publiée : le slider est-il visible à l'ouverture, et de combien de pixels la grille défile.
+- **Résultat** : aucune vraie grille ne l'affiche à 1280, 375 ou 320 px. Sur ordinateur, dans une fenêtre de 861 à 1116 px de large (la grille garde alors la mise en page à deux colonnes), toutes les vraies grilles l'affichent : les grilles de 8 créneaux jusqu'à 1116 px, celles de 6 créneaux jusqu'à un peu moins de 1000 px (oui à 960, non à 1000).
+- **Vues** : W-31 à W-33 le montrent sur de vraies grilles (1024 et 960 px) ; W-29, M-29, M-31 et M-33 sur la grille fictive de 12 créneaux, la seule qui le déclenche à 1280, 375 et 320 px.
+
+<!-- slider:start -->
+
+| Grille | Créneaux | 1280 px | 1024 px | 960 px | 375 px | 320 px |
+|---|---|---|---|---|---|---|
+| 1 · 1. Poser l’inventaire | 6 | non | non | oui (16 px à défiler) | non | non |
+| 2 · 2. Le prix plafonne la colonne | 6 | non | non | oui (16 px à défiler) | non | non |
+| 3 · 3. Inventaire juste | 6 | non | non | oui (38 px à défiler) | non | non |
+| 4 · 4. Le creux coupe le ruban | 6 | non | non | oui (38 px à défiler) | non | non |
+| 5 · 5. Flux publié et compter la colonne | 6 | non | non | oui (38 px à défiler) | non | non |
+| 6 · 6. La case la plus chère | 6 | non | non | oui (38 px à défiler) | non | non |
+| 7 · 7. Pompage, relevé et programme | 8 | non | oui (94 px à défiler) | oui (158 px à défiler) | non | non |
+| 8 · Facile | 8 | non | oui (94 px à défiler) | oui (158 px à défiler) | non | non |
+| 9 · Moyen | 8 | non | oui (94 px à défiler) | oui (158 px à défiler) | non | non |
+| 10 · Difficile | 8 | non | oui (94 px à défiler) | oui (158 px à défiler) | non | non |
+| 11 · Expert | 8 | non | oui (94 px à défiler) | oui (158 px à défiler) | non | non |
+| 12 · 8. La rampe de charbon | 6 | non | non | oui (16 px à défiler) | non | non |
+| 13 · 9. Deux épaules se relaient | 8 | non | oui (72 px à défiler) | oui (136 px à défiler) | non | non |
+
+<!-- slider:end -->
+
 ## Vues
 
 <!-- views:start -->
@@ -53,9 +80,9 @@ node scripts/ui-gallery.mjs --only W-03,M-07 --skip-build   # quelques vues seul
 
 | Vue | Catégorie | Grille | Route | Largeur | Actions | Ce qu’elle montre |
 |---|---|---|---|---|---|---|
-| W-01 | Accueil | — | `#/` | 1280 px | — | Accueil au premier passage : fiche du jour (dernier bulletin), quarts précédents, dossier « Premiers pas » à 0 sur 9, lien « Imprimer toutes les grilles ». |
+| W-01 | Accueil | — | `#/` | 1280 px | — | Accueil au premier passage : fiche du jour (dernier bulletin) non jouée, donc bouton plein « Prendre le quart » (il devient « Revoir le quart » à contour une fois la grille bouclée, voir la vue 03) ; quarts précédents, dossier « Premiers pas » à 0 sur 9, lien « Imprimer toutes les grilles ». |
 | W-02 | Accueil | — | `#/` | 1280 px | ouvre « Comment jouer » | Accueil avec les règles du jeu dépliées. |
-| W-03 | Accueil | — | `#/` | 1280 px | progression : grilles 1, 2, 3, 9, 11 terminées ; grilles 10 commencées | Accueil d’un joueur avancé : fiche du jour bouclée (tampon, solution en couleurs, « Revoir le quart »), un quart précédent bouclé, dossier à 3 sur 9. |
+| W-03 | Accueil | — | `#/` | 1280 px | progression : grilles 1, 2, 3, 9, 11 terminées ; grilles 10 commencées | Accueil d’un joueur avancé : fiche du jour bouclée (tampon, solution en couleurs) : le bouton devient « Revoir le quart », à contour, au lieu du bouton plein « Prendre le quart » d’une grille non jouée ; un quart précédent bouclé, dossier à 3 sur 9. |
 | W-04 | Dossier | — | `#/dossier/premiers-pas` | 1280 px | — | Dossier « Premiers pas » neuf : les neuf fiches du tutoriel, la première marquée « à jouer ensuite ». |
 | W-05 | Dossier | — | `#/dossier/premiers-pas` | 1280 px | progression : grilles 1, 2, 3 terminées ; grilles 4 commencées | Dossier en cours : trois fiches terminées, la quatrième en cours et marquée « à jouer ensuite ». |
 | W-06 | Tutoriel | 1 · 1. Poser l’inventaire | `#/grille/1` | 1280 px | — | Premier tutoriel à vide : technique du jour, carnet d’ordres exact (nucléaire, gaz, TAC), aucun indice. |
@@ -81,16 +108,19 @@ node scripts/ui-gallery.mjs --only W-03,M-07 --skip-build   # quelques vues seul
 | W-26 | Verdict | 7 · 7. Pompage, relevé et programme | `#/grille/7` | 1280 px | chrono amorcé à 12 min 34 s ; pose toute la solution | Verdict juste sur un vrai tutoriel : bandeau « Programme bouclé », temps, bouton « Grille suivante ». |
 | W-27 | Verdict | 11 · Expert | `#/grille/11` | 1280 px | chrono amorcé à 12 min 34 s ; pose toute la solution | Verdict juste sur la fiche du jour (grille notée) : dernière grille notée, le bouton ramène à l’accueil. |
 | W-28 | Verdict | 2 · 2. Le prix plafonne la colonne | `#/grille/2` | 1280 px | pose la solution en échangeant les poses 2 et 3 | Verdict faux : grille pleine mais le prix de 16h est contredit (barrage et TAC échangés). |
-| W-29 | Grilles extrêmes | 906 · Galerie · Grande journée d’hiver sur douze créneaux, avec trois pointes et l’Espagne en renfort (fictive) | `#/grille/906` | 1280 px | — | Grande grille de 12 créneaux, titre et relevé très longs, onze indices. |
+| W-29 | Grilles extrêmes | 906 · Galerie · Grande journée d’hiver sur douze créneaux, avec trois pointes et l’Espagne en renfort (fictive) | `#/grille/906` | 1280 px | — | Grande grille de 12 créneaux, titre et relevé très longs, onze indices ; elle déborde de son cadre, d’où le slider de défilement sous la grille. À 1280 px, seule une grille de 12 créneaux le fait apparaître ; les vraies grilles l’affichent dans une fenêtre de 861 à 1116 px (vues W-31 à W-33). |
 | W-30 | Grilles extrêmes | 907 · Galerie · Pointe haute sur six créneaux (fictive) | `#/grille/907` | 1280 px | — | Grille étroite et haute : six créneaux, pointe à 12 GW. |
+| W-31 | Slider de défilement | 11 · Expert | `#/grille/11` | 1024 px | — | Vraie grille de 8 créneaux dans une fenêtre de 1024 px : elle déborde de son cadre, le slider de défilement sous la grille apparaît, au début. |
+| W-32 | Slider de défilement | 11 · Expert | `#/grille/11` | 1024 px | fait défiler la grille à droite | La même grille défilée vers la droite : slider de défilement sous la grille poussé au bout, premiers créneaux masqués. |
+| W-33 | Slider de défilement | 1 · 1. Poser l’inventaire | `#/grille/1` | 960 px | — | Vraie grille de 6 créneaux dans une fenêtre de 960 px : slider de défilement sous la grille, au début. |
 
 ### mobile
 
 | Vue | Catégorie | Grille | Route | Largeur | Actions | Ce qu’elle montre |
 |---|---|---|---|---|---|---|
-| M-01 | Accueil | — | `#/` | 375 px | — | Accueil au premier passage : fiche du jour (dernier bulletin), quarts précédents, dossier « Premiers pas » à 0 sur 9, lien « Imprimer toutes les grilles ». |
+| M-01 | Accueil | — | `#/` | 375 px | — | Accueil au premier passage : fiche du jour (dernier bulletin) non jouée, donc bouton plein « Prendre le quart » (il devient « Revoir le quart » à contour une fois la grille bouclée, voir la vue 03) ; quarts précédents, dossier « Premiers pas » à 0 sur 9, lien « Imprimer toutes les grilles ». |
 | M-02 | Accueil | — | `#/` | 375 px | ouvre « Comment jouer » | Accueil avec les règles du jeu dépliées. |
-| M-03 | Accueil | — | `#/` | 375 px | progression : grilles 1, 2, 3, 9, 11 terminées ; grilles 10 commencées | Accueil d’un joueur avancé : fiche du jour bouclée (tampon, solution en couleurs, « Revoir le quart »), un quart précédent bouclé, dossier à 3 sur 9. |
+| M-03 | Accueil | — | `#/` | 375 px | progression : grilles 1, 2, 3, 9, 11 terminées ; grilles 10 commencées | Accueil d’un joueur avancé : fiche du jour bouclée (tampon, solution en couleurs) : le bouton devient « Revoir le quart », à contour, au lieu du bouton plein « Prendre le quart » d’une grille non jouée ; un quart précédent bouclé, dossier à 3 sur 9. |
 | M-04 | Dossier | — | `#/dossier/premiers-pas` | 375 px | — | Dossier « Premiers pas » neuf : les neuf fiches du tutoriel, la première marquée « à jouer ensuite ». |
 | M-05 | Dossier | — | `#/dossier/premiers-pas` | 375 px | progression : grilles 1, 2, 3 terminées ; grilles 4 commencées | Dossier en cours : trois fiches terminées, la quatrième en cours et marquée « à jouer ensuite ». |
 | M-06 | Tutoriel | 1 · 1. Poser l’inventaire | `#/grille/1` | 375 px | — | Premier tutoriel à vide : technique du jour, carnet d’ordres exact (nucléaire, gaz, TAC), aucun indice. |
@@ -116,11 +146,11 @@ node scripts/ui-gallery.mjs --only W-03,M-07 --skip-build   # quelques vues seul
 | M-26 | Verdict | 7 · 7. Pompage, relevé et programme | `#/grille/7` | 375 px | chrono amorcé à 12 min 34 s ; pose toute la solution | Verdict juste sur un vrai tutoriel : bandeau « Programme bouclé », temps, bouton « Grille suivante ». |
 | M-27 | Verdict | 11 · Expert | `#/grille/11` | 375 px | chrono amorcé à 12 min 34 s ; pose toute la solution | Verdict juste sur la fiche du jour (grille notée) : dernière grille notée, le bouton ramène à l’accueil. |
 | M-28 | Verdict | 2 · 2. Le prix plafonne la colonne | `#/grille/2` | 375 px | pose la solution en échangeant les poses 2 et 3 | Verdict faux : grille pleine mais le prix de 16h est contredit (barrage et TAC échangés). |
-| M-29 | Grilles extrêmes | 906 · Galerie · Grande journée d’hiver sur douze créneaux, avec trois pointes et l’Espagne en renfort (fictive) | `#/grille/906` | 375 px | — | Grande grille de 12 créneaux, titre et relevé très longs, onze indices. |
+| M-29 | Grilles extrêmes | 906 · Galerie · Grande journée d’hiver sur douze créneaux, avec trois pointes et l’Espagne en renfort (fictive) | `#/grille/906` | 375 px | — | Grande grille de 12 créneaux, titre et relevé très longs, onze indices ; slider de défilement sous la grille, au début. Aucune vraie grille ne l’affiche à 375 ni à 320 px. |
 | M-30 | Grilles extrêmes | 907 · Galerie · Pointe haute sur six créneaux (fictive) | `#/grille/907` | 375 px | — | Grille étroite et haute : six créneaux, pointe à 12 GW. |
-| M-31 | Grilles extrêmes | 906 · Galerie · Grande journée d’hiver sur douze créneaux, avec trois pointes et l’Espagne en renfort (fictive) | `#/grille/906` | 375 px | fait défiler la grille à droite | Grande grille défilée vers la droite avec le curseur sous la grille. |
+| M-31 | Grilles extrêmes | 906 · Galerie · Grande journée d’hiver sur douze créneaux, avec trois pointes et l’Espagne en renfort (fictive) | `#/grille/906` | 375 px | fait défiler la grille à droite | Grande grille défilée vers la droite avec le slider de défilement sous la grille, poussé au bout. |
 | M-32 | Témoins 320 px | — | `#/` | 320 px | — | Accueil à 320 px. |
-| M-33 | Témoins 320 px | 906 · Galerie · Grande journée d’hiver sur douze créneaux, avec trois pointes et l’Espagne en renfort (fictive) | `#/grille/906` | 320 px | — | Grande grille de 12 créneaux à 320 px. |
+| M-33 | Témoins 320 px | 906 · Galerie · Grande journée d’hiver sur douze créneaux, avec trois pointes et l’Espagne en renfort (fictive) | `#/grille/906` | 320 px | — | Grande grille de 12 créneaux à 320 px, avec le slider de défilement sous la grille. |
 | M-34 | Témoins 320 px | 7 · 7. Pompage, relevé et programme | `#/grille/7` | 320 px | chrono amorcé à 12 min 34 s ; pose toute la solution | Verdict juste à 320 px. |
 
 ### papier
