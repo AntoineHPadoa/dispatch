@@ -274,9 +274,29 @@ export function inventoryExchanges(grid: Grid): ExchangesClue | null {
   return clue.exports || clue.imports || clue.step !== undefined ? clue : null;
 }
 
-/** Number of clues the clue card lists: the grid's own, plus the exchanges line of an exact inventory and the CO2 limit. */
+/**
+ * Display lines of an exchanges clue, one per subject, each checked on its own: every country (its
+ * exports and imports together), then the import total of all countries (`*`), then the STEP pairs.
+ */
+export function exchangeLines(clue: ExchangesClue): ExchangesClue[] {
+  const ids: string[] = [];
+  for (const id of [...Object.keys(clue.exports ?? {}), ...Object.keys(clue.imports ?? {})]) if (!ids.includes(id)) ids.push(id);
+  ids.sort((a, b) => Number(a === ANY_COUNTRY) - Number(b === ANY_COUNTRY));
+  const lines = ids.map((id) => {
+    const line: ExchangesClue = { type: 'exchanges' };
+    if (clue.exports?.[id] !== undefined) line.exports = { [id]: clue.exports[id] };
+    if (clue.imports?.[id] !== undefined) line.imports = { [id]: clue.imports[id] };
+    return line;
+  });
+  if (clue.step !== undefined) lines.push({ type: 'exchanges', step: clue.step });
+  return lines.length ? lines : [clue];
+}
+
+/** Number of clues the clue card lists: the grid's own (an exchanges clue by its lines), the exchanges lines of an exact inventory, the CO2 limit. */
 export function shownClueCount(grid: Grid): number {
-  return grid.clues.length + (inventoryExchanges(grid) ? 1 : 0) + (typeof grid.co2_cap === 'number' ? 1 : 0);
+  const lines = (c: Clue) => (c.type === 'exchanges' ? exchangeLines(c).length : 1);
+  const inv = inventoryExchanges(grid);
+  return grid.clues.reduce((n, c) => n + lines(c), 0) + (inv ? lines(inv) : 0) + (typeof grid.co2_cap === 'number' ? 1 : 0);
 }
 
 /** Status of an exchanges clue on a board: every total met (ok), one exceeded (broken), else open. */
@@ -294,6 +314,12 @@ export function withInventoryExchanges(grid: Grid, state: PlayState, reports: re
   const clue = inventoryExchanges(grid);
   if (!clue) return [...reports];
   return [...reports, { clue, text: clueText(grid, clue), status: exchangesStatus(state, clue) }];
+}
+
+/** Clue reports with every exchanges clue split into its display lines, each with its own status. */
+export function splitExchanges(grid: Grid, state: PlayState, reports: readonly ClueReport[]): ClueReport[] {
+  return reports.flatMap((r) => (r.clue.type !== 'exchanges' ? [r]
+    : exchangeLines(r.clue).map((line) => ({ clue: line, text: clueText(grid, line), status: exchangesStatus(state, line) }))));
 }
 
 /** CO2 points of the board, by plant ('I' for every import). */
@@ -336,7 +362,7 @@ export function co2ClueItem(grid: Grid, state: PlayState, full: boolean): { html
 
 /** Clue card: the CO2 limit and every clue in text, day clues first, then slot clues in time order. `full`: no cell left to cover. */
 export function renderClues(grid: Grid, boardReports: readonly ClueReport[], state: PlayState, full = false): string {
-  const reports = withInventoryExchanges(grid, state, boardReports);
+  const reports = splitExchanges(grid, state, withInventoryExchanges(grid, state, boardReports));
   const co2 = co2ClueItem(grid, state, full);
   if (!reports.length && !co2) return '';
   const ok = reports.filter((r) => r.status === 'ok').length + (co2?.status === 'ok' ? 1 : 0);
