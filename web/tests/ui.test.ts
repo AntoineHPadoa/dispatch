@@ -22,7 +22,7 @@ import {
 import { MSG, TUTORIAL_LORE, durationText } from '../src/i18n/fr';
 import { STEP_KEY, bookEntries, inventoryExchanges, isDayClue, orderClues, withInventoryExchanges, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, richClueText, shownClueCount, co2Costs } from '../src/ui/panels';
 import { renderSheet, slotLegend } from '../src/ui/print';
-import { PIECE_COLORS } from '../src/ui/palette';
+import { OK, PIECE_COLORS } from '../src/ui/palette';
 import { stepArrowAction, stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from '../src/ui/step';
 import { UI } from '../src/i18n/fr';
 import { currentBulletin } from '../src/model/bulletin';
@@ -1263,5 +1263,34 @@ describe('progress saved before weather bricks (B3)', () => {
       expect(replay, `grid ${g.id}`).toEqual(board);
       expect(evaluate(g, replay!).solved, `grid ${g.id}`).toBe(true);
     }
+  });
+});
+
+describe('exchanges under the neighbor rows', () => {
+  const under = (g: Grid, s: PlayState) => renderBoard({ grid: g, state: s, ev: evaluate(g, s), style: 'A', cell: 60 }).svg;
+  const counts = (svg: string) => [...svg.matchAll(/>([→←] [\d/]+)<\/text>/g)].map((m) => m[1]);
+
+  it('counts the day exchanges of each direction against what is laid', () => {
+    const g = byId(10);
+    expect(counts(under(g, newGame(g)))).toEqual(['→ 0/2', '← 0/2']);
+    const s = { ...newGame(g), exports: { DE: [1, 0, 0, 0, 0, 0, 0, 0] } };
+    expect(counts(under(g, s))).toEqual(['→ 1/2', '← 0/2']);
+  });
+
+  it('greys a direction allowed zero times, counts published flows as laid and greens a met count', () => {
+    expect(counts(under(byId(9), newGame(byId(9))))).toEqual(['→ 0', '← 0/6']);
+    const g7 = byId(7);
+    const svg = under(g7, applyLockedExports(g7, newGame(g7)));
+    // Two exports published by flows: already laid; the exact inventory gives 2 imports.
+    expect(counts(svg)).toEqual(['→ 2/2', '← 0/2']);
+    expect(svg).toMatch(new RegExp(`fill="${OK}">→ 2/2<`));
+  });
+
+  it('shows nothing for an unknown count or a total shared by every neighbor', () => {
+    const g = byId(10);
+    const free = { ...g, clues: g.clues.filter((c) => c.type !== 'exchanges') };
+    expect(counts(under(free, newGame(free)))).toEqual([]);
+    const shared = { ...g, clues: g.clues.map((c) => (c.type === 'exchanges' ? { ...c, imports: { '*': 2 } } : c)) };
+    expect(counts(under(shared, newGame(shared)))).toEqual(['→ 0/2']);
   });
 });

@@ -11,7 +11,8 @@
  * - Slot clues (price, record) share one band under the slot hours, aligned on the columns. A
  *   programme is a thin coloured line right under the grid on its range, packed on as few lanes as
  *   possible; on paper its name also stands in the band. Each neighbor has a row of cells under the
- *   band, headed by its id in a left gutter, and a tap on a cell exports a block in that slot.
+ *   band, headed by its id in a left gutter, and a tap on a cell exports a block in that slot. Under
+ *   it (screen), the day's exchanges against what is laid ("→ 1/2  ← 0/2"), then the neighbor caption.
  * - Records: a pill of colour squares and counts; with `recordChips` (desktop), a bare group of colour
  *   chips holding the counts, centred on the slot, three to a line at most before wrapping.
  * - A clue's state is one mark on the top right corner of its pill (or cell, or programme line end):
@@ -20,10 +21,10 @@
  * - Rectangles are drawn as rects; a coal ramp as one outline following its profile (rounded
  *   corners on screen, concave ones included; square on paper).
  */
-import type { Grid, PieceId, Placement } from '../model/grid';
+import { ANY_COUNTRY, type Grid, type PieceId, type Placement } from '../model/grid';
 import { cellsOf, isRamp, kindOf, profileOf, topIn } from '../model/shapes';
 import {
-  barHeight, exportsAt, importsAt, rawSilhouette, residual, type Evaluation, type PlayState, type ClueStatus,
+  barHeight, exportsAt, importsAt, rawSilhouette, residual, totalExports, totalImports, type Evaluation, type PlayState, type ClueStatus,
 } from '../engine';
 import { UI, columnLabel, priceTag, priceTagShort, programLabel } from '../i18n/fr';
 import type { Cell, Rect } from './gesture';
@@ -140,6 +141,18 @@ export interface BoardGeometry {
   reach: number[];
   /** Height of the slot-clue band under the hours (0 without slot clues). */
   bandHeight: number;
+}
+
+/**
+ * Blocks the day allows with a neighbor in one direction: exact inventory, else the exchanges clue.
+ * Null when unknown, or when only a total shared by every neighbor ("*") is published: it is not split by row.
+ */
+export function allowedExchange(grid: Grid, country: string, dir: 'exports' | 'imports'): number | null {
+  const inv = grid.inventory;
+  if (inv.level === 'exact') return inv[dir]?.[ANY_COUNTRY] !== undefined ? null : inv[dir]?.[country] ?? 0;
+  const ex = grid.clues.find((c) => c.type === 'exchanges');
+  const m = ex && ex.type === 'exchanges' ? ex[dir] : undefined;
+  return m?.[country] ?? null;
 }
 
 /** Width of the left gutter of the export rows: the neighbor id ("DE") stands there. */
@@ -692,9 +705,28 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     const ry = baseY + k * pitch;
     // The CO2 of an import line shows only when that import is possible today.
     const importable = grid.co2_cap !== null && bookEntries(grid).some((e) => e.key === `I:${nb.id}`);
-    const cap = W < 240 ? nb.name : `${UI.neighborLine(nb.name, nb.cap)}${importable ? ` · ${UI.co2PerCell(nb.co2)}` : ''}`;
+    const long = `${UI.neighborLine(nb.name, nb.cap)}${importable ? ` · ${UI.co2PerCell(nb.co2)}` : ''}`;
     s += T(X0 - 5, ry + rowH / 2 + 3.5, nb.id, { anchor: 'end', w: 800, size: 9.5, color: soft });
-    s += T(X0, ry + rowH + 13, cap, { anchor: 'start', w: 700, size: 9, color: soft });
+    // Screen: the day's exchanges with this neighbor under the first block ("→ 1/2  ← 0/2"; a laid
+    // or published flow counts), green once met, red beyond, grey when none is allowed; then the caption.
+    const capY = ry + rowH + 13;
+    let capX = X0 + cgap / 2;
+    if (A) {
+      const flows: [string, number | null, number][] = [
+        ['→', allowedExchange(grid, nb.id, 'exports'), totalExports(state, nb.id)],
+        ['←', allowedExchange(grid, nb.id, 'imports'), totalImports(state, nb.id)],
+      ];
+      for (const [arrow, want, got] of flows) {
+        if (want === null) continue;
+        const t = UI.exchangeCount(arrow, got, want);
+        const color = got > want ? BAD : want > 0 && got === want ? OK : soft;
+        s += T(capX, capY, t, { anchor: 'start', w: 800, size: 9, color });
+        capX += t.length * 5.4 + 8;
+      }
+    }
+    // The long caption only where it fits beside the counts, else the neighbor's name alone.
+    const cap = W >= 240 && capX - X0 + long.length * 4.9 <= W ? long : nb.name;
+    s += T(capX, capY, cap, { anchor: 'start', w: 700, size: 9, color: soft });
     for (let c = 0; c < n; c++) {
       const px = x(c) + cgap / 2;
       const w = cell - cgap;
