@@ -201,6 +201,7 @@ Format réel (S4.6), vérifié avant tout tirage par `check_lot()` : une clé in
 | `clue_types` | liste parmi price, column, flow, bar, length, exchanges | toutes |
 | `rating` | note imposée (1 à 4) : niveau visé et rejet des autres | libre |
 | `max_clues` | rejet au-delà | nombre de créneaux |
+| `min_decisions` | décisions minimales (`no_decision` en dessous, §17) ; 0 pour un tutoriel | 1 |
 
 ### 9.2 Silhouettes et météo
 
@@ -219,7 +220,7 @@ Familles nommées, chacune avec une demande et une météo cohérentes : `pointe
 
 ### 9.4 Rejets (nommés, comptés par lot)
 
-`infeasible`, `trivial` (une seule sorte de pièce, rien à déduire), `not_unique` (plusieurs compositions même avec toute la réserve), `blocked` (unique mais pas déductible : gardée à part si `ramp`, §6.4), `too_many_clues`, `rating_mismatch`, `duplicate` (même silhouette à un décalage près, ou même composition), `quota` (§9.5).
+`infeasible`, `trivial` (une seule sorte de pièce, rien à déduire), `not_unique` (plusieurs compositions même avec toute la réserve), `blocked` (unique mais pas déductible : gardée à part si `ramp`, §6.4), `too_many_clues`, `rating_mismatch`, `no_decision` (moins de `min_decisions` décisions, §17), `duplicate` (même silhouette à un décalage près, ou même composition), `quota` (§9.5).
 
 ### 9.5 Lots et diversité imposée
 
@@ -238,7 +239,7 @@ Un **lot** est un fichier JSON : `lot` (nom de fichier), `size`, `seed`, `max_at
             "max_same_clue_profile": 4}}
 ```
 
-- Quotas connus : `max_same_family` (alias accepté : `max_same_silhouette`), `max_same_mechanics`, `max_same_clue_profile`, `min_per_rating`, `min_per_mix`.
+- Quotas connus : `max_same_family` (alias accepté : `max_same_silhouette`), `max_same_mechanics`, `max_same_clue_profile`, `max_same_single_decision` (§17, sans limite par défaut), `min_per_rating`, `min_per_mix`.
 - Le lot tire jusqu'à remplir la taille ; une candidate qui ferait dépasser un quota est rejetée (`quota`).
 - **Mécaniques** d'une grille = l'ensemble {voisins (nombre), STEP, surplus, CO₂, pièce haute, rampe, inventaire} ; **profil d'indices** = l'ensemble des types utilisés.
 - Les quotas par défaut sont un choix ouvert (C4).
@@ -333,3 +334,21 @@ Bloc `lab` d'une candidate : `lot`, `index` (0…), `seed`, `aim` (niveau visé)
 - **Rampe** : trapèze seul dans les lots (l'escalier reste dans le code et les fixtures, hors lots, `rampe.md` §8) ; largeurs tirées et relais ; 4 techniques nommées (`ramp_plateau`, `ramp_shoulder` niveau 1, `ramp_lone` niveau 2, `ramp_relay` niveau 3), mesurées dans `lab.ramp_techniques`. Le contrefactuel « rampe remplacée par un rectangle » (signal 1 du §6.4) n'est pas implémenté : les techniques nommées le remplacent.
 - **Coût** : un plateau (`Puzzle`) par grille pour tous les essais d'indices ; déduction complète seulement près de la fin ; file de travail continue ; « Hypothèse réfutée » plafonnée (`MAX_REFUTE_WORK`) et limitée aux poses qui touchent une case ouverte.
 
+
+## 17. Générateur v3-gen-1 (session 2 du labo, `docs/next/v3-criteres.md`)
+
+- **Mécaniques mortes nettoyées** (C1), pas rejetées :
+  - un voisin sans export ni import dans la référence est retiré de la grille juste après la pose de référence, avant l'inventaire et les indices (`lab.cleaned.neighbors`) ;
+  - un plafond CO₂ qu'aucune étape `carbon` n'utilise est retiré après la déduction ; unicité (CP-SAT) et déduction sont refaites sans lui, la note est celle de la seconde déduction (`lab.cleaned.co2_cap`, valeur retirée). Les indices restent minimaux : sans le plafond, aucun ne devient superflu.
+- **Décisions** (`deduce/trace.py`, `decisions()`), dans `lab.decisions` par type, ex. `{"exchange": 2, "tall": 1}`. Une décision est un choix de la référence que la déduction doit trancher et qui change la solution :
+  - `exchange` : par (voisin, créneau) non nul. Export : sa valeur est fixée par une étape dont la règle n'est pas `flow` (champ `exchanges` de l'étape), et aucun indice `flow` ne le publie ; un export jamais fixé par une étape est imposé d'emblée. Import : une étape autre que `given`/`flow` pose la barre d'import, sans indice `flow` ni relevé `I:<pays>` à ce créneau ; un import trouvé en comptant les colonnes à la fin n'est pas une décision (c'est le remplissage des commentaires).
+  - `step` : nombre de paires de la référence, si une étape fixe l'option STEP.
+  - `tall` : chaque barre de charbon de hauteur 2 ; `ramp` : chaque barre de charbon à paliers ; sauf indice `engaged` qui la pose.
+  - `carbon` : 1 si une étape `carbon` existe (le plafond exclut au moins une pose).
+  - `stock` : 1 en carnet libre si la référence épuise `max_cells` du barrage et qu'une étape `exhausted` retire une pose de B.
+  - `price` : chaque indice `price` cité par une étape `top_price` (le prix force sa centrale dans une seule case).
+  - Calage : sur `v3-jouer-a`, `exchange` + `step` donne exactement la colonne « Déc. » de l'analyse (20/20).
+- **Rejet `no_decision`** : moins de `min_decisions` décisions (1 par défaut). Le seuil « ≥ 2 » n'est pas imposé : hypothèse à tester.
+- **Quota `max_same_single_decision`** : au plus N grilles d'un lot dont toutes les décisions sont d'un même type, par type. Les lots « jouer » v3g1 prennent 6 sur 20 (≈ 1/3) : les échanges seuls (8 des 15 grilles à décisions de `v3-jouer-a`) ne dominent plus le lot ; la même borne vaut pour les autres types (STEP seule, pièce haute seule, prix seuls), pour ne pas déplacer le monopole. Les grilles à 2 types ou plus n'y sont pas comptées.
+- **Mesures seules** (sans filtre) dans `lab` : `live_mechanics` (C3, types de décision hors `price`), `bars` (C4, barres de la référence hors imports), `nuclear_prices` (C6, indices `price` sur N en carnet libre, 0 en carnet exact). Agrégats dans `.stats.json` : `decisions` (par type, grilles par type, grilles à type unique, grilles par nombre de décisions, par nombre de mécaniques vivantes) et `cleaned`.
+- **Lots** `lab/lots/v3g1-jouer-{a,b,c}.json` : configurations de `v3-jouer-*` ; un plafond CO₂ passe en carnet libre (en carnet exact il était mort 3 fois sur 3) ; une entrée sans aucune mécanique reçoit une pièce haute ; une entrée « stock » sans voisin en reçoit un. Bilan : `lab/candidates/V3G1.md`.

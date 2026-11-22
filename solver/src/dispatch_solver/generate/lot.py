@@ -1,14 +1,18 @@
 """Generator: one candidate grid from a configuration, and lots with imposed diversity (§10).
 
 - Config (one entry of a lot's `mix`): cols, family, height, pieces, tall, ramp, neighbors, step, surplus,
-  co2_cap, stock, inventory, clue_types, rating, max_clues. See DEFAULTS; check_lot() refuses unknown
-  keys and bad values before any draw.
+  co2_cap, stock, inventory, clue_types, rating, max_clues, min_decisions. See DEFAULTS; check_lot()
+  refuses unknown keys and bad values before any draw.
 - make_candidate(): draw a day, solve the reference (merit order; ramps of drawn widths, sometimes two),
-  write the inventory, select the minimal clues up to an aimed technique level, check one composition
-  (CP-SAT) and the deduction, rate it, write the bulletin draft and the `lab` block.
+  drop the neighbors the reference never trades with (dead mechanic), write the inventory, select the
+  minimal clues up to an aimed technique level, check one composition (CP-SAT) and the deduction, drop a
+  CO2 cap no `carbon` step uses (checked again), rate it, count its decisions (deduce.trace.decisions;
+  fewer than `min_decisions` is the reject `no_decision`, "filling"), write the bulletin draft and the
+  `lab` block (decisions, live mechanics, bars, nuclear prices: measures only).
 - run_lot(): keeps the worker processes busy (rolling queue), accepts in draw order under the quotas
-  (silhouette family, mechanics, clue profile, minimum per rating and per mix entry). Draws aim at the
-  ratings still missing; finished grids refused by the rating reservation wait in a reserve.
+  (silhouette family, mechanics, clue profile, grids whose decisions are all of one type, minimum per
+  rating and per mix entry). Draws aim at the ratings still missing; finished grids refused by the rating
+  reservation wait in a reserve.
 
 Example: grids, stats = run_lot(json.load(open("lab/lots/demo-01.json")))
 """
@@ -27,7 +31,7 @@ from typing import Any
 from .. import __version__, exact
 from ..board import reference_composition
 from ..deduce import deduce
-from ..deduce.trace import RAMP_OWN, RAMP_RULES
+from ..deduce.trace import DECISION_TYPES, RAMP_OWN, RAMP_RULES, decisions, live_mechanics
 from ..grid import LABELS, validate
 from .bulletin import make_bulletin
 from .cluesel import clue_pool, select_clues
@@ -51,6 +55,7 @@ DEFAULTS: dict[str, Any] = {
     "clue_types": ["price", "column", "flow", "bar", "length", "exchanges"],
     "rating": None,
     "max_clues": None,
+    "min_decisions": 1,  # 0 only for lots that may hold filling grids (tutorials)
 }
 COLUMN_COUNTS = (6, 8, 12)
 COUNTRIES = [("DE", 2), ("ES", 0), ("UK", 1), ("IT", 2), ("BE", 1)]
@@ -60,6 +65,7 @@ QUOTAS = {
     "max_same_clue_profile": 4,
     "min_per_rating": 2,
     "min_per_mix": 1,
+    "max_same_single_decision": None,  # grids whose decisions are all of one type, per type (None: no limit)
 }
 QUOTA_ALIASES = {"max_same_silhouette": "max_same_family"}
 LOT_KEYS = ("lot", "size", "seed", "mix", "quotas", "max_attempts", "comment")
@@ -166,6 +172,8 @@ def check_config(m: Any) -> tuple[dict[str, Any], list[str]]:
         errs.append("rating: 1, 2, 3 or 4 expected")
     if m.get("max_clues") is not None and (not _nat(m["max_clues"]) or m["max_clues"] < 1):
         errs.append("max_clues: positive integer expected")
+    if "min_decisions" in m and not _nat(m["min_decisions"]):
+        errs.append("min_decisions: integer >= 0 expected")
     return cfg, errs
 
 
@@ -263,6 +271,13 @@ def make_candidate(
             break
     if sol is None:
         return None, "infeasible", info
+    # Dead mechanic (C1): a neighbor the reference never trades with is dropped before the clue selection.
+    live = set(sol["exports"]) | {p["country"] for p in sol["placements"] if p["piece"] == "I"}
+    cleaned: dict[str, Any] = {}
+    dead = [nb["id"] for nb in d["neighbors"] if nb["id"] not in live]
+    if dead:
+        d["neighbors"] = [nb for nb in d["neighbors"] if nb["id"] in live]
+        cleaned["neighbors"] = dead
     if cfg["co2_cap"] == "auto":
         d["solution"] = sol
         comp = reference_composition(d)
@@ -294,6 +309,19 @@ def make_candidate(
     res = deduce(d)
     if not res.solved:
         return None, "blocked", info
+    if d.get("co2_cap") is not None and not any(s.rule == "carbon" for s in res.steps):
+        # Dead mechanic (C1): a CO2 cap no step uses is dropped; the grid is checked again without it.
+        cleaned["co2_cap"] = d["co2_cap"]
+        d["co2_cap"] = None
+        ex = exact.count(d)
+        if ex.count != 1 or ex.composition != reference_composition(d):
+            return None, "not_unique", info
+        res = deduce(d)
+        if not res.solved:
+            return None, "blocked", info
+    dec = decisions(d, res.steps)
+    if sum(dec.values()) < cfg["min_decisions"]:
+        return None, "no_decision", info
     if cfg["rating"] is not None and res.rating != cfg["rating"]:
         return None, "rating_mismatch", info
     d["difficulty"] = {"rating": res.rating, "label": LABELS[res.rating], "techniques": sorted(res.techniques())}
@@ -308,6 +336,13 @@ def make_candidate(
         "clue_profile": sorted({c["type"] for c in clues}),
         "trace_summary": summary,
         "ramp_techniques": {k: v for k, v in summary["techniques"].items() if k in RAMP_RULES},
+        "decisions": dec,
+        "live_mechanics": live_mechanics(dec),
+        "bars": sum(1 for p in sol["placements"] if p["piece"] != "I"),
+        "nuclear_prices": sum(1 for c in clues if c["type"] == "price" and c["piece"] == "N")
+        if d["inventory"]["level"] == "none"
+        else 0,
+        "cleaned": cleaned,
         "bulletin": bulletin,
         "generator": f"dispatch-solver {__version__}",
         "seconds": round(time.perf_counter() - t0, 2),
@@ -348,6 +383,12 @@ def _signatures(g: dict[str, Any]) -> set[tuple[Any, ...]]:
     return out
 
 
+def single_decision_type(lab: dict[str, Any]) -> str | None:
+    """The decision type of a grid whose decisions are all of one type, else None (none, or several types)."""
+    kinds = [k for k, v in lab.get("decisions", {}).items() if v]
+    return kinds[0] if len(kinds) == 1 else None
+
+
 class Quotas:
     def __init__(self, size: int, q: dict[str, int], mixes: int = 0) -> None:
         self.size, self.q = size, {**QUOTAS, **{QUOTA_ALIASES.get(k, k): v for k, v in q.items()}}
@@ -357,6 +398,7 @@ class Quotas:
         self.mech: dict[tuple[str, ...], int] = {}
         self.profile: dict[tuple[str, ...], int] = {}
         self.rating: dict[int, int] = {}
+        self.single: dict[str, int] = {}
         self.seen: set[tuple[Any, ...]] = set()
         self.titles: set[str] = set()
         self.kept = 0
@@ -381,6 +423,10 @@ class Quotas:
                 return "quota:mechanics"
             if self.profile.get(tuple(lab["clue_profile"]), 0) >= self.q["max_same_clue_profile"]:
                 return "quota:clue_profile"
+            one = single_decision_type(lab)
+            cap = self.q["max_same_single_decision"]
+            if one is not None and cap is not None and self.single.get(one, 0) >= cap:
+                return "quota:single_decision"
         # Reserve the slots still needed for the minimum per rating and per mix entry.
         if left < missing_r and self.rating.get(r, 0) >= need_r:
             return "quota:rating"
@@ -398,6 +444,9 @@ class Quotas:
         self.family[lab["family"]] = self.family.get(lab["family"], 0) + 1
         self.mech[tuple(lab["mechanics"])] = self.mech.get(tuple(lab["mechanics"]), 0) + 1
         self.profile[tuple(lab["clue_profile"])] = self.profile.get(tuple(lab["clue_profile"]), 0) + 1
+        one = single_decision_type(lab)
+        if one is not None:
+            self.single[one] = self.single.get(one, 0) + 1
         r = g["difficulty"]["rating"]
         self.rating[r] = self.rating.get(r, 0) + 1
         self.mix[lab.get("mix", -1)] = self.mix.get(lab.get("mix", -1), 0) + 1
@@ -521,6 +570,31 @@ def run_lot(lot: dict[str, Any], workers: int = 6, log: Any = None) -> tuple[lis
         "per_mix": {str(k): v for k, v in sorted(quotas.mix.items())},
         "mechanics": {" ".join(k): v for k, v in quotas.mech.items()},
         "clue_profiles": {" ".join(k): v for k, v in quotas.profile.items()},
+        "decisions": {
+            "by_type": {t: sum(g["lab"]["decisions"].get(t, 0) for g in kept) for t in DECISION_TYPES},
+            "grids_with_type": {t: sum(1 for g in kept if g["lab"]["decisions"].get(t)) for t in DECISION_TYPES},
+            "single_type": dict(sorted(quotas.single.items())),
+            "per_grid": dict(
+                sorted(
+                    {
+                        n: sum(1 for g in kept if sum(g["lab"]["decisions"].values()) == n)
+                        for n in {sum(g["lab"]["decisions"].values()) for g in kept}
+                    }.items()
+                )
+            ),
+            "live_mechanics": dict(
+                sorted(
+                    {
+                        n: sum(1 for g in kept if len(g["lab"]["live_mechanics"]) == n)
+                        for n in {len(g["lab"]["live_mechanics"]) for g in kept}
+                    }.items()
+                )
+            ),
+        },
+        "cleaned": {
+            "neighbors": sum(len(g["lab"]["cleaned"].get("neighbors", [])) for g in kept),
+            "co2_cap": sum(1 for g in kept if "co2_cap" in g["lab"]["cleaned"]),
+        },
         "ramp_grids": len(ramp),
         "ramp_grids_with_technique": sum(1 for g in ramp if g["lab"]["ramp_techniques"]),
         "ramp_grids_with_own_technique": sum(1 for g in ramp if set(g["lab"]["ramp_techniques"]) & set(RAMP_OWN)),
