@@ -3,7 +3,6 @@
     "id": 1,
     "title": "1. Poser le carnet",
     "section": "tutorial",
-    "intro": "Pose toutes les centrales du carnet, ni plus ni moins, en remplissant exactement la silhouette. Quand tu sais combien de cases de chaque centrale vont dans une colonne, l’ordre ne compte pas.",
     "teaches": [
       "swap"
     ],
@@ -148,7 +147,6 @@
     "id": 2,
     "title": "2. Le prix plafonne la colonne",
     "section": "tutorial",
-    "intro": "Nouveau : un prix publié par la bourse. Sous un prix publié, aucune case ne coûte plus cher que celles de cette centrale.",
     "teaches": [
       "price_cap"
     ],
@@ -297,7 +295,6 @@
     "id": 3,
     "title": "3. Carnet juste",
     "section": "tutorial",
-    "intro": "Nouveau : la ligne vers l’Allemagne. Touche une pastille sous un créneau pour exporter un bloc ; pose « Import » comme une centrale d’une case. S’il reste exactement autant de cases possibles que de cases à poser pour une centrale, toutes ces cases sont à elle.",
     "teaches": [
       "just_enough"
     ],
@@ -470,7 +467,6 @@
     "id": 4,
     "title": "4. Le creux coupe le ruban",
     "section": "tutorial",
-    "intro": "Chaque ligne se découpe en rubans entre les creux de demande. Une barre qui laisserait un bout de ruban impossible à remplir est exclue.",
     "teaches": [
       "ribbon"
     ],
@@ -630,7 +626,6 @@
     "id": 5,
     "title": "5. Flux publié et compter la colonne",
     "section": "tutorial",
-    "intro": "Nouveau : un flux publié, qui fixe l’échange d’un créneau avec l’Allemagne. Une colonne a autant de cases que sa hauteur : connaissant les autres, on déduit celle qui reste.",
     "teaches": [
       "flow",
       "column_sum"
@@ -792,7 +787,6 @@
     "id": 6,
     "title": "6. La case la plus chère",
     "section": "tutorial",
-    "intro": "Un prix publié exige au moins une case de cette centrale dans la colonne : s’il n’y a qu’une place possible, c’est elle.",
     "teaches": [
       "top_price"
     ],
@@ -978,7 +972,6 @@
     "id": 7,
     "title": "7. Pompage, relevé et programme",
     "section": "tutorial",
-    "intro": "Nouveau : une STEP (pompage ▲ puis turbinage ▼), un relevé de production RTE et le programme publié d’une centrale. Le pompage ▲ ajoute une case à couvrir, le turbinage ▼ en retire une.",
     "teaches": [
       "silhouette",
       "record",
@@ -2040,7 +2033,6 @@
     "id": 12,
     "title": "8. Le charbon par paliers",
     "section": "tutorial",
-    "intro": "Nouveau : le charbon démarre et s’arrête par paliers. Il se pose comme une barre, sur sa ligne de base ; son plateau occupe aussi la ligne au-dessus, sauf aux deux bords.",
     "teaches": [
       "ramp_plateau",
       "ramp_shoulder"
@@ -2179,7 +2171,6 @@
     "id": 13,
     "title": "9. Deux bords se relaient",
     "section": "tutorial",
-    "intro": "Deux charbons par paliers cette fois. Quand une colonne a deux cases de charbon sans plateau autour, l’un s’arrête et l’autre démarre sur son bord.",
     "teaches": [
       "ramp_relay"
     ],

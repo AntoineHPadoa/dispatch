@@ -8,7 +8,7 @@
  * - Exchanges imposed by an exact inventory are listed with the day clues (market publications).
  */
 import type { Grid } from '../model/grid';
-import { TECHNIQUES, UI, slotClueShort } from '../i18n/fr';
+import { TUTORIAL_LORE, UI, slotClueShort } from '../i18n/fr';
 import { bandPlan, boardGeometry, renderBoard } from './board';
 import { bulletinTag, displayTitle, initialState } from './game';
 import { clueItem, co2RuleText, inventoryExchanges, isDayClue, renderBook } from './panels';
@@ -32,9 +32,9 @@ export function renderSheet(grid: Grid, tutorialIndex: number | null): string {
   // Paper shows what the statement imposes: engaged bars and published exports, no STEP pair.
   const state = { ...initialState(grid), step: [] };
   const board = renderBoard({ grid, state, ev: null, style: 'B', cell: printCell(grid) }).svg;
-  const techniques = (grid.teaches ?? []).map((t) => TECHNIQUES[t]).filter(Boolean);
-  const lead = grid.intro
-    ? `<p class="lead">${techniques.length ? `<b>${esc(techniques.map((t) => t!.name).join(' · '))}.</b> ` : ''}${esc(grid.intro)}</p>` : '';
+  // A tutorial prints its lore line; any other grid prints its own instructions, if it has some.
+  const lore = grid.teaches?.length ? TUTORIAL_LORE[grid.id] : grid.intro;
+  const lead = lore ? `<p class="lead">${esc(lore)}</p>` : '';
   const meta = tutorialIndex !== null ? `${UI.tutorialShort(tutorialIndex)} · ${grid.difficulty.label}`
     : `${bulletinTag(grid) ?? UI.ratedEyebrow} · ${grid.difficulty.label}`;
   const day = grid.clues.filter(isDayClue).map((c) => clueItem(grid, c, null, true));
