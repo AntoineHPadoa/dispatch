@@ -1,0 +1,261 @@
+{
+ "lot": "v3g5-squelette",
+ "kept": 20,
+ "size": 20,
+ "attempts": 464,
+ "rejects": {
+  "too_many_clues": 301,
+  "quota:per_mix": 22,
+  "infeasible": 6,
+  "quota:family": 6,
+  "not_unique": 17,
+  "no_decision": 2,
+  "quota:with_type": 32,
+  "quota:rating": 17,
+  "quota:mix": 22
+ },
+ "rejects_by_family": {
+  "deux_bosses": {
+   "attempts": 19,
+   "too_many_clues": 12,
+   "infeasible": 2,
+   "not_unique": 1
+  },
+  "midi_solaire": {
+   "attempts": 13,
+   "too_many_clues": 9
+  },
+  "nuit_plate": {
+   "attempts": 52,
+   "too_many_clues": 48
+  },
+  "plateau_hiver": {
+   "attempts": 38,
+   "too_many_clues": 31,
+   "no_decision": 1
+  },
+  "pointe_soir": {
+   "attempts": 15,
+   "too_many_clues": 9,
+   "infeasible": 1
+  },
+  "surplus_midi": {
+   "attempts": 166,
+   "too_many_clues": 110,
+   "not_unique": 5,
+   "no_decision": 1
+  },
+  "vent_nocturne": {
+   "attempts": 142,
+   "infeasible": 3,
+   "too_many_clues": 82,
+   "not_unique": 11
+  }
+ },
+ "ratings": {
+  "Facile": 6,
+  "Moyen": 10,
+  "Difficile": 2,
+  "Expert": 2
+ },
+ "families": {
+  "deux_bosses": 3,
+  "surplus_midi": 2,
+  "plateau_hiver": 3,
+  "vent_nocturne": 3,
+  "pointe_soir": 3,
+  "midi_solaire": 3,
+  "nuit_plate": 3
+ },
+ "per_mix": {
+  "0": 2,
+  "1": 2,
+  "2": 2,
+  "3": 1,
+  "4": 2,
+  "5": 1,
+  "6": 2,
+  "7": 2,
+  "8": 1,
+  "9": 2,
+  "10": 2,
+  "11": 1
+ },
+ "mechanics": {
+  "neighbors:1 step co2 inventory:none": 1,
+  "neighbors:1 surplus co2 tall inventory:none": 1,
+  "neighbors:1 step surplus co2 inventory:none": 1,
+  "step co2 inventory:none": 1,
+  "neighbors:1 tall inventory:exact": 2,
+  "neighbors:1 step inventory:none": 1,
+  "neighbors:1 inventory:exact": 2,
+  "neighbors:1 step inventory:exact": 2,
+  "tall inventory:none": 2,
+  "step stock inventory:none": 2,
+  "tall stock inventory:none": 2,
+  "neighbors:1 inventory:none": 2,
+  "neighbors:2 inventory:none": 1
+ },
+ "clue_profiles": {
+  "column exchanges": 3,
+  "bar column exchanges": 2,
+  "column flow": 1,
+  "bar column exchanges length price": 1,
+  "column": 2,
+  "": 2,
+  "flow": 1,
+  "column price": 1,
+  "bar column exchanges price": 2,
+  "bar": 1,
+  "bar column": 1,
+  "column exchanges flow price": 1,
+  "column length price": 1,
+  "bar column exchanges flow length price": 1
+ },
+ "decisions": {
+  "by_type": {
+   "exchange": 28,
+   "step": 8,
+   "tall": 7,
+   "ramp": 0,
+   "carbon": 4,
+   "stock": 2,
+   "price": 1
+  },
+  "grids_with_type": {
+   "exchange": 12,
+   "step": 8,
+   "tall": 7,
+   "ramp": 0,
+   "carbon": 4,
+   "stock": 2,
+   "price": 1
+  },
+  "single_type": {
+   "exchange": 4,
+   "step": 1,
+   "tall": 4
+  },
+  "type_quotas": {
+   "max_with_type": {
+    "exchange": 12,
+    "coupled": 6
+   },
+   "min_with_type": {
+    "coupled": 4,
+    "step": 4,
+    "tall": 4,
+    "stock": 2
+   }
+  },
+  "grids_with_key": {
+   "carbon": 4,
+   "coupled": 6,
+   "exchange": 12,
+   "price": 1,
+   "step": 8,
+   "stock": 2,
+   "tall": 7
+  },
+  "coupled_globals": {
+   "grids": 6,
+   "step": 5,
+   "carbon": 3
+  },
+  "per_grid": {
+   "1": 6,
+   "2": 6,
+   "3": 5,
+   "4": 1,
+   "6": 1,
+   "7": 1
+  },
+  "live_mechanics": {
+   "1": 10,
+   "2": 7,
+   "3": 3
+  }
+ },
+ "demand_price_grids": 1,
+ "contested_quota": {
+  "min_with_contested": null,
+  "medium_up_with_contested": 1,
+  "held": 0,
+  "held_left_out": 0
+ },
+ "compactness": {
+  "median": 0.33,
+  "min": 0.08,
+  "max": 1.25
+ },
+ "cells": {
+  "median": 27.0,
+  "min": 16,
+  "max": 41
+ },
+ "cells_bands": {
+  "<=28": 12,
+  "29-39": 6,
+  ">=40": 2
+ },
+ "hard_cells_bands": {
+  "<=28": 4,
+  "29-39": 0,
+  ">=40": 0
+ },
+ "full_n_rows": {
+  "0": 16,
+  "1": 1,
+  "2": 2,
+  "4": 1
+ },
+ "nuclear_share": {
+  "median": 0.61,
+  "min": 0.19,
+  "max": 0.94
+ },
+ "nuclear_under_half": 5,
+ "cells_per_decision": {
+  "median": 9.65,
+  "min": 2.1,
+  "max": 35.0
+ },
+ "holes": {
+  "grids_with_holes": 12,
+  "holes": 30,
+  "unique": 20,
+  "contested": 2,
+  "grids_with_contested": 1,
+  "medium_up_with_contested": 1,
+  "medium_up": 14,
+  "contested_types": {
+   "GI": 2
+  }
+ },
+ "cleaned": {
+  "neighbors": 1,
+  "co2_cap": 1
+ },
+ "ramp_grids": 0,
+ "ramp_grids_with_technique": 0,
+ "ramp_grids_with_own_technique": 0,
+ "ramp_techniques": {
+  "ramp_lone": 0,
+  "ramp_plateau": 0,
+  "ramp_relay": 0,
+  "ramp_shoulder": 0
+ },
+ "ramp_settled_by": {},
+ "ramp_relays": 0,
+ "cols": {
+  "6": 2,
+  "8": 17,
+  "12": 1
+ },
+ "seconds": 244.2,
+ "seconds_per_kept_grid": 12.2,
+ "workers": 10,
+ "generator": "dispatch-solver 2.0.0",
+ "blocked_ramp": 0,
+ "errors": []
+}

@@ -1,0 +1,242 @@
+{
+ "lot": "v3g5-temoin",
+ "kept": 20,
+ "size": 20,
+ "attempts": 81,
+ "rejects": {
+  "too_many_clues": 17,
+  "one_plant": 17,
+  "trivial": 5,
+  "quota:clue_profile": 2,
+  "quota:family": 6,
+  "quota:mechanics": 3
+ },
+ "rejects_by_family": {
+  "deux_bosses": {
+   "attempts": 4,
+   "one_plant": 1
+  },
+  "midi_solaire": {
+   "attempts": 4,
+   "too_many_clues": 1
+  },
+  "nuit_plate": {
+   "attempts": 20,
+   "too_many_clues": 6,
+   "one_plant": 5,
+   "trivial": 1
+  },
+  "plateau_hiver": {
+   "attempts": 23,
+   "too_many_clues": 7,
+   "one_plant": 8,
+   "trivial": 3
+  },
+  "pointe_soir": {
+   "attempts": 9,
+   "too_many_clues": 2,
+   "one_plant": 2,
+   "trivial": 1
+  },
+  "surplus_midi": {
+   "attempts": 5
+  },
+  "vent_nocturne": {
+   "attempts": 5,
+   "one_plant": 1,
+   "too_many_clues": 1
+  }
+ },
+ "ratings": {
+  "Facile": 7,
+  "Moyen": 7,
+  "Difficile": 6,
+  "Expert": 0
+ },
+ "families": {
+  "deux_bosses": 3,
+  "surplus_midi": 3,
+  "midi_solaire": 3,
+  "vent_nocturne": 3,
+  "nuit_plate": 3,
+  "pointe_soir": 2,
+  "plateau_hiver": 3
+ },
+ "per_mix": {
+  "0": 3,
+  "1": 4,
+  "2": 4,
+  "3": 2,
+  "4": 2,
+  "5": 1,
+  "6": 2,
+  "7": 1,
+  "8": 1
+ },
+ "mechanics": {
+  "neighbors:1 inventory:exact": 3,
+  "neighbors:1 surplus inventory:exact": 1,
+  "neighbors:1 step inventory:none": 1,
+  "neighbors:3 surplus inventory:none": 1,
+  "neighbors:1 inventory:none": 2,
+  "neighbors:1 co2 inventory:none": 2,
+  "neighbors:2 co2 inventory:none": 2,
+  "neighbors:1 step inventory:exact": 3,
+  "stock inventory:none": 1,
+  "inventory:none": 1,
+  "neighbors:1 tall inventory:exact": 2,
+  "neighbors:1 surplus inventory:none": 1
+ },
+ "clue_profiles": {
+  "": 4,
+  "column exchanges flow": 2,
+  "bar column exchanges flow price": 2,
+  "column": 2,
+  "column exchanges": 2,
+  "bar exchanges length price": 1,
+  "bar column price": 1,
+  "column price": 1,
+  "bar column": 1,
+  "bar column exchanges price": 1,
+  "bar": 1,
+  "column flow": 1,
+  "column exchanges price": 1
+ },
+ "decisions": {
+  "by_type": {
+   "exchange": 41,
+   "step": 4,
+   "tall": 2,
+   "ramp": 0,
+   "carbon": 4,
+   "stock": 1,
+   "price": 0
+  },
+  "grids_with_type": {
+   "exchange": 17,
+   "step": 4,
+   "tall": 2,
+   "ramp": 0,
+   "carbon": 4,
+   "stock": 1,
+   "price": 0
+  },
+  "single_type": {
+   "exchange": 7,
+   "stock": 1
+  },
+  "type_quotas": {},
+  "grids_with_key": {
+   "carbon": 4,
+   "coupled": 8,
+   "exchange": 17,
+   "step": 4,
+   "stock": 1,
+   "tall": 2
+  },
+  "coupled_globals": {
+   "grids": 8,
+   "step": 4,
+   "carbon": 4
+  },
+  "per_grid": {
+   "0": 2,
+   "1": 3,
+   "2": 7,
+   "3": 2,
+   "4": 4,
+   "5": 1,
+   "8": 1
+  },
+  "live_mechanics": {
+   "0": 2,
+   "1": 8,
+   "2": 10
+  }
+ },
+ "demand_price_grids": 0,
+ "contested_quota": {
+  "min_with_contested": null,
+  "medium_up_with_contested": 4,
+  "held": 0,
+  "held_left_out": 0
+ },
+ "compactness": {
+  "median": 0.33,
+  "min": 0.0,
+  "max": 0.71
+ },
+ "cells": {
+  "median": 31.0,
+  "min": 18,
+  "max": 87
+ },
+ "cells_bands": {
+  "<=28": 7,
+  "29-39": 9,
+  ">=40": 4
+ },
+ "hard_cells_bands": {
+  "<=28": 1,
+  "29-39": 2,
+  ">=40": 3
+ },
+ "full_n_rows": {
+  "0": 12,
+  "1": 4,
+  "2": 1,
+  "3": 1,
+  "4": 1,
+  "6": 1
+ },
+ "nuclear_share": {
+  "median": 0.88,
+  "min": 0.5,
+  "max": 0.97
+ },
+ "nuclear_under_half": 0,
+ "cells_per_decision": {
+  "median": 9.75,
+  "min": 3.7,
+  "max": 35.0
+ },
+ "holes": {
+  "grids_with_holes": 12,
+  "holes": 24,
+  "unique": 15,
+  "contested": 5,
+  "grids_with_contested": 4,
+  "medium_up_with_contested": 4,
+  "medium_up": 13,
+  "contested_types": {
+   "GT": 4,
+   "GTI": 1
+  }
+ },
+ "cleaned": {
+  "neighbors": 2,
+  "co2_cap": 0
+ },
+ "ramp_grids": 0,
+ "ramp_grids_with_technique": 0,
+ "ramp_grids_with_own_technique": 0,
+ "ramp_techniques": {
+  "ramp_lone": 0,
+  "ramp_plateau": 0,
+  "ramp_relay": 0,
+  "ramp_shoulder": 0
+ },
+ "ramp_settled_by": {},
+ "ramp_relays": 0,
+ "cols": {
+  "6": 2,
+  "8": 12,
+  "12": 6
+ },
+ "seconds": 29.5,
+ "seconds_per_kept_grid": 1.5,
+ "workers": 6,
+ "generator": "dispatch-solver 2.0.0",
+ "blocked_ramp": 0,
+ "errors": []
+}
