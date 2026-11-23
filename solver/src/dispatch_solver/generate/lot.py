@@ -743,7 +743,7 @@ def run_lot(lot: dict[str, Any], workers: int = 6, log: Any = None) -> tuple[lis
             )
 
     pending: deque[tuple[Future, dict[str, Any], int, int]] = deque()
-    stuck = 0
+    stuck = done = 0
     pool = ProcessPoolExecutor(max_workers=workers)
     try:
         while len(kept) < size and (pending or attempts < max_attempts):
@@ -758,6 +758,9 @@ def run_lot(lot: dict[str, Any], workers: int = 6, log: Any = None) -> tuple[lis
                 stuck += 1
                 g, reason = None, "timeout"
                 info = {"seed": seed, "family": cfg.get("family", "any"), "error": f"no result after {HEAD_SECONDS} s"}
+            done += 1
+            if log and done % 50 == 0:
+                log(f"progress: {done} draws done, {len(kept)}/{size} kept, rejects {dict(sorted(rejects.items()))}")
             fam = by_family.setdefault(info.get("family", "?"), {"attempts": 0})
             fam["attempts"] += 1
             if reason is not None:

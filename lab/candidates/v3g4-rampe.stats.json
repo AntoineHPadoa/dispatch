@@ -1,0 +1,190 @@
+{
+ "lot": "v3g4-rampe",
+ "kept": 20,
+ "size": 20,
+ "attempts": 44,
+ "rejects": {
+  "too_many_clues": 11,
+  "quota:family": 6,
+  "infeasible": 1,
+  "quota:clue_profile": 1
+ },
+ "rejects_by_family": {
+  "deux_bosses": {
+   "attempts": 3,
+   "too_many_clues": 1
+  },
+  "midi_solaire": {
+   "attempts": 6,
+   "infeasible": 1,
+   "too_many_clues": 1
+  },
+  "nuit_plate": {
+   "attempts": 6,
+   "too_many_clues": 2
+  },
+  "plateau_hiver": {
+   "attempts": 7,
+   "too_many_clues": 1
+  },
+  "pointe_soir": {
+   "attempts": 4,
+   "too_many_clues": 1
+  },
+  "surplus_midi": {
+   "attempts": 5,
+   "too_many_clues": 1
+  },
+  "vent_nocturne": {
+   "attempts": 8,
+   "too_many_clues": 4
+  }
+ },
+ "ratings": {
+  "Facile": 5,
+  "Moyen": 10,
+  "Difficile": 3,
+  "Expert": 2
+ },
+ "families": {
+  "vent_nocturne": 3,
+  "surplus_midi": 3,
+  "midi_solaire": 3,
+  "deux_bosses": 2,
+  "plateau_hiver": 3,
+  "pointe_soir": 3,
+  "nuit_plate": 3
+ },
+ "per_mix": {
+  "0": 1,
+  "1": 1,
+  "2": 2,
+  "3": 2,
+  "4": 2,
+  "5": 2,
+  "6": 2,
+  "7": 2,
+  "8": 1,
+  "9": 2,
+  "10": 2,
+  "11": 1
+ },
+ "mechanics": {
+  "neighbors:1 step co2 ramp:trap inventory:none": 2,
+  "neighbors:1 step surplus ramp:trap inventory:none": 1,
+  "neighbors:1 surplus ramp:trap stock inventory:none": 1,
+  "neighbors:1 ramp:trap inventory:exact": 4,
+  "neighbors:1 ramp:trap inventory:none": 3,
+  "neighbors:1 step ramp:trap inventory:none": 2,
+  "neighbors:1 step ramp:trap inventory:exact": 1,
+  "neighbors:1 co2 ramp:trap inventory:none": 1,
+  "neighbors:1 surplus ramp:trap inventory:exact": 1,
+  "ramp:trap inventory:none": 2,
+  "ramp:trap inventory:exact": 2
+ },
+ "clue_profiles": {
+  "column exchanges flow": 1,
+  "column exchanges flow price": 4,
+  "": 5,
+  "column exchanges": 1,
+  "exchanges": 1,
+  "exchanges length": 1,
+  "column": 2,
+  "column exchanges price": 1,
+  "column price": 1,
+  "bar column price": 1,
+  "bar exchanges flow": 1,
+  "bar": 1
+ },
+ "decisions": {
+  "by_type": {
+   "exchange": 35,
+   "step": 6,
+   "tall": 0,
+   "ramp": 35,
+   "carbon": 3,
+   "stock": 0,
+   "price": 2
+  },
+  "grids_with_type": {
+   "exchange": 14,
+   "step": 6,
+   "tall": 0,
+   "ramp": 19,
+   "carbon": 3,
+   "stock": 0,
+   "price": 2
+  },
+  "single_type": {
+   "ramp": 5
+  },
+  "type_quotas": {},
+  "grids_with_key": {
+   "carbon": 3,
+   "coupled": 7,
+   "exchange": 14,
+   "price": 2,
+   "ramp": 19,
+   "step": 6
+  },
+  "coupled_globals": {
+   "grids": 7,
+   "step": 6,
+   "carbon": 3
+  },
+  "per_grid": {
+   "1": 3,
+   "2": 2,
+   "3": 3,
+   "4": 4,
+   "5": 3,
+   "6": 2,
+   "7": 2,
+   "8": 1
+  },
+  "live_mechanics": {
+   "1": 5,
+   "2": 10,
+   "3": 3,
+   "4": 2
+  }
+ },
+ "demand_price_grids": 0,
+ "compactness": {
+  "median": 0.67,
+  "min": 0.2,
+  "max": 1.86
+ },
+ "cleaned": {
+  "neighbors": 0,
+  "co2_cap": 1
+ },
+ "ramp_grids": 20,
+ "ramp_grids_with_technique": 8,
+ "ramp_grids_with_own_technique": 0,
+ "ramp_techniques": {
+  "ramp_lone": 0,
+  "ramp_plateau": 10,
+  "ramp_relay": 0,
+  "ramp_shoulder": 2
+ },
+ "ramp_settled_by": {
+  "eliminated": 5,
+  "ribbon": 1,
+  "share_out": 3,
+  "single_cover": 25,
+  "single_spot": 1
+ },
+ "ramp_relays": 11,
+ "cols": {
+  "6": 2,
+  "8": 12,
+  "12": 6
+ },
+ "seconds": 120.7,
+ "seconds_per_kept_grid": 6.0,
+ "workers": 3,
+ "generator": "dispatch-solver 2.0.0",
+ "blocked_ramp": 0,
+ "errors": []
+}
