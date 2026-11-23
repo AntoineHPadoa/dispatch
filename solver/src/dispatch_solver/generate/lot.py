@@ -1,27 +1,30 @@
 """Generator: one candidate grid from a configuration, and lots with imposed diversity (§10).
 
 - Config (one entry of a lot's `mix`): cols, family, height, pieces, tall, ramp, neighbors, step, surplus,
-  co2_cap, stock, inventory, clue_types, rating, max_clues, min_decisions, demand_price. See DEFAULTS; check_lot()
-  refuses unknown keys and bad values before any draw.
-- make_candidate(): draw a day, solve the reference (merit order; ramps of drawn widths, sometimes two),
-  with one export imposed when it trades with none of the entry's neighbors (else reject `dead_neighbors`),
-  drop the neighbors the reference never trades with (dead mechanic), write the inventory, select the
-  minimal clues up to an aimed technique level, check one composition (CP-SAT) and the deduction, drop a
-  CO2 cap no `carbon` step uses (checked again), rate it, count its decisions (deduce.trace.decisions;
-  fewer than `min_decisions` is the reject `no_decision`, "filling"), write the bulletin draft and the
-  `lab` block (decisions, live mechanics, bars, nuclear prices, coupled global mechanics, compactness K,
-  demand prices, ramp_settled_by: measures only, all taken on the cleaned grid). `demand_price`: when the pool has a price on a dear plant in an export
-  column (D7), one such price starts the clue selection.
+  co2_cap, stock, inventory, clue_types, rating, max_clues, min_decisions, demand_price, hole_types. See
+  DEFAULTS; check_lot() refuses unknown keys and bad values before any draw.
+- make_candidate(): draw a day, solve the reference (merit order; ramps of drawn widths, sometimes two; with
+  `hole_types`, the type of each hole drawn among those that fit), with one export imposed when it trades with
+  none of the entry's neighbors (else reject `dead_neighbors`), drop the neighbors the reference never trades
+  with (dead mechanic), write the inventory, select the minimal clues up to an aimed technique level, check
+  one composition (CP-SAT) and the deduction, drop a CO2 cap no `carbon` step uses (checked again), rate it,
+  count its decisions (deduce.trace.decisions; fewer than `min_decisions` is the reject `no_decision`,
+  "filling"), write the bulletin draft and the `lab` block (decisions, live mechanics, bars, nuclear prices,
+  coupled global mechanics, compactness K, demand prices, ramp_settled_by, cells, full_n_rows,
+  cells_per_decision, holes: measures only, all taken on the cleaned grid). `demand_price`: when the pool has
+  a price on a dear plant in an export column (D7), one such price starts the clue selection.
 - run_lot(): keeps the worker processes busy (rolling queue), accepts in draw order under the quotas
   (silhouette family, mechanics, clue profile, grids whose decisions are all of one type, grids holding
-  a decision type: ceiling max_with_type and floor min_with_type, minimum per rating and per mix entry,
-  grids with a demand price: max_demand_price; near-twins: max_per_mix grids per entry, max_with_cols grids
-  per slot count). Type quotas also take the key "coupled": a global mechanic
-  (STEP or CO2) coupled to an exchange, what notation A rates. Draws aim at the ratings still missing (a
-  missing Difficile or Expert aims at the entries able to give a coupled global mechanic) and at the mix
-  entries able to give a type under its floor; while max_demand_price is not reached, half the draws seed
-  a demand price;
-  finished grids refused by a reservation (rating, mix, type floor) wait in a reserve; a draw longer than
+  a decision type: ceiling max_with_type and floor min_with_type, minimum per rating (one number or
+  {rating: n}) and per mix entry, grids with a demand price: max_demand_price; near-twins: max_per_mix grids
+  per entry, max_with_cols grids per slot count; filler_cells: reject `filler` for a Difficile or Expert with
+  that many cells, off by default). Type quotas also take the key "coupled": a global mechanic (STEP or CO2)
+  coupled to an exchange, what notation A rates. Draws aim at the ratings still missing (a missing Difficile
+  or Expert aims at the entries able to give a coupled global mechanic) and at the mix entries able to give
+  a type under its floor; while max_demand_price is not reached, half the draws seed a demand price.
+  Soft quota min_with_contested (never a reject): while it is short, a Moyen-and-up grid without a contested
+  hole waits, one time in two, until the quota is met or the draws run out (contested holes weigh twice).
+  Finished grids refused by a reservation (rating, mix, type floor) wait in a reserve; a draw longer than
   ATTEMPT_SECONDS is the reject `timeout` (config and seed in stats.errors).
 
 Example: grids, stats = run_lot(json.load(open("lab/lots/demo-01.json")))
@@ -44,6 +47,7 @@ from typing import Any
 from .. import __version__, exact
 from ..board import reference_composition
 from ..deduce import deduce
+from ..deduce.holes import filling_measures, hole_measures, lot_measures
 from ..deduce.trace import (
     DECISION_TYPES,
     RAMP_OWN,
@@ -78,6 +82,9 @@ DEFAULTS: dict[str, Any] = {
     "max_clues": None,
     "min_decisions": 1,  # 0 only for lots that may hold filling grids (tutorials)
     "demand_price": False,  # D7: seed the clue selection with a price on a dear plant in an export column
+    "hole_types": False,  # the reference draws the type of each hole among those that fit (contested holes)
+    "max_nuclear": None,  # [lo, hi]: nuclear share cap of the reference, drawn per grid (1: no cap); looser skeleton
+    "allow_one_plant": False,  # keep grids with a single kind of plant (imports aside) instead of rejecting one_plant
 }
 COLUMN_COUNTS = (6, 8, 12)
 COUNTRIES = [("DE", 2), ("ES", 0), ("UK", 1), ("IT", 2), ("BE", 1)]
@@ -93,6 +100,8 @@ QUOTAS = {
     "max_demand_price": None,  # at most n grids with a demand price (D7); while under it, draws seed one
     "max_per_mix": None,  # at most n grids per mix entry (None: no limit)
     "max_with_cols": {},  # {slot count: n}: at most n grids of that many slots (e.g. {"12": 5})
+    "min_with_contested": None,  # soft: Moyen-and-up grids with a contested hole aimed at, never a reject
+    "filler_cells": None,  # reject `filler`: a Difficile or Expert with at least n cells to lay (off by default)
 }
 COUPLED = "coupled"  # quota key: a global mechanic (STEP or CO2) coupled to an exchange (notation A)
 QUOTA_TYPES = (*DECISION_TYPES, COUPLED)
@@ -152,7 +161,12 @@ def check_lot(lot: Any) -> tuple[dict[str, Any], list[str]]:
                 )
             else:
                 norm_q[key] = {int(c): n for c, n in v.items()}
-        elif v is None and key in ("max_demand_price", "max_per_mix"):
+        elif key == "min_per_rating" and isinstance(v, dict):
+            if any(str(r) not in ("1", "2", "3", "4") or not _nat(n) for r, n in v.items()):
+                errors.append(f"quotas.{k}: integer >= 0, or object {{rating (1-4): integer >= 0}} expected")
+            else:
+                norm_q[key] = {int(r): n for r, n in v.items()}
+        elif v is None and key in ("max_demand_price", "max_per_mix", "min_with_contested", "filler_cells"):
             norm_q[key] = None
         elif not _nat(v):
             errors.append(f"quotas.{k}: integer >= 0 expected")
@@ -241,6 +255,17 @@ def check_config(m: Any) -> tuple[dict[str, Any], list[str]]:
         errs.append("min_decisions: integer >= 0 expected")
     if "demand_price" in m and not isinstance(m["demand_price"], bool):
         errs.append("demand_price: true or false expected")
+    for key in ("hole_types", "allow_one_plant"):
+        if key in m and not isinstance(m[key], bool):
+            errs.append(f"{key}: true or false expected")
+    mn = m.get("max_nuclear")
+    if mn is not None and not (
+        isinstance(mn, list)
+        and len(mn) == 2
+        and all(isinstance(x, (int, float)) and not isinstance(x, bool) for x in mn)
+        and 0 < mn[0] <= mn[1] <= 1
+    ):
+        errs.append("max_nuclear: [lo, hi] expected, 0 < lo <= hi <= 1 (the cap is drawn per grid, 1: no cap)")
     return cfg, errs
 
 
@@ -327,15 +352,36 @@ def make_candidate(
     bonus = rng.choice([0, 100, 200, 300]) if cfg["ramp"] else 0
     count = rng.choice([1, 1, 2]) if cfg["ramp"] else 1
     cost = rng.choice([3, 4, 6, 6])
+    holes = cfg["hole_types"]
+    nuclear_cap = round(rng.uniform(*cfg["max_nuclear"]), 2) if cfg["max_nuclear"] else None
+    if nuclear_cap is not None:
+        info["nuclear_cap"] = nuclear_cap
 
     def reference(ex: dict[str, int] | None, fallback: bool = True) -> dict[str, Any] | None:
         """Merit-order reference, two ramps first when drawn; `fallback`: without the exports if they fail."""
         for cnt in sorted({count, 1}, reverse=True):
             out = solve_reference(
-                d, rng, exports=ex, import_cost=cost, require=require, min_count=cnt, ramp_bonus=bonus
+                d,
+                rng,
+                exports=ex,
+                import_cost=cost,
+                require=require,
+                min_count=cnt,
+                ramp_bonus=bonus,
+                hole_types=holes,
+                max_nuclear=nuclear_cap,
             )
             if out is None and ex and fallback:
-                out = solve_reference(d, rng, import_cost=6, require=require, min_count=cnt, ramp_bonus=bonus)
+                out = solve_reference(
+                    d,
+                    rng,
+                    import_cost=6,
+                    require=require,
+                    min_count=cnt,
+                    ramp_bonus=bonus,
+                    hole_types=holes,
+                    max_nuclear=nuclear_cap,
+                )
             if out is not None:
                 return out
         return None
@@ -374,7 +420,7 @@ def make_candidate(
     keys = {k for col in comp["cells"] for k in col}
     if len(keys) <= 1 and not any(any(v) for v in comp["exports"].values()) and not sol["step"]:
         return None, "trivial", info
-    if len({p["piece"] for p in sol["placements"] if p["piece"] != "I"}) < 2:
+    if len({p["piece"] for p in sol["placements"] if p["piece"] != "I"}) < 2 and not cfg["allow_one_plant"]:
         return None, "one_plant", info  # imports cheaper than every plant but one: nothing to dispatch
     types = tuple(t for t in cfg["clue_types"] if t != "exchanges" or cfg["inventory"] == "none")
     max_clues = cfg["max_clues"] if cfg["max_clues"] is not None else n
@@ -423,12 +469,15 @@ def make_candidate(
         "live_mechanics": live_mechanics(dec),
         "coupled_globals": res.coupled_globals,
         "compactness": compactness(d, dec),
+        **filling_measures(d, dec),
+        "holes": hole_measures(d),
         "demand_prices": len(demand_prices(d, clues)),
         "bars": sum(1 for p in sol["placements"] if p["piece"] != "I"),
         "nuclear_prices": sum(1 for c in clues if c["type"] == "price" and c["piece"] == "N")
         if d["inventory"]["level"] == "none"
         else 0,
         "cleaned": cleaned,
+        **({"nuclear_cap": nuclear_cap} if nuclear_cap is not None else {}),
         "bulletin": bulletin,
         "generator": f"dispatch-solver {__version__}",
         "seconds": round(time.perf_counter() - t0, 2),
@@ -550,6 +599,7 @@ class Quotas:
         self.single: dict[str, int] = {}
         self.with_type: dict[str, int] = {}
         self.demand = 0  # grids with a demand price (D7)
+        self.contested = 0  # Moyen-and-up grids with a contested hole
         self.seen: set[tuple[Any, ...]] = set()
         self.titles: set[str] = set()
         self.kept = 0
@@ -559,10 +609,12 @@ class Quotas:
         if _signatures(g) & self.seen:
             return "duplicate"
         r = g["difficulty"]["rating"]
+        cap_f = self.q["filler_cells"]
+        if cap_f is not None and r >= 3 and lab.get("cells", 0) >= cap_f:
+            return "filler"
         m = lab.get("mix", -1)
-        need_r = self.q["min_per_rating"]
         need_m = self.q["min_per_mix"]
-        missing_r = sum(max(0, need_r - self.rating.get(x, 0)) for x in (1, 2, 3, 4) if x != r)
+        missing_r = sum(max(0, self.need(x) - self.rating.get(x, 0)) for x in (1, 2, 3, 4) if x != r)
         missing_m = sum(max(0, need_m - self.mix.get(x, 0)) for x in range(self.mixes) if x != m)
         left = self.size - self.kept - 1
         kinds = self.keys(decision_types(lab))
@@ -592,23 +644,23 @@ class Quotas:
         if cap_m is not None and m >= 0 and self.mix.get(m, 0) >= cap_m:
             return "quota:per_mix"
         # Reserve the slots still needed for the minimum per rating and per mix entry.
-        if left < missing_r and self.rating.get(r, 0) >= need_r:
+        if left < missing_r and self.rating.get(r, 0) >= self.need(r):
             return "quota:rating"
         # Notation A: a Difficile or an Expert holds a coupled global mechanic. Under a "coupled" ceiling, a
         # coupled grid that fills no missing hard rating must leave room for the hard ratings still missing.
         cap_c = self.q["max_with_type"].get(COUPLED)
-        if cap_c is not None and COUPLED in kinds and not (r >= 3 and self.rating.get(r, 0) < need_r):
-            hard = sum(max(0, need_r - self.rating.get(x, 0)) for x in (3, 4))
+        if cap_c is not None and COUPLED in kinds and not (r >= 3 and self.rating.get(r, 0) < self.need(r)):
+            hard = sum(max(0, self.need(x) - self.rating.get(x, 0)) for x in (3, 4))
             if cap_c - self.with_type.get(COUPLED, 0) - 1 < hard:
                 return "quota:rating"
-        if left < missing_r + missing_m and self.rating.get(r, 0) >= need_r and self.mix.get(m, 0) >= need_m:
+        if left < missing_r + missing_m and self.rating.get(r, 0) >= self.need(r) and self.mix.get(m, 0) >= need_m:
             return "quota:mix"
         # Floors per decision type, reserved jointly with the ratings (a grid may fill a rating and types at
         # once): once the deficits fit in the slots left, a grid must keep them fitting; before, it must
         # reduce them. Separate reservations let the last slot need a rare pair (a Difficile with stock).
         if self.q["min_with_type"]:
-            r_now = sum(max(0, need_r - self.rating.get(x, 0)) for x in (1, 2, 3, 4))
-            r_after = r_now - (self.rating.get(r, 0) < need_r)
+            r_now = sum(max(0, self.need(x) - self.rating.get(x, 0)) for x in (1, 2, 3, 4))
+            r_after = r_now - (self.rating.get(r, 0) < self.need(r))
             t_now = self.type_deficit()
             t_after = t_now - len(kinds & set(self.missing_types()))
             d_now, d_after = r_now + t_now, r_after + t_after
@@ -631,7 +683,12 @@ class Quotas:
         return sum(max(0, n - self.with_type.get(t, 0)) for t, n in self.q["min_with_type"].items())
 
     def missing_ratings(self) -> list[int]:
-        return [x for x in (1, 2, 3, 4) if self.rating.get(x, 0) < self.q["min_per_rating"]]
+        return [x for x in (1, 2, 3, 4) if self.rating.get(x, 0) < self.need(x)]
+
+    def need(self, rating: int) -> int:
+        """Minimum of grids of a rating: min_per_rating is one number for all, or {rating: n} (others: 2)."""
+        v = self.q["min_per_rating"]
+        return v.get(rating, QUOTAS["min_per_rating"]) if isinstance(v, dict) else v
 
     def add(self, g: dict[str, Any]) -> None:
         lab = g["lab"]
@@ -651,7 +708,21 @@ class Quotas:
         self.rating[r] = self.rating.get(r, 0) + 1
         self.mix[lab.get("mix", -1)] = self.mix.get(lab.get("mix", -1), 0) + 1
         self.cols[len(g["columns"])] = self.cols.get(len(g["columns"]), 0) + 1
+        if r >= 2 and lab.get("holes", {}).get("contested"):
+            self.contested += 1
         self.kept += 1
+
+    def short_contested(self) -> bool:
+        target = self.q["min_with_contested"]
+        return target is not None and self.contested < target
+
+    def holds(self, g: dict[str, Any]) -> bool:
+        """Contested holes weigh twice (soft quota min_with_contested): while it is short, a Moyen-and-up grid
+        without one waits, one time in two (coin of its seed), until the quota is met or the draws run out."""
+        lab = g["lab"]
+        if not self.short_contested() or g["difficulty"]["rating"] < 2 or lab.get("holes", {}).get("contested"):
+            return False
+        return random.Random(lab["seed"]).random() < 0.5
 
 
 def _draw(
@@ -742,6 +813,19 @@ def run_lot(lot: dict[str, Any], workers: int = 6, log: Any = None) -> tuple[lis
                 f"{g['lab']['seconds']}s; missing ratings {quotas.missing_ratings()} types {quotas.missing_types()}"
             )
 
+    held: list[dict[str, Any]] = []  # Moyen-and-up grids without a contested hole, waiting (min_with_contested)
+    n_held = 0
+
+    def drain(final: bool = False) -> None:
+        """Accept the reserve grids a filled slot frees, then the held grids once the contested quota is met."""
+        for pool_ in (reserve, held):
+            if pool_ is held and quotas.short_contested() and not final:
+                break
+            for h in list(pool_):
+                if len(kept) < size and quotas.check(h) is None:
+                    pool_.remove(h)
+                    accept(h)
+
     pending: deque[tuple[Future, dict[str, Any], int, int]] = deque()
     stuck = done = 0
     pool = ProcessPoolExecutor(max_workers=workers)
@@ -771,19 +855,21 @@ def run_lot(lot: dict[str, Any], workers: int = 6, log: Any = None) -> tuple[lis
                 reason = quotas.check(g)
                 if reason in ("quota:rating", "quota:mix", "quota:type_floor"):
                     reserve.append(g)
+                elif reason is None and len(kept) < size and quotas.holds(g):
+                    held.append(g)
+                    n_held += 1
+                    reason = "held"
             if reason is None and len(kept) < size:
                 accept(g)
-                for h in list(reserve):  # a slot reserved for a rating may have been filled
-                    if len(kept) < size and quotas.check(h) is None:
-                        reserve.remove(h)
-                        accept(h)
-            elif reason is not None:
+                drain()
+            elif reason is not None and reason != "held":
                 key = reason.split(":")[0] if reason.startswith(("invalid", "error")) else reason
                 rejects[key] = rejects.get(key, 0) + 1
                 if reason.startswith(("error", "timeout")) and len(errors_seen) < 20:
                     errors_seen.append({"config": cfg, "seed": seed, "error": f"{reason}: {info.get('error')}"})
                 if reason == "blocked" and info.get("grid") is not None:
                     blocked.append({"config": cfg, "seed": seed, "grid": info["grid"]})
+        drain(final=True)  # the draws ran out: held grids still fill the lot
     finally:
         for fut, *_ in pending:
             fut.cancel()
@@ -834,7 +920,14 @@ def run_lot(lot: dict[str, Any], workers: int = 6, log: Any = None) -> tuple[lis
             ),
         },
         "demand_price_grids": quotas.demand,
+        "contested_quota": {
+            "min_with_contested": quotas.q["min_with_contested"],
+            "medium_up_with_contested": quotas.contested,
+            "held": n_held,
+            "held_left_out": len(held),
+        },
         "compactness": _spread([g["lab"]["compactness"] for g in kept]),
+        **lot_measures(kept),
         "cleaned": {
             "neighbors": sum(len(g["lab"]["cleaned"].get("neighbors", [])) for g in kept),
             "co2_cap": sum(1 for g in kept if "co2_cap" in g["lab"]["cleaned"]),

@@ -57,6 +57,7 @@ class Solver:
         self.work = 0  # rule calls, for the refutation budget
         self.done = False  # solved by counting the columns
         self.budget: int | None = None
+        self.observe: Callable[[View], None] | None = None  # called with the view of every turn (lab measures)
         self.rules: list[tuple[int, Callable[[View], bool]]] = [
             (1, self.r_ramp_plateau),
             (1, self.r_room),
@@ -218,6 +219,8 @@ class Solver:
             while True:
                 v = View(self.pz, self.st)
                 self.check(v)
+                if self.observe is not None:
+                    self.observe(v)
                 if self.done or self.solved(v):
                     return Result("solved", self.steps, self.composition(v), 0)
                 for level, rule in self.rules:

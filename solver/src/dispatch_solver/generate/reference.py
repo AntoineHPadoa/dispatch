@@ -5,6 +5,11 @@
   A required shape (ramp, tall piece) may be asked several times, and ramp cells may get a bonus (wider
   ramps, two ramps relaying each other).
   Exchange totals of the draft (exports per neighbor, STEP pairs) are imposed.
+  `hole_types`: each hole (deduce.holes.find_holes: 1 or 2 cells between weather bricks) gets a type drawn
+  among those that fit it (gas, peaker, import when a neighbor allows it…), instead of the cheapest one; the
+  clue selection then has to settle it (contested holes, v3-criteres-m23.md §3). Infeasible: drawn without.
+  `max_nuclear`: at most that share of the laid cells is nuclear (a looser skeleton than the merit order,
+  docs/next/v3-challenge.md §6). Infeasible: solved without the cap.
 - fill_inventory(): writes `inventory` (exact: bar widths, cells of one-cell plants; none: `{}`) from the
   reference, keeping `max_cells`.
 
@@ -20,6 +25,7 @@ from ortools.sat.python import cp_model
 
 from .. import exact
 from ..board import Puzzle
+from ..deduce.holes import find_holes
 from ..exact import Model
 
 
@@ -32,6 +38,8 @@ def solve_reference(
     require: tuple[str, ...] = (),
     min_count: int = 1,
     ramp_bonus: int = 0,
+    hole_types: bool = False,
+    max_nuclear: float | None = None,
 ) -> dict[str, Any] | None:
     """§14 solution of the draft at minimal merit-order cost, or None if infeasible.
 
@@ -39,7 +47,52 @@ def solve_reference(
     `ramp_bonus`: cost removed per ramp cell, so that wider ramps (and relays) win over the shortest one.
     """
     pz = Puzzle(draft)
+    holes = draw_hole_types(pz, rng) if hole_types else []
+    caps = [max_nuclear] if max_nuclear is not None and max_nuclear < 1 else []
+    tries: list[tuple[Any, list[float]]] = []
+    for t in [(holes, caps), (holes, []), ([], caps), ([], [])]:  # drop the hole types, then the cap, then both
+        if t not in tries:
+            tries.append(t)
+    for hs, cap in tries:
+        out = _solve(pz, rng, exports, import_cost, time_limit, require, min_count, ramp_bonus, hs, cap)
+        if out is not None:
+            return out
+    return None
 
+
+def _group(key: str) -> str:
+    return "I" if key.startswith("I:") else key
+
+
+def draw_hole_types(pz: Puzzle, rng: random.Random) -> list[tuple[list[tuple[int, int]], str]]:
+    """[(hole cells, type)]: for each hole, a type drawn among those that can cover every cell of it."""
+    out = []
+    for hole in find_holes(pz):
+        fits = sorted(
+            {
+                t
+                for t in {_group(pl.key) for pl in pz.placements}
+                if all(any(_group(pl.key) == t and x in pl.cells for pl in pz.placements) for x in hole)
+            },
+            key="NBCGTI".index,
+        )
+        if len(fits) >= 2:
+            out.append((hole, rng.choice(fits)))
+    return out
+
+
+def _solve(
+    pz: Puzzle,
+    rng: random.Random,
+    exports: dict[str, int] | None,
+    import_cost: int,
+    time_limit: float,
+    require: tuple[str, ...],
+    min_count: int,
+    ramp_bonus: int,
+    holes: list[tuple[list[tuple[int, int]], str]],
+    nuclear_cap: list[float],
+) -> dict[str, Any] | None:
     def extra(model: Model) -> None:
         m = model.m
         for k, v in (exports or {}).items():
@@ -57,6 +110,15 @@ def solve_reference(
                 for i, pl in enumerate(pz.placements)
                 if pl.shape.kind.startswith("ramp")
             ]
+        for hole, t in holes:
+            for x in hole:
+                m.Add(
+                    sum(model.x[i] for i, pl in enumerate(pz.placements) if _group(pl.key) == t and x in pl.cells) == 1
+                )
+        for share in nuclear_cap:
+            if "N" in pz.keys:
+                laid = sum(model.cells[k, c] for k in pz.keys for c in range(pz.n))
+                m.Add(100 * sum(model.cells["N", c] for c in range(pz.n)) <= round(100 * share) * laid)
         for kind in require:
             m.Add(sum(model.x[i] for i, pl in enumerate(pz.placements) if pl.shape.kind == kind) >= min_count)
         m.Minimize(sum(cost))

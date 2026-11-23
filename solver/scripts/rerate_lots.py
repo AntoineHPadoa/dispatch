@@ -3,7 +3,9 @@
 - For each candidate: one composition equal to the reference (CP-SAT), full deduction, then each clue
   removed in turn (§8.3: none may be useless). Rating (notation A), techniques, lab.trace_summary,
   lab.ramp_techniques and the measures lab.decisions, lab.live_mechanics, lab.coupled_globals,
-  lab.compactness, lab.demand_prices and lab.ramp_settled_by are rewritten; the stats file gets the new ratings and ramp counts.
+  lab.compactness, lab.demand_prices, lab.ramp_settled_by and the filling and hole measures (lab.cells,
+  lab.full_n_rows, lab.cells_per_decision, lab.holes) are rewritten; the stats file gets the new ratings,
+  ramp counts and measure aggregates.
 - Prints one line per grid whose rating changed and every grid that is no longer publishable
   (not unique, blocked, or a clue became useless). Such grids are kept and flagged in `lab.recheck`.
 
@@ -21,6 +23,7 @@ from typing import Any
 from dispatch_solver import exact
 from dispatch_solver.board import reference_composition
 from dispatch_solver.deduce import deduce
+from dispatch_solver.deduce.holes import filling_measures, hole_measures, lot_measures
 from dispatch_solver.deduce.trace import RAMP_OWN, RAMP_RULES, compactness, decisions, live_mechanics, ramp_settled_by
 from dispatch_solver.generate.cluesel import demand_prices, mandatory_clues
 from dispatch_solver.grid import LABELS
@@ -55,6 +58,8 @@ def rerate(g: dict[str, Any]) -> dict[str, Any]:
         "compactness": compactness(g, dec),
         "demand_prices": len(demand_prices(g, g["clues"])),
         "ramp_settled_by": ramp_settled_by(g, res.steps),
+        **filling_measures(g, dec),
+        "holes": hole_measures(g),
     }
     return out
 
@@ -91,7 +96,8 @@ def main(paths: list[str]) -> None:
                 1 for g in ramp if set(g["lab"]["ramp_techniques"]) & set(RAMP_OWN)
             )
             stats["ramp_techniques"] = {k: sum(g["lab"]["ramp_techniques"].get(k, 0) for g in ramp) for k in RAMP_RULES}
-            stats["rerated"] = "scripts/rerate_lots.py (notation A, S4.16)"
+            stats.update(lot_measures(grids))
+            stats["rerated"] = "scripts/rerate_lots.py (notation A, S4.16; filling and hole measures, S8.1)"
             stats_path.write_text(json.dumps(stats, ensure_ascii=False, indent=1) + "\n")
         print(f"{path.name}: {len(grids)} grids, ratings {stats['ratings'] if stats_path.exists() else '-'}")
 

@@ -1,0 +1,943 @@
+{
+ "tall_contested": {
+  "id": 10,
+  "title": "v3g4-jouer-c n°10",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   3,
+   4,
+   3,
+   5,
+   5,
+   5,
+   6,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "C": {
+    "len": [
+     3,
+     4
+    ],
+    "height": [
+     1,
+     2
+    ],
+    "rank": 3,
+    "co2": 3
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    3,
+    5,
+    2,
+    0,
+    0
+   ],
+   "F": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "DE",
+    "name": "Allemagne",
+    "cap": 1,
+    "co2": 2
+   }
+  ],
+  "step": false,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      3,
+      3,
+      3
+     ]
+    },
+    "C": {
+     "bars": [
+      3
+     ]
+    },
+    "G": {
+     "bars": [
+      2,
+      2
+     ]
+    }
+   },
+   "exports": {
+    "DE": 4
+   },
+   "imports": {
+    "DE": 2
+   }
+  },
+  "clues": [
+   {
+    "type": "column",
+    "col": 0,
+    "counts": {
+     "N": 1
+    }
+   },
+   {
+    "type": "column",
+    "col": 1,
+    "counts": {
+     "N": 1
+    }
+   }
+  ],
+  "solution": {
+   "exports": {
+    "DE": [
+     1,
+     0,
+     1,
+     0,
+     1,
+     0,
+     0,
+     1
+    ]
+   },
+   "step": [],
+   "placements": [
+    {
+     "piece": "C",
+     "row": 1,
+     "col": 0,
+     "len": 3,
+     "height": 2
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "I",
+     "row": 4,
+     "col": 3,
+     "len": 1,
+     "country": "DE"
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 1,
+     "col": 6,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 2,
+     "col": 6,
+     "len": 2
+    },
+    {
+     "piece": "I",
+     "row": 5,
+     "col": 6,
+     "len": 1,
+     "country": "DE"
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "column_sum",
+    "exhausted",
+    "refuted",
+    "room",
+    "share_out",
+    "silhouette",
+    "single_cover"
+   ]
+  }
+ },
+ "gas_import_trivial": {
+  "id": 12,
+  "title": "v3g3-jouer-b n°12",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   5,
+   6,
+   5,
+   6,
+   7,
+   7,
+   8,
+   6
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    3,
+    5,
+    2,
+    0,
+    0
+   ],
+   "F": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "BE",
+    "name": "Belgique",
+    "cap": 1,
+    "co2": 1
+   }
+  ],
+  "step": true,
+  "co2_cap": 4,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "G": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "exchanges",
+    "step": 1
+   },
+   {
+    "type": "column",
+    "col": 6,
+    "counts": {
+     "G": 2
+    }
+   },
+   {
+    "type": "column",
+    "col": 0,
+    "counts": {
+     "N": 4
+    }
+   },
+   {
+    "type": "column",
+    "col": 5,
+    "counts": {
+     "N": 4
+    }
+   },
+   {
+    "type": "flow",
+    "col": 7,
+    "country": "BE",
+    "dir": "export",
+    "value": 0
+   },
+   {
+    "type": "column",
+    "col": 3,
+    "counts": {
+     "N": 3
+    }
+   },
+   {
+    "type": "flow",
+    "col": 2,
+    "country": "BE",
+    "dir": "export",
+    "value": 0
+   }
+  ],
+  "solution": {
+   "exports": {
+    "BE": [
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     0
+    ]
+   },
+   "step": [
+    {
+     "pump": 2,
+     "turbine": 6
+    }
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 1,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 6,
+     "col": 3,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 1,
+     "col": 6,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 2,
+     "col": 6,
+     "len": 2
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 4,
+   "label": "Expert",
+   "techniques": [
+    "carbon",
+    "flow",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ]
+  }
+ },
+ "gas_only": {
+  "id": 3,
+  "title": "v3g4-jouer-a n°3",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   3,
+   4,
+   4,
+   3,
+   8,
+   4,
+   7,
+   4
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   },
+   "T": {
+    "len": [
+     1
+    ],
+    "height": [
+     1
+    ],
+    "rank": 5,
+    "co2": 2
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    1,
+    3,
+    6,
+    2,
+    0,
+    0
+   ],
+   "F": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "UK",
+    "name": "Royaume-Uni",
+    "cap": 1,
+    "co2": 1
+   },
+   {
+    "id": "IT",
+    "name": "Italie",
+    "cap": 1,
+    "co2": 2
+   }
+  ],
+  "step": true,
+  "co2_cap": null,
+  "inventory": {
+   "level": "exact",
+   "pieces": {
+    "N": {
+     "bars": [
+      3,
+      3,
+      3,
+      3,
+      3
+     ]
+    },
+    "G": {
+     "bars": [
+      2,
+      2,
+      2
+     ]
+    },
+    "T": {
+     "cells": 1
+    }
+   },
+   "exports": {
+    "UK": 3,
+    "IT": 2
+   },
+   "imports": {
+    "UK": 0,
+    "IT": 0
+   },
+   "step": 1
+  },
+  "clues": [
+   {
+    "type": "flow",
+    "col": 0,
+    "country": "UK",
+    "dir": "export",
+    "value": 1
+   },
+   {
+    "type": "column",
+    "col": 4,
+    "counts": {
+     "T": 0
+    }
+   }
+  ],
+  "solution": {
+   "exports": {
+    "UK": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     1
+    ],
+    "IT": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     1
+    ]
+   },
+   "step": [
+    {
+     "pump": 3,
+     "turbine": 4
+    }
+   ],
+   "placements": [
+    {
+     "piece": "G",
+     "row": 1,
+     "col": 0,
+     "len": 2
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 1,
+     "col": 6,
+     "len": 2
+    },
+    {
+     "piece": "G",
+     "row": 2,
+     "col": 6,
+     "len": 2
+    },
+    {
+     "piece": "T",
+     "row": 6,
+     "col": 6,
+     "len": 1
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 2,
+   "label": "Moyen",
+   "techniques": [
+    "exhausted",
+    "flow",
+    "record",
+    "room",
+    "silhouette",
+    "single_cover"
+   ]
+  }
+ },
+ "nuclear_rows": {
+  "id": 13,
+  "title": "v3g3-jouer-b n°13",
+  "section": "rated",
+  "columns": [
+   "0h",
+   "3h",
+   "6h",
+   "9h",
+   "12h",
+   "15h",
+   "18h",
+   "21h"
+  ],
+  "demand": [
+   5,
+   4,
+   7,
+   8,
+   8,
+   8,
+   7,
+   5
+  ],
+  "pieces": {
+   "N": {
+    "len": [
+     3,
+     4,
+     5,
+     6
+    ],
+    "height": [
+     1
+    ],
+    "rank": 1,
+    "co2": 0
+   },
+   "G": {
+    "len": [
+     2,
+     3
+    ],
+    "height": [
+     1
+    ],
+    "rank": 4,
+    "co2": 1
+   }
+  },
+  "weather": {
+   "R": [
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    0,
+    0
+   ],
+   "F": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "neighbors": [
+   {
+    "id": "UK",
+    "name": "Royaume-Uni",
+    "cap": 1,
+    "co2": 1
+   }
+  ],
+  "step": true,
+  "co2_cap": 2,
+  "inventory": {
+   "level": "none",
+   "pieces": {
+    "N": {},
+    "G": {}
+   }
+  },
+  "clues": [
+   {
+    "type": "exchanges",
+    "step": 1
+   },
+   {
+    "type": "column",
+    "col": 2,
+    "counts": {
+     "N": 6
+    }
+   },
+   {
+    "type": "bar",
+    "piece": "N",
+    "col": 1,
+    "len": 6
+   },
+   {
+    "type": "column",
+    "col": 7,
+    "counts": {
+     "I:UK": 0
+    }
+   },
+   {
+    "type": "exchanges",
+    "exports": {
+     "UK": 1
+    }
+   }
+  ],
+  "solution": {
+   "exports": {
+    "UK": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ]
+   },
+   "step": [
+    {
+     "pump": 1,
+     "turbine": 2
+    }
+   ],
+   "placements": [
+    {
+     "piece": "N",
+     "row": 0,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 0,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 0,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 0,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 5,
+     "col": 1,
+     "len": 6
+    },
+    {
+     "piece": "N",
+     "row": 1,
+     "col": 3,
+     "len": 5
+    },
+    {
+     "piece": "N",
+     "row": 6,
+     "col": 3,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 7,
+     "col": 3,
+     "len": 3
+    },
+    {
+     "piece": "N",
+     "row": 2,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 3,
+     "col": 4,
+     "len": 4
+    },
+    {
+     "piece": "N",
+     "row": 4,
+     "col": 5,
+     "len": 3
+    },
+    {
+     "piece": "G",
+     "row": 0,
+     "col": 6,
+     "len": 2
+    }
+   ]
+  },
+  "difficulty": {
+   "rating": 4,
+   "label": "Expert",
+   "techniques": [
+    "carbon",
+    "program",
+    "record",
+    "ribbon",
+    "room",
+    "silhouette",
+    "single_cover"
+   ]
+  }
+ }
+}
