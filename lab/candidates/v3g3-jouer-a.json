@@ -269,7 +269,20 @@
    "seconds": 0.72,
    "mix": 7,
    "lot": "v3g3-jouer-a",
-   "index": 0
+   "index": 0,
+   "ramp_settled_by": {},
+   "cells": 20,
+   "full_n_rows": 0,
+   "cells_per_decision": 6.7,
+   "holes": {
+    "n": 2,
+    "unique": 0,
+    "contested": 1,
+    "types": [
+     "BG"
+    ]
+   },
+   "nuclear_share": 0.7
   }
  },
  {
@@ -525,7 +538,20 @@
    "seconds": 0.84,
    "mix": 0,
    "lot": "v3g3-jouer-a",
-   "index": 1
+   "index": 1,
+   "ramp_settled_by": {},
+   "cells": 21,
+   "full_n_rows": 0,
+   "cells_per_decision": 3.0,
+   "holes": {
+    "n": 1,
+    "unique": 0,
+    "contested": 1,
+    "types": [
+     "GI"
+    ]
+   },
+   "nuclear_share": 0.9
   }
  },
  {
@@ -764,7 +790,18 @@
    "seconds": 0.81,
    "mix": 0,
    "lot": "v3g3-jouer-a",
-   "index": 2
+   "index": 2,
+   "ramp_settled_by": {},
+   "cells": 20,
+   "full_n_rows": 1,
+   "cells_per_decision": 3.3,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.85
   }
  },
  {
@@ -1015,7 +1052,18 @@
    "seconds": 1.73,
    "mix": 5,
    "lot": "v3g3-jouer-a",
-   "index": 3
+   "index": 3,
+   "ramp_settled_by": {},
+   "cells": 31,
+   "full_n_rows": 1,
+   "cells_per_decision": 5.2,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.9
   }
  },
  {
@@ -1337,7 +1385,18 @@
    "seconds": 2.57,
    "mix": 0,
    "lot": "v3g3-jouer-a",
-   "index": 4
+   "index": 4,
+   "ramp_settled_by": {},
+   "cells": 40,
+   "full_n_rows": 0,
+   "cells_per_decision": 6.7,
+   "holes": {
+    "n": 2,
+    "unique": 2,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.9
   }
  },
  {
@@ -1623,7 +1682,18 @@
    "seconds": 0.12,
    "mix": 11,
    "lot": "v3g3-jouer-a",
-   "index": 5
+   "index": 5,
+   "ramp_settled_by": {},
+   "cells": 33,
+   "full_n_rows": 2,
+   "cells_per_decision": 4.7,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.97
   }
  },
  {
@@ -1875,7 +1945,18 @@
    "seconds": 0.32,
    "mix": 0,
    "lot": "v3g3-jouer-a",
-   "index": 6
+   "index": 6,
+   "ramp_settled_by": {},
+   "cells": 24,
+   "full_n_rows": 0,
+   "cells_per_decision": 4.0,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.71
   }
  },
  {
@@ -2151,7 +2232,18 @@
    "seconds": 0.54,
    "mix": 9,
    "lot": "v3g3-jouer-a",
-   "index": 7
+   "index": 7,
+   "ramp_settled_by": {},
+   "cells": 22,
+   "full_n_rows": 0,
+   "cells_per_decision": 11.0,
+   "holes": {
+    "n": 2,
+    "unique": 2,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.32
   }
  },
  {
@@ -2427,7 +2519,18 @@
    "seconds": 0.29,
    "mix": 4,
    "lot": "v3g3-jouer-a",
-   "index": 8
+   "index": 8,
+   "ramp_settled_by": {},
+   "cells": 23,
+   "full_n_rows": 0,
+   "cells_per_decision": 11.5,
+   "holes": {
+    "n": 1,
+    "unique": 1,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.57
   }
  },
  {
@@ -2725,7 +2828,18 @@
    "seconds": 2.64,
    "mix": 4,
    "lot": "v3g3-jouer-a",
-   "index": 9
+   "index": 9,
+   "ramp_settled_by": {},
+   "cells": 36,
+   "full_n_rows": 1,
+   "cells_per_decision": 9.0,
+   "holes": {
+    "n": 1,
+    "unique": 1,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.72
   }
  },
  {
@@ -3044,7 +3158,18 @@
    "seconds": 2.74,
    "mix": 2,
    "lot": "v3g3-jouer-a",
-   "index": 10
+   "index": 10,
+   "ramp_settled_by": {},
+   "cells": 49,
+   "full_n_rows": 4,
+   "cells_per_decision": 16.3,
+   "holes": {
+    "n": 2,
+    "unique": 2,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.96
   }
  },
  {
@@ -3320,7 +3445,18 @@
    "seconds": 0.05,
    "mix": 3,
    "lot": "v3g3-jouer-a",
-   "index": 11
+   "index": 11,
+   "ramp_settled_by": {},
+   "cells": 57,
+   "full_n_rows": 1,
+   "cells_per_decision": 19.0,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.95
   }
  },
  {
@@ -3585,7 +3721,18 @@
    "seconds": 0.92,
    "mix": 2,
    "lot": "v3g3-jouer-a",
-   "index": 12
+   "index": 12,
+   "ramp_settled_by": {},
+   "cells": 39,
+   "full_n_rows": 1,
+   "cells_per_decision": 13.0,
+   "holes": {
+    "n": 1,
+    "unique": 1,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.95
   }
  },
  {
@@ -3875,7 +4022,18 @@
    "seconds": 0.49,
    "mix": 2,
    "lot": "v3g3-jouer-a",
-   "index": 13
+   "index": 13,
+   "ramp_settled_by": {},
+   "cells": 47,
+   "full_n_rows": 4,
+   "cells_per_decision": 15.7,
+   "holes": {
+    "n": 1,
+    "unique": 1,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.96
   }
  },
  {
@@ -4195,7 +4353,18 @@
    "seconds": 2.15,
    "mix": 6,
    "lot": "v3g3-jouer-a",
-   "index": 14
+   "index": 14,
+   "ramp_settled_by": {},
+   "cells": 26,
+   "full_n_rows": 0,
+   "cells_per_decision": 5.2,
+   "holes": {
+    "n": 2,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.5
   }
  },
  {
@@ -4503,7 +4672,21 @@
    "seconds": 2.2,
    "mix": 8,
    "lot": "v3g3-jouer-a",
-   "index": 15
+   "index": 15,
+   "ramp_settled_by": {},
+   "cells": 18,
+   "full_n_rows": 0,
+   "cells_per_decision": 2.0,
+   "holes": {
+    "n": 3,
+    "unique": 0,
+    "contested": 2,
+    "types": [
+     "GTI",
+     "GTI"
+    ]
+   },
+   "nuclear_share": 0.17
   }
  },
  {
@@ -4771,7 +4954,18 @@
    "seconds": 0.01,
    "mix": 1,
    "lot": "v3g3-jouer-a",
-   "index": 16
+   "index": 16,
+   "ramp_settled_by": {},
+   "cells": 23,
+   "full_n_rows": 0,
+   "cells_per_decision": 5.8,
+   "holes": {
+    "n": 2,
+    "unique": 2,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.78
   }
  },
  {
@@ -5026,7 +5220,18 @@
    "seconds": 0.84,
    "mix": 7,
    "lot": "v3g3-jouer-a",
-   "index": 17
+   "index": 17,
+   "ramp_settled_by": {},
+   "cells": 20,
+   "full_n_rows": 0,
+   "cells_per_decision": 6.7,
+   "holes": {
+    "n": 2,
+    "unique": 2,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.8
   }
  },
  {
@@ -5276,7 +5481,18 @@
    "seconds": 0.02,
    "mix": 10,
    "lot": "v3g3-jouer-a",
-   "index": 18
+   "index": 18,
+   "ramp_settled_by": {},
+   "cells": 22,
+   "full_n_rows": 1,
+   "cells_per_decision": 22.0,
+   "holes": {
+    "n": 3,
+    "unique": 3,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.64
   }
  },
  {
@@ -5556,7 +5772,18 @@
    "seconds": 0.35,
    "mix": 6,
    "lot": "v3g3-jouer-a",
-   "index": 19
+   "index": 19,
+   "ramp_settled_by": {},
+   "cells": 25,
+   "full_n_rows": 0,
+   "cells_per_decision": 8.3,
+   "holes": {
+    "n": 1,
+    "unique": 1,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.44
   }
  }
 ]

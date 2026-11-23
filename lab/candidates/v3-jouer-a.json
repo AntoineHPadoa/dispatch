@@ -241,7 +241,18 @@
    "live_mechanics": [],
    "coupled_globals": [],
    "compactness": 0.0,
-   "demand_prices": 0
+   "demand_prices": 0,
+   "ramp_settled_by": {},
+   "cells": 33,
+   "full_n_rows": 0,
+   "cells_per_decision": null,
+   "holes": {
+    "n": 1,
+    "unique": 1,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.85
   }
  },
  {
@@ -516,7 +527,20 @@
     "step"
    ],
    "compactness": 0.3,
-   "demand_prices": 0
+   "demand_prices": 0,
+   "ramp_settled_by": {},
+   "cells": 27,
+   "full_n_rows": 0,
+   "cells_per_decision": 9.0,
+   "holes": {
+    "n": 1,
+    "unique": 0,
+    "contested": 1,
+    "types": [
+     "GI"
+    ]
+   },
+   "nuclear_share": 0.89
   }
  },
  {
@@ -822,7 +846,18 @@
    ],
    "coupled_globals": [],
    "compactness": 0.08,
-   "demand_prices": 0
+   "demand_prices": 0,
+   "ramp_settled_by": {},
+   "cells": 48,
+   "full_n_rows": 5,
+   "cells_per_decision": 48.0,
+   "holes": {
+    "n": 1,
+    "unique": 1,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.98
   }
  },
  {
@@ -1084,7 +1119,18 @@
    "live_mechanics": [],
    "coupled_globals": [],
    "compactness": 0.0,
-   "demand_prices": 0
+   "demand_prices": 0,
+   "ramp_settled_by": {},
+   "cells": 32,
+   "full_n_rows": 2,
+   "cells_per_decision": null,
+   "holes": {
+    "n": 1,
+    "unique": 1,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.91
   }
  },
  {
@@ -1344,7 +1390,18 @@
    ],
    "coupled_globals": [],
    "compactness": 0.22,
-   "demand_prices": 0
+   "demand_prices": 0,
+   "ramp_settled_by": {},
+   "cells": 21,
+   "full_n_rows": 2,
+   "cells_per_decision": 10.5,
+   "holes": {
+    "n": 1,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.71
   }
  },
  {
@@ -1672,7 +1729,18 @@
    ],
    "coupled_globals": [],
    "compactness": 0.36,
-   "demand_prices": 0
+   "demand_prices": 0,
+   "ramp_settled_by": {},
+   "cells": 35,
+   "full_n_rows": 0,
+   "cells_per_decision": 8.8,
+   "holes": {
+    "n": 1,
+    "unique": 1,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.74
   }
  },
  {
@@ -1942,7 +2010,18 @@
    "live_mechanics": [],
    "coupled_globals": [],
    "compactness": 0.0,
-   "demand_prices": 0
+   "demand_prices": 0,
+   "ramp_settled_by": {},
+   "cells": 27,
+   "full_n_rows": 1,
+   "cells_per_decision": null,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.78
   }
  },
  {
@@ -2228,7 +2307,18 @@
    ],
    "coupled_globals": [],
    "compactness": 0.07,
-   "demand_prices": 0
+   "demand_prices": 0,
+   "ramp_settled_by": {},
+   "cells": 53,
+   "full_n_rows": 5,
+   "cells_per_decision": 53.0,
+   "holes": {
+    "n": 2,
+    "unique": 2,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.92
   }
  },
  {
@@ -2544,7 +2634,21 @@
    ],
    "coupled_globals": [],
    "compactness": 0.5,
-   "demand_prices": 0
+   "demand_prices": 0,
+   "ramp_settled_by": {},
+   "cells": 26,
+   "full_n_rows": 0,
+   "cells_per_decision": 5.2,
+   "holes": {
+    "n": 2,
+    "unique": 0,
+    "contested": 2,
+    "types": [
+     "GT",
+     "GT"
+    ]
+   },
+   "nuclear_share": 0.46
   }
  },
  {
@@ -2832,7 +2936,18 @@
    ],
    "coupled_globals": [],
    "compactness": 0.11,
-   "demand_prices": 0
+   "demand_prices": 0,
+   "ramp_settled_by": {},
+   "cells": 20,
+   "full_n_rows": 1,
+   "cells_per_decision": 20.0,
+   "holes": {
+    "n": 1,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.7
   }
  },
  {
@@ -3131,7 +3246,18 @@
    ],
    "coupled_globals": [],
    "compactness": 0.5,
-   "demand_prices": 0
+   "demand_prices": 0,
+   "ramp_settled_by": {},
+   "cells": 33,
+   "full_n_rows": 0,
+   "cells_per_decision": 8.2,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.79
   }
  },
  {
@@ -3465,7 +3591,20 @@
    ],
    "coupled_globals": [],
    "compactness": 0.08,
-   "demand_prices": 0
+   "demand_prices": 0,
+   "ramp_settled_by": {},
+   "cells": 34,
+   "full_n_rows": 0,
+   "cells_per_decision": 34.0,
+   "holes": {
+    "n": 2,
+    "unique": 1,
+    "contested": 1,
+    "types": [
+     "GT"
+    ]
+   },
+   "nuclear_share": 0.85
   }
  },
  {
@@ -3706,7 +3845,18 @@
    "live_mechanics": [],
    "coupled_globals": [],
    "compactness": 0.0,
-   "demand_prices": 0
+   "demand_prices": 0,
+   "ramp_settled_by": {},
+   "cells": 30,
+   "full_n_rows": 0,
+   "cells_per_decision": null,
+   "holes": {
+    "n": 5,
+    "unique": 5,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.6
   }
  },
  {
@@ -4028,7 +4178,18 @@
    ],
    "coupled_globals": [],
    "compactness": 0.11,
-   "demand_prices": 0
+   "demand_prices": 0,
+   "ramp_settled_by": {},
+   "cells": 35,
+   "full_n_rows": 0,
+   "cells_per_decision": 35.0,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.97
   }
  },
  {
@@ -4334,7 +4495,18 @@
    ],
    "coupled_globals": [],
    "compactness": 0.25,
-   "demand_prices": 0
+   "demand_prices": 0,
+   "ramp_settled_by": {},
+   "cells": 25,
+   "full_n_rows": 0,
+   "cells_per_decision": 8.3,
+   "holes": {
+    "n": 2,
+    "unique": 2,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.6
   }
  },
  {
@@ -4666,7 +4838,18 @@
    ],
    "coupled_globals": [],
    "compactness": 0.17,
-   "demand_prices": 0
+   "demand_prices": 0,
+   "ramp_settled_by": {},
+   "cells": 34,
+   "full_n_rows": 0,
+   "cells_per_decision": 17.0,
+   "holes": {
+    "n": 4,
+    "unique": 4,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.85
   }
  },
  {
@@ -5030,7 +5213,18 @@
    ],
    "coupled_globals": [],
    "compactness": 0.14,
-   "demand_prices": 0
+   "demand_prices": 0,
+   "ramp_settled_by": {},
+   "cells": 53,
+   "full_n_rows": 2,
+   "cells_per_decision": 26.5,
+   "holes": {
+    "n": 2,
+    "unique": 2,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.96
   }
  },
  {
@@ -5296,7 +5490,18 @@
    "live_mechanics": [],
    "coupled_globals": [],
    "compactness": 0.0,
-   "demand_prices": 0
+   "demand_prices": 0,
+   "ramp_settled_by": {},
+   "cells": 22,
+   "full_n_rows": 0,
+   "cells_per_decision": null,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.45
   }
  },
  {
@@ -5598,7 +5803,18 @@
     "step"
    ],
    "compactness": 0.56,
-   "demand_prices": 0
+   "demand_prices": 0,
+   "ramp_settled_by": {},
+   "cells": 32,
+   "full_n_rows": 1,
+   "cells_per_decision": 6.4,
+   "holes": {
+    "n": 1,
+    "unique": 1,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.97
   }
  },
  {
@@ -5891,7 +6107,18 @@
    ],
    "coupled_globals": [],
    "compactness": 0.43,
-   "demand_prices": 0
+   "demand_prices": 0,
+   "ramp_settled_by": {},
+   "cells": 23,
+   "full_n_rows": 0,
+   "cells_per_decision": 7.7,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.57
   }
  }
 ]

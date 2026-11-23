@@ -183,10 +183,10 @@
  "ramp_grids_with_technique": 0,
  "ramp_grids_with_own_technique": 0,
  "ramp_techniques": {
-  "ramp_lone": 0,
   "ramp_plateau": 0,
-  "ramp_relay": 0,
-  "ramp_shoulder": 0
+  "ramp_shoulder": 0,
+  "ramp_lone": 0,
+  "ramp_relay": 0
  },
  "ramp_settled_by": {},
  "ramp_relays": 0,
@@ -200,5 +200,51 @@
  "workers": 3,
  "generator": "dispatch-solver 2.0.0",
  "blocked_ramp": 0,
- "errors": []
+ "errors": [],
+ "cells": {
+  "median": 33.5,
+  "min": 17,
+  "max": 55
+ },
+ "cells_bands": {
+  "<=28": 8,
+  "29-39": 6,
+  ">=40": 6
+ },
+ "hard_cells_bands": {
+  "<=28": 1,
+  "29-39": 2,
+  ">=40": 1
+ },
+ "full_n_rows": {
+  "0": 11,
+  "1": 6,
+  "4": 2,
+  "5": 1
+ },
+ "cells_per_decision": {
+  "median": 7.65,
+  "min": 2.6,
+  "max": 18.5
+ },
+ "holes": {
+  "grids_with_holes": 14,
+  "holes": 27,
+  "unique": 20,
+  "contested": 4,
+  "grids_with_contested": 3,
+  "medium_up_with_contested": 3,
+  "medium_up": 15,
+  "contested_types": {
+   "GI": 3,
+   "GT": 1
+  }
+ },
+ "rerated": "scripts/rerate_lots.py (notation A, S4.16; filling and hole measures, S8.1)",
+ "nuclear_share": {
+  "median": 0.79,
+  "min": 0.15,
+  "max": 0.98
+ },
+ "nuclear_under_half": 3
 }

@@ -293,7 +293,17 @@
    "seconds": 5.72,
    "mix": 10,
    "lot": "v3g4-rampe",
-   "index": 0
+   "index": 0,
+   "cells": 25,
+   "full_n_rows": 0,
+   "cells_per_decision": 1.9,
+   "holes": {
+    "n": 2,
+    "unique": 2,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.6
   }
  },
  {
@@ -614,7 +624,17 @@
    "seconds": 1.53,
    "mix": 9,
    "lot": "v3g4-rampe",
-   "index": 1
+   "index": 1,
+   "cells": 32,
+   "full_n_rows": 0,
+   "cells_per_decision": 4.0,
+   "holes": {
+    "n": 2,
+    "unique": 2,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.75
   }
  },
  {
@@ -935,7 +955,17 @@
    "seconds": 5.88,
    "mix": 10,
    "lot": "v3g4-rampe",
-   "index": 2
+   "index": 2,
+   "cells": 25,
+   "full_n_rows": 0,
+   "cells_per_decision": 2.3,
+   "holes": {
+    "n": 1,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.76
   }
  },
  {
@@ -1235,7 +1265,17 @@
    "seconds": 0.83,
    "mix": 11,
    "lot": "v3g4-rampe",
-   "index": 3
+   "index": 3,
+   "cells": 22,
+   "full_n_rows": 0,
+   "cells_per_decision": 3.7,
+   "holes": {
+    "n": 1,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.45
   }
  },
  {
@@ -1509,7 +1549,17 @@
    "seconds": 0.26,
    "mix": 2,
    "lot": "v3g4-rampe",
-   "index": 4
+   "index": 4,
+   "cells": 28,
+   "full_n_rows": 1,
+   "cells_per_decision": 4.7,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.54
   }
  },
  {
@@ -1829,7 +1879,17 @@
    "seconds": 2.71,
    "mix": 3,
    "lot": "v3g4-rampe",
-   "index": 5
+   "index": 5,
+   "cells": 49,
+   "full_n_rows": 0,
+   "cells_per_decision": 5.4,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.82
   }
  },
  {
@@ -2171,7 +2231,17 @@
    "seconds": 25.79,
    "mix": 5,
    "lot": "v3g4-rampe",
-   "index": 6
+   "index": 6,
+   "cells": 49,
+   "full_n_rows": 1,
+   "cells_per_decision": 7.0,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.84
   }
  },
  {
@@ -2462,7 +2532,17 @@
    "seconds": 4.45,
    "mix": 5,
    "lot": "v3g4-rampe",
-   "index": 7
+   "index": 7,
+   "cells": 32,
+   "full_n_rows": 0,
+   "cells_per_decision": 3.6,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.56
   }
  },
  {
@@ -2737,7 +2817,17 @@
    "seconds": 1.88,
    "mix": 6,
    "lot": "v3g4-rampe",
-   "index": 8
+   "index": 8,
+   "cells": 44,
+   "full_n_rows": 3,
+   "cells_per_decision": 14.7,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.91
   }
  },
  {
@@ -3030,7 +3120,19 @@
    "seconds": 0.32,
    "mix": 4,
    "lot": "v3g4-rampe",
-   "index": 9
+   "index": 9,
+   "cells": 30,
+   "full_n_rows": 0,
+   "cells_per_decision": 6.0,
+   "holes": {
+    "n": 1,
+    "unique": 0,
+    "contested": 1,
+    "types": [
+     "GI"
+    ]
+   },
+   "nuclear_share": 0.43
   }
  },
  {
@@ -3310,7 +3412,17 @@
    "seconds": 1.11,
    "mix": 6,
    "lot": "v3g4-rampe",
-   "index": 10
+   "index": 10,
+   "cells": 34,
+   "full_n_rows": 1,
+   "cells_per_decision": 5.7,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.82
   }
  },
  {
@@ -3683,7 +3795,17 @@
    "seconds": 1.56,
    "mix": 3,
    "lot": "v3g4-rampe",
-   "index": 11
+   "index": 11,
+   "cells": 66,
+   "full_n_rows": 3,
+   "cells_per_decision": 16.5,
+   "holes": {
+    "n": 1,
+    "unique": 1,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.91
   }
  },
  {
@@ -4032,7 +4154,17 @@
    "seconds": 2.05,
    "mix": 8,
    "lot": "v3g4-rampe",
-   "index": 12
+   "index": 12,
+   "cells": 33,
+   "full_n_rows": 0,
+   "cells_per_decision": 3.3,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.09
   }
  },
  {
@@ -4377,7 +4509,17 @@
    "seconds": 3.08,
    "mix": 9,
    "lot": "v3g4-rampe",
-   "index": 13
+   "index": 13,
+   "cells": 51,
+   "full_n_rows": 5,
+   "cells_per_decision": 4.2,
+   "holes": {
+    "n": 2,
+    "unique": 2,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.78
   }
  },
  {
@@ -4626,7 +4768,17 @@
    "seconds": 0.07,
    "mix": 7,
    "lot": "v3g4-rampe",
-   "index": 14
+   "index": 14,
+   "cells": 20,
+   "full_n_rows": 0,
+   "cells_per_decision": 10.0,
+   "holes": {
+    "n": 7,
+    "unique": 7,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.0
   }
  },
  {
@@ -4911,7 +5063,17 @@
    "seconds": 0.39,
    "mix": 0,
    "lot": "v3g4-rampe",
-   "index": 15
+   "index": 15,
+   "cells": 27,
+   "full_n_rows": 0,
+   "cells_per_decision": 13.5,
+   "holes": {
+    "n": 1,
+    "unique": 1,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.67
   }
  },
  {
@@ -5117,7 +5279,17 @@
    "seconds": 0.01,
    "mix": 7,
    "lot": "v3g4-rampe",
-   "index": 16
+   "index": 16,
+   "cells": 17,
+   "full_n_rows": 0,
+   "cells_per_decision": 8.5,
+   "holes": {
+    "n": 2,
+    "unique": 2,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.65
   }
  },
  {
@@ -5399,7 +5571,17 @@
    "seconds": 0.08,
    "mix": 4,
    "lot": "v3g4-rampe",
-   "index": 17
+   "index": 17,
+   "cells": 39,
+   "full_n_rows": 0,
+   "cells_per_decision": 4.9,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.69
   }
  },
  {
@@ -5701,7 +5883,17 @@
    "seconds": 3.69,
    "mix": 2,
    "lot": "v3g4-rampe",
-   "index": 18
+   "index": 18,
+   "cells": 47,
+   "full_n_rows": 2,
+   "cells_per_decision": 15.7,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.89
   }
  },
  {
@@ -6045,7 +6237,20 @@
    "seconds": 3.19,
    "mix": 1,
    "lot": "v3g4-rampe",
-   "index": 19
+   "index": 19,
+   "cells": 45,
+   "full_n_rows": 0,
+   "cells_per_decision": 5.6,
+   "holes": {
+    "n": 2,
+    "unique": 0,
+    "contested": 2,
+    "types": [
+     "GT",
+     "GT"
+    ]
+   },
+   "nuclear_share": 0.2
   }
  }
 ]

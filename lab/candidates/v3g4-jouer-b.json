@@ -292,7 +292,17 @@
    "seconds": 4.14,
    "mix": 0,
    "lot": "v3g4-jouer-b",
-   "index": 0
+   "index": 0,
+   "cells": 25,
+   "full_n_rows": 0,
+   "cells_per_decision": 3.6,
+   "holes": {
+    "n": 1,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.84
   }
  },
  {
@@ -583,7 +593,17 @@
    "seconds": 1.27,
    "mix": 0,
    "lot": "v3g4-jouer-b",
-   "index": 1
+   "index": 1,
+   "cells": 26,
+   "full_n_rows": 0,
+   "cells_per_decision": 3.2,
+   "holes": {
+    "n": 2,
+    "unique": 2,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.85
   }
  },
  {
@@ -842,7 +862,17 @@
    "seconds": 1.47,
    "mix": 6,
    "lot": "v3g4-jouer-b",
-   "index": 2
+   "index": 2,
+   "cells": 28,
+   "full_n_rows": 1,
+   "cells_per_decision": 4.7,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.96
   }
  },
  {
@@ -1147,7 +1177,17 @@
    "seconds": 2.78,
    "mix": 3,
    "lot": "v3g4-jouer-b",
-   "index": 3
+   "index": 3,
+   "cells": 44,
+   "full_n_rows": 4,
+   "cells_per_decision": 8.8,
+   "holes": {
+    "n": 1,
+    "unique": 1,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.91
   }
  },
  {
@@ -1421,7 +1461,17 @@
    "seconds": 0.48,
    "mix": 8,
    "lot": "v3g4-jouer-b",
-   "index": 4
+   "index": 4,
+   "cells": 21,
+   "full_n_rows": 0,
+   "cells_per_decision": 2.3,
+   "holes": {
+    "n": 2,
+    "unique": 2,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.57
   }
  },
  {
@@ -1659,7 +1709,17 @@
    "seconds": 2.65,
    "mix": 4,
    "lot": "v3g4-jouer-b",
-   "index": 5
+   "index": 5,
+   "cells": 26,
+   "full_n_rows": 1,
+   "cells_per_decision": 2.9,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.92
   }
  },
  {
@@ -1938,7 +1998,17 @@
    "seconds": 20.65,
    "mix": 6,
    "lot": "v3g4-jouer-b",
-   "index": 6
+   "index": 6,
+   "cells": 22,
+   "full_n_rows": 0,
+   "cells_per_decision": 3.1,
+   "holes": {
+    "n": 1,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.73
   }
  },
  {
@@ -2211,7 +2281,17 @@
    "seconds": 0.27,
    "mix": 7,
    "lot": "v3g4-jouer-b",
-   "index": 7
+   "index": 7,
+   "cells": 24,
+   "full_n_rows": 0,
+   "cells_per_decision": 4.8,
+   "holes": {
+    "n": 2,
+    "unique": 2,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.62
   }
  },
  {
@@ -2526,7 +2606,17 @@
    "seconds": 0.95,
    "mix": 10,
    "lot": "v3g4-jouer-b",
-   "index": 8
+   "index": 8,
+   "cells": 31,
+   "full_n_rows": 0,
+   "cells_per_decision": 6.2,
+   "holes": {
+    "n": 2,
+    "unique": 2,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.87
   }
  },
  {
@@ -2897,7 +2987,17 @@
    "seconds": 2.55,
    "mix": 5,
    "lot": "v3g4-jouer-b",
-   "index": 9
+   "index": 9,
+   "cells": 31,
+   "full_n_rows": 0,
+   "cells_per_decision": 10.3,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.55
   }
  },
  {
@@ -3207,7 +3307,17 @@
    "seconds": 0.89,
    "mix": 7,
    "lot": "v3g4-jouer-b",
-   "index": 10
+   "index": 10,
+   "cells": 26,
+   "full_n_rows": 0,
+   "cells_per_decision": 6.5,
+   "holes": {
+    "n": 2,
+    "unique": 2,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.54
   }
  },
  {
@@ -3556,7 +3666,17 @@
    "seconds": 8.46,
    "mix": 5,
    "lot": "v3g4-jouer-b",
-   "index": 11
+   "index": 11,
+   "cells": 57,
+   "full_n_rows": 2,
+   "cells_per_decision": 28.5,
+   "holes": {
+    "n": 1,
+    "unique": 1,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.86
   }
  },
  {
@@ -3845,7 +3965,17 @@
    "seconds": 0.27,
    "mix": 9,
    "lot": "v3g4-jouer-b",
-   "index": 12
+   "index": 12,
+   "cells": 47,
+   "full_n_rows": 2,
+   "cells_per_decision": 23.5,
+   "holes": {
+    "n": 1,
+    "unique": 1,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.96
   }
  },
  {
@@ -4142,7 +4272,19 @@
    "seconds": 0.45,
    "mix": 9,
    "lot": "v3g4-jouer-b",
-   "index": 13
+   "index": 13,
+   "cells": 32,
+   "full_n_rows": 1,
+   "cells_per_decision": 16.0,
+   "holes": {
+    "n": 1,
+    "unique": 0,
+    "contested": 1,
+    "types": [
+     "GT"
+    ]
+   },
+   "nuclear_share": 0.88
   }
  },
  {
@@ -4452,7 +4594,17 @@
    "seconds": 3.09,
    "mix": 1,
    "lot": "v3g4-jouer-b",
-   "index": 14
+   "index": 14,
+   "cells": 26,
+   "full_n_rows": 0,
+   "cells_per_decision": 6.5,
+   "holes": {
+    "n": 0,
+    "unique": 0,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.96
   }
  },
  {
@@ -4720,7 +4872,17 @@
    "seconds": 1.12,
    "mix": 3,
    "lot": "v3g4-jouer-b",
-   "index": 15
+   "index": 15,
+   "cells": 31,
+   "full_n_rows": 2,
+   "cells_per_decision": 6.2,
+   "holes": {
+    "n": 1,
+    "unique": 1,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.94
   }
  },
  {
@@ -5090,7 +5252,17 @@
    "seconds": 30.49,
    "mix": 2,
    "lot": "v3g4-jouer-b",
-   "index": 16
+   "index": 16,
+   "cells": 64,
+   "full_n_rows": 4,
+   "cells_per_decision": 12.8,
+   "holes": {
+    "n": 1,
+    "unique": 1,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.98
   }
  },
  {
@@ -5382,7 +5554,17 @@
    "seconds": 0.1,
    "mix": 10,
    "lot": "v3g4-jouer-b",
-   "index": 17
+   "index": 17,
+   "cells": 17,
+   "full_n_rows": 0,
+   "cells_per_decision": 8.5,
+   "holes": {
+    "n": 3,
+    "unique": 3,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.53
   }
  },
  {
@@ -5626,7 +5808,19 @@
    "seconds": 5.5,
    "mix": 4,
    "lot": "v3g4-jouer-b",
-   "index": 18
+   "index": 18,
+   "cells": 28,
+   "full_n_rows": 0,
+   "cells_per_decision": 3.1,
+   "holes": {
+    "n": 1,
+    "unique": 0,
+    "contested": 1,
+    "types": [
+     "GT"
+    ]
+   },
+   "nuclear_share": 0.89
   }
  },
  {
@@ -5919,7 +6113,17 @@
    "seconds": 0.81,
    "mix": 1,
    "lot": "v3g4-jouer-b",
-   "index": 19
+   "index": 19,
+   "cells": 47,
+   "full_n_rows": 2,
+   "cells_per_decision": 47.0,
+   "holes": {
+    "n": 1,
+    "unique": 1,
+    "contested": 0,
+    "types": []
+   },
+   "nuclear_share": 0.96
   }
  }
 ]

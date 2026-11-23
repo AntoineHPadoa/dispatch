@@ -116,5 +116,51 @@
  "generator": "dispatch-solver 2.0.0",
  "blocked_ramp": 0,
  "errors": [],
- "rerated": "scripts/rerate_lots.py (notation A, S4.16)"
+ "rerated": "scripts/rerate_lots.py (notation A, S4.16; filling and hole measures, S8.1)",
+ "cells": {
+  "median": 32.5,
+  "min": 14,
+  "max": 65
+ },
+ "cells_bands": {
+  "<=28": 7,
+  "29-39": 9,
+  ">=40": 4
+ },
+ "hard_cells_bands": {
+  "<=28": 0,
+  "29-39": 1,
+  ">=40": 1
+ },
+ "full_n_rows": {
+  "0": 13,
+  "1": 3,
+  "2": 2,
+  "3": 1,
+  "4": 1
+ },
+ "cells_per_decision": {
+  "median": 14.0,
+  "min": 3.4,
+  "max": 35.0
+ },
+ "holes": {
+  "grids_with_holes": 13,
+  "holes": 30,
+  "unique": 25,
+  "contested": 3,
+  "grids_with_contested": 2,
+  "medium_up_with_contested": 2,
+  "medium_up": 9,
+  "contested_types": {
+   "BG": 1,
+   "TI": 2
+  }
+ },
+ "nuclear_share": {
+  "median": 0.83,
+  "min": 0.24,
+  "max": 0.98
+ },
+ "nuclear_under_half": 1
 }
