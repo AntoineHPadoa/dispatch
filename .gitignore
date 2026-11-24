@@ -27,3 +27,10 @@ docs/reviews/**/*.pdf
 # Gallery build (web/scripts/ui-gallery.mjs) and its captures: the HTML pages are versioned, not the images
 web/dist-gallery/
 docs/ui-gallery/**/img/
+
+# Lab play data stays local (public repo, personal comments): plays, notes, sessions and their backups
+lab/plays.jsonl*
+lab/notes.json*
+lab/sessions/.counters.json
+lab/sessions/**/*.json
+!lab/sessions/archive/v3-session-1.json

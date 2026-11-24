@@ -27,10 +27,10 @@ Bilan du workspace `v3-lab-solver` : trois jours de jeu à l'aveugle dans le lab
 
 - **C1, une mécanique morte fait rejeter** : 4 rejets sur 4 en session 2, 1 ★ sur 7 au total, commentaires explicites (`v3-criteres.md`, `v3-challenge.md`).
 - **C2, sans décision c'est du remplissage** : 0 ★ sur 7. Avec au moins 2 décisions, 14 ★ sur 19, contre 4 sur 18 (p ≈ 0,002). Prédit en session 2, vérifié en session 3, ancrage tenu en M24 (`v3-criteres-s3.md`, `v3-criteres-m24.md`).
-- **Une globale couplée rend la grille plus dure, mais s'use** : ressenti 2,25 contre 1,24 (ρ 0,56, 69 grilles). Sans échange, STEP et CO₂ sont ressentis 1, Joueur 2 compris (`v3-criteres-j2.md`). L'usure : ressenti des couplées 2,33 (S3), 3,0 (G3B), 2,08 (M23), puis 1,86 (M24). Plus dure ne veut pas dire plus belle : 5 ★ sur 12 couplées en M23 (`v3-criteres-m23.md`).
-- **La compacité, c'est le nombre de cases** : `cells` attrape le reproche « pas compact » avec une AUC de 0,89 en M24, contre 0,51 pour la part de nucléaire. 40 cases ou plus, ou 2 lignes pleines de nucléaire : 0 ★ sur 3. Les 9 commentaires « compact » vont dans le même sens : éloges à 17-31 cases, reproches à 31-69 (`v3-criteres-m24.md` §2).
+- **Une globale couplée rend la grille plus dure, mais s'use** : ressenti 2,25 contre 1,24 (ρ 0,56, 69 grilles). Sans échange, STEP et CO₂ sont ressentis 1, Joueur 2 compris (`v3-criteres-j2.md`). L'usure : ressenti des couplées 2,33 (S3), 3,0 (G3B), 2,08 (M23), puis 1,86 (M24). Plus dure ne veut pas dire plus belle : 6 ★ sur 13 couplées en M23 (`v3-criteres-m23.md`).
+- **La compacité, c'est le nombre de cases** : `cells` attrape le reproche « pas compact » avec une AUC de 0,89 en M24, contre 0,51 pour la part de nucléaire. 40 cases ou plus, ou 2 lignes pleines de nucléaire : 0 ★ sur 3. Les 9 commentaires « compact » vont dans le même sens : éloges à 17-31 cases, reproches à 31-69 (`v3-criteres-m24.md` §2). La mesure est solide ; les seuils (40 cases, 2 lignes) sont indicatifs, calés sur Joueur 1, à confirmer par `v3g6-compact` et des joueurs neufs.
 - **Peu de nucléaire → plus de ★** : 12 ★ sur 15 sous 50 %, contre 42 sur 81 (p = 0,04). Ça ne suffit pas sans décision.
-- **Règle objective de difficulté** : abandon → Expert ; sinon 6 s par case ou plus → Difficile ; sinon une gomme, annulation, remise à zéro, ou 2,5 s par case → Moyen ; sinon Facile. Accord avec le ressenti : 81 % en M24, 71 % sur 96 grilles. Les erreurs (poses refusées) ne signalent rien : 9 Faciles sur 15 en ont (`v3-criteres-m24.md` §3).
+- **Règle objective de difficulté** : abandon → Expert ; sinon 6 s par case ou plus → Difficile ; sinon une gomme, annulation, remise à zéro, ou 2,5 s par case → Moyen ; sinon Facile. Accord avec le ressenti : 81 % en M24, 71 % sur 96 grilles. Les erreurs (poses refusées) ne signalent rien : 9 Faciles sur 15 en ont (`v3-criteres-m24.md` §3). Réserve : la règle reprend l'échelle décrite par Joueur 1 pendant M24, l'accord n'est donc pas indépendant ; elle n'est pas testée sur un novice.
 
 ### Infirmé
 
@@ -66,7 +66,9 @@ Bilan du workspace `v3-lab-solver` : trois jours de jeu à l'aveugle dans le lab
 
 **Lots gardés** (dans le labo) : `v3-jouer-a/b/c` (témoins historiques), `v3g2-jouer-c`, `v3g3-jouer-a/b`, `v3g4-jouer-a/b/c`, `v3g4-rampe`, `v3g5-temoin`, `v3g5-squelette`, `nuit-rejeu-notees` (rejeu des grilles publiées notées). Ils portent les 55 grilles ★.
 
-**Lots archivés** (`lab/candidates/archive/`, jamais joués) : `v3-rampe` (remplacé par `v3g4-rampe`), `v3-reprises`, `v3g1-jouer-a/b/c`, `v3g2-jouer-a/b`.
+**Lots archivés** (`lab/candidates/archive/`) : jamais joués, `v3-rampe` (remplacé par `v3g4-rampe`), `v3-reprises`, `v3g1-jouer-a/b/c`, `v3g2-jouer-a/b` ; et `v3-confort` (G8 sans son indice de confort, test fini, 1 partie), désormais versionné pour que sa clé résolve sur tout clone.
+
+**Données de jeu** : `plays.jsonl`, `notes.json` et les sessions restent locales, hors git (dépôt public, commentaires personnels). Sessions de test finies rangées dans `lab/sessions/archive/` : `v3-confort`, `v3g3-dures` (fondue dans `matin-23`).
 
 > **À remplir par S10.3** : sort de `v3g6-compact` (gardé, ou lot de référence).
 
@@ -79,7 +81,7 @@ Bilan du workspace `v3-lab-solver` : trois jours de jeu à l'aveugle dans le lab
 **Tutoriel d'onboarding**
 - La STEP et le CO₂ couplé sont durs pour un joueur neuf : Joueur 2 a mis 619 s, avec 14 gommes, sur une STEP + échange.
 - La pièce haute n'est pas comprise sans aide.
-- Un joueur occasionnel décroche après ~6 grilles, et les grilles à 12 créneaux usent (65 % de temps en plus).
+- Joueur 2 s'est arrêté après 8 grilles (34 min actives) : sessions de 6 grilles pour un joueur occasionnel. Les grilles à 12 créneaux usent (65 % de temps en plus).
 
 **Labo**
 - Mesurer le temps de réflexion (inactivité) et le délai avant la 1re pose : aujourd'hui, « se poser pour regarder » ne se distingue pas d'une manipulation lente.

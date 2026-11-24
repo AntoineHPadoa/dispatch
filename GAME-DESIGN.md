@@ -198,11 +198,11 @@ Sortie : `lab/candidates/<lot>.json` (grilles §14 plus un bloc `lab` : famille,
 - **C1, aucune mécanique morte** : une mécanique affichée sert à la solution (point 3). Une mécanique inutile fait rejeter la grille.
 - **C2, au moins une décision** : une grille sans décision est du remplissage (point 7).
 - **Une globale couplée rend plus dure** : la STEP ou un plafond CO₂ actif, couplés à un échange, rendent la grille plus dure ; sans échange, non. C'est le fondement de la notation A (§9). L'effet s'use avec l'habitude du joueur, et plus dure ne veut pas dire plus belle.
-- **Compacité = nombre de cases** : le reproche « pas compact » suit `cells`, pas la part de nucléaire. À 40 cases ou plus, ou avec 2 lignes pleines de nucléaire, une grille passe pour du remplissage.
+- **Compacité = nombre de cases** : le reproche « pas compact » suit `cells`, pas la part de nucléaire. Seuils indicatifs, calés sur un seul joueur et à confirmer : à 40 cases ou plus, ou avec 2 lignes pleines de nucléaire, une grille passe pour du remplissage.
 
 Les autres mesures (K, trous, part de nucléaire) restent descriptives : aucune n'a tenu comme critère.
 
-**Règle objective de difficulté** (labo seulement, pas la note publiée) : sur la 1re partie d'un joueur, (1) **Expert** si elle est abandonnée ; sinon (2) **Difficile** à 6 s par case ou plus (temps actif / `cells`) ; sinon (3) **Moyen** avec au moins une gomme, annulation ou remise à zéro, ou à 2,5 s par case ou plus ; sinon (4) **Facile**. Les erreurs (poses refusées) n'y comptent pas. Elle se calcule à côté du ressenti, pour comparer des joueurs et suivre l'expertise d'un même joueur.
+**Règle objective de difficulté** (labo seulement, pas la note publiée) : sur la 1re partie d'un joueur, (1) **Expert** si elle est abandonnée ; sinon (2) **Difficile** à 6 s par case ou plus (temps actif / `cells`) ; sinon (3) **Moyen** avec au moins une gomme, annulation ou remise à zéro, ou à 2,5 s par case ou plus ; sinon (4) **Facile**. Les erreurs (poses refusées) n'y comptent pas. Elle se calcule à côté du ressenti, pour comparer des joueurs et suivre l'expertise d'un même joueur. Elle reprend l'échelle décrite par un seul joueur et n'est pas encore vérifiée sur un novice.
 
 ## 11. Tutoriel
 

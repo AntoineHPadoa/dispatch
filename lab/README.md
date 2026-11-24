@@ -2,11 +2,13 @@
 
 Local tool to generate, play, rate and promote candidate grids. Launch: `lab/run.sh`, then open `http://localhost:5173/dispatch/lab.html`. What the sessions established, the method to keep and the backlog: `docs/next/v3-synthese.md`.
 
-## Files (all in `lab/`, versioned)
+## Files (all in `lab/`)
+
+Versioned: lot configs, candidates and their archive, reports. **Local only** (git-ignored, the repository is public and comments are personal): `plays.jsonl`, `notes.json`, `sessions/*.json`, `sessions/.counters.json` and their backups. One exception, `sessions/archive/v3-session-1.json`, a plain grid list already versioned. Back them up outside git.
 
 - `lots/<lot>.json`: generator configs. `lots/reference.json` holds the settings to start from: copy it, rename the lot, change the seed.
 - `candidates/<lot>.json`: grids written by `dispatch-solver generate`, with a `lab` block (index from 0, family, mechanics, trace summary, decisions, measures, bulletin draft; listed in `GAME-DESIGN.md` §10). A lot name is never reused: the server refuses an existing one, so `lot:index` always points to the same grid.
-- `candidates/archive/<lot>.json`: lots set aside: a rule change made their grids invalid, or a newer lot replaced them unplayed. Not listed by the lab and read-only: their `lot:index` keys still resolve for notes, plays and sessions (a session item there shows as not playable), but they cannot be played, drawn into a session or promoted, and their names are never reused (server and `dispatch-solver generate` both refuse them). `sessions/archive/` holds abandoned sessions, not listed.
+- `candidates/archive/<lot>.json`: lots set aside: a rule change made their grids invalid, or a newer lot replaced them unplayed. Not listed by the lab and read-only: their `lot:index` keys still resolve for notes, plays and sessions (a session item there shows as not playable), but they cannot be played, drawn into a session or promoted, and their names are never reused (server and `dispatch-solver generate` both refuse them). `sessions/archive/` holds abandoned or finished test sessions, not listed (local, like the other sessions).
 - `sessions/<id>.json`: an ordered list of candidates to play in a row: `{"title": …, "items": [{"lot": …, "index": …, "hold"?: "text"}, …]}` (`index` from 0). An item with `hold` is shown with that text and cannot be launched. Page: `#/session` (lists every session, newest first), `#/session/<id>`. A session is written by hand or drawn from a lot (below).
 - `plays.jsonl`: one JSON line per game (below).
 - `candidates/V3*.md`: one report per generator version (what changed, lot figures).
