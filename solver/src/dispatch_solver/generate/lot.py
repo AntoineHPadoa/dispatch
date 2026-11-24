@@ -18,7 +18,8 @@
   a decision type: ceiling max_with_type and floor min_with_type, minimum per rating (one number or
   {rating: n}) and per mix entry, grids with a demand price: max_demand_price; near-twins: max_per_mix grids
   per entry, max_with_cols grids per slot count; filler_cells: reject `filler` for a Difficile or Expert with
-  that many cells, off by default). Type quotas also take the key "coupled": a global mechanic (STEP or CO2)
+  that many cells, off by default; size caps max_cells and max_full_n_rows: reject `quota:cells`, taken in the
+  worker right after the reference, and entries without a set height draw a lower day, off by default). Type quotas also take the key "coupled": a global mechanic (STEP or CO2)
   coupled to an exchange, what notation A rates. Draws aim at the ratings still missing (a missing Difficile
   or Expert aims at the entries able to give a coupled global mechanic) and at the mix entries able to give
   a type under its floor; while max_demand_price is not reached, half the draws seed a demand price.
@@ -102,7 +103,12 @@ QUOTAS = {
     "max_with_cols": {},  # {slot count: n}: at most n grids of that many slots (e.g. {"12": 5})
     "min_with_contested": None,  # soft: Moyen-and-up grids with a contested hole aimed at, never a reject
     "filler_cells": None,  # reject `filler`: a Difficile or Expert with at least n cells to lay (off by default)
+    "max_cells": None,  # size cap: reject `quota:cells` above n cells in the reference (off by default)
+    "max_full_n_rows": None,  # size cap: reject `quota:cells` above n rows full of nuclear (off by default)
 }
+SIZE_CAPS = ("max_cells", "max_full_n_rows")
+# Under a cells cap, an entry without a set height draws a lower day (residual height 4..6 instead of 5..7).
+LOW_HEIGHTS = (4, 4, 5, 5, 6)
 COUPLED = "coupled"  # quota key: a global mechanic (STEP or CO2) coupled to an exchange (notation A)
 QUOTA_TYPES = (*DECISION_TYPES, COUPLED)
 TYPE_QUOTAS = ("max_with_type", "min_with_type")
@@ -166,7 +172,7 @@ def check_lot(lot: Any) -> tuple[dict[str, Any], list[str]]:
                 errors.append(f"quotas.{k}: integer >= 0, or object {{rating (1-4): integer >= 0}} expected")
             else:
                 norm_q[key] = {int(r): n for r, n in v.items()}
-        elif v is None and key in ("max_demand_price", "max_per_mix", "min_with_contested", "filler_cells"):
+        elif v is None and key in ("max_demand_price", "max_per_mix", "min_with_contested", "filler_cells", *SIZE_CAPS):
             norm_q[key] = None
         elif not _nat(v):
             errors.append(f"quotas.{k}: integer >= 0 expected")
@@ -297,12 +303,14 @@ def mechanics(g: dict[str, Any]) -> list[str]:
 
 
 def make_candidate(
-    cfg: dict[str, Any], seed: int, aim: int | None = None
+    cfg: dict[str, Any], seed: int, aim: int | None = None, caps: dict[str, int | None] | None = None
 ) -> tuple[dict[str, Any] | None, str | None, dict[str, Any]]:
     """(grid, None, info) or (None, reject reason, info) for one attempt.
 
     aim: highest technique level the clue selection may count on (the lot's lever on the rating);
     a configuration's `rating` sets it and rejects any other rating.
+    caps: the lot's size caps {max_cells, max_full_n_rows}; a reference above one is the reject `quota:cells`,
+    taken before the clue selection (the costly part).
     """
     cfg = {**DEFAULTS, **cfg}
     rng = random.Random(seed)
@@ -422,6 +430,8 @@ def make_candidate(
         return None, "trivial", info
     if len({p["piece"] for p in sol["placements"] if p["piece"] != "I"}) < 2 and not cfg["allow_one_plant"]:
         return None, "one_plant", info  # imports cheaper than every plant but one: nothing to dispatch
+    if caps and over_size(reference_size(d, comp), caps):
+        return None, "quota:cells", info
     types = tuple(t for t in cfg["clue_types"] if t != "exchanges" or cfg["inventory"] == "none")
     max_clues = cfg["max_clues"] if cfg["max_clues"] is not None else n
     pool = clue_pool(d, types)
@@ -488,16 +498,40 @@ def make_candidate(
     return d, None, info
 
 
+def reference_size(d: dict[str, Any], comp: dict[str, Any]) -> dict[str, int]:
+    """{cells, full_n_rows} of the reference, from its composition and nuclear bars (no board needed): the
+    measures of filling_measures(), taken before the clues to reject an oversized draw early."""
+    n = len(d["columns"])
+    nuclear: set[tuple[int, int]] = set()
+    for p in d["solution"]["placements"]:
+        if p["piece"] == "N":
+            nuclear |= {(p["row"] + h, p["col"] + i) for i in range(p["len"]) for h in range(p.get("height", 1))}
+    rows = {r for r, _c in nuclear}
+    return {
+        "cells": sum(sum(col.values()) for col in comp["cells"]),
+        "full_n_rows": sum(1 for r in rows if all((r, c) in nuclear for c in range(n))),
+    }
+
+
+def over_size(measures: dict[str, Any], caps: dict[str, int | None]) -> bool:
+    """True when the reference is above a size cap (cells, rows full of nuclear); None caps are off."""
+    cells, rows = caps.get("max_cells"), caps.get("max_full_n_rows")
+    return (cells is not None and measures.get("cells", 0) > cells) or (
+        rows is not None and measures.get("full_n_rows", 0) > rows
+    )
+
+
 def _live(sol: dict[str, Any]) -> set[str]:
     """Neighbors the reference trades with (an export or an import bar)."""
     return set(sol["exports"]) | {p["country"] for p in sol["placements"] if p["piece"] == "I"}
 
 
 def _attempt(
-    args: tuple[dict[str, Any], int, int | None],
+    args: tuple[Any, ...],
 ) -> tuple[dict[str, Any] | None, str | None, dict[str, Any]]:
-    """One draw in a worker process; any error is a named reject, it never stops the lot."""
-    cfg, seed, aim = args
+    """One draw in a worker process, args (cfg, seed, aim[, caps]); any error is a named reject, never a stop."""
+    cfg, seed, aim, *rest = args
+    caps = rest[0] if rest else None
     exact.NUM_WORKERS = 1
 
     def expire(_signum: int, _frame: Any) -> None:
@@ -509,7 +543,7 @@ def _attempt(
         signal.alarm(ATTEMPT_SECONDS)
         faulthandler.dump_traceback_later(ATTEMPT_SECONDS + 30)
     try:
-        return make_candidate(cfg, seed, aim)
+        return make_candidate(cfg, seed, aim, caps)
     except TimeoutError as exc:
         return None, "timeout", {"seed": seed, "family": cfg.get("family", "any"), "error": str(exc)}
     except Exception as exc:  # noqa: BLE001 - one bad draw must not lose the lot
@@ -612,6 +646,8 @@ class Quotas:
         cap_f = self.q["filler_cells"]
         if cap_f is not None and r >= 3 and lab.get("cells", 0) >= cap_f:
             return "filler"
+        if over_size(lab, self.q):
+            return "quota:cells"  # the worker rejects it first; kept here for grids made without the caps
         m = lab.get("mix", -1)
         need_m = self.q["min_per_mix"]
         missing_r = sum(max(0, self.need(x) - self.rating.get(x, 0)) for x in (1, 2, 3, 4) if x != r)
@@ -766,6 +802,8 @@ def _draw(
             cfg["inventory"] = "exact"
         if "clue_types" not in mix[i]:
             cfg["clue_types"] = [t for t in DEFAULTS["clue_types"] if t != "price"]
+    if quotas.q["max_cells"] is not None and mix[i].get("height") is None:
+        cfg["height"] = rng.choice(LOW_HEIGHTS)  # compact lot: a lower day, fewer cells to lay
     cap_d = quotas.q["max_demand_price"]
     if cap_d is not None and "demand_price" not in mix[i] and quotas.demand < cap_d and rng.random() < 0.5:
         cfg["demand_price"] = True
@@ -833,7 +871,8 @@ def run_lot(lot: dict[str, Any], workers: int = 6, log: Any = None) -> tuple[lis
         while len(kept) < size and (pending or attempts < max_attempts):
             while len(pending) < workers * 2 and attempts < max_attempts:
                 cfg, seed, mi, aim = _draw(rng, mix, weights, quotas)
-                pending.append((pool.submit(_attempt, (cfg, seed, aim)), cfg, seed, mi))
+                caps = {k: quotas.q[k] for k in SIZE_CAPS}
+                pending.append((pool.submit(_attempt, (cfg, seed, aim, caps)), cfg, seed, mi))
                 attempts += 1
             fut, cfg, seed, mi = pending.popleft()  # accepted in draw order: same lot for the same seed
             try:
