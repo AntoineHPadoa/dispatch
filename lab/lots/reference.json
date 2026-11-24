@@ -1,0 +1,32 @@
+{
+ "lot": "v3-ref-1",
+ "size": 20,
+ "seed": 3101,
+ "max_attempts": 4000,
+ "comment": "Reference settings for new play lots (docs/next/v3-synthese.md). Copy this file, rename the lot and change the seed: a lot name is never reused. Mix of v3g4-jouer-a plus two entries of v3-jouer-a lost on the way (3 neighbors, surplus on 8 slots). Kept: the C1 cleaning and the no_decision reject (C2), both built in; general diversity quotas; at most 2 grids per entry; at most 3 grids on 12 slots (size is what players call 'not compact'). Dropped: the per-type floors and ceilings, the single-decision and demand-price quotas (no visible effect on the stars, docs/next/v3-criteres-m24.md). Size caps of v3g6-compact to be added once S10.3 has judged them.",
+ "mix": [
+  {"weight": 2, "cols": 8, "neighbors": 1, "step": 1, "co2_cap": "auto", "inventory": "none"},
+  {"weight": 2, "cols": 8, "neighbors": 1},
+  {"weight": 2, "cols": 8, "step": 1, "neighbors": 1},
+  {"weight": 1, "cols": 12, "neighbors": 2, "co2_cap": "auto", "inventory": "none"},
+  {"weight": 1, "cols": 8, "pieces": "NCGT", "tall": true, "neighbors": 1},
+  {"weight": 1, "cols": 8, "step": 1, "co2_cap": "auto", "inventory": "none"},
+  {"weight": 2, "cols": 8, "pieces": "NBCGT", "tall": true, "stock": 2, "inventory": "none"},
+  {"weight": 1, "cols": 8, "pieces": "NBGT", "step": 1, "stock": 2, "inventory": "none"},
+  {"weight": 1, "cols": 8, "pieces": "NCGT", "tall": true, "co2_cap": "auto", "neighbors": 1, "inventory": "none"},
+  {"weight": 1, "cols": 8, "clue_types": ["length", "column", "price"], "pieces": "NCGT", "tall": true},
+  {"weight": 1, "cols": 6, "inventory": "exact", "neighbors": 1},
+  {"weight": 1, "cols": 8, "step": 1, "neighbors": 2},
+  {"weight": 1, "cols": 8, "neighbors": 3},
+  {"weight": 1, "cols": 8, "pieces": "NBCGT", "surplus": true, "neighbors": 1}
+ ],
+ "quotas": {
+  "max_same_family": 3,
+  "max_same_mechanics": 3,
+  "max_same_clue_profile": 4,
+  "min_per_rating": 2,
+  "min_per_mix": 1,
+  "max_per_mix": 2,
+  "max_with_cols": {"12": 3}
+ }
+}

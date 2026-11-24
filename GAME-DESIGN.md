@@ -191,7 +191,18 @@ Le générateur (`solver/`, `dispatch_solver.generate`) produit des **lots** de 
    **Quasi-jumelles** : deux règles générales, qui bornent sans imposer de motif. `max_per_mix` : au plus N grilles par entrée du mélange (2 dans les lots v3g4), même en fin de lot (rejet `quota:per_mix`) ; le lot doit avoir assez d'entrées (N × entrées ≥ taille, vérifié). `max_with_cols` : au plus N grilles d'un nombre de créneaux donné, ex. `{"12": 5}`, un quart du lot sur 12 créneaux (rejet `quota:cols`). Une entrée à son plafond, ou dont le nombre de créneaux l'est, est tirée 25 fois moins souvent.
 9. **Bulletin** : titre, court texte et ciel par créneau, écrits par gabarits à partir de ce que voit le joueur (jamais de la solution). Le brouillon va dans le bloc `lab` ; le labo lui donne un numéro et une date à la promotion.
 
-Sortie : `lab/candidates/<lot>.json` (grilles §14 plus un bloc `lab` : famille, mécaniques, profil d'indices, niveau visé, résumé de la trace, techniques de rampe employées, décisions par type, mécaniques vivantes, nombre de barres, prix sur le nucléaire en carnet libre, mécaniques globales couplées, compacité K, prix de demande, mécaniques nettoyées, brouillon de bulletin) et `<lot>.stats.json` (tirages, rejets, répartition). Le bloc `lab` est retiré quand une grille entre dans le jeu.
+Sortie : `lab/candidates/<lot>.json` (grilles §14 plus un bloc `lab` : famille, mécaniques, profil d'indices, niveau visé, résumé de la trace, techniques de rampe employées, décisions par type, mécaniques vivantes, nombre de barres, prix sur le nucléaire en carnet libre, mécaniques globales couplées, compacité K, prix de demande, mécaniques nettoyées, brouillon de bulletin) et `<lot>.stats.json` (tirages, rejets, répartition). Le bloc `lab` est retiré quand une grille entre dans le jeu. Réglage de référence pour un nouveau lot : `lab/lots/reference.json`.
+
+**Critères figés** (tenus hors échantillon sur les parties du labo, `docs/next/v3-synthese.md` §2) :
+
+- **C1, aucune mécanique morte** : une mécanique affichée sert à la solution (point 3). Une mécanique inutile fait rejeter la grille.
+- **C2, au moins une décision** : une grille sans décision est du remplissage (point 7).
+- **Une globale couplée rend plus dure** : la STEP ou un plafond CO₂ actif, couplés à un échange, rendent la grille plus dure ; sans échange, non. C'est le fondement de la notation A (§9). L'effet s'use avec l'habitude du joueur, et plus dure ne veut pas dire plus belle.
+- **Compacité = nombre de cases** : le reproche « pas compact » suit `cells`, pas la part de nucléaire. À 40 cases ou plus, ou avec 2 lignes pleines de nucléaire, une grille passe pour du remplissage.
+
+Les autres mesures (K, trous, part de nucléaire) restent descriptives : aucune n'a tenu comme critère.
+
+**Règle objective de difficulté** (labo seulement, pas la note publiée) : sur la 1re partie d'un joueur, (1) **Expert** si elle est abandonnée ; sinon (2) **Difficile** à 6 s par case ou plus (temps actif / `cells`) ; sinon (3) **Moyen** avec au moins une gomme, annulation ou remise à zéro, ou à 2,5 s par case ou plus ; sinon (4) **Facile**. Les erreurs (poses refusées) n'y comptent pas. Elle se calcule à côté du ressenti, pour comparer des joueurs et suivre l'expertise d'un même joueur.
 
 ## 11. Tutoriel
 
