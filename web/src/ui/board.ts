@@ -32,6 +32,7 @@ import { UI, columnLabel, priceTag, priceTagShort, programLabel } from '../i18n/
 import type { Cell, Rect } from './gesture';
 import {
   BAD, ICONS, INK_A, INK_B, OK, PIECE_COLORS, SOFT_A, SOFT_B, ACCENT, colorKey, esc,
+  STEP_INK,
 } from './palette';
 
 export type BoardStyle = 'A' | 'B';
@@ -118,7 +119,7 @@ export function lockedExports(grid: Grid): Map<string, number> {
   return m;
 }
 
-const STEP_BLUE = '#e3eefa';
+const STEP_BLUE = '#e7ebf3';
 
 /** Icons of the STEP tags in column `c`: ▲ for a pump, ▼ for a turbine, with the pair number when `numbered`. */
 export function stepTagLabels(step: readonly { pump: number; turbine: number }[], c: number, numbered: boolean): string[] {
@@ -483,10 +484,6 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
         s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="none" stroke="${BAD}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
       }
     }
-    if (grid.demand[c]! < F + R) {
-      const ly = y(grid.demand[c]!, 0);
-      s += `<line x1="${x(c) - 4}" x2="${x(c + 1) + 4}" y1="${ly}" y2="${ly}" stroke="${ink}" stroke-width="1.6" stroke-dasharray="6 3"/>`;
-    }
     const k = sil[c]!;
     const e = A ? exportsOf(c) : 0;
     for (let r = 0; r < k; r++) {
@@ -497,7 +494,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
         s += A ? `<rect x="${bx}" y="${by}" width="${w}" height="${w}" rx="${rad}" fill="#fff" stroke="#eadfe6"/>`
           : `<rect x="${bx}" y="${by}" width="${w}" height="${w}" fill="#fff" stroke="#c7d5d1" stroke-width=".8"/>`;
       } else if (kind === 'pump') {
-        s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" stroke="${PIECE_COLORS.B.ink}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
+        s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" stroke="${STEP_INK}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
       } else {
         // Exported block: a dashed violet cell above the column.
         s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" stroke="${PIECE_COLORS.I.ink}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
@@ -506,7 +503,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     // The pump chosen but not yet turbined: its dashed cell shows already.
     if (A && input.stepPending === c) {
       const { bx, by, w } = box(c, weather[c]! + k + turbines[c]!);
-      s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" stroke="${PIECE_COLORS.B.ink}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
+      s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" stroke="${STEP_INK}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
     }
     // Paper: the grid is a full rectangle; cells above the demand line are plain white too.
     if (!A) {
@@ -516,9 +513,10 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       }
     }
     for (let t = 0; t < turbines[c]!; t++) {
+      // Turbined block: the dashed slate cell of a pumped one, struck by a slate diagonal.
       const { bx, by, w } = box(c, weather[c]! + k + t);
-      s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="none" stroke="${soft}" stroke-opacity=".6" stroke-width="1.2" stroke-dasharray="2 3"/>`
-        + `<path d="M${bx + 8} ${by + 8} L${bx + w - 8} ${by + w - 8}" stroke="${soft}" stroke-opacity=".5" stroke-width="1.2"/>`;
+      s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="none" stroke="${STEP_INK}" stroke-width="1.6" stroke-dasharray="4 3"/>`
+        + `<path d="M${bx + 8} ${by + 8} L${bx + w - 8} ${by + w - 8}" stroke="${STEP_INK}" stroke-width="1.4"/>`;
     }
   }
 
@@ -570,7 +568,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       for (let r = Math.max(0, k - pumps[c]! - e); r < k; r++) {
         if (!hiddenAny.has(`${weather[c]! + r},${c}`)) continue;
         const { bx, by, w } = box(c, weather[c]! + r);
-        const color = r >= k - pumps[c]! ? PIECE_COLORS.B.ink : PIECE_COLORS.I.ink;
+        const color = r >= k - pumps[c]! ? STEP_INK : PIECE_COLORS.I.ink;
         s += `<rect class="covered" x="${bx + 2.5}" y="${by + 2.5}" width="${w - 5}" height="${w - 5}" rx="${Math.max(0, rad - 2)}" fill="none" stroke="${color}" stroke-width="1.6" stroke-dasharray="4 3" pointer-events="none"/>`;
       }
     }
@@ -643,7 +641,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       const act = input.interactive && pair
         ? ` data-act="step-tag" data-col="${c}" tabindex="0" role="button" aria-label="${esc(UI.stepTagLabel(columnLabel(grid, pair.pump), columnLabel(grid, pair.turbine)))}"` : '';
       tags += `<g class="tag step-tag${act ? ' act' : ''}"${act}>`
-        + pill(mid, ty, w, STEP_BLUE, PIECE_COLORS.B.ink, (tc) => T(tc, ty + 12.5, label, { size: full ? 8.5 : 9.5 }), null)
+        + pill(mid, ty, w, STEP_BLUE, STEP_INK, (tc) => T(tc, ty + 12.5, label, { size: full ? 8.5 : 9.5 }), null)
         + '</g>';
     }
     s += tags;
@@ -658,7 +656,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
         const ty = tagY(c);
         const cx = x(c) + cell / 2;
         const cy = ty + 9;
-        const col = PIECE_COLORS.B.ink;
+        const col = STEP_INK;
         const label = kind === 'up' ? (chosen ? UI.stepArrowChosen(columnLabel(grid, c)) : UI.stepArrowPump(columnLabel(grid, c))) : UI.stepArrowTurbine(columnLabel(grid, c));
         const act = input.interactive ? ` data-act="step-arrow" data-col="${c}" tabindex="0" role="button" aria-label="${esc(label)}"` : '';
         s += `<g class="step-arrow${act ? ' act' : ''}"${act}><circle cx="${cx}" cy="${cy}" r="${r}" fill="${chosen ? col : STEP_BLUE}" stroke="${col}" stroke-width="1.4"/>`

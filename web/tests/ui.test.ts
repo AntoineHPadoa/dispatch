@@ -922,14 +922,25 @@ describe('board card: fixed layout, price row, export rows', () => {
     expect(viewBox(after.svg)).toBe(viewBox(before.svg));
   });
 
-  it('a pump chosen but not yet turbined already shows its dashed blue cell; the turbine only once laid', () => {
+  it('a pump chosen but not yet turbined already shows its dashed slate cell; the turbine only once laid', () => {
     const g = byId(7);
     const st = initialState(g);
     const plain = renderBoard({ grid: g, state: st, ev: evaluate(g, st), style: 'A', cell: 50, stepMode: true, interactive: true });
     const pend = renderBoard({ grid: g, state: st, ev: evaluate(g, st), style: 'A', cell: 50, stepMode: true, interactive: true, stepPending: 3 });
-    const blue = (svg: string) => (svg.match(/stroke="#6f9bd0" stroke-width="1.6" stroke-dasharray="4 3"/g) ?? []).length;
+    const blue = (svg: string) => (svg.match(/stroke="#5d6f93" stroke-width="1.6" stroke-dasharray="4 3"/g) ?? []).length;
     expect(blue(pend.svg)).toBe(blue(plain.svg) + 1);
     expect(viewBox(pend.svg)).toBe(viewBox(plain.svg));
+  });
+
+  it('a turbined block is a dashed slate cell struck by a slate diagonal; no black demand line under the weather', () => {
+    const g = byId(7);
+    const st = { ...initialState(g), step: [{ pump: 3, turbine: 5 }] };
+    const svg = renderBoard({ grid: g, state: st, ev: evaluate(g, st), style: 'A', cell: 50 }).svg;
+    expect(svg).toContain('d="M' ) ;
+    expect(svg).toMatch(/stroke="#5d6f93" stroke-width="1.4"/);
+    expect(svg).not.toContain('#6f9bd0" stroke-width="1.6"');
+    const w = byId(8);
+    expect(renderBoard({ grid: w, state: initialState(w), ev: evaluate(w, initialState(w)), style: 'A', cell: 50 }).svg).not.toMatch(/stroke-dasharray="6 3"/);
   });
 
   it('price tags sit under the hours, below the grid, not above the columns', () => {

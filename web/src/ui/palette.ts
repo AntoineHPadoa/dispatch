@@ -6,6 +6,9 @@
 
 export type PaletteKey = 'N' | 'B' | 'C' | 'G' | 'T' | 'I' | 'R' | 'F';
 
+/** Slate of the STEP (pumped and turbined blocks, tags, arrows): distinct from the dam's blue. */
+export const STEP_INK = '#5d6f93';
+
 export const PIECE_COLORS: Record<PaletteKey, { a: string; b: string; ink: string }> = {
   N: { a: '#f7e2a0', b: '#f2e5a2', ink: '#c9a23f' },
   B: { a: '#bfd7f1', b: '#bcd6ee', ink: '#6f9bd0' },
