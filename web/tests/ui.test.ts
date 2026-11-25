@@ -1208,8 +1208,9 @@ describe('order book without exchanges line; exchanges in the clue card', () => 
     expect(html.indexOf('exporté')).toBeLessThan(html.indexOf('class="clue"', html.indexOf('class="clue"') + 1));
   });
 
-  it('G7 exchanges line also tells the STEP pair; grids without inventory or exports have none', () => {
-    expect(inventoryExchanges(byId(7))?.step).toBe(1);
+  it('the STEP pairs are not in the exchanges line; the STEP plant still counts them; grids without inventory or exports have none', () => {
+    expect(inventoryExchanges(byId(7))?.step).toBeUndefined();
+    expect(renderBook(byId(7), newGame(byId(7)), null)).toContain('0 / 1');
     expect(inventoryExchanges(byId(1))).toBeNull();
     expect(inventoryExchanges(byId(2))).toBeNull();
     for (const id of [8, 9, 10, 11]) expect(inventoryExchanges(byId(id))).toBeNull();
@@ -1231,17 +1232,29 @@ describe('order book without exchanges line; exchanges in the clue card', () => 
 });
 
 describe('exchanges: one line per country, each checked on its own', () => {
-  it('splits by country, the all-country import total and the STEP; grid 10 keeps one line', () => {
+  it('splits by country and the all-country import total, without the STEP; grid 10 keeps one line', () => {
     expect(exchangeLines({ type: 'exchanges', exports: { DE: 2 }, imports: { DE: 2 } })).toHaveLength(1);
     expect(exchangeLines({ type: 'exchanges', exports: { DE: 0, GB: 1 }, imports: { '*': 2, GB: 0 }, step: 1 })).toEqual([
       { type: 'exchanges', exports: { DE: 0 } },
       { type: 'exchanges', exports: { GB: 1 }, imports: { GB: 0 } },
       { type: 'exchanges', imports: { '*': 2 } },
-      { type: 'exchanges', step: 1 },
     ]);
+    expect(exchangeLines({ type: 'exchanges', step: 1 })).toEqual([]);
     const g10 = byId(10);
     const html = renderClues(g10, evaluate(g10, newGame(g10)).clues, newGame(g10));
     expect(html.match(/Échanges du jour/g)).toHaveLength(1);
+  });
+
+  it('a STEP published only by the exchanges clue: no pump line in the publications, the plant reads "0 / N"', () => {
+    const g = byId(7);
+    g.inventory = { level: 'none', pieces: {} };
+    g.clues = [...g.clues, { type: 'exchanges', step: 1 }];
+    const st = newGame(g);
+    expect(publishedStepPairs(g)).toBe(1);
+    expect(renderBook(g, st, null)).toMatch(/0 \/ 1/);
+    const html = renderClues(g, evaluate(g, st).clues, st);
+    expect(html).not.toMatch(/pompage/);
+    expect(splitExchanges(g, st, evaluate(g, st).clues).filter((r) => r.clue.type === 'exchanges')).toEqual([]);
   });
 
   it('a country line is checked as soon as its own count is met', () => {

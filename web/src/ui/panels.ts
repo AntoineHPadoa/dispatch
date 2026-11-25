@@ -266,7 +266,7 @@ export function orderClues<T extends { clue: Clue }>(reports: readonly T[]): T[]
 }
 
 /**
- * Day totals an exact inventory imposes (exports, imports, STEP pairs), as an "exchanges" clue:
+ * Day totals an exact inventory imposes (exports, imports; the STEP pairs are not published), as an "exchanges" clue:
  * they are market publications like the clues of the no-inventory grids, so they live in the clue
  * card, not in the order book. Null when the inventory imposes none, or the grid has its own clue.
  */
@@ -276,13 +276,13 @@ export function inventoryExchanges(grid: Grid): ExchangesClue | null {
   const clue: ExchangesClue = { type: 'exchanges' };
   if (inv.exports && Object.keys(inv.exports).length) clue.exports = { ...inv.exports };
   if (inv.imports && Object.keys(inv.imports).length) clue.imports = { ...inv.imports };
-  if (grid.step && inv.step !== undefined) clue.step = inv.step;
-  return clue.exports || clue.imports || clue.step !== undefined ? clue : null;
+  return clue.exports || clue.imports ? clue : null;
 }
 
 /**
  * Display lines of an exchanges clue, one per subject, each checked on its own: every country (its
- * exports and imports together), then the import total of all countries (`*`), then the STEP pairs.
+ * exports and imports together), then the import total of all countries (`*`). The STEP pairs are not a publication:
+ * the STEP plant shows them ("laid / N").
  */
 export function exchangeLines(clue: ExchangesClue): ExchangesClue[] {
   const ids: string[] = [];
@@ -294,8 +294,7 @@ export function exchangeLines(clue: ExchangesClue): ExchangesClue[] {
     if (clue.imports?.[id] !== undefined) line.imports = { [id]: clue.imports[id] };
     return line;
   });
-  if (clue.step !== undefined) lines.push({ type: 'exchanges', step: clue.step });
-  return lines.length ? lines : [clue];
+  return lines;
 }
 
 /** Number of clues the clue card lists: the grid's own (an exchanges clue by its lines), the exchanges lines of an exact inventory, the CO2 limit. */
@@ -311,7 +310,6 @@ function exchangesStatus(state: PlayState, clue: ExchangesClue): ClueStatus {
   const count = (got: number, want: number): ClueStatus => (got > want ? 'broken' : got === want ? 'ok' : 'open');
   for (const [k, v] of Object.entries(clue.exports ?? {})) st.push(count(totalExports(state, k), v));
   for (const [k, v] of Object.entries(clue.imports ?? {})) st.push(count(totalImports(state, k), v));
-  if (clue.step !== undefined) st.push(count(state.step.length, clue.step));
   return st.includes('broken') ? 'broken' : st.includes('open') ? 'open' : 'ok';
 }
 
