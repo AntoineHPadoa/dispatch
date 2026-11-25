@@ -1,0 +1,266 @@
+<title>Échanges : trois pistes</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+/* VOICE work: a design review for the game's author
+   IDEA the game's own screen (style A "Dragée"), redrawn three ways on one grid
+   PICTURE three boards side by side, same day, same moves, only the exchanges change
+   COLOUR the game's pastel pieces on its pink-white ground; import lavender leads
+   TYPE Outfit titles + Manrope text, as in the game
+   LAYOUT finding + diagnosis first, then three columns of mock-ups (stacked under 900px), comparison, recommendation */
+:root{color-scheme:light dark;--bg:light-dark(#fbf7f9,#1d1a20);--card:light-dark(#fff,#27232b);--ink:light-dark(#3b3340,#efe8f0);--soft:light-dark(#8f8593,#a99fae);--hair:light-dark(#efe5eb,#3a3440);--wash:light-dark(#f5ebf1,#322b35);--ok:#5f9e78;--bad:#d0566c;--acc:#a8577f;--iA:#d6c9f1;--iK:#8f78cf;--nA:#f7e2a0;--rA:#d3ebcb;--rK:#7fb874;--gA:#f8c8a9;--empty:light-dark(#fff,#2e2933);--emptyK:light-dark(#e6dce2,#4a4250)}
+:root[data-theme=light]{color-scheme:light}
+:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 Manrope,system-ui,sans-serif;overflow-x:clip;margin:0}
+.band{padding-block:clamp(24px,3.5vw,48px);padding-left:max(4vw,16px,env(safe-area-inset-left,0px));padding-right:max(4vw,16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1320px;margin:0 auto}
+h1,h2,h3{font-family:Outfit,Manrope,sans-serif;letter-spacing:-.02em;line-height:1.1;margin:0}
+h1{font-weight:300;font-size:clamp(2rem,4vw,2.8rem)}
+h2{font-weight:400;font-size:1.6rem;margin-bottom:12px}
+h3{font-weight:500;font-size:1.15rem}
+p{margin:.4em 0;max-width:72ch}
+.lead{font-size:1.05rem;max-width:80ch}
+.card{background:var(--card);border:1px solid var(--hair);border-radius:16px;padding:16px}
+.diag{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:16px}
+.diag .card b{font-family:Outfit;font-weight:500;font-size:1rem}
+.tag{display:inline-block;font-weight:700;font-size:.72rem;padding:1px 8px;border-radius:99px;margin-right:6px;vertical-align:1px}
+.bug{background:color-mix(in srgb,var(--bad) 18%,transparent);color:var(--bad)}
+.ux{background:color-mix(in srgb,var(--iK) 20%,transparent);color:var(--iK)}
+code{font-size:.85em;background:var(--wash);padding:1px 5px;border-radius:5px;overflow-wrap:anywhere}
+.vars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:8px}
+@media(max-width:1000px){.vars{grid-template-columns:minmax(0,1fr)}}
+.chosen{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;margin-top:12px}
+@media(max-width:900px){.chosen{grid-template-columns:minmax(0,1fr)}}
+.pubx{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:12px}
+@media(max-width:900px){.pubx{grid-template-columns:minmax(0,1fr)}}
+.pubcard .hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.pi{display:grid;grid-template-columns:34px 1fr;gap:12px;padding:8px 0;align-items:start}
+.pi .ic{width:34px;height:34px;border-radius:9px;background:var(--wash);display:grid;place-items:center;font-size:15px;color:var(--acc)}
+.pi .k{font-size:.7rem;font-weight:800;letter-spacing:.08em;color:var(--soft)}
+.pi .t{font-family:Outfit;font-size:1rem}
+.pi .t b{font-weight:600}
+.pi .sub{display:grid;grid-template-columns:1fr 20px;gap:8px;align-items:center;font-family:Outfit;font-size:1rem;padding:2px 0}
+.dot.bad{background:var(--bad);border-color:var(--bad)}
+.st{display:grid;grid-template-columns:64px 1fr;gap:10px;align-items:center;font-size:.86rem;padding:4px 0}
+.var{display:flex;flex-direction:column;gap:12px}
+.var .head{display:flex;gap:10px;align-items:baseline}
+.letter{font-family:Outfit;font-weight:600;font-size:1.6rem;color:var(--acc)}
+.cost{margin-left:auto;font-size:.78rem;font-weight:700;color:var(--soft);white-space:nowrap}
+.board svg{width:100%;height:auto;display:block}
+.book{font-size:.86rem}
+.book .row{display:grid;grid-template-columns:8.5em 1fr auto;gap:8px;align-items:center;padding:5px 8px;border-radius:10px}
+.book .row.sel{background:var(--wash);outline:1.5px solid color-mix(in srgb,var(--acc) 45%,transparent)}
+.book .sec{font-size:.72rem;font-weight:700;color:var(--soft);margin:8px 8px 2px}
+.book b{font-family:Outfit;font-weight:500;font-size:.95rem}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:2px}
+.cnt{color:var(--soft);font-variant-numeric:tabular-nums;white-space:nowrap}
+.cnt.ok{color:var(--ok);font-weight:700}
+ul.pc{margin:0;padding-left:1.1em;font-size:.88rem}
+ul.pc li{margin:.15em 0}
+.plus::marker{content:"+ ";color:var(--ok);font-weight:800}
+.minus::marker{content:"− ";color:var(--bad);font-weight:800}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--hair);vertical-align:top}
+th{font-family:Outfit;font-weight:500}
+td.best{background:color-mix(in srgb,var(--ok) 12%,transparent)}
+.pub{font-size:.9rem}
+.pub .l{display:flex;justify-content:space-between;gap:10px;padding:3px 0}
+.dot{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--emptyK);flex:none;margin-top:4px}
+.dot.ok{background:var(--ok);border-color:var(--ok)}
+.reco{border-left:4px solid var(--acc)}
+@media(max-width:600px){table{font-size:13px}th,td{padding:6px 4px}}
+</style>
+
+<section class="band"><div class="wrap">
+  <h1>Échanges : trois pistes</h1>
+  <p class="lead">Même journée, mêmes coups, trois façons de montrer les échanges. Exemple : Candidate 4 du lot <code>v3g5-temoin</code>, avec 3 voisins (Allemagne, Belgique, Royaume-Uni). Les exports publiés sont 1 vers DE, 3 vers BE et 1 vers UK ; les imports sont à volonté. Le joueur a posé 2 exports, à 12h vers DE et à 15h vers BE.</p>
+
+  <div class="diag">
+    <div class="card"><span class="tag bug">bug</span><b>Seul le 1er indice « échanges » est lu</b>
+      <p><code>allowedExchange</code> (<code>board.ts:155</code>) et la centrale Import (<code>panels.ts:37</code>) font un <code>clues.find</code>. Or les grilles du labo ont souvent 2 ou 3 indices <code>exchanges</code>, un par pays ou par sens.</p>
+      <p>Effets : Candidate 4 n'affiche que le compteur DE (BE et UK manquent). Candidate 5 n'en affiche aucun, car son 1er indice est « 1 pompage ». Candidate 1 montre « Import d'Espagne 0 / ∞ » alors que « Aucun bloc importé » est publié.</p></div>
+    <div class="card"><span class="tag ux">voulu</span><b>Un total tous pays n'a pas de compteur</b>
+      <p>« 4 blocs exportés », sans pays (Candidate 6), ne se répartit pas par ligne : la barre ne l'affiche nulle part.</p></div>
+    <div class="card"><span class="tag ux">ux</span><b>Le relevé d'import est loin de son pays</b>
+      <p>« Relevé de 0h : 1 case importée de Belgique » s'affiche sous l'axe des heures, avec les autres relevés, et non sur la ligne BE. Les flux, eux, sont bien sur la ligne du pays.</p></div>
+    <div class="card"><span class="tag ux">ux</span><b>La barre double les imports</b>
+      <p>L'import est déjà une centrale qu'on pose sur la grille. Il revient en « ←1 » dans la barre, sur la même case que les exports. Il y a donc deux endroits pour un seul objet, et un troisième pour l'export.</p></div>
+  </div>
+  <p style="margin-top:12px">Le bug est indépendant de la variante choisie : je propose de le corriger avec S2.3, qui fusionne déjà les indices par pays.</p>
+</div></section>
+
+<section class="band" style="padding-top:0"><div class="wrap">
+  <h2>A retenue, révisée (sans encoches)</h2>
+  <p>Les flèches deviennent verticales : ↑ pour un export (l'énergie quitte la grille par le haut), ↓ pour un import. Un total à volonté s'écrit ∞.</p>
+  <div class="chosen">
+    <div class="card board" id="chosen"></div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="card"><h3 style="margin-bottom:8px">États d'une case</h3><div id="states"></div></div>
+      <div id="chosenBook"></div>
+    </div>
+  </div>
+</div></section>
+
+<section class="band" style="padding-top:0"><div class="wrap">
+  <h2>Exemple chargé : 3 pays, 11 publications</h2>
+  <p>Ordre fixe : CO₂, échanges du jour, programmes par heure de début, puis le reste par heure. Toutes les pastilles de statut sont dans une seule colonne. Une journée fictive qui empile tous les cas d'échanges : totaux par pays et par sens, un total sans pays, des flux dans les deux sens, des relevés d'import. La colonne de droite dit où chaque indice se lit sur la grille dans la variante A révisée.</p>
+  <div class="pubx">
+    <div class="card pubcard" id="pubx"></div>
+    <div class="card"><h3 style="margin-bottom:8px">Où se lit chaque indice sur la grille</h3><div class="scroll"><table id="where"></table></div></div>
+  </div>
+</div></section>
+
+<section class="band" style="padding-top:0"><div class="wrap">
+  <details><summary style="cursor:pointer;font-family:Outfit;font-size:1.2rem">Les trois variantes de départ (A, B, C)</summary>
+  <div class="vars" id="vars"></div></details>
+</div></section>
+
+<section class="band" style="padding-top:0"><div class="wrap">
+  <div class="card" style="margin-bottom:16px">
+    <h3>Publications, commun aux trois (S2.3 + S2.4)</h3>
+    <div class="pub" style="margin-top:8px">
+      <div style="font-size:.72rem;font-weight:700;color:var(--soft)">Échanges du jour</div>
+      <div class="l"><span><b>Allemagne</b> : ↓ ∞ import, ↑ 1 export</span><span class="dot ok"></span></div>
+      <div class="l"><span><b>Belgique</b> : ↓ ∞ import, ↑ 3 exports</span><span class="dot"></span></div>
+      <div class="l"><span><b>Royaume-Uni</b> : ↓ ∞ import, ↑ 1 export</span><span class="dot"></span></div>
+      <p style="color:var(--soft);font-size:.82rem">La ligne « N pompages » disparaît (la centrale STEP affiche déjà « posées / N »). Un total sans pays reste sur une ligne à part : « 4 blocs exportés au total ».</p>
+    </div>
+  </div>
+  <h2>Comparaison</h2>
+  <div class="scroll"><table id="cmp"></table></div>
+</div></section>
+
+<section class="band" style="padding-top:0"><div class="wrap">
+  <div class="card reco">
+    <h3>Décision : A révisée</h3><p>En cours d'implémentation (s1) : flèches ↑ / ↓, ∞, sans encoches, un compteur pour chaque pays, le relevé d'import sur la ligne de son pays, et le correctif du 1er indice. Ci-dessous, mon analyse d'avant ta décision.</p><h3 style="margin-top:12px">Ma recommandation initiale : B</h3>
+    <p>La grille dessine déjà chaque export comme une case violette en pointillé au-dessus de la production, et le moteur stocke déjà les exports par pays et par créneau. B ne fait que montrer cette case comme une pièce posée. On place un export comme le reste : on choisit « Export → Allemagne » dans les centrales, puis on touche la colonne. Toute la barre disparaît, 3 lignes dans cet exemple. Les compteurs vont dans les centrales, là où l'œil compte déjà.</p>
+    <p>Coût : de l'interface seulement (gestes, panneau, bande des indices), sans toucher au moteur ni au format. Le risque est la lisibilité d'un flux d'import imposé à un créneau, qui n'a plus de ligne pays où vivre. Il devient une pastille « DE ←1 » dans la bande sous les heures, comme les relevés. Si ça te gêne, C est le repli : on garde une barre, mais pour les exports seulement.</p>
+    <p>A corrige les défauts sans rien simplifier. Je ne la retiens que si tu veux une passe courte.</p>
+  </div>
+</div></section>
+
+<script>
+{
+const COLS=8, LABELS=['0h','3h','6h','9h','12h','15h','18h','21h'];
+const FILL={N:'#f7e2a0',R:'#d3ebcb',I:'#d6c9f1',G:'#f8c8a9'};
+// bottom-up stacks; '.' = empty demand cell to fill; I:xx = import piece
+const stacks=[['I:BE','N','N','N'],['I:DE','N','N','N'],['R','N','N','N'],['R','R','R','N'],['R','R','R','R','R','R'],['R','R','.','.','.'],['.','.','.','.','.','.'],['.','.','.','.']];
+const EXP={4:'DE',5:'BE'};
+const NB=[{id:'DE',name:'Allemagne',want:1,got:1,imp:1},{id:'BE',name:'Belgique',want:3,got:1,imp:1},{id:'UK',name:'Royaume-Uni',want:1,got:0,imp:0}];
+const cell=44, X0=34, gap=3;
+function grid(opt){
+  const H=7; let s=''; const top=20;
+  const y=r=>top+(H-1-r)*cell;
+  for(let c=0;c<COLS;c++){
+    const st=stacks[c], x=X0+c*cell;
+    st.forEach((k,r)=>{
+      const px=x+gap/2, py=y(r)+gap/2, w=cell-gap;
+      if(k==='.'){s+=`<rect x="${px}" y="${py}" width="${w}" height="${w}" rx="7" fill="var(--empty)" stroke="var(--emptyK)"/>`;return;}
+      const p=k.startsWith('I')?'I':k;
+      s+=`<rect x="${px}" y="${py}" width="${w}" height="${w}" rx="7" fill="${FILL[p]}"/>`;
+      if(p==='R')s+=`<text x="${x+cell/2}" y="${py+w/2+5}" text-anchor="middle" font-size="13" font-weight="700" fill="${'#6f8f68'}">R</text>`;
+      if(p==='I')s+=`<text x="${x+cell/2}" y="${py+w/2+5}" text-anchor="middle" font-size="13" font-weight="800" fill="#5b4a8a">${k.slice(2)}</text>`;
+    });
+    if(EXP[c]){
+      const r=st.length, px=x+gap/2, py=y(r)+gap/2, w=cell-gap;
+      if(opt.exportPiece){
+        s+=`<rect x="${px}" y="${py}" width="${w}" height="${w}" rx="7" fill="color-mix(in srgb,#d6c9f1 55%,transparent)" stroke="#8f78cf" stroke-width="1.6" stroke-dasharray="4 3"/>`
+          +`<text x="${x+cell/2}" y="${py+w/2-1}" text-anchor="middle" font-size="11" font-weight="800" fill="#5b4a8a">${EXP[c]}</text>`
+          +`<text x="${x+cell/2}" y="${py+w/2+12}" text-anchor="middle" font-size="11" font-weight="800" fill="#5b4a8a">↑</text>`;
+      } else s+=`<rect x="${px}" y="${py}" width="${w}" height="${w}" rx="7" fill="none" stroke="#8f78cf" stroke-width="1.4" stroke-dasharray="4 3"/>`;
+    }
+    s+=`<text x="${x+cell/2}" y="${top+H*cell+16}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--soft)">${LABELS[c]}</text>`;
+  }
+  let yy=top+H*cell+26;
+  // slot-clue band
+  const pills=[{c:0,t:opt.relevéOnRow?null:'1',col:'#d6c9f1'},{c:2,t:'€ Nucl.',col:'#f7e2a0'},{c:7,t:'5',col:'#f7e2a0'}];
+  if(opt.flowInBand)pills.push({c:1,t:'DE ↓1',col:'#d6c9f1'});
+  pills.forEach(p=>{if(!p.t)return;const w=Math.max(22,p.t.length*7.2+12),cx=X0+p.c*cell+cell/2;
+    s+=`<rect x="${cx-w/2}" y="${yy}" width="${w}" height="20" rx="10" fill="${p.col}"/><text x="${cx}" y="${yy+14}" text-anchor="middle" font-size="11" font-weight="700" fill="#3b3340">${p.t}</text>`;});
+  yy+=32;
+  if(opt.rows){
+    NB.forEach(nb=>{
+      s+=`<text x="${X0-6}" y="${yy+18}" text-anchor="end" font-size="11" font-weight="800" fill="var(--soft)">${nb.id}</text>`;
+      for(let c=0;c<COLS;c++){
+        const px=X0+c*cell+gap/2,w=cell-gap; const e=EXP[c]===nb.id;
+        const flow=nb.id==='DE'&&c===1&&opt.rows!=='export', relev=opt.relevéOnRow&&nb.id==='BE'&&c===0;
+        const im=opt.rows==='both'&&((nb.id==='DE'&&c===1)||(nb.id==='BE'&&c===0));
+        const txt=e&&im?'↑1 ↓1':e?'↑1':im?'↓1':'';
+        s+=(txt?`<rect x="${px}" y="${yy}" width="${w}" height="${opt.rows==='export'?22:28}" rx="7" fill="#d6c9f1" stroke="${flow?'#3b3340':'#8f78cf'}" stroke-width="1.3"/>`
+               :`<rect x="${px}" y="${yy}" width="${w}" height="${opt.rows==='export'?22:28}" rx="7" fill="var(--empty)" stroke="var(--emptyK)" stroke-dasharray="3 3"/>`)
+          +(txt?`<text x="${px+w/2}" y="${yy+(opt.rows==='export'?15:18)}" text-anchor="middle" font-size="10.5" font-weight="700" fill="#3b3340">${txt}</text>`:'')
+          +(opt.notches?notch(px+w/2,yy+24,1,(e?1:0)+(im?1:0)>0?1:0):'');
+        if(relev)s+=`<rect x="${px+w-16}" y="${yy-8}" width="16" height="16" rx="8" fill="#d6c9f1" stroke="#8f78cf"/><text x="${px+w-8}" y="${yy+4}" text-anchor="middle" font-size="10" font-weight="800" fill="#3b3340">1</text>`;
+      }
+      const rh=opt.rows==='export'?22:28;
+      if(opt.counters){const ok=nb.got===nb.want;
+        s+=`<text x="${X0}" y="${yy+rh+13}" font-size="10.5" font-weight="800" fill="${ok?'var(--ok)':'var(--soft)'}">↑ ${nb.got}/${nb.want}</text><text x="${X0+40}" y="${yy+rh+13}" font-size="10.5" font-weight="800" fill="var(--soft)">↓ ${nb.imp}/∞</text><text x="${X0+82}" y="${yy+rh+13}" font-size="10.5" font-weight="600" fill="var(--soft)">${nb.name} · 1 bloc par créneau</text>`;
+        yy+=rh+24;} else {s+=`<text x="${X0}" y="${yy+rh+13}" font-size="10.5" font-weight="600" fill="var(--soft)">${nb.name}</text>`;yy+=rh+22;}
+    });
+  }
+  return `<svg viewBox="0 0 ${X0+COLS*cell+4} ${yy+4}" role="img" aria-label="Maquette de grille">${s}</svg>`;
+}
+function notch(cx,y,cap,used,bad){let o='';const d=7,w=cap*d+(cap-1)*3;for(let i=0;i<cap;i++){const x=cx-w/2+i*(d+3);o+=`<rect x="${x}" y="${y}" width="${d}" height="3" rx="1.5" fill="${i<used?(bad?'var(--bad)':'#5b4a8a'):'#c9bde6'}"/>`;}if(used>cap)o+=`<rect x="${cx+w/2+3}" y="${y}" width="${d}" height="3" rx="1.5" fill="var(--bad)"/>`;return o;}
+function stateCell(o){const w=52,h=30;let r=o.empty?`<rect x="1" y="1" width="${w}" height="${h}" rx="7" fill="var(--empty)" stroke="${o.pending?'#8f78cf':'var(--emptyK)'}" stroke-dasharray="3 3" stroke-width="1.2"/>`:`<rect x="1" y="1" width="${w}" height="${h}" rx="7" fill="#d6c9f1" stroke="${o.bad?'var(--bad)':o.clue?'#3b3340':'#8f78cf'}" stroke-width="${o.clue||o.bad?1.6:1.2}"/>`;
+ if(o.lock)r+=`<g transform="translate(5 9) scale(.5)" fill="none" stroke="#3b3340" stroke-width="2.4" stroke-linecap="round"><rect x="4" y="9" width="12" height="9" rx="2"/><path d="M7 9V6a3 3 0 0 1 6 0v3"/></g>`;
+ if(o.t)r+=`<text x="${w/2+1+(o.lock?5:0)}" y="${h/2+1}" text-anchor="middle" font-size="11" font-weight="700" fill="#3b3340">${o.t}</text>`;
+ return `<svg viewBox="0 0 ${w+16} ${h+2}" width="${w+16}" height="${h+2}">${r}</svg>`;}
+function book(v){
+  const imp=nb=>`<div class="row"><b>Import ${nb.name==='Allemagne'?"d'Allemagne":nb.name==='Belgique'?'de Belgique':'du Royaume-Uni'}</b><span><i class="sw" style="background:#d6c9f1"></i></span><span class="cnt">${nb.imp} / ∞</span></div>`;
+  let h=`<div class="row"><b>Nucléaire</b><span><i class="sw" style="background:#f7e2a0"></i><i class="sw" style="background:#f7e2a0"></i> 3–6</span><span class="cnt">10 / ∞</span></div>`+NB.map(imp).join('');
+  if(v==='B'){h+=`<div class="sec">Exports</div>`+NB.map((nb,i)=>`<div class="row${i===1?' sel':''}"><b>Vers ${nb.id==='DE'?"l'Allemagne":nb.id==='BE'?'la Belgique':'le Royaume-Uni'}</b><span><i class="sw" style="background:transparent;border:1.5px dashed #8f78cf"></i> ↑</span><span class="cnt${nb.got===nb.want?' ok':''}">${nb.got} / ${nb.want}</span></div>`).join('');}
+  if(v==='C'){h+=`<div class="sec">Exports (barre sous la grille)</div>`+NB.map(nb=>`<div class="row"><b>Vers ${nb.id}</b><span></span><span class="cnt${nb.got===nb.want?' ok':''}">${nb.got} / ${nb.want}</span></div>`).join('');}
+  return `<div class="card book"><h3 style="margin:0 0 6px">Centrales disponibles</h3>${h}</div>`;
+}
+const V=[
+ {k:'A',t:'Barre actuelle corrigée',cost:'petit · s1',opt:{rows:'both',counters:true,relevéOnRow:true},
+  pro:['Aucun nouveau geste à apprendre.','Toutes les lignes pays ont leur compteur, même un total à volonté.','Le relevé d\'import va sur la ligne de son pays.'],
+  con:['L\'import reste à deux endroits (grille et barre).','3 voisins = 3 lignes sous la grille, la page s\'allonge.','L\'export reste un objet à part, posé hors de la grille.']},
+ {k:'B',t:'Export posé sur la grille, plus de barre',cost:'moyen · s2',opt:{rows:null,exportPiece:true,flowInBand:true},
+  pro:['Tout ce qu\'on pose est dans les centrales, et tout ce qui est posé est sur la grille.','La case export existe déjà (pointillé violet) : elle devient visible et nommée.','Les compteurs sont dans les centrales, avec 3 lignes de moins sous la grille.','Moteur et format inchangés.'],
+  con:['Nouveau geste : choisir « Vers X » puis toucher la colonne, pour poser au-dessus de la production.','Un flux imposé devient une pastille « DE ←1 » sous les heures, sans ligne pays.','Plafond « 1 bloc par créneau » à montrer au survol ou dans la ligne de la centrale.']},
+ {k:'C',t:'Barre réduite aux exports',cost:'moyen · s2',opt:{rows:'export',counters:false,exportPiece:false},
+  pro:['L\'import n\'est plus qu\'une centrale.','Geste d\'export inchangé (toucher la case du pays).','Compteurs regroupés dans les centrales.'],
+  con:['La barre reste (une ligne par pays), seulement plus fine.','Compteur dans le panneau, mais l\'action dans la barre : l\'œil fait l\'aller-retour.','Le relevé et le flux d\'import restent sans ligne naturelle.']},
+];
+document.getElementById('chosen').innerHTML=grid({rows:'both',counters:true,relevéOnRow:true});
+const ST=[[{empty:1,cap:1,used:0},'Vide.'],[{t:'↑1',cap:1,used:1},'Export posé.'],[{t:'↓1',cap:1,used:1},'Import posé sur la grille, rappelé ici.'],[{t:'↑1 ↓1',cap:2,used:2},'Export et import au même créneau (plafond 2).'],[{t:'↑1',lock:1,clue:1,cap:1,used:1},'Export imposé par un flux : cadenas.'],[{empty:1,pending:1,t:'↓1',cap:1,used:0},'Import imposé par un flux, pas encore posé.'],[{t:'↑2',bad:1,cap:1,used:2},'Plafond du créneau dépassé : bord rouge.']];
+document.getElementById('states').innerHTML=ST.map(([o,l])=>`<div class="st">${stateCell(o)}<span>${l}</span></div>`).join('');
+document.getElementById('chosenBook').innerHTML=book('A');
+const N='<i class="sw" style="background:#f7e2a0"></i>';
+const PUB=[
+ ['☁','Limite CO₂','<b>6</b> points de CO₂ au plus.','ok'],
+ ['⇅','Échanges du jour',[['<b>Allemagne</b> : ↓ ∞ import, ↑ <b>1</b> export','ok'],['<b>Belgique</b> : ↓ <b>1</b> import, ↑ <b>3</b> exports',''],['<b>Royaume-Uni</b> : ↓ <b>0</b> import, ↑ ∞ export','ok'],['<b>2</b> blocs importés au total','']]],
+ ['▦','Programme',N+' <b>Un réacteur</b> tourne de <b>0h</b> à <b>12h</b>.','ok'],
+ ['ılı','Relevé','Relevé de <b>0h</b> : <b>1</b> case importée de Belgique.','ok'],
+ ['⇄','Flux','À <b>3h</b>, ↓ <b>1</b> bloc arrive d’Allemagne.','ok'],
+ ['◇','Prix','À <b>6h</b>, c’est '+N+' <b>le nucléaire</b> qui fixe le prix.','ok'],
+ ['⇄','Flux','À <b>12h</b>, ↑ <b>1</b> bloc part vers l’Allemagne.',''],
+ ['ılı','Relevé','Relevé de <b>15h</b> : aucune case importée d’Allemagne.',''],
+ ['⇄','Flux','À <b>18h</b>, ↑ aucun bloc ne part vers la Belgique.','bad'],
+ ['ılı','Relevé','Relevé de <b>21h</b> : <b>5</b> cases de '+N+' <b>nucléaire</b>.',''],
+];
+const dot=st=>`<span class="dot ${st}"></span>`;
+const nLines=PUB.reduce((a,p)=>a+(Array.isArray(p[2])?p[2].length:1),0), nOk=PUB.reduce((a,p)=>a+(Array.isArray(p[2])?p[2].filter(x=>x[1]==='ok').length:p[3]==='ok'?1:0),0);
+document.getElementById('pubx').innerHTML=`<div class="hd"><h3>Publications du marché</h3><span class="cnt">${nOk} sur ${nLines} vérifiés</span></div>`+PUB.map(([ic,k,t,st])=>`<div class="pi"><span class="ic">${ic}</span><div><div class="k">${k.toUpperCase()}</div>${(Array.isArray(t)?t:[[t,st]]).map(([x,s2])=>`<div class="sub"><span>${x}</span>${dot(s2)}</div>`).join('')}</div></div>`).join('');
+const WH=[['Limite CO₂','Bloc CO₂ sous les publications'],['Échanges, par pays','Compteur « ↑ x/y ↓ x/y » sous la ligne du pays'],['Échanges, total sans pays','Publications seulement (non réparti par ligne)'],['Programme','Trait sous la grille, sur sa plage'],['Flux d’import (3h, DE)','Case 3h de la ligne DE : pointillé violet « ↓1 » tant qu’il n’est pas posé'],['Flux d’export (18h, BE ; 12h, DE)','Case du créneau, cadenas : « ↑0 » ou « ↑1 » imposé'],['Relevé d’import (0h BE ; 15h DE)','Pastille sur la case du créneau, ligne du pays (déplacé depuis l’axe des heures)'],['Relevé de centrale (21h)','Pastille sous l’axe des heures (inchangé)'],['Prix (6h)','Pastille « € Nucl. » sous l’axe des heures (inchangé)']];
+document.getElementById('where').innerHTML='<thead><tr><th>Indice</th><th>Place sur la grille</th></tr></thead><tbody>'+WH.map(r=>`<tr><th>${r[0]}</th><td>${r[1]}</td></tr>`).join('')+'</tbody>';
+document.getElementById('vars').innerHTML=V.map(v=>`<div class="var"><div class="head"><span class="letter">${v.k}</span><h3>${v.t}</h3><span class="cost">${v.cost}</span></div>
+ <div class="card board">${grid(v.opt)}</div>${book(v.k)}
+ <div class="card"><ul class="pc">${v.pro.map(p=>`<li class="plus">${p}</li>`).join('')}${v.con.map(p=>`<li class="minus">${p}</li>`).join('')}</ul></div></div>`).join('');
+const rows=[
+ ['Où se pose un export','Case du pays dans la barre','Sur la grille, au-dessus de la production','Case du pays dans la barre'],
+ ['Où se lit l\'import','Grille + barre','Grille seule','Grille seule'],
+ ['Compteurs par pays','Sous chaque ligne de la barre','Centrales','Centrales'],
+ ['Flux imposé à un créneau','Sur la case du pays','Pastille sous les heures','Export : case de la barre ; import : pastille'],
+ ['Relevé d\'import','Sur la ligne du pays','Pastille sous les heures (inchangé)','Pastille sous les heures (inchangé)'],
+ ['Hauteur ajoutée, 3 voisins','3 lignes','0','3 lignes fines'],
+ ['Ce qui change dans le code','board.ts (barre), panels.ts','board.ts, gestes, panels.ts, bande des indices','board.ts, panels.ts'],
+];
+const best=[[],[2,3],[2,3],[1],[1],[2],[1]];
+document.getElementById('cmp').innerHTML=`<thead><tr><th></th><th>A</th><th>B</th><th>C</th></tr></thead><tbody>`+rows.map((r,i)=>`<tr>${r.map((c,j)=>j===0?`<th>${c}</th>`:`<td class="${best[i].includes(j)?'best':''}">${c}</td>`).join('')}</tr>`).join('')+`</tbody>`;
+}
+</script>
