@@ -918,7 +918,7 @@ describe('board card: fixed layout, price row, export rows', () => {
     const r = exportTap(g, initialState(g), 'DE', 2);
     expect(r.state).not.toBeNull();
     const after = draw(g, r.state!);
-    expect(after.svg).toContain('stroke="#8f78cf" stroke-width="1.6" stroke-dasharray="4 3"');
+    expect(after.svg).toMatch(/stroke="#8f78cf" stroke-width="2\.13" stroke-dasharray="5 3\.75"/); // 1.7 / 4 / 3 of a 40 px cell, at 50 px
     expect(viewBox(after.svg)).toBe(viewBox(before.svg));
   });
 
@@ -927,7 +927,7 @@ describe('board card: fixed layout, price row, export rows', () => {
     const st = initialState(g);
     const plain = renderBoard({ grid: g, state: st, ev: evaluate(g, st), style: 'A', cell: 50, stepMode: true, interactive: true });
     const pend = renderBoard({ grid: g, state: st, ev: evaluate(g, st), style: 'A', cell: 50, stepMode: true, interactive: true, stepPending: 3 });
-    const blue = (svg: string) => (svg.match(/stroke="#5d6f93" stroke-width="1.6" stroke-dasharray="4 3"/g) ?? []).length;
+    const blue = (svg: string) => (svg.match(/stroke="#5d6f93" stroke-width="2\.13" stroke-dasharray="5 3\.75"/g) ?? []).length;
     expect(blue(pend.svg)).toBe(blue(plain.svg) + 1);
     expect(viewBox(pend.svg)).toBe(viewBox(plain.svg));
   });
@@ -937,7 +937,7 @@ describe('board card: fixed layout, price row, export rows', () => {
     const st = { ...initialState(g), step: [{ pump: 3, turbine: 5 }] };
     const svg = renderBoard({ grid: g, state: st, ev: evaluate(g, st), style: 'A', cell: 50 }).svg;
     expect(svg).toContain('d="M' ) ;
-    expect(svg).toMatch(/stroke="#5d6f93" stroke-width="1.4"/);
+    expect(svg).toMatch(/stroke="#5d6f93" stroke-width="1\.75"\/>/);
     expect(svg).not.toContain('#6f9bd0" stroke-width="1.6"');
     const w = byId(8);
     expect(renderBoard({ grid: w, state: initialState(w), ev: evaluate(w, initialState(w)), style: 'A', cell: 50 }).svg).not.toMatch(/stroke-dasharray="6 3"/);
@@ -1170,16 +1170,16 @@ describe('board card: fixed layout, price row, export rows', () => {
     const H = plain.geo.rows;
     const a = arrows(plain.svg);
     expect(a.size).toBe(g.columns.length - 1);
-    for (const [c, cy] of a) expect(cy).toBe((H - top(st, c)) * 50 - 24 + 9);
+    for (const [c, cy] of a) expect(cy).toBe((H - top(st, c)) * 50 - 15 * 1.25);
     // Pending pump on slot 3: its arrow rises by one cell; the other arrows stay; the viewBox too.
     const pend = renderBoard({ grid: g, state: st, ev: evaluate(g, st), style: 'A', cell: 50, stepMode: true, interactive: true, stepPending: 3 });
     const b = arrows(pend.svg);
     expect(b.get(3)).toBe(a.get(3)! - 50);
     for (const [c, cy] of b) if (c > 3 && a.has(c)) expect(cy).toBe(a.get(c));
-    expect(b.get(g.columns.length - 1)).toBe((H - top(st, g.columns.length - 1)) * 50 - 15); // ▼ on the last slot
+    expect(b.get(g.columns.length - 1)).toBe((H - top(st, g.columns.length - 1)) * 50 - 15 * 1.25); // ▼ on the last slot
     expect(pend.svg.match(/viewBox="([^"]+)"/)![1]).toBe(plain.svg.match(/viewBox="([^"]+)"/)![1]);
     // Every arrow stays inside the card, whatever the column height.
-    for (const cy of [...a.values(), ...b.values()]) expect(cy - 11).toBeGreaterThanOrEqual(-plain.geo.topPad);
+    for (const cy of [...a.values(), ...b.values()]) expect(cy - 11 * 1.25).toBeGreaterThanOrEqual(-plain.geo.topPad);
   });
 
   it('two neighbours: one export row each, distinct positions, viewBox stable after an export', () => {

@@ -119,6 +119,16 @@ export function lockedExports(grid: Grid): Map<string, number> {
   return m;
 }
 
+/** Proportions of the screen board follow a 40 px cell (the design mock): sizes below are given for it. */
+const unit = (cell: number): number => cell / 40;
+/** STEP tags and arrows never shrink below their 40 px size. */
+export const stepUnit = (cell: number): number => Math.max(1, cell / 40);
+/** Hours under the axis (screen): 11.4 px for a 40 px cell, never under 10. */
+export const hoursSize = (cell: number): number => Math.max(10, cell * 0.285);
+/** Room the hours take beyond the 10.5 px of the paper style. */
+export const hoursExtra = (cell: number, style: BoardStyle): number => (style === 'A' ? Math.round(Math.max(0, hoursSize(cell) - 10.5) * 1.3) : 0);
+/** Text size of the exchange rows (arrows, numbers, counters): ~12 px at the usual desktop cell. */
+export const exchangeSize = (cell: number): number => Math.max(9, cell * 0.21);
 const STEP_BLUE = '#e7ebf3';
 
 /** Icons of the STEP tags in column `c`: ▲ for a pump, ▼ for a turbine, with the pair number when `numbered`. */
@@ -337,13 +347,14 @@ export function boardGeometry(grid: Grid, style: BoardStyle, cell: number, recor
   const tags = tagsPerColumn(grid, style);
   // Tags sit above what a column can reach (paper: above the rectangle), so nothing depends on the play state.
   const tops = style === 'B' ? res.map(() => rows) : colMax;
-  const need = Math.max(0, ...tags.map((k, c) => (k ? k * 22 + 6 - (rows - tops[c]!) * cell : 0)));
+  const ut = stepUnit(cell);
+  const need = Math.max(0, ...tags.map((k, c) => (k ? k * 22 * ut + 6 * ut - (rows - tops[c]!) * cell : 0)));
   const topPad = Math.max(8, need);
   const bandHeight = bandPlan(grid, cell, style, recordChips).height;
   // Export rows (one per neighbor); STEP: chosen from the order book on screen, a row of boxes on paper.
   const bottomRows = grid.neighbors.length + (grid.step && style === 'B' ? 1 : 0);
   const lead = boardLead(grid);
-  const botPad = 20 + (bandHeight ? bandHeight + 4 : 0) + bottomRows * neighborPitch(cell) + 4;
+  const botPad = 20 + hoursExtra(cell, style) + (bandHeight ? bandHeight + 4 : 0) + bottomRows * neighborPitch(cell) + 4;
   return {
     n, cell, rows, weather, topPad, botPad, width: lead + n * cell + 4, height: rows * cell + topPad + botPad,
     bottomRows, lead, reach: colMax, bandHeight,
@@ -435,6 +446,12 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   const rad = A ? Math.round(cell * 0.15) : 0;
   const id = ++uid;
   const fs = Math.max(7.5, Math.min(9.5, cell * 0.19));
+  const u = unit(cell);
+  const ut = stepUnit(cell);
+  const f2 = (v: number) => Number(v.toFixed(2));
+  /** Dashed outline of an exported, pumped, turbined or surplus block, in proportion of the cell. */
+  const dashed = (color: string, w = 1.7) => `stroke="${color}" stroke-width="${f2(Math.max(1.2, w * u))}" stroke-dasharray="${f2(4 * u)} ${f2(3 * u)}"`;
+  const es = exchangeSize(cell);
   const fill = (p: string) => (A ? PIECE_COLORS[colorKey(p)].a : PIECE_COLORS[colorKey(p)].b);
   const res = residual(grid);
   const raw = A ? rawSilhouette(grid, state) : res;
@@ -479,9 +496,9 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       const k = v < F ? 'F' : 'R';
       const { bx, by, w } = box(c, v);
       s += `<rect x="${bx}" y="${by}" width="${w}" height="${w}" rx="${rad}" fill="url(#h${k}${id})"${A ? '' : ` stroke="${ink}" stroke-width=".8"`}/>`;
-      s += T(bx + w / 2, by + w / 2 + cell * 0.07, k, { size: cell * 0.2, op: 0.55 });
+      s += T(bx + w / 2, by + w / 2 + cell * 0.125, k, { size: cell * 0.3, w: 700, color: k === 'R' ? '#6f8f68' : '#4f8f88' });
       if (v >= F + R - surplus) {
-        s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="none" stroke="${BAD}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
+        s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="none" ${dashed(BAD, 1.6)}/>`;
       }
     }
     const k = sil[c]!;
@@ -494,16 +511,16 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
         s += A ? `<rect x="${bx}" y="${by}" width="${w}" height="${w}" rx="${rad}" fill="#fff" stroke="#eadfe6"/>`
           : `<rect x="${bx}" y="${by}" width="${w}" height="${w}" fill="#fff" stroke="#c7d5d1" stroke-width=".8"/>`;
       } else if (kind === 'pump') {
-        s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" stroke="${STEP_INK}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
+        s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" ${dashed(STEP_INK)}/>`;
       } else {
         // Exported block: a dashed violet cell above the column.
-        s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" stroke="${PIECE_COLORS.I.ink}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
+        s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" ${dashed(PIECE_COLORS.I.ink)}/>`;
       }
     }
     // The pump chosen but not yet turbined: its dashed cell shows already.
     if (A && input.stepPending === c) {
       const { bx, by, w } = box(c, weather[c]! + k + turbines[c]!);
-      s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" stroke="${STEP_INK}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
+      s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" ${dashed(STEP_INK)}/>`;
     }
     // Paper: the grid is a full rectangle; cells above the demand line are plain white too.
     if (!A) {
@@ -515,8 +532,8 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     for (let t = 0; t < turbines[c]!; t++) {
       // Turbined block: the dashed slate cell of a pumped one, struck by a slate diagonal.
       const { bx, by, w } = box(c, weather[c]! + k + t);
-      s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="none" stroke="${STEP_INK}" stroke-width="1.6" stroke-dasharray="4 3"/>`
-        + `<path d="M${bx + 8} ${by + 8} L${bx + w - 8} ${by + w - 8}" stroke="${STEP_INK}" stroke-width="1.4"/>`;
+      s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="none" ${dashed(STEP_INK)}/>`
+        + `<path d="M${f2(bx + 6 * u)} ${f2(by + 6 * u)} L${f2(bx + w - 6 * u)} ${f2(by + w - 6 * u)}" stroke="${STEP_INK}" stroke-width="${f2(Math.max(1.2, 1.4 * u))}"/>`;
     }
   }
 
@@ -555,8 +572,8 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     const label = b.piece === 'I' ? b.country ?? '' : '';
     if (label) {
       const cx = x(b.col) + (b.len * cell) / 2;
-      const cy = y(b.row, h) + (h * cell) / 2 + cell * 0.08;
-      s += T(cx, cy, label, { size: cell * 0.22, op: b.piece === 'I' ? 0.8 : 0.55 });
+      const cy = y(b.row, h) + (h * cell) / 2 + cell * 0.11;
+      s += T(cx, cy, label, { size: cell * 0.3, w: 700, op: b.piece === 'I' ? 0.8 : 0.55 });
     }
   });
 
@@ -569,7 +586,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
         if (!hiddenAny.has(`${weather[c]! + r},${c}`)) continue;
         const { bx, by, w } = box(c, weather[c]! + r);
         const color = r >= k - pumps[c]! ? STEP_INK : PIECE_COLORS.I.ink;
-        s += `<rect class="covered" x="${bx + 2.5}" y="${by + 2.5}" width="${w - 5}" height="${w - 5}" rx="${Math.max(0, rad - 2)}" fill="none" stroke="${color}" stroke-width="1.6" stroke-dasharray="4 3" pointer-events="none"/>`;
+        s += `<rect class="covered" x="${bx + 2.5}" y="${by + 2.5}" width="${w - 5}" height="${w - 5}" rx="${Math.max(0, rad - 2)}" fill="none" ${dashed(color)} pointer-events="none"/>`;
       }
     }
   }
@@ -608,16 +625,16 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   // never moves when a column rises.
   const stack = grid.columns.map(() => 0);
   const topOf = (c: number) => weather[c]! + sil[c]! + turbines[c]! + (input.stepPending === c ? 1 : 0);
-  const tagY = (c: number) => y(topOf(c) - 1) - 24 - stack[c]!++ * 22;
+  const tagY = (c: number) => y(topOf(c) - 1) - 24 * ut - stack[c]!++ * 22 * ut;
   // A pill centred on `mid`, kept inside the board; `content(textCentre, left)` draws what is inside.
   // Its state mark sits on its top right corner.
   const W = n * cell;
   const minX = X0;
   const maxX = X0 + W;
   const pill = (mid: number, py: number, w: number, bg: string, stroke: string | null,
-    content: (tc: number, left: number) => string, st: ClueStatus | null) => {
+    content: (tc: number, left: number) => string, st: ClueStatus | null, ph = 18, sw?: number) => {
     const px = Math.min(Math.max(mid - w / 2, minX), Math.max(minX, maxX - w));
-    return `<rect x="${px}" y="${py}" width="${w}" height="18" rx="9" fill="${bg}"${stroke ? ` stroke="${stroke}"` : ''}/>${content(px + w / 2, px)}`
+    return `<rect x="${px}" y="${py}" width="${w}" height="${ph}" rx="${ph / 2}" fill="${bg}"${stroke ? ` stroke="${stroke}"${sw !== undefined ? ` stroke-width="${sw}"` : ''}` : ''}/>${content(px + w / 2, px)}`
       + clueMark(Math.min(px + w - 2, maxX - 4), py + 1, st);
   };
   if (A) {
@@ -630,24 +647,23 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     for (let c = 0; c < n; c++) {
       if (!pumps[c] && !turbines[c]) continue;
       const ty = tagY(c);
-      const full = cell >= 48;
       const labels = stepTagLabels(state.step, c, numbered);
       // Arrows only (▲ pump, ▼ turbine); several in one tag are joined.
       const label = labels.join('');
-      const w = full ? Math.max(cell - 8, label.length * 5 + 12) : Math.max(cell - 8, label.length * 5.5 + 8);
+      const w = Math.max(cell - 10 * ut, label.length * 5.5 * ut + 10 * ut);
       const mid = x(c) + cell / 2;
       const k = state.step.findIndex((q) => q.pump === c || q.turbine === c);
       const pair = k >= 0 ? state.step[k] : undefined;
       const act = input.interactive && pair
         ? ` data-act="step-tag" data-col="${c}" tabindex="0" role="button" aria-label="${esc(UI.stepTagLabel(columnLabel(grid, pair.pump), columnLabel(grid, pair.turbine)))}"` : '';
       tags += `<g class="tag step-tag${act ? ' act' : ''}"${act}>`
-        + pill(mid, ty, w, STEP_BLUE, STEP_INK, (tc) => T(tc, ty + 12.5, label, { size: full ? 8.5 : 9.5 }), null)
+        + pill(mid, ty, w, STEP_BLUE, STEP_INK, (tc) => T(tc, f2(ty + 13 * ut), label, { size: f2(10 * ut), color: STEP_INK }), null, f2(18 * ut), f2(1.1 * ut))
         + '</g>';
     }
     s += tags;
     if (input.stepMode) {
       // ▲ over each slot to choose the pump; once chosen, it stays filled and ▼ shows on later slots.
-      const r = Math.min(11, cell / 2 - 3);
+      const r = Math.min(11 * ut, cell / 2 - 3);
       const nextPair = state.step.length + 1;
       for (let c = 0; c < n; c++) {
         const chosen = pending === c;
@@ -655,21 +671,21 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
         if (!kind) continue;
         const ty = tagY(c);
         const cx = x(c) + cell / 2;
-        const cy = ty + 9;
+        const cy = ty + 9 * ut;
         const col = STEP_INK;
         const label = kind === 'up' ? (chosen ? UI.stepArrowChosen(columnLabel(grid, c)) : UI.stepArrowPump(columnLabel(grid, c))) : UI.stepArrowTurbine(columnLabel(grid, c));
         const act = input.interactive ? ` data-act="step-arrow" data-col="${c}" tabindex="0" role="button" aria-label="${esc(label)}"` : '';
         s += `<g class="step-arrow${act ? ' act' : ''}"${act}><circle cx="${cx}" cy="${cy}" r="${r}" fill="${chosen ? col : STEP_BLUE}" stroke="${col}" stroke-width="1.4"/>`
-          + T(cx, cy + 4, (kind === 'up' ? '▲' : '▼') + (numbered ? String(nextPair) : ''), { size: numbered ? 9 : 11, color: chosen ? '#fff' : col }) + '</g>';
+          + T(cx, cy + 4 * ut, (kind === 'up' ? '▲' : '▼') + (numbered ? String(nextPair) : ''), { size: (numbered ? 9 : 11) * ut, color: chosen ? '#fff' : col }) + '</g>';
       }
     }
   }
 
   // ---- column labels
-  grid.columns.forEach((label, c) => { s += T(x(c) + cell / 2, H * cell + 14 + plan.offset, label, { w: 600, size: Math.min(10.5, fs + 1), color: soft }); });
+  grid.columns.forEach((label, c) => { s += T(x(c) + cell / 2, H * cell + 14 + hoursExtra(cell, style) + plan.offset, label, { w: 600, size: A ? f2(hoursSize(cell)) : Math.min(10.5, fs + 1), color: soft }); });
 
   // ---- slot clues: one band under the hours, aligned on the columns (see bandPlan)
-  const bandY = H * cell + 20;
+  const bandY = H * cell + 20 + hoursExtra(cell, style);
   for (const it of plan.items) {
     const cl = grid.clues[it.index]!;
     const st = statusOf(it.index);
@@ -732,14 +748,14 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   const recordIndex = (country: string, c: number) => grid.clues.findIndex((cl) => cl.type === 'column' && cl.col === c && importRecordCountry(grid, cl) === country);
   const flowClue = (country: string, c: number) => grid.clues.findIndex((cl) => cl.type === 'flow' && cl.country === country && cl.col === c);
   const focus = input.interactive ? ' tabindex="0" role="button"' : '';
-  const baseY = H * cell + 24 + geo.bandHeight;
+  const baseY = H * cell + 24 + hoursExtra(cell, style) + geo.bandHeight;
   const rowH = exportCellHeight(cell);
   const pitch = rowH + 24;
   const cgap = 3;
   grid.neighbors.forEach((nb, k) => {
     const ry = baseY + k * pitch;
     const long = UI.neighborLine(nb.name, nb.cap);
-    s += T(X0 - 5, ry + rowH / 2 + 3.5, nb.id, { anchor: 'end', w: 800, size: 9.5, color: soft });
+    s += T(X0 - 5, ry + rowH / 2 + 3.5, nb.id, { anchor: 'end', w: 800, size: A ? Math.max(9.5, es * 0.9) : 9.5, color: soft });
     // Screen: the day's exchanges with this neighbor under the first block ("↑ 1/2  ↓ 1/∞"; a laid
     // or published flow counts; ∞ when the total is not published), green once met, red beyond, grey otherwise; then the caption.
     const capY = ry + rowH + 13;
@@ -752,13 +768,13 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       for (const [arrow, want, got] of flows) {
         const t = UI.exchangeCount(arrow, got, want);
         const color = want !== null && got > want ? BAD : want !== null && want > 0 && got === want ? OK : soft;
-        s += T(capX, capY, t, { anchor: 'start', w: 800, size: 9, color });
-        capX += t.length * 5.4 + 8;
+        s += T(capX, capY, t, { anchor: 'start', w: 800, size: f2(es), color });
+        capX += t.length * es * 0.6 + 8;
       }
     }
     // The long caption only where it fits beside the counts, else the neighbor's name alone.
-    const cap = W >= 240 && capX - X0 + long.length * 4.9 <= W ? long : nb.name;
-    s += T(capX, capY, cap, { anchor: 'start', w: 700, size: 9, color: soft });
+    const cap = W >= 240 && capX - X0 + long.length * es * 0.54 <= W ? long : nb.name;
+    s += T(capX, capY, cap, { anchor: 'start', w: 700, size: A ? f2(es) : 9, color: soft });
     for (let c = 0; c < n; c++) {
       const px = x(c) + cgap / 2;
       const w = cell - cgap;
@@ -788,10 +804,10 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       if (!e && !im) {
         const pending = flow && flow.type === 'flow' && flow.dir === 'import' && flow.value > 0;
         s += `<rect x="${px}" y="${yy}" width="${w}" height="${rowH}" rx="${rad}" fill="#fbf7f9" stroke="${pending ? PIECE_COLORS.I.ink : '#dccfd7'}" stroke-width="1.2" stroke-dasharray="3 3"/>`
-          + (text ? T(tx, yy + rowH / 2 + 3.5, text, { w: 700, size: 9, color: ink }) : '');
+          + (text ? T(tx, yy + rowH / 2 + es * 0.37, text, { w: 700, size: f2(es), color: ink }) : '');
       } else {
         s += `<rect x="${px}" y="${yy}" width="${w}" height="${rowH}" rx="${rad}" fill="${PIECE_COLORS.I.a}" stroke="${fi >= 0 ? ink : PIECE_COLORS.I.ink}" stroke-width="${fi >= 0 ? 1.5 : 1.2}"/>`
-          + T(tx + (isLocked ? 5 : 0), yy + rowH / 2 + 3.5, text, { size: 9 });
+          + T(tx + (isLocked ? 5 : 0), yy + rowH / 2 + es * 0.37, text, { size: f2(es) });
       }
       // A published export is fixed: padlock inside its cell. A published import only outlines
       // the cell (the player still exports there freely).
