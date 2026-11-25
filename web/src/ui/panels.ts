@@ -5,11 +5,11 @@
  *   width; optional heights are dashed rows above the filled first row, optional widths a dashed tail.
  * - Paper (style B): every bar drawn, shape hints under the names, no usage.
  */
-import { ANY_COUNTRY, IMPORT_PIECE, PIECE_IDS, publishedStepPairs, type Clue, type ExchangesClue, type Grid, type PieceId } from '../model/grid';
+import { ANY_COUNTRY, IMPORT_PIECE, PIECE_IDS, mergeExchanges, publishedStepPairs, type Clue, type ExchangesClue, type Grid, type PieceId } from '../model/grid';
 import {
   clueText, co2PerCell, pieceCells, totalExports, totalImports, type ClueReport, type ClueStatus, type PlayState,
 } from '../engine';
-import { CLUE_KIND, PIECE_WORDS, UI, countryFrom, pieceHint } from '../i18n/fr';
+import { CLUE_KIND, PIECE_WORDS, UI, countryFrom, exchangeLineText, pieceHint } from '../i18n/fr';
 import { CLUE_ICON, PIECE_COLORS, colorKey, esc, icon } from './palette';
 import { cellCount, isRamp, profile, shapeKind, type ShapeKind } from '../model/shapes';
 
@@ -34,7 +34,7 @@ export { publishedStepPairs } from '../model/grid';
 /** True when no block can come from `country` today: a line without capacity, or a published zero total. */
 function importRuledOut(grid: Grid, country: string): boolean {
   if ((grid.neighbors.find((nb) => nb.id === country)?.cap ?? 0) <= 0) return true;
-  const imports = grid.clues.find((c): c is ExchangesClue => c.type === 'exchanges')?.imports;
+  const imports = mergeExchanges(grid.clues)?.imports;
   return imports !== undefined && (imports[ANY_COUNTRY] === 0 || imports[country] === 0);
 }
 
@@ -215,6 +215,9 @@ export function renderBook(grid: Grid, state: PlayState, selected: PieceKey | nu
   return `<div class="book">${rows.join('')}</div>`;
 }
 
+/** Hours ("8h") and counts of an escaped text, highlighted as slot values. */
+const slotValues = (html: string): string => html.replace(/(^|[\s(])(\d+h|\d+)(?=[\s,.)]|$)/g, (_m, pre: string, v: string) => `${pre}<span class="slot">${v}</span>`);
+
 /** Clue text with plant chips and slot values highlighted (text itself comes from fr.ts). */
 export function richClueText(grid: Grid, clue: Clue, text = clueText(grid, clue)): string {
   let html = esc(text);
@@ -237,8 +240,7 @@ export function richClueText(grid: Grid, clue: Clue, text = clueText(grid, clue)
     }
   }
   // Slot values: hours ("8h") and counts.
-  html = html.replace(/(^|[\s(])(\d+h|\d+)(?=[\s,.)]|$)/g, (_m, pre: string, v: string) => `${pre}<span class="slot">${v}</span>`);
-  return html;
+  return slotValues(html);
 }
 
 /** True when the clue is drawn on the grid (slot clues); day clues go to the list. */
@@ -299,9 +301,9 @@ export function exchangeLines(clue: ExchangesClue): ExchangesClue[] {
 
 /** Number of clues the clue card lists: the grid's own (an exchanges clue by its lines), the exchanges lines of an exact inventory, the CO2 limit. */
 export function shownClueCount(grid: Grid): number {
-  const lines = (c: Clue) => (c.type === 'exchanges' ? exchangeLines(c).length : 1);
-  const inv = inventoryExchanges(grid);
-  return grid.clues.reduce((n, c) => n + lines(c), 0) + (inv ? lines(inv) : 0) + (typeof grid.co2_cap === 'number' ? 1 : 0);
+  const merged = mergeExchanges(grid.clues) ?? inventoryExchanges(grid);
+  return grid.clues.filter((c) => c.type !== 'exchanges').length + (merged ? exchangeLines(merged).length : 0)
+    + (typeof grid.co2_cap === 'number' ? 1 : 0);
 }
 
 /** Status of an exchanges clue on a board: every total met (ok), one exceeded (broken), else open. */
@@ -320,10 +322,21 @@ export function withInventoryExchanges(grid: Grid, state: PlayState, reports: re
   return [...reports, { clue, text: clueText(grid, clue), status: exchangesStatus(state, clue) }];
 }
 
-/** Clue reports with every exchanges clue split into its display lines, each with its own status. */
+/**
+ * Clue reports with the exchanges clues (a grid may publish several) merged into one publication,
+ * split into its display lines (one per country, then the all-country totals), each with its own status.
+ * The lines sit where the first exchanges clue was.
+ */
 export function splitExchanges(grid: Grid, state: PlayState, reports: readonly ClueReport[]): ClueReport[] {
-  return reports.flatMap((r) => (r.clue.type !== 'exchanges' ? [r]
-    : exchangeLines(r.clue).map((line) => ({ clue: line, text: clueText(grid, line), status: exchangesStatus(state, line) }))));
+  const merged = mergeExchanges(reports.map((r) => r.clue));
+  const lines = merged ? exchangeLines(merged).map((line) => ({ clue: line, text: exchangeLineText(grid, line), status: exchangesStatus(state, line) })) : [];
+  const first = reports.findIndex((r) => r.clue.type === 'exchanges');
+  const out: ClueReport[] = [];
+  reports.forEach((r, i) => {
+    if (i === first) out.push(...lines);
+    if (r.clue.type !== 'exchanges') out.push(r);
+  });
+  return out;
 }
 
 /** CO2 points of the board, by plant ('I' for every import). */
@@ -364,6 +377,13 @@ export function co2ClueItem(grid: Grid, state: PlayState, full: boolean): { html
   return { html, status };
 }
 
+/** The day's exchanges as one publication: a line per country, each with its own status. */
+function exchangesItem(lines: readonly ClueReport[]): string {
+  const rows = lines.map((r) => `<span class="xline"><span class="txt">${slotValues(esc(r.text))}</span>${stateDot(r.status)}</span>`).join('');
+  return `<li class="clue clue-exchanges"><span class="ico">${icon(CLUE_ICON.exchanges ?? 'price')}</span>`
+    + `<span class="xlines"><span class="kind">${esc(CLUE_KIND.exchanges)}</span>${rows}</span></li>`;
+}
+
 /** Clue card: the CO2 limit and every clue in text, day clues first, then slot clues in time order. `full`: no cell left to cover. */
 export function renderClues(grid: Grid, boardReports: readonly ClueReport[], state: PlayState, full = false): string {
   const reports = splitExchanges(grid, state, withInventoryExchanges(grid, state, boardReports));
@@ -372,7 +392,15 @@ export function renderClues(grid: Grid, boardReports: readonly ClueReport[], sta
   const ok = reports.filter((r) => r.status === 'ok').length + (co2?.status === 'ok' ? 1 : 0);
   const n = reports.length + (co2 ? 1 : 0);
   const title = UI.cluesTitle;
-  const list = `<ul class="clues">${co2?.html ?? ''}${orderClues(reports).map((r) => clueItem(grid, r.clue, r.status, false, grid.clues.indexOf(r.clue))).join('')}</ul>`;
+  const exch = reports.filter((r) => r.clue.type === 'exchanges');
+  let grouped = false;
+  const items = orderClues(reports).map((r) => {
+    if (r.clue.type !== 'exchanges') return clueItem(grid, r.clue, r.status, false, grid.clues.indexOf(r.clue));
+    if (grouped) return '';
+    grouped = true;
+    return exchangesItem(exch);
+  }).join('');
+  const list = `<ul class="clues">${co2?.html ?? ''}${items}</ul>`;
   return `<section class="card" aria-label="${esc(title)}"><h2 class="ct">${esc(title)} <small>${esc(UI.cluesChecked(ok, n))}</small></h2>${list}</section>`;
 }
 

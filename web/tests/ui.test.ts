@@ -14,7 +14,7 @@ import {
   ProgressStore, STORAGE_KEY, emptyProgress, isPlayState, nextGrid, parseProgress,
   playOrder, recordState, statusOf, gridFingerprint, savedBoard, type KeyValueStore,
 } from '../src/ui/progress';
-import { bandPlan, boardLead, recordLayout, boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard, stepTagLabels } from '../src/ui/board';
+import { allowedExchange, bandPlan, boardLead, recordLayout, boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard, stepTagLabels } from '../src/ui/board';
 import {
   applyLockedExports, boardMessage, bulletinTag, displayTitle, exportTap, initialState, isInitialState, newlyBroken, nextExportValue,
   poseMessage,
@@ -837,7 +837,9 @@ describe('clue card (every clue in text, time order)', () => {
       if (!grid.clues.length) continue;
       const ev = evaluate(grid, newGame(grid));
       const html = renderClues(grid, ev.clues, newGame(grid));
-      expect(html.match(/<li class="clue"/g)?.length ?? 0).toBe(shownClueCount(grid));
+      // The exchanges are one publication of several lines: count items, then the lines beyond the first.
+      const lines = html.match(/class="xline"/g)?.length ?? 0;
+      expect((html.match(/<li class="clue/g)?.length ?? 0) + Math.max(0, lines - 1)).toBe(shownClueCount(grid));
       expect(html).not.toContain('<details');
     }
   });
@@ -1203,9 +1205,10 @@ describe('order book without exchanges line; exchanges in the clue card', () => 
     const g6 = byId(6);
     const html = renderClues(g6, evaluate(g6, newGame(g6)).clues, newGame(g6));
     expect(html).not.toContain('Aujourd’hui');
-    expect(html).toContain('exporté');
-    // The exchanges line is the first publication.
-    expect(html.indexOf('exporté')).toBeLessThan(html.indexOf('class="clue"', html.indexOf('class="clue"') + 1));
+    expect(html).toContain('↑');
+    // The exchanges publication comes first.
+    const other = html.indexOf('data-clue="');
+    if (other >= 0) expect(html.indexOf('clue-exchanges')).toBeLessThan(other);
   });
 
   it('the STEP pairs are not in the exchanges line; the STEP plant still counts them; grids without inventory or exports have none', () => {
@@ -1257,6 +1260,18 @@ describe('exchanges: one line per country, each checked on its own', () => {
     expect(splitExchanges(g, st, evaluate(g, st).clues).filter((r) => r.clue.type === 'exchanges')).toEqual([]);
   });
 
+  it('several exchanges clues are merged: one per country or per direction all count', () => {
+    const g = byId(10);
+    g.clues = [...g.clues.filter((c) => c.type !== 'exchanges'),
+      { type: 'exchanges', exports: { DE: 1 } }, { type: 'exchanges', imports: { DE: 0 } }];
+    expect(allowedExchange(g, 'DE', 'exports')).toBe(1);
+    expect(allowedExchange(g, 'DE', 'imports')).toBe(0);
+    const st = newGame(g);
+    const lines = splitExchanges(g, st, evaluate(g, st).clues).filter((r) => r.clue.type === 'exchanges');
+    expect(lines.map((r) => r.text)).toEqual(['Allemagne : ↓ 0 import, ↑ 1 export']);
+    expect(renderClues(g, evaluate(g, st).clues, st).match(/Échanges du jour/g)).toHaveLength(1);
+  });
+
   it('a country line is checked as soon as its own count is met', () => {
     const g = byId(10);
     g.neighbors = [...g.neighbors, { id: 'GB', name: 'Royaume-Uni', cap: 1, co2: 0 }];
@@ -1265,12 +1280,12 @@ describe('exchanges: one line per country, each checked on its own', () => {
     const st = { ...s, exports: { ...s.exports, GB: g.columns.map((_, c) => (c === 0 ? 1 : 0)) } };
     const lines = splitExchanges(g, st, evaluate(g, st).clues).filter((r) => r.clue.type === 'exchanges');
     expect(lines.map((r) => [r.text, r.status])).toEqual([
-      ['2 blocs exportés vers l’Allemagne.', 'open'],
-      ['1 bloc exporté vers le Royaume-Uni.', 'ok'],
-      ['2 blocs importés, tous pays confondus.', 'open'],
+      ['Allemagne : ↓ ∞ import, ↑ 2 exports', 'open'],
+      ['Royaume-Uni : ↓ ∞ import, ↑ 1 export', 'ok'],
+      ['2 blocs importés au total', 'open'],
     ]);
     expect(shownClueCount(g)).toBe(g.clues.length + 2);
-    expect(renderClues(g, evaluate(g, st).clues, st)).toMatch(/Royaume-Uni\.<\/span><\/span><span class="state ok"/);
+    expect(renderClues(g, evaluate(g, st).clues, st)).toMatch(/Royaume-Uni : ↓ ∞ import, ↑ <span class="slot">1<\/span> export<\/span><span class="state ok"/);
   });
 });
 

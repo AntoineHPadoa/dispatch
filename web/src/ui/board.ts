@@ -23,7 +23,7 @@
  * - Rectangles are drawn as rects; a coal ramp as one outline following its profile (rounded
  *   corners on screen, concave ones included; square on paper).
  */
-import { ANY_COUNTRY, type Grid, type PieceId, type Placement } from '../model/grid';
+import { ANY_COUNTRY, mergeExchanges, type Grid, type PieceId, type Placement } from '../model/grid';
 import { cellsOf, isRamp, kindOf, profileOf, topIn } from '../model/shapes';
 import {
   barHeight, exportsAt, importsAt, rawSilhouette, residual, totalExports, totalImports, type Evaluation, type PlayState, type ClueStatus,
@@ -152,9 +152,7 @@ export interface BoardGeometry {
 export function allowedExchange(grid: Grid, country: string, dir: 'exports' | 'imports'): number | null {
   const inv = grid.inventory;
   if (inv.level === 'exact') return inv[dir]?.[ANY_COUNTRY] !== undefined ? null : inv[dir]?.[country] ?? 0;
-  const ex = grid.clues.find((c) => c.type === 'exchanges');
-  const m = ex && ex.type === 'exchanges' ? ex[dir] : undefined;
-  return m?.[country] ?? null;
+  return mergeExchanges(grid.clues)?.[dir]?.[country] ?? null;
 }
 
 /** Width of the left gutter of the export rows: the neighbor id ("DE") stands there. */
