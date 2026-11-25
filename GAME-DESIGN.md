@@ -129,30 +129,30 @@ Chaque technique a un nom, un niveau et une phrase pour le joueur : elles serven
 
 | Niveau | Technique | Phrase pour le joueur |
 |---|---|---|
-| 1 | Pas de place | Une barre ne peut ni dépasser de la silhouette ni chevaucher une barre déjà posée. |
-| 1 | Carnet épuisé | Quand toutes les cases d'une pièce sont trouvées, elle ne va nulle part ailleurs ; une barre plus longue que ce qu'il reste ne passe plus. |
-| 1 | Le prix plafonne la colonne | Sous un prix publié, aucune case n'est plus chère que ce prix. |
-| 1 | Le relevé compte les cases | Un relevé atteint interdit d'autres cases de cette pièce ; s'il reste juste assez de cases possibles, elles y passent toutes. Vaut aussi pour les totaux du jour (« Échanges du jour »). |
+| 1 | Pas de place | Un groupe ne peut ni dépasser de la silhouette ni chevaucher un groupe déjà posé. |
+| 1 | Carnet épuisé | Quand tous les blocs d'une centrale sont trouvés, elle ne va nulle part ailleurs ; un groupe plus long que ce qu'il reste ne passe plus. |
+| 1 | Le prix plafonne la colonne | Sous un prix publié, aucun bloc n'est plus cher que ce prix. |
+| 1 | Le relevé compte les blocs | Un relevé atteint interdit d'autres cases de cette pièce ; s'il reste juste assez de cases possibles, elles y passent toutes. Vaut aussi pour les totaux du jour (« Échanges du jour »). |
 | 1 | Flux publié | Un flux publié fixe l'export ou l'import d'un créneau avec un pays. |
-| 1 | Une seule barre pour cette case | Une case qu'une seule barre peut encore couvrir reçoit cette barre. |
-| 1 | La barre qui ne tient qu'à un endroit | Une barre du carnet qui n'a plus qu'une place possible y va. |
-| 1 | Programme publié | La barre annoncée par un programme va sur la seule ligne où elle tient. |
-| 1 | Durée de marche | La barre dont on connaît la durée de marche va à la seule place où cette durée tient. |
-| 1 | La silhouette suit les barres | Un export ou un pompage qui laisserait une case impossible à couvrir est exclu. |
-| 1 | Cases interchangeables | Quand on connaît le nombre de cases de chaque pièce dans une colonne, l'ordre ne compte pas. |
-| 1 | Le plateau barre la ligne du dessus | Au-dessus de sa base, la barre à paliers occupe aussi la ligne suivante sur tout son plateau : aucun ruban de cette ligne ne la traverse. |
-| 1 | Le bord appelle une case | La case au-dessus d'un bord est fermée côté plateau : seule une pièce d'une case, ou une barre qui s'arrête pile là, peut la couvrir. |
-| 2 | La case la plus chère | Un prix publié exige au moins une case de cette centrale dans la colonne : s'il n'y a qu'une place possible, c'est elle. |
-| 2 | Le creux coupe le ruban | Chaque ligne se découpe en rubans entre les creux : une barre qui laisserait un bout impossible à remplir est exclue. |
-| 2 | Carnet juste | S'il reste exactement autant de cases possibles que de cases à poser pour une pièce, toutes sont à elle. |
-| 2 | Compter la colonne | Une colonne a autant de cases que sa hauteur : connaissant les autres pièces, on déduit celle qui reste. |
-| 2 | Plafond carbone | Une barre qui ferait dépasser le plafond CO₂ est exclue. |
-| 2 | Une case seule est un bord | Une seule case à paliers dans une colonne, c'est un bord : la barre continue à deux cases d'un côté et s'arrête de l'autre. |
-| 3 | Répartition du carnet | Les barres doivent toutes trouver une ligne : un découpage qui empêche les autres de se placer est exclu. |
-| 3 | Deux bords se relaient | Deux cases à paliers sans plateau autour : une barre s'arrête et une autre démarre sur son bord. |
+| 1 | Un seul groupe pour ce bloc | Un bloc qu'un seul groupe peut encore couvrir reçoit ce groupe. |
+| 1 | Le groupe qui ne tient qu'à un endroit | Un groupe du carnet d'ordres qui n'a plus qu'une place possible y va. |
+| 1 | Programme publié | Le groupe annoncé par un programme va sur la seule ligne où il tient. |
+| 1 | Durée de marche | Le groupe dont on connaît la durée de marche va à la seule place où cette durée tient. |
+| 1 | La silhouette suit les groupes | Un export ou un pompage qui laisserait un bloc impossible à couvrir est exclu. |
+| 1 | Blocs interchangeables | Quand on connaît le nombre de blocs de chaque centrale dans une colonne, l'ordre ne compte pas. |
+| 1 | Le plateau barre la ligne du dessus | Au-dessus de sa base, le groupe à paliers occupe aussi la ligne suivante sur tout son plateau : aucun ruban de cette ligne ne le traverse. |
+| 1 | Le bord appelle un bloc | Le bloc au-dessus d'un bord est fermé côté plateau : seul un groupe d'un bloc, ou un groupe qui s'arrête pile là, peut le couvrir. |
+| 2 | Le bloc le plus cher | Un prix publié exige au moins un bloc de cette centrale dans la colonne : s'il n'y a qu'une place possible, c'est elle. |
+| 2 | Le creux coupe le ruban | Chaque ligne se découpe en rubans entre les creux : un groupe qui laisserait un bout impossible à remplir est exclu. |
+| 2 | Carnet juste | S'il reste exactement autant de blocs possibles que de blocs à poser pour une centrale, tous sont à elle. |
+| 2 | Compter la colonne | Une colonne a autant de blocs que sa hauteur : connaissant les autres centrales, on déduit celle qui reste. |
+| 2 | Plafond carbone | Un groupe qui ferait dépasser le plafond CO₂ est exclu. |
+| 2 | Un bloc seul est un bord | Un seul bloc à paliers dans une colonne, c'est un bord : le groupe continue sur deux blocs d'un côté et s'arrête de l'autre. |
+| 3 | Répartition du carnet | Les groupes doivent tous trouver une ligne : un découpage qui empêche les autres de se placer est exclu. |
+| 3 | Deux bords se relaient | Deux blocs à paliers sans plateau autour : un groupe s'arrête et un autre démarre sur son bord. |
 | 4 | Hypothèse réfutée | Si un choix mène à une impasse par les règles simples, il est exclu (une seule hypothèse, jamais imbriquée). |
 
-Les quatre techniques de rampe (trapèze, `docs/next/rampe.md` §2) ne servent qu'aux grilles dont le charbon est une rampe ; leurs niveaux sont provisoires. « Le plateau barre la ligne du dessus » et « Le bord appelle une case » sont « Pas de place » et « Une seule barre pour cette case » nommées pour une rampe : elles enseignent le geste, mais ne rendent pas une grille plus difficile. Une brique météo est une case occupée dès le départ : « Pas de place » et « Le creux coupe le ruban » la traitent comme une barre déjà posée, sans technique à part. « Pas de place » regarde aussi plusieurs colonnes à la fois : une barre qui demanderait plus d'exports (ou de pompages) que le jour n'en publie est exclue. « Cases interchangeables » ne compte que les cases sûres et les relevés de la colonne : quand il faut la hauteur de la colonne, c'est « Compter la colonne ». Les noms et phrases sont les mêmes dans `web/src/i18n/fr.ts` et dans les traces du solveur (testé).
+Les quatre techniques de rampe (trapèze, `docs/next/rampe.md` §2) ne servent qu'aux grilles dont le charbon est une rampe ; leurs niveaux sont provisoires. « Le plateau barre la ligne du dessus » et « Le bord appelle un bloc » sont « Pas de place » et « Un seul groupe pour ce bloc » nommées pour une rampe : elles enseignent le geste, mais ne rendent pas une grille plus difficile. Une brique météo est une case occupée dès le départ : « Pas de place » et « Le creux coupe le ruban » la traitent comme une barre déjà posée, sans technique à part. « Pas de place » regarde aussi plusieurs colonnes à la fois : une barre qui demanderait plus d'exports (ou de pompages) que le jour n'en publie est exclue. « Blocs interchangeables » ne compte que les cases sûres et les relevés de la colonne : quand il faut la hauteur de la colonne, c'est « Compter la colonne ». Les noms et phrases sont les mêmes dans `web/src/i18n/fr.ts` et dans les traces du solveur (testé).
 
 **Ce qui crée la difficulté** (constaté sur les tirages) : des choix réels, c'est-à-dire un voisin, un STEP ou l'absence d'inventaire. Sans voisin et avec un inventaire exact, les grilles sont toujours faciles.
 
@@ -181,7 +181,7 @@ Le générateur (`solver/`, `dispatch_solver.generate`) produit des **lots** de 
    - `step` : une paire pompage → turbinage, quand une étape fixe l'option STEP ;
    - `tall` : une barre de charbon posée sur 2 lignes ; `ramp` : une barre de charbon à paliers dont la déduction tranche la place ou la largeur (pas quand un indice la donne : barre engagée, programme qui la nomme, ou étape qui lit un indice, « Programme publié » ou « Durée de marche ») ;
    - `carbon` : le plafond CO₂ exclut au moins une pose ; `stock` : le stock du barrage (carnet libre) est épuisé et une étape « Carnet épuisé » l'applique ;
-   - `price` : un prix qui force sa centrale dans une seule case (« La case la plus chère »), par indice.
+   - `price` : un prix qui force sa centrale dans une seule case (« Le bloc le plus cher »), par indice.
 
    Mesures seules, sans filtre : **compacité K** = poids des décisions / pièces posées (barres et imports de la référence), poids 3 pour STEP et CO₂, 2 pour pièce haute et rampe, 1 pour échange, stock et prix ; **mécaniques globales couplées** (celles que compte la notation A, §9) ; **prix de demande** (D7) : indices `price` sur une centrale chère (C, G, T) dans une colonne d'export, le prix qui fait naître une demande du tutoriel 6 ; **règle qui pose chaque rampe** (`ramp_settled_by`, technique de rampe ou générale) ; **remplissage** (`docs/next/v3-criteres-m23.md` §2) : cases à poser (`cells`), lignes pleines de nucléaire (`full_n_rows`), part de nucléaire (`nuclear_share`), cases par point de décision (`cells_per_decision`, `cells` / poids des décisions de K) ; **trous** (§3 de la même note, `holes = {n, unique, contested, types}`) : un trou est une suite de 1 ou 2 cases d'une ligne, fermée de chaque côté par une brique météo ou le bord (une brique au moins), sous toutes les silhouettes ; ses types sont les centrales qui peuvent encore le remplir (imports regroupés) ; il est à choix unique s'il n'a qu'un type au point fixe du niveau 1, contesté s'il en garde au moins deux et qu'une étape non triviale (niveau ≥ 2, échange ou import posé) le tranche. Toutes ces mesures sont prises sur la grille nettoyée, celle que joue le joueur, et les quotas s'y appliquent.
 8. **Diversité imposée** : un lot mélange des configurations pondérées et applique des quotas (par défaut sur 20 grilles : au plus 3 par famille de silhouette, 4 par ensemble de mécaniques, 4 par profil d'indices, au moins 2 par note ; sans limite par défaut, au plus N grilles dont toutes les décisions sont d'un même type, `max_same_single_decision`, 6 sur 20 dans les lots « jouer » ; par type de décision, un plafond `max_with_type` et un plancher `min_with_type` sur le nombre de grilles qui contiennent ce type, ex. au plus 10 grilles avec un échange, au moins 4 avec la STEP ; une clé `"step+carbon"` exige les deux types, `"step|carbon"` l'un des deux ; la clé `coupled` compte les grilles à mécanique globale couplée ; `max_demand_price` plafonne les grilles à prix de demande, et tant qu'il n'est pas atteint, un tirage sur deux commence la sélection d'indices par un tel prix quand la réserve en a un). Les tirages visent d'abord les notes qui manquent (une Difficile ou une Expert qui manque vise les configurations capables d'une mécanique globale couplée), et les configurations qui peuvent donner un type sous son plancher ; une grille finie refusée seulement pour réserver une note ou un type attend dans une réserve.

@@ -116,7 +116,7 @@ button.prow:hover { background: #faf4f7; }
 .gcount { font-size: .7rem; color: var(--soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .gcount.over { color: var(--bad); font-weight: 800; opacity: 1; }
 .grp.done .gcount { opacity: .45; }
-.step-glyph { font-size: .66rem; font-weight: 800; letter-spacing: .05em; color: #4f7fb8; background: #e3eefa; border: 1px solid #bfd7f1; border-radius: 6px; padding: 1px 6px; position: relative; }
+.step-glyph { font-size: .66rem; font-weight: 800; letter-spacing: .05em; color: #5d6f93; background: #e7ebf3; border: 1px solid #c3cbdb; border-radius: 6px; padding: 1px 6px; position: relative; }
 .step-glyph.used { opacity: .45; }
 .step-glyph.used::after { content: ""; position: absolute; left: -2px; right: -2px; top: 50%; border-top: 1.5px solid var(--soft); }
 .board-svg .step-tag.act, .board-svg .step-arrow.act { cursor: pointer; }

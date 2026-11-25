@@ -187,7 +187,7 @@ function lenText(lens: number[]): string {
 export const MSG = {
   bounds: (ramp = false) => `Le groupe${ramp ? ' à paliers' : ''} dépasse de la grille.`,
   length: (subject: string, lens: number[]) => `${subject} doit faire ${lenText(lens)}.`,
-  rampLength: (lens: number[]) => `Un groupe de charbon à paliers fait ${lenText(lens)}.`,
+  rampLength: (lens: number[]) => `Un groupe charbon à paliers fait ${lenText(lens)}.`,
   height: (subject: string, heights: number[]) => `${subject} doit faire ${heights.join(' ou ')} GW de haut.`,
   silhouette: (col: string) => `Hors de la silhouette à ${col}.`,
   weather: (col: string) => `La météo occupe déjà ce bloc à ${col}.`,
@@ -468,7 +468,7 @@ export const UI = {
   hintSecondTap: (label: string) => `${label} : touche maintenant le bloc d’arrivée.`,
   hintErase: 'Gomme : touche une centrale pour la retirer.',
   poseOk: (label: string) => `${label} : la pose tient.`,
-  /** "Remplace 1 groupe de gaz et 2 imports d’Allemagne", "1 groupe à paliers de charbon" (groups covered by a new placement). */
+  /** "Remplace 1 groupe gaz et 2 imports d’Allemagne", "1 groupe charbon à paliers" (groups covered by a new placement). */
   replaces: (grid: Grid, bars: readonly { piece: string; country?: string }[]) => {
     const counts = new Map<string, number>();
     for (const b of bars) {

@@ -146,7 +146,7 @@ describe('engine', () => {
   it('a ramp too short is refused with its own message', () => {
     const g = t1();
     const r = checkPlacement(g, newGame(g), C(1, 0, 2));
-    expect(r.ok ? null : r.error).toEqual({ code: 'length', message: 'Un groupe de charbon à paliers fait 3 à 5 créneaux.' });
+    expect(r.ok ? null : r.error).toEqual({ code: 'length', message: 'Un groupe charbon à paliers fait 3 à 5 créneaux.' });
     const h = checkPlacement(g, newGame(g), { ...C(1, 0, 3), height: 2 });
     expect(h.ok ? null : h.error.code).toBe('height');
   });

@@ -167,7 +167,7 @@ function stepGlyph(cx: number, cy: number, kind: 'up' | 'down', u: number, color
   return out;
 }
 
-const STEP_BLUE = '#e7ebf3';
+const STEP_WASH = '#e7ebf3';
 
 /** Icons of the STEP tags in column `c`: ▲ for a pump, ▼ for a turbine, with the pair number when `numbered`. */
 export function stepTagLabels(step: readonly { pump: number; turbine: number }[], c: number, numbered: boolean): string[] {
@@ -696,7 +696,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
           const act = input.interactive
             ? ` data-act="step-tag" data-col="${c}" tabindex="0" role="button" aria-label="${esc(UI.stepTagLabel(columnLabel(grid, pair.pump), columnLabel(grid, pair.turbine)))}"` : '';
           tags += `<g class="tag step-tag${act ? ' act' : ''}"${act}>`
-            + pill(mid, ty, w, STEP_BLUE, STEP_INK, (tc) => stepGlyph(tc, ty + 9 * ut, kind, ut, STEP_INK, numbered ? k + 1 : undefined), null, f2(18 * ut), f2(1.1 * ut))
+            + pill(mid, ty, w, STEP_WASH, STEP_INK, (tc) => stepGlyph(tc, ty + 9 * ut, kind, ut, STEP_INK, numbered ? k + 1 : undefined), null, f2(18 * ut), f2(1.1 * ut))
             + '</g>';
         }
       });
@@ -716,7 +716,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
         const col = STEP_INK;
         const label = kind === 'up' ? (chosen ? UI.stepArrowChosen(columnLabel(grid, c)) : UI.stepArrowPump(columnLabel(grid, c))) : UI.stepArrowTurbine(columnLabel(grid, c));
         const act = input.interactive ? ` data-act="step-arrow" data-col="${c}" tabindex="0" role="button" aria-label="${esc(label)}"` : '';
-        s += `<g class="step-arrow${act ? ' act' : ''}"${act}><circle cx="${cx}" cy="${cy}" r="${r}" fill="${chosen ? col : STEP_BLUE}" stroke="${col}" stroke-width="1.4"/>`
+        s += `<g class="step-arrow${act ? ' act' : ''}"${act}><circle cx="${cx}" cy="${cy}" r="${r}" fill="${chosen ? col : STEP_WASH}" stroke="${col}" stroke-width="1.4"/>`
           + stepGlyph(cx, cy, kind === 'up' ? 'up' : 'down', ut * (numbered ? 0.9 : 1.1), chosen ? '#fff' : col, numbered ? nextPair : undefined) + '</g>';
       }
     }
