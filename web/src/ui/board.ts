@@ -555,7 +555,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       const ly = y(topIn(grid, b, b.col + b.len - 1), 0) + gap / 2 + cell * 0.07;
       s += `<g transform="translate(${lx} ${ly}) scale(${(cell * 0.0115).toFixed(3)})" fill="none" stroke="${ink}" stroke-width="2" stroke-linecap="round">${ICONS.lock}</g>`;
     }
-    const label = b.piece === 'I' ? b.country ?? '' : h > 1 ? `${h} GW` : '';
+    const label = b.piece === 'I' ? b.country ?? '' : '';
     if (label) {
       const cx = x(b.col) + (b.len * cell) / 2;
       const cy = y(b.row, h) + (h * cell) / 2 + cell * 0.08;
