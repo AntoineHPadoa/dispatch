@@ -481,7 +481,7 @@ describe('print sheet', () => {
     const svg = renderBoard({ grid: g, state: s, ev: evaluate(g, s), style: 'A', cell: 50 }).svg;
     expect(svg).not.toContain('CO₂');
     const g2 = { ...g, clues: g.clues.slice(0, -1) };
-    expect(renderBoard({ grid: g2, state: s, ev: evaluate(g2, s), style: 'A', cell: 50 }).svg).toContain(UI.co2PerCell(3));
+    expect(renderBoard({ grid: g2, state: s, ev: evaluate(g2, s), style: 'A', cell: 70 }).svg).toContain(UI.co2PerCell(3));
   });
 
   it('book by width: one glyph per width with its width and its own counter', () => {
@@ -1172,7 +1172,7 @@ describe('board card: fixed layout, price row, export rows', () => {
     expect(r.state).not.toBeNull();
     const svg = draw(g, r.state!).svg;
     expect(svg).toContain('aria-label="Allemagne');
-    expect(svg).toContain('>→1</text>');
+    expect(svg).toContain('>↑1</text>');
   });
 });
 
@@ -1391,29 +1391,41 @@ describe('progress saved before weather bricks (B3)', () => {
 
 describe('exchanges under the neighbor rows', () => {
   const under = (g: Grid, s: PlayState) => renderBoard({ grid: g, state: s, ev: evaluate(g, s), style: 'A', cell: 60 }).svg;
-  const counts = (svg: string) => [...svg.matchAll(/>([→←] [\d/]+)<\/text>/g)].map((m) => m[1]);
+  const counts = (svg: string) => [...svg.matchAll(/>([↑↓] [\d/∞]+)<\/text>/g)].map((m) => m[1]);
 
   it('counts the day exchanges of each direction against what is laid', () => {
     const g = byId(10);
-    expect(counts(under(g, newGame(g)))).toEqual(['→ 0/2', '← 0/2']);
+    expect(counts(under(g, newGame(g)))).toEqual(['↑ 0/2', '↓ 0/2']);
     const s = { ...newGame(g), exports: { DE: [1, 0, 0, 0, 0, 0, 0, 0] } };
-    expect(counts(under(g, s))).toEqual(['→ 1/2', '← 0/2']);
+    expect(counts(under(g, s))).toEqual(['↑ 1/2', '↓ 0/2']);
   });
 
   it('greys a direction allowed zero times, counts published flows as laid and greens a met count', () => {
-    expect(counts(under(byId(9), newGame(byId(9))))).toEqual(['→ 0', '← 0/6']);
+    expect(counts(under(byId(9), newGame(byId(9))))).toEqual(['↑ 0', '↓ 0/6']);
     const g7 = byId(7);
     const svg = under(g7, applyLockedExports(g7, newGame(g7)));
     // Two exports published by flows: already laid; the exact inventory gives 2 imports.
-    expect(counts(svg)).toEqual(['→ 2/2', '← 0/2']);
-    expect(svg).toMatch(new RegExp(`fill="${OK}">→ 2/2<`));
+    expect(counts(svg)).toEqual(['↑ 2/2', '↓ 0/2']);
+    expect(svg).toMatch(new RegExp(`fill="${OK}">↑ 2/2<`));
   });
 
-  it('shows nothing for an unknown count or a total shared by every neighbor', () => {
+  it('an import record of one country sits on its row, not under the hours', () => {
+    const g = byId(10);
+    const nb = g.neighbors[0]!;
+    const plain = renderBoard({ grid: g, state: newGame(g), ev: evaluate(g, newGame(g)), style: 'A', cell: 60 });
+    g.clues = [...g.clues, { type: 'column', col: 2, counts: { [`I:${nb.id}`]: 1 } }];
+    const withRecord = renderBoard({ grid: g, state: newGame(g), ev: evaluate(g, newGame(g)), style: 'A', cell: 60 });
+    expect(withRecord.svg.match(/class="import-record"/g)).toHaveLength(1);
+    expect(withRecord.svg).toContain('Relevé d’import : 1.');
+    // No band item for it: the band keeps its height.
+    expect(withRecord.geo.height).toBe(plain.geo.height);
+  });
+
+  it('reads ∞ for an unknown count or a total shared by every neighbor', () => {
     const g = byId(10);
     const free = { ...g, clues: g.clues.filter((c) => c.type !== 'exchanges') };
-    expect(counts(under(free, newGame(free)))).toEqual([]);
+    expect(counts(under(free, newGame(free)))).toEqual(['↑ 0/∞', '↓ 0/∞']);
     const shared = { ...g, clues: g.clues.map((c) => (c.type === 'exchanges' ? { ...c, imports: { '*': 2 } } : c)) };
-    expect(counts(under(shared, newGame(shared)))).toEqual(['→ 0/2']);
+    expect(counts(under(shared, newGame(shared)))).toEqual(['↑ 0/2', '↓ 0/∞']);
   });
 });
