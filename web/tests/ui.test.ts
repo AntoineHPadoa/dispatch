@@ -1424,6 +1424,16 @@ describe('exchanges under the neighbor rows', () => {
     expect(withRecord.geo.height).toBe(plain.geo.height);
   });
 
+  it('an Import plant takes the published total of its country as quota; ∞ without one or with a shared total', () => {
+    const g = byId(10);
+    const row = (grid: Grid, id: string) => renderBook(grid, newGame(grid), null).split(`data-piece="I:${id}"`)[1]!.split('data-piece=')[0]!;
+    expect(row(g, 'DE')).toContain('0 / 2');
+    const free = { ...g, clues: g.clues.filter((c) => c.type !== 'exchanges') };
+    expect(row(free, 'DE')).toContain('0 / ∞');
+    const shared = { ...g, clues: g.clues.map((c) => (c.type === 'exchanges' ? { ...c, imports: { '*': 2 } } : c)) };
+    expect(row(shared, 'DE')).toContain('0 / ∞');
+  });
+
   it('reads ∞ for an unknown count or a total shared by every neighbor', () => {
     const g = byId(10);
     const free = { ...g, clues: g.clues.filter((c) => c.type !== 'exchanges') };

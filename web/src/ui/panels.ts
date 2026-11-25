@@ -38,6 +38,11 @@ function importRuledOut(grid: Grid, country: string): boolean {
   return imports !== undefined && (imports[ANY_COUNTRY] === 0 || imports[country] === 0);
 }
 
+/** Import total the exchanges clues publish for one country (a total shared by every country is not split); undefined when none. */
+export function publishedImport(grid: Grid, country: string): number | undefined {
+  return mergeExchanges(grid.clues)?.imports?.[country];
+}
+
 /** Plants, import lines and the STEP the player can lay, in merit order (no import line when none is possible). */
 export function bookEntries(grid: Grid): BookEntry[] {
   const out: BookEntry[] = [];
@@ -158,7 +163,7 @@ export function renderBook(grid: Grid, state: PlayState, selected: PieceKey | nu
         if (grid.co2_cap !== null) hint += ` · ${UI.co2PerCell(grid.neighbors.find((nb) => nb.id === country)?.co2 ?? 0)}`;
       } else label = UI.importOf(countryFrom(grid, country));
       const used = importCells(state, country);
-      const want = inv.level === 'exact' ? inv.imports?.[country] ?? inv.imports?.[ANY_COUNTRY] : undefined;
+      const want = inv.level === 'exact' ? inv.imports?.[country] ?? inv.imports?.[ANY_COUNTRY] : paper ? undefined : publishedImport(grid, country);
       if (want !== undefined && !paper) {
         glyphs = group(mb('I', 1, 1, { used: used >= want }), used, want);
       } else if (want !== undefined) {
@@ -460,6 +465,10 @@ function entryCount(grid: Grid, state: PlayState, e: BookEntry): string {
   if (e.piece === STEP_KEY) {
     const want = publishedStepPairs(grid);
     return want === null ? '' : `${state.step.length}/${want}`;
+  }
+  if (e.piece === IMPORT_PIECE && inv.level !== 'exact') {
+    const want = publishedImport(grid, e.country ?? '');
+    return want === undefined ? '' : `${importCells(state, e.country ?? '')}/${want}`;
   }
   if (inv.level !== 'exact') return '';
   if (e.piece === IMPORT_PIECE) {
