@@ -127,7 +127,7 @@ button.prow:hover { background: #faf4f7; }
 
 /* ---- clues ---- */
 .clues { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-.clue { display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: start; }
+.clue { display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: start; }
 .ico { width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; background: var(--wash); color: var(--ink); }
 .lad { display: inline-flex; align-items: center; gap: 3px; margin-left: 8px; vertical-align: -2px; text-transform: none; letter-spacing: 0; }
 .cd { display: inline-block; width: 10px; height: 10px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .08); }
@@ -135,9 +135,12 @@ button.prow:hover { background: #faf4f7; }
 .lt { font-size: .7rem; color: var(--soft); font-weight: 600; }
 .kind { font-size: .62rem; letter-spacing: .09em; text-transform: uppercase; color: var(--soft); font-weight: 800; display: block; }
 .txt { font-size: .84rem; }
-.clue-exchanges { grid-template-columns: 28px 1fr; }
-.clue-exchanges .xlines { display: grid; gap: 6px; }
-.clue-exchanges .xline { display: grid; grid-template-columns: 1fr 18px; gap: 10px; align-items: start; }
+/* A publication: its label, then one row per line of text; every status dot sits in one column, centred on its text's first line. */
+.pub { display: grid; min-width: 0; }
+.pubrow { display: grid; grid-template-columns: 1fr 18px; gap: 10px; align-items: start; }
+.pubrow + .pubrow { margin-top: 6px; }
+.pubrow .txt { line-height: 18px; }
+.pubrow .state { margin-top: 0; }
 .state { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--hair); margin-top: 3px; position: relative; flex: none; display: block; }
 .state.ok { background: var(--ok); border-color: var(--ok); }
 .state.ok::after { content: ""; position: absolute; left: 5px; top: 2px; width: 4px; height: 8px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }

@@ -263,6 +263,11 @@ export function priceLadder(grid: Grid, piece: PieceId): string {
   return `<span class="lad" role="img" aria-label="${esc(UI.priceLadderLabel(plants.map((p) => PIECE_WORDS[p].name)))}">${dots}</span>`;
 }
 
+/** One line of a publication (screen): its text and its status dot, centred on the text's first line. */
+function pubRow(txt: string, status: ClueReport['status'] | null): string {
+  return `<span class="pubrow"><span class="txt">${txt}</span>${stateDot(status)}</span>`;
+}
+
 /** One clue list item. */
 export function clueItem(grid: Grid, clue: Clue, status: ClueReport['status'] | null, paper = false, index = -1): string {
   const kind = esc(CLUE_KIND[clue.type]);
@@ -270,7 +275,7 @@ export function clueItem(grid: Grid, clue: Clue, status: ClueReport['status'] | 
   const ladder = !paper && clue.type === 'price' ? priceLadder(grid, clue.piece) : '';
   if (paper) return `<li class="clue"><span><span class="kind">${kind}</span><span class="txt">${txt}</span></span></li>`;
   return `<li class="clue"${index >= 0 ? ` data-clue="${index}"` : ''}><span class="ico">${icon(CLUE_ICON[clue.type] ?? 'price')}</span>`
-    + `<span><span class="kind">${kind}${ladder}</span><span class="txt">${txt}</span></span>${stateDot(status)}</li>`;
+    + `<span class="pub"><span class="kind">${kind}${ladder}</span>${pubRow(txt, status)}</span></li>`;
 }
 
 /**
@@ -393,15 +398,15 @@ export function co2ClueItem(grid: Grid, state: PlayState, full: boolean): { html
   const status: ClueStatus = total > cap ? 'broken' : full ? 'ok' : 'open';
   const txt = esc(UI.co2Clue(cap)).replace(/(^|\s)(\d+)(?=[\s,.]|$)/g, '$1<span class="slot">$2</span>');
   const html = `<li class="clue"><span class="ico">${icon('co2')}</span>`
-    + `<span><span class="kind">${esc(UI.co2ClueKind)}</span><span class="txt">${txt}</span></span>${stateDot(status)}</li>`;
+    + `<span class="pub"><span class="kind">${esc(UI.co2ClueKind)}</span>${pubRow(txt, status)}</span></li>`;
   return { html, status };
 }
 
 /** The day's exchanges as one publication: a line per country, each with its own status. */
 function exchangesItem(lines: readonly ClueReport[]): string {
-  const rows = lines.map((r) => `<span class="xline"><span class="txt">${slotValues(esc(r.text))}</span>${stateDot(r.status)}</span>`).join('');
+  const rows = lines.map((r) => pubRow(slotValues(esc(r.text)), r.status)).join('');
   return `<li class="clue clue-exchanges"><span class="ico">${icon(CLUE_ICON.exchanges ?? 'price')}</span>`
-    + `<span class="xlines"><span class="kind">${esc(CLUE_KIND.exchanges)}</span>${rows}</span></li>`;
+    + `<span class="pub"><span class="kind">${esc(CLUE_KIND.exchanges)}</span>${rows}</span></li>`;
 }
 
 /** Clue card: the CO2 limit and every clue in text, day clues first, then slot clues in time order. `full`: no cell left to cover. */
