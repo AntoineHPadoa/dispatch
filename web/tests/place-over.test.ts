@@ -54,7 +54,7 @@ describe('placeOver', () => {
     expect(r.ok).toBe(false);
     if (r.ok) return;
     expect(r.error.code).toBe('locked');
-    expect(r.error.message).toContain('engagée');
+    expect(r.error.message).toContain('engagé');
     expect(r.state).toBe(s);
   });
 

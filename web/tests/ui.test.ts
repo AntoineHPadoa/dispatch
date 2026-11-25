@@ -143,7 +143,7 @@ describe('pose messages', () => {
   it('without a contradiction: replaced plants, else the pose fits', () => {
     const g1 = byId(1);
     expect(poseMessage(g1, 'TAC à 8h, ligne 2', [], null)).toEqual({ text: 'TAC à 8h, ligne 2 : la pose tient.', tone: 'ok' });
-    expect(poseMessage(g1, 'TAC à 8h, ligne 2', [{ piece: 'N' }], null).text).toBe('TAC à 8h, ligne 2 : remplace 1 barre de nucléaire.');
+    expect(poseMessage(g1, 'TAC à 8h, ligne 2', [{ piece: 'N' }], null).text).toBe('TAC à 8h, ligne 2 : remplace 1 groupe de nucléaire.');
     const ok = [{ clue: byId(2).clues[0]!, text: '', status: 'broken' as const }];
     expect(newlyBroken(ok, ok)).toBeNull();
   });
@@ -347,12 +347,12 @@ describe('board and game helpers', () => {
     expect(renderBook(byId(9), newGame(byId(9)), null)).toContain('Import d’Allemagne');
     // Screen: no hint under the names, the stock is drawn and counted; free plants count to ∞.
     const screen = renderBook(g8, newGame(g8), null);
-    expect(screen).not.toContain('stock : 2 cases');
+    expect(screen).not.toContain('stock : 2 blocs');
     expect(screen).toContain('0 / 2');
     expect(screen).toContain('0 / ∞');
     expect(screen).not.toMatch(/posée|créneaux|ruban/);
     // Paper keeps the hints and shows no usage.
-    expect(renderBook(g8, newGame(g8), null, true)).toContain('stock : 2 cases');
+    expect(renderBook(g8, newGame(g8), null, true)).toContain('stock : 2 blocs');
     expect(renderBook(g8, newGame(g8), null, true)).not.toContain('∞');
   });
 
@@ -706,8 +706,8 @@ describe('review S6.3 round 3', () => {
   });
 
   it('the stock refusal has one colon only', () => {
-    expect(MSG.stock('B', 'du barrage', 2)).toBe('Plus d’eau dans le barrage (2 cases au plus).');
-    expect(MSG.stock('G', 'de gaz', 1)).toBe('Plus de stock de gaz (1 case au plus).');
+    expect(MSG.stock('B', 'du barrage', 2)).toBe('Plus d’eau dans le barrage (2 blocs au plus).');
+    expect(MSG.stock('G', 'de gaz', 1)).toBe('Plus de stock de gaz (1 bloc au plus).');
   });
 });
 
@@ -814,7 +814,7 @@ describe('clue text: punctuation stays glued to the plant chip', () => {
 
 describe('phone hint', () => {
   it('points to the row under the board below 860 px', () => {
-    expect(UI.hintChoose(false, true)).toContain('la barre sous la grille');
+    expect(UI.hintChoose(false, true)).toContain('la rangée de centrales sous la grille');
     expect(UI.hintChoose(false)).toContain('le carnet d’ordres');
   });
 });
