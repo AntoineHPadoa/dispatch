@@ -819,17 +819,20 @@ describe('phone hint', () => {
 });
 
 describe('clue card (every clue in text, time order)', () => {
-  const slotOf = (c: Grid['clues'][number]) => ('col' in c && typeof c.col === 'number' ? c.col : -1);
 
-  it('puts day clues first, then slot clues by column, keeping grid order on ties', () => {
-    for (const grid of grids) {
-      const ordered = orderClues(grid.clues.map((clue) => ({ clue })));
-      expect(ordered).toHaveLength(grid.clues.length);
-      const cols = ordered.map((r) => slotOf(r.clue));
-      expect(cols).toEqual([...cols].sort((a, b) => a - b));
-      const dayCount = grid.clues.filter((c) => slotOf(c) < 0).length;
-      expect(ordered.slice(0, dayCount).every((r) => slotOf(r.clue) < 0)).toBe(true);
-    }
+  it('orders: exchanges, day clues without hour, programmes by start, then the others by hour; ties keep the grid order', () => {
+    const clues: Grid['clues'] = [
+      { type: 'price', piece: 'N', col: 1 },
+      { type: 'bar', piece: 'N', col: 5, len: 2 },
+      { type: 'flow', country: 'DE', dir: 'export', col: 0, value: 1 },
+      { type: 'engaged', piece: 'N', row: 0, col: 3, len: 2 },
+      { type: 'bar', piece: 'G', col: 2, len: 2 },
+      { type: 'exchanges', exports: { DE: 1 } },
+      { type: 'length', piece: 'N', len: 4 },
+      { type: 'price', piece: 'G', col: 1 },
+    ] as Grid['clues'];
+    const ordered = orderClues(clues.map((clue) => ({ clue }))).map((r) => clues.indexOf(r.clue));
+    expect(ordered).toEqual([5, 3, 6, 4, 1, 2, 0, 7]);
   });
 
   it('lists every clue, with no collapsed list', () => {

@@ -258,12 +258,17 @@ export function clueItem(grid: Grid, clue: Clue, status: ClueReport['status'] | 
     + `<span><span class="kind">${kind}</span><span class="txt">${txt}</span></span>${stateDot(status)}</li>`;
 }
 
-/** Clues in reading order: day clues first (no slot), then slot clues by column; ties keep the grid order. */
+/**
+ * Clues in the order of the publications card (the CO2 limit comes before them all): the day's exchanges,
+ * the day clues without an hour (duration, engaged plant), the programmes by start hour, then every other
+ * clue by hour. Ties keep the grid order.
+ */
 export function orderClues<T extends { clue: Clue }>(reports: readonly T[]): T[] {
   const col = (c: Clue) => ('col' in c && typeof c.col === 'number' ? c.col : -1);
+  const rank = (c: Clue) => (c.type === 'exchanges' ? 0 : c.type === 'length' || c.type === 'engaged' ? 1 : c.type === 'bar' ? 2 : 3);
   return reports
     .map((r, i) => ({ r, i }))
-    .sort((a, b) => col(a.r.clue) - col(b.r.clue) || a.i - b.i)
+    .sort((a, b) => rank(a.r.clue) - rank(b.r.clue) || (rank(a.r.clue) >= 2 ? col(a.r.clue) - col(b.r.clue) : 0) || a.i - b.i)
     .map(({ r }) => r);
 }
 
