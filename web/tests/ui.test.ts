@@ -14,7 +14,7 @@ import {
   ProgressStore, STORAGE_KEY, emptyProgress, isPlayState, nextGrid, parseProgress,
   playOrder, recordState, statusOf, gridFingerprint, savedBoard, type KeyValueStore,
 } from '../src/ui/progress';
-import { allowedExchange, bandPlan, boardLead, recordLayout, boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard, stepTagLabels } from '../src/ui/board';
+import { allowedExchange, bandPlan, bandStart, hoursGap, boardLead, recordLayout, boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard, stepTagLabels } from '../src/ui/board';
 import {
   applyLockedExports, boardMessage, bulletinTag, displayTitle, exportTap, initialState, isInitialState, newlyBroken, nextExportValue,
   poseMessage,
@@ -608,9 +608,12 @@ describe('STEP in the order book', () => {
     expect(maxStepPairs(multi)).toBe(2);
     const s = { ...initialState(multi), step: pairs };
     const svg = renderBoard({ grid: multi, state: s, ev: null, style: 'A', cell: 50 }).svg;
-    for (const l of ['▲1', '▲2', '▼1', '▼2']) expect(svg).toContain(l);
+    // One pill per pair end (4), each with its drawn triangle and its pair number.
+    expect(svg.match(/class="tag step-tag"/g)).toHaveLength(4);
+    expect(svg.match(/<polygon /g)).toHaveLength(4);
+    for (const l of ['1', '2']) expect(svg).toContain(`>${l}</text>`);
     const arrows = renderBoard({ grid: multi, state: { ...initialState(multi), step: [pairs[0]!] }, ev: null, style: 'A', cell: 50, stepMode: true, interactive: true }).svg;
-    expect(arrows).toContain('▲2'); // next pair to place
+    expect(arrows.match(/class="step-arrow[^]*?<\/g>/)![0]).toContain('>2</text>'); // next pair to place
   });
 
   it('STEP numbering: two pairs pumping at the same slot keep both numbers, compact tag widens', () => {
@@ -618,10 +621,20 @@ describe('STEP in the order book', () => {
     const s = { ...initialState(multi), step: [{ pump: 1, turbine: 3 }, { pump: 1, turbine: 5 }] };
     for (const cell of [50, 34]) {
       const svg = renderBoard({ grid: multi, state: s, ev: null, style: 'A', cell }).svg;
-      expect(svg).toContain('▲1▲2');
+      // Two pills in the same column, stacked: the first pair laid is the lowest.
+      const ys = [...svg.matchAll(/class="tag step-tag"><rect x="[\d.]+" y="([\d.-]+)"/g)].map((m) => Number(m[1]));
+      expect(ys).toHaveLength(4); // two pumps in column 1, the turbines of columns 3 and 5
+      expect(ys[0]!).toBeGreaterThan(ys[1]!);
     }
     const both = { ...initialState(multi), step: [{ pump: 1, turbine: 3 }, { pump: 3, turbine: 5 }] };
-    expect(renderBoard({ grid: multi, state: both, ev: null, style: 'A', cell: 34 }).svg).toContain('▲2▼1');
+    expect(renderBoard({ grid: multi, state: both, ev: null, style: 'A', cell: 34 }).svg.match(/class="tag step-tag"/g)).toHaveLength(4);
+  });
+
+  it('the gap under the hours equals the gap above them (screen)', () => {
+    for (const cell of [30, 40, 50, 58, 60]) {
+      const gap = hoursGap(cell);
+      expect(Math.abs(gap.above - gap.below)).toBeLessThanOrEqual(0.6);
+    }
   });
 
   it('paper keeps its STEP boxes and draws no pair', () => {
@@ -1036,7 +1049,7 @@ describe('board card: fixed layout, price row, export rows', () => {
           for (const p of band) {
             expect(p.x1).toBeGreaterThanOrEqual(geo.lead);
             expect(p.x2).toBeLessThanOrEqual(geo.lead + g.columns.length * cell);
-            expect(p.y + 18).toBeLessThanOrEqual(geo.rows * cell + 24 + geo.bandHeight);
+            expect(p.y + 18).toBeLessThanOrEqual(geo.rows * cell + bandStart(cell, 'A') + 4 + geo.bandHeight);
           }
         }
       }

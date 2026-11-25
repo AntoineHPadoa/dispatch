@@ -127,8 +127,46 @@ export const stepUnit = (cell: number): number => Math.max(1, cell / 40);
 export const hoursSize = (cell: number): number => Math.max(10, cell * 0.285);
 /** Room the hours take beyond the 10.5 px of the paper style. */
 export const hoursExtra = (cell: number, style: BoardStyle): number => (style === 'A' ? Math.round(Math.max(0, hoursSize(cell) - 10.5) * 1.3) : 0);
+/**
+ * Where the clue band starts under the grid (screen): the gap between the hours and the pills under them
+ * equals the gap between the bottom of the grid and the hours (digit top, 0.71 of the font size).
+ */
+export const bandStart = (cell: number, style: BoardStyle): number => {
+  if (style !== 'A') return 20;
+  return Math.round(11 + hoursExtra(cell, style) + gapAboveHours(cell));
+};
+/** Grid bottom to digit top of the hours (screen). */
+const gapAboveHours = (cell: number): number => 15.5 + hoursExtra(cell, 'A') - 0.71 * hoursSize(cell);
+/** Gap above the hours and gap below them (baseline to the pills), screen. */
+export const hoursGap = (cell: number): { above: number; below: number } => ({
+  above: gapAboveHours(cell),
+  below: bandStart(cell, 'A') + 3 - (14 + hoursExtra(cell, 'A')),
+});
 /** Text size of the exchange rows (arrows, numbers, counters): ~12 px at the usual desktop cell. */
 export const exchangeSize = (cell: number): number => Math.max(9, cell * 0.21);
+/** Text of the exchange cells: the violet of their border, a shade darker so it stays readable on the light violet. */
+const EXPORT_TEXT = '#6a54b3';
+/**
+ * ▲ or ▼ drawn as a polygon centred on (`cx`, `cy`), with the pair number beside it when there is one:
+ * a text triangle has no optical centre in its text box, so it is drawn.
+ */
+function stepGlyph(cx: number, cy: number, kind: 'up' | 'down', u: number, color: string, num?: number | string): string {
+  const gw = 8.4 * u;
+  const gh = 7 * u;
+  const digit = num === undefined ? 0 : 6 * u;
+  const gap = num === undefined ? 0 : 2 * u;
+  const left = cx - (gw + gap + digit) / 2;
+  const gx = left + gw / 2;
+  const pts = kind === 'up'
+    ? [[gx, cy - gh / 2], [gx - gw / 2, cy + gh / 2], [gx + gw / 2, cy + gh / 2]]
+    : [[gx, cy + gh / 2], [gx - gw / 2, cy - gh / 2], [gx + gw / 2, cy - gh / 2]];
+  let out = `<polygon points="${pts.map(([px, py]) => `${Number(px!.toFixed(2))},${Number(py!.toFixed(2))}`).join(' ')}" fill="${color}"/>`;
+  if (num !== undefined) {
+    out += `<text x="${Number((left + gw + gap + digit / 2).toFixed(2))}" y="${Number((cy + 3.6 * u).toFixed(2))}" text-anchor="middle" font-family="Manrope, system-ui, sans-serif" font-size="${Number((10 * u).toFixed(2))}" font-weight="800" fill="${color}">${num}</text>`;
+  }
+  return out;
+}
+
 const STEP_BLUE = '#e7ebf3';
 
 /** Icons of the STEP tags in column `c`: ▲ for a pump, ▼ for a turbine, with the pair number when `numbered`. */
@@ -189,7 +227,7 @@ const neighborPitch = (cell: number): number => exportCellHeight(cell) + 24;
 function tagsPerColumn(grid: Grid, style: BoardStyle): number[] {
   const t = grid.columns.map(() => 0);
   // One slot per column for the STEP arrows and pair tags, so the board never jumps when the mode opens.
-  if (style === 'A' && grid.step) for (let c = 0; c < t.length; c++) t[c]! += 1;
+  if (style === 'A' && grid.step) for (let c = 0; c < t.length; c++) t[c]! += Math.max(1, maxStepPairs(grid));
   return t;
 }
 
@@ -354,7 +392,7 @@ export function boardGeometry(grid: Grid, style: BoardStyle, cell: number, recor
   // Export rows (one per neighbor); STEP: chosen from the order book on screen, a row of boxes on paper.
   const bottomRows = grid.neighbors.length + (grid.step && style === 'B' ? 1 : 0);
   const lead = boardLead(grid);
-  const botPad = 20 + hoursExtra(cell, style) + (bandHeight ? bandHeight + 4 : 0) + bottomRows * neighborPitch(cell) + 4;
+  const botPad = bandStart(cell, style) + (bandHeight ? bandHeight + 4 : 0) + bottomRows * neighborPitch(cell) + 4;
   return {
     n, cell, rows, weather, topPad, botPad, width: lead + n * cell + 4, height: rows * cell + topPad + botPad,
     bottomRows, lead, reach: colMax, bandHeight,
@@ -646,19 +684,22 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     const numbered = maxStepPairs(grid) > 1;
     for (let c = 0; c < n; c++) {
       if (!pumps[c] && !turbines[c]) continue;
-      const ty = tagY(c);
-      const labels = stepTagLabels(state.step, c, numbered);
-      // Arrows only (▲ pump, ▼ turbine); several in one tag are joined.
-      const label = labels.join('');
-      const w = Math.max(cell - 10 * ut, label.length * 5.5 * ut + 10 * ut);
-      const mid = x(c) + cell / 2;
-      const k = state.step.findIndex((q) => q.pump === c || q.turbine === c);
-      const pair = k >= 0 ? state.step[k] : undefined;
-      const act = input.interactive && pair
-        ? ` data-act="step-tag" data-col="${c}" tabindex="0" role="button" aria-label="${esc(UI.stepTagLabel(columnLabel(grid, pair.pump), columnLabel(grid, pair.turbine)))}"` : '';
-      tags += `<g class="tag step-tag${act ? ' act' : ''}"${act}>`
-        + pill(mid, ty, w, STEP_BLUE, STEP_INK, (tc) => T(tc, f2(ty + 13 * ut), label, { size: f2(10 * ut), color: STEP_INK }), null, f2(18 * ut), f2(1.1 * ut))
-        + '</g>';
+      // One pill per pair end in this column, stacked: the first pair laid is the lowest, nearest the column.
+      state.step.forEach((pair, k) => {
+        const ends: ('up' | 'down')[] = [];
+        if (pair.pump === c) ends.push('up');
+        if (pair.turbine === c) ends.push('down');
+        for (const kind of ends) {
+          const ty = tagY(c);
+          const w = Math.max(cell - 10 * ut, 28 * ut);
+          const mid = x(c) + cell / 2;
+          const act = input.interactive
+            ? ` data-act="step-tag" data-col="${c}" tabindex="0" role="button" aria-label="${esc(UI.stepTagLabel(columnLabel(grid, pair.pump), columnLabel(grid, pair.turbine)))}"` : '';
+          tags += `<g class="tag step-tag${act ? ' act' : ''}"${act}>`
+            + pill(mid, ty, w, STEP_BLUE, STEP_INK, (tc) => stepGlyph(tc, ty + 9 * ut, kind, ut, STEP_INK, numbered ? k + 1 : undefined), null, f2(18 * ut), f2(1.1 * ut))
+            + '</g>';
+        }
+      });
     }
     s += tags;
     if (input.stepMode) {
@@ -676,7 +717,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
         const label = kind === 'up' ? (chosen ? UI.stepArrowChosen(columnLabel(grid, c)) : UI.stepArrowPump(columnLabel(grid, c))) : UI.stepArrowTurbine(columnLabel(grid, c));
         const act = input.interactive ? ` data-act="step-arrow" data-col="${c}" tabindex="0" role="button" aria-label="${esc(label)}"` : '';
         s += `<g class="step-arrow${act ? ' act' : ''}"${act}><circle cx="${cx}" cy="${cy}" r="${r}" fill="${chosen ? col : STEP_BLUE}" stroke="${col}" stroke-width="1.4"/>`
-          + T(cx, cy + 4 * ut, (kind === 'up' ? '▲' : '▼') + (numbered ? String(nextPair) : ''), { size: (numbered ? 9 : 11) * ut, color: chosen ? '#fff' : col }) + '</g>';
+          + stepGlyph(cx, cy, kind === 'up' ? 'up' : 'down', ut * (numbered ? 0.9 : 1.1), chosen ? '#fff' : col, numbered ? nextPair : undefined) + '</g>';
       }
     }
   }
@@ -685,7 +726,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   grid.columns.forEach((label, c) => { s += T(x(c) + cell / 2, H * cell + 14 + hoursExtra(cell, style) + plan.offset, label, { w: 600, size: A ? f2(hoursSize(cell)) : Math.min(10.5, fs + 1), color: soft }); });
 
   // ---- slot clues: one band under the hours, aligned on the columns (see bandPlan)
-  const bandY = H * cell + 20 + hoursExtra(cell, style);
+  const bandY = H * cell + bandStart(cell, style);
   for (const it of plan.items) {
     const cl = grid.clues[it.index]!;
     const st = statusOf(it.index);
@@ -748,7 +789,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   const recordIndex = (country: string, c: number) => grid.clues.findIndex((cl) => cl.type === 'column' && cl.col === c && importRecordCountry(grid, cl) === country);
   const flowClue = (country: string, c: number) => grid.clues.findIndex((cl) => cl.type === 'flow' && cl.country === country && cl.col === c);
   const focus = input.interactive ? ' tabindex="0" role="button"' : '';
-  const baseY = H * cell + 24 + hoursExtra(cell, style) + geo.bandHeight;
+  const baseY = H * cell + 4 + bandStart(cell, style) + geo.bandHeight;
   const rowH = exportCellHeight(cell);
   const pitch = rowH + 24;
   const cgap = 3;
@@ -768,13 +809,13 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       for (const [arrow, want, got] of flows) {
         const t = UI.exchangeCount(arrow, got, want);
         const color = want !== null && got > want ? BAD : want !== null && want > 0 && got === want ? OK : soft;
-        s += T(capX, capY, t, { anchor: 'start', w: 800, size: f2(es), color });
-        capX += t.length * es * 0.6 + 8;
+        s += T(capX, capY, t, { anchor: 'start', w: 800, size: 9, color });
+        capX += t.length * 5.4 + 8;
       }
     }
     // The long caption only where it fits beside the counts, else the neighbor's name alone.
-    const cap = W >= 240 && capX - X0 + long.length * es * 0.54 <= W ? long : nb.name;
-    s += T(capX, capY, cap, { anchor: 'start', w: 700, size: A ? f2(es) : 9, color: soft });
+    const cap = W >= 240 && capX - X0 + long.length * 4.9 <= W ? long : nb.name;
+    s += T(capX, capY, cap, { anchor: 'start', w: 700, size: 9, color: soft });
     for (let c = 0; c < n; c++) {
       const px = x(c) + cgap / 2;
       const w = cell - cgap;
@@ -804,10 +845,10 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       if (!e && !im) {
         const pending = flow && flow.type === 'flow' && flow.dir === 'import' && flow.value > 0;
         s += `<rect x="${px}" y="${yy}" width="${w}" height="${rowH}" rx="${rad}" fill="#fbf7f9" stroke="${pending ? PIECE_COLORS.I.ink : '#dccfd7'}" stroke-width="1.2" stroke-dasharray="3 3"/>`
-          + (text ? T(tx, yy + rowH / 2 + es * 0.37, text, { w: 700, size: f2(es), color: ink }) : '');
+          + (text ? T(tx, yy + rowH / 2 + es * 0.37, text, { w: 700, size: f2(es), color: EXPORT_TEXT }) : '');
       } else {
         s += `<rect x="${px}" y="${yy}" width="${w}" height="${rowH}" rx="${rad}" fill="${PIECE_COLORS.I.a}" stroke="${fi >= 0 ? ink : PIECE_COLORS.I.ink}" stroke-width="${fi >= 0 ? 1.5 : 1.2}"/>`
-          + T(tx + (isLocked ? 5 : 0), yy + rowH / 2 + es * 0.37, text, { size: f2(es) });
+          + T(tx + (isLocked ? 5 : 0), yy + rowH / 2 + es * 0.37, text, { size: f2(es), color: EXPORT_TEXT });
       }
       // A published export is fixed: padlock inside its cell. A published import only outlines
       // the cell (the player still exports there freely).
