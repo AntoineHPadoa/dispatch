@@ -805,9 +805,11 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       }
       if (fi >= 0) s += clueMark(px + w - 2, yy + 1, st);
       if (ri >= 0) {
-        s += `<rect class="import-record" x="${px + 3}" y="${yy + (rowH - 13) / 2}" width="${chipW}" height="13" rx="4" fill="${PIECE_COLORS.I.a}" stroke="${PIECE_COLORS.I.ink}" stroke-width=".8"/>`
-          + T(px + 3 + chipW / 2, yy + rowH / 2 + 3.2, String(rv), { size: 9 })
-          + clueMark(px + w - 2, yy + 1, statusOf(ri));
+        // Same chip as the records under the hours: the colour of the line, the state mark on its top right corner.
+        const cx = px + 3;
+        s += `<rect class="import-record" x="${cx}" y="${yy + (rowH - 13) / 2}" width="${chipW}" height="13" rx="4" fill="${fill('I')}" stroke="${PIECE_COLORS.I.ink}" stroke-width=".8"/>`
+          + T(cx + chipW / 2, yy + rowH / 2 + 3.2, String(rv), { size: 9 })
+          + clueMark(cx + chipW - 1, yy + (rowH - 13) / 2 + 1, statusOf(ri));
       }
       s += '</g>';
     }
