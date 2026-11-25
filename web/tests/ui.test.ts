@@ -1448,7 +1448,7 @@ describe('progress saved before weather bricks (B3)', () => {
 
 describe('exchanges under the neighbor rows', () => {
   const under = (g: Grid, s: PlayState) => renderBoard({ grid: g, state: s, ev: evaluate(g, s), style: 'A', cell: 60 }).svg;
-  const counts = (svg: string) => [...svg.matchAll(/>([↑↓] [\d/∞]+)<\/text>/g)].map((m) => m[1]);
+  const counts = (svg: string) => [...svg.matchAll(/>([↑↓] [\d/∞]+)<\/tspan>/g)].map((m) => m[1]);
 
   it('counts the day exchanges of each direction against what is laid', () => {
     const g = byId(10);
@@ -1463,7 +1463,7 @@ describe('exchanges under the neighbor rows', () => {
     const svg = under(g7, applyLockedExports(g7, newGame(g7)));
     // Two exports published by flows: already laid; the exact inventory gives 2 imports.
     expect(counts(svg)).toEqual(['↑ 2/2', '↓ 0/2']);
-    expect(svg).toMatch(new RegExp(`fill="${OK}">↑ 2/2<`));
+    expect(svg).toMatch(new RegExp(`fill="${OK}">↑ 2/2</tspan>`));
   });
 
   it('an import record of one country sits on its row, not under the hours', () => {
@@ -1486,6 +1486,17 @@ describe('exchanges under the neighbor rows', () => {
     expect(row(free, 'DE')).toContain('0 / ∞');
     const shared = { ...g, clues: g.clues.map((c) => (c.type === 'exchanges' ? { ...c, imports: { '*': 2 } } : c)) };
     expect(row(shared, 'DE')).toContain('0 / ∞');
+  });
+
+  it('the legend is one regular string; the card has the same margin left and right of the grid', () => {
+    const g = byId(10);
+    const { svg, geo } = renderBoard({ grid: g, state: newGame(g), ev: evaluate(g, newGame(g)), style: 'A', cell: 60 });
+    expect(svg).toMatch(/>↑ 0\/2<\/tspan> <tspan[^>]*>↓ 0\/2<\/tspan> · Allemagne · 1 bloc par créneau<\/text>/);
+    const [vx, , vw] = svg.match(/viewBox="([^"]+)"/)![1]!.split(' ').map(Number);
+    const left = geo.lead - vx!;
+    const right = vx! + vw! - (geo.lead + geo.n * geo.cell);
+    expect(right).toBe(left);
+    expect(geo.lead).toBeGreaterThan(0); // the country codes stay in the left gutter
   });
 
   it('reads ∞ for an unknown count or a total shared by every neighbor', () => {

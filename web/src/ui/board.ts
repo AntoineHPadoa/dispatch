@@ -394,7 +394,7 @@ export function boardGeometry(grid: Grid, style: BoardStyle, cell: number, recor
   const lead = boardLead(grid);
   const botPad = bandStart(cell, style) + (bandHeight ? bandHeight + 4 : 0) + bottomRows * neighborPitch(cell) + 4;
   return {
-    n, cell, rows, weather, topPad, botPad, width: lead + n * cell + 4, height: rows * cell + topPad + botPad,
+    n, cell, rows, weather, topPad, botPad, width: 2 * lead + n * cell + 4, height: rows * cell + topPad + botPad,
     bottomRows, lead, reach: colMax, bandHeight,
   };
 }
@@ -800,22 +800,26 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     // Screen: the day's exchanges with this neighbor under the first block ("↑ 1/2  ↓ 1/∞"; a laid
     // or published flow counts; ∞ when the total is not published), green once met, red beyond, grey otherwise; then the caption.
     const capY = ry + rowH + 13;
-    let capX = X0 + cgap / 2;
+    // One text, one regular string: "↑ 0/2 ↓ 0/3 · Allemagne · 1 bloc par créneau", each counter in its own colour.
+    const counters: { t: string; color: string }[] = [];
     if (A) {
       const flows: [string, number | null, number][] = [
         ['↑', allowedExchange(grid, nb.id, 'exports'), totalExports(state, nb.id)],
         ['↓', allowedExchange(grid, nb.id, 'imports'), totalImports(state, nb.id)],
       ];
       for (const [arrow, want, got] of flows) {
-        const t = UI.exchangeCount(arrow, got, want);
-        const color = want !== null && got > want ? BAD : want !== null && want > 0 && got === want ? OK : soft;
-        s += T(capX, capY, t, { anchor: 'start', w: 800, size: 9, color });
-        capX += t.length * 5.4 + 8;
+        counters.push({
+          t: UI.exchangeCount(arrow, got, want),
+          color: want !== null && got > want ? BAD : want !== null && want > 0 && got === want ? OK : soft,
+        });
       }
     }
     // The long caption only where it fits beside the counts, else the neighbor's name alone.
-    const cap = W >= 240 && capX - X0 + long.length * 4.9 <= W ? long : nb.name;
-    s += T(capX, capY, cap, { anchor: 'start', w: 700, size: 9, color: soft });
+    const used = counters.reduce((a, c) => a + c.t.length * 5.4 + 8, 0);
+    const cap = W >= 240 && used + long.length * 4.9 <= W ? long : nb.name;
+    const lead = counters.map((c) => `<tspan font-weight="800" fill="${c.color}">${esc(c.t)}</tspan>`).join(' ');
+    s += `<text x="${X0 + cgap / 2}" y="${capY}" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="9" font-weight="700" fill="${soft}">`
+      + `${lead}${lead ? ' · ' : ''}${esc(cap)}</text>`;
     for (let c = 0; c < n; c++) {
       const px = x(c) + cgap / 2;
       const w = cell - cgap;
