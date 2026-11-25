@@ -420,6 +420,8 @@ export const UI = {
   cluesTitle: 'Publications du marché',
   cluesChecked: (k: number, n: number) => `${k} sur ${n} ${k > 1 ? 'vérifiés' : 'vérifié'}`,
   clueState: { ok: 'vérifié', open: 'à vérifier', broken: 'contredit' } as const,
+  /** Accessible name of the price scale: plants from the cheapest to the dearest. */
+  priceLadderLabel: (names: string[]) => `Ordre de prix : ${names.map((n) => (n === n.toUpperCase() ? n : n.toLowerCase())).join(', ')}`,
   chipsLabel: 'Centrales',
   tools: { erase: 'Gomme', undo: 'Annuler', reset: 'Recommencer' },
   toolsLabel: 'Outils',

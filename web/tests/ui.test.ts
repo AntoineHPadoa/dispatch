@@ -20,7 +20,7 @@ import {
   poseMessage,
 } from '../src/ui/game';
 import { MSG, TUTORIAL_LORE, durationText } from '../src/i18n/fr';
-import { STEP_KEY, bookEntries, inventoryExchanges, isDayClue, orderClues, withInventoryExchanges, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, richClueText, shownClueCount, splitExchanges, exchangeLines, co2Costs } from '../src/ui/panels';
+import { STEP_KEY, bookEntries, clueItem, inventoryExchanges, isDayClue, orderClues, withInventoryExchanges, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, richClueText, shownClueCount, splitExchanges, exchangeLines, co2Costs } from '../src/ui/panels';
 import { esc } from '../src/ui/palette';
 import { renderSheet, slotLegend } from '../src/ui/print';
 import { OK, PIECE_COLORS } from '../src/ui/palette';
@@ -372,6 +372,24 @@ describe('board and game helpers', () => {
     // Gaps in the widths: one glyph per width, as before.
     g.pieces.C!.len = [3, 5];
     expect(renderBook(g, newGame(g), null).match(/class="mb/g)!.length).toBeGreaterThan(glyph.match(/class="mb/g)!.length);
+  });
+
+  it('a price publication carries the price scale: book plants in merit order, the price setter ringed', () => {
+    const g = byId(6);
+    const price = g.clues.find((c) => c.type === 'price' && c.piece === 'G')!;
+    if (price.type !== 'price') throw new Error('no price clue');
+    const html = clueItem(g, price, null);
+    const plants = bookEntries(g).map((e) => e.piece).filter((p) => p !== 'STEP' && p !== 'I');
+    expect(html.match(/class="cd/g)).toHaveLength(plants.length);
+    expect(html.match(/class="cd hi"/g)).toHaveLength(1);
+    // The ringed dot is the price setter's colour; the others follow the merit order.
+    const dots = [...html.matchAll(/<i class="cd( hi)?" style="background:([^"]+)"/g)];
+    expect(dots.map((m) => m[2])).toEqual(plants.map((p) => PIECE_COLORS[p as 'N'].a));
+    expect(dots.findIndex((m) => m[1])).toBe(plants.indexOf(price.piece));
+    expect(plants).toEqual(['N', 'G']);
+    expect(html).toContain('aria-label="Ordre de prix : nucléaire, gaz"');
+    expect(html).toContain('aria-label="Ordre de prix : ');
+    expect(clueItem(g, price, null, true)).not.toContain('class="cd');
   });
 
   it('clue texts get plant chips and slot values; day clues are the unslotted ones', () => {

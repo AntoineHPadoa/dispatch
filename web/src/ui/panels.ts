@@ -254,13 +254,23 @@ export const isDayClue = (clue: Clue) => clue.type === 'length' || clue.type ===
 const stateDot = (st: ClueReport['status'] | null) => (st === null ? ''
   : `<span class="state ${st === 'ok' ? 'ok' : st === 'broken' ? 'bad' : ''}" role="img" aria-label="${esc(UI.clueState[st])}"></span>`);
 
+/** Price scale next to the "Prix" label (screen): a dot per plant of the order book in merit order, the price setter ringed. */
+export function priceLadder(grid: Grid, piece: PieceId): string {
+  const plants = bookEntries(grid).map((e) => e.piece).filter((p): p is PieceId => (PIECE_IDS as readonly string[]).includes(p));
+  if (plants.length < 2) return '';
+  const dots = plants.map((p) => `<i class="cd${p === piece ? ' hi' : ''}" style="background:${PIECE_COLORS[colorKey(p)].a}"></i>`)
+    .join('<span class="lt" aria-hidden="true">&lt;</span>');
+  return `<span class="lad" role="img" aria-label="${esc(UI.priceLadderLabel(plants.map((p) => PIECE_WORDS[p].name)))}">${dots}</span>`;
+}
+
 /** One clue list item. */
 export function clueItem(grid: Grid, clue: Clue, status: ClueReport['status'] | null, paper = false, index = -1): string {
   const kind = esc(CLUE_KIND[clue.type]);
   const txt = richClueText(grid, clue);
+  const ladder = !paper && clue.type === 'price' ? priceLadder(grid, clue.piece) : '';
   if (paper) return `<li class="clue"><span><span class="kind">${kind}</span><span class="txt">${txt}</span></span></li>`;
   return `<li class="clue"${index >= 0 ? ` data-clue="${index}"` : ''}><span class="ico">${icon(CLUE_ICON[clue.type] ?? 'price')}</span>`
-    + `<span><span class="kind">${kind}</span><span class="txt">${txt}</span></span>${stateDot(status)}</li>`;
+    + `<span><span class="kind">${kind}${ladder}</span><span class="txt">${txt}</span></span>${stateDot(status)}</li>`;
 }
 
 /**
