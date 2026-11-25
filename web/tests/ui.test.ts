@@ -480,8 +480,9 @@ describe('print sheet', () => {
     expect(co2Costs(g).map((c) => c.name)).toEqual(['Charbon', 'TAC', 'Gaz']);
     const svg = renderBoard({ grid: g, state: s, ev: evaluate(g, s), style: 'A', cell: 50 }).svg;
     expect(svg).not.toContain('CO₂');
+    // The cost per cell stays in the CO2 card, never under the neighbor rows.
     const g2 = { ...g, clues: g.clues.slice(0, -1) };
-    expect(renderBoard({ grid: g2, state: s, ev: evaluate(g2, s), style: 'A', cell: 70 }).svg).toContain(UI.co2PerCell(3));
+    expect(renderBoard({ grid: g2, state: s, ev: evaluate(g2, s), style: 'A', cell: 70 }).svg).not.toContain('CO₂');
   });
 
   it('book by width: one glyph per width with its width and its own counter', () => {
