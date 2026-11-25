@@ -1324,7 +1324,7 @@ describe('exchanges: one line per country, each checked on its own', () => {
     expect(allowedExchange(g, 'DE', 'imports')).toBe(0);
     const st = newGame(g);
     const lines = splitExchanges(g, st, evaluate(g, st).clues).filter((r) => r.clue.type === 'exchanges');
-    expect(lines.map((r) => r.text)).toEqual(['Allemagne : ↓ 0 import, ↑ 1 export']);
+    expect(lines.map((r) => r.text)).toEqual(['Allemagne : ↑ 1 export, ↓ 0 import']);
     expect(renderClues(g, evaluate(g, st).clues, st).match(/Échanges du jour/g)).toHaveLength(1);
   });
 
@@ -1336,12 +1336,12 @@ describe('exchanges: one line per country, each checked on its own', () => {
     const st = { ...s, exports: { ...s.exports, GB: g.columns.map((_, c) => (c === 0 ? 1 : 0)) } };
     const lines = splitExchanges(g, st, evaluate(g, st).clues).filter((r) => r.clue.type === 'exchanges');
     expect(lines.map((r) => [r.text, r.status])).toEqual([
-      ['Allemagne : ↓ ∞ import, ↑ 2 exports', 'open'],
-      ['Royaume-Uni : ↓ ∞ import, ↑ 1 export', 'ok'],
+      ['Allemagne : ↑ 2 exports, ↓ ∞ import', 'open'],
+      ['Royaume-Uni : ↑ 1 export, ↓ ∞ import', 'ok'],
       ['2 blocs importés au total', 'open'],
     ]);
     expect(shownClueCount(g)).toBe(g.clues.length + 2);
-    expect(renderClues(g, evaluate(g, st).clues, st)).toMatch(/Royaume-Uni : ↓ ∞ import, ↑ <span class="slot">1<\/span> export<\/span><span class="state ok"/);
+    expect(renderClues(g, evaluate(g, st).clues, st)).toMatch(/Royaume-Uni : ↑ <span class="slot">1<\/span> export, ↓ ∞ import<\/span><span class="state ok"/);
   });
 });
 

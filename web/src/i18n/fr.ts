@@ -124,7 +124,7 @@ export function clueText(grid: Grid, clue: Clue): string {
 }
 
 /**
- * One line of the "day's exchanges" publication, for one country: "Allemagne : ↓ 1 import, ↑ 2 exports".
+ * One line of the "day's exchanges" publication, for one country: "Allemagne : ↑ 2 exports, ↓ 1 import".
  * A direction without a published total reads "∞" (none allowed at all: "0" on an exact inventory).
  * The total of every country reads on its own: "4 blocs exportés au total".
  */
@@ -146,7 +146,7 @@ export function exchangeLineText(grid: Grid, line: ExchangesClue): string {
   const shared = (dir: 'exports' | 'imports') => grid.inventory[dir]?.[ANY_COUNTRY] !== undefined;
   const value = (dir: 'exports' | 'imports') => line[dir]?.[id] ?? (exact && !shared(dir) ? 0 : null);
   const part = (arrow: string, k: number | null, one: string) => `${arrow} ${k === null ? '∞' : k} ${one}${k !== null && k > 1 ? 's' : ''}`;
-  return `${name} : ${part('↓', value('imports'), 'import')}, ${part('↑', value('exports'), 'export')}`;
+  return `${name} : ${part('↑', value('exports'), 'export')}, ${part('↓', value('imports'), 'import')}`;
 }
 
 /** Short text of a clue drawn on the grid, for the paper legend: "8h : la TAC fixe le prix", "16h : 1 gaz, 3 TAC". */
