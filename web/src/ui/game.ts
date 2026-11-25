@@ -43,7 +43,7 @@ export function gameEyebrow(grid: Grid, grids: readonly Grid[], ratedEyebrow?: s
   const tutorials = grids.filter((g) => g.section === 'tutorial').sort((a, b) => a.id - b.id);
   return grid.section === 'tutorial'
     ? UI.tutorialOf(tutorials.findIndex((g) => g.id === grid.id) + 1, tutorials.length)
-    : `${bulletinTag(grid) ?? ratedEyebrow ?? UI.ratedEyebrow}${grid.inventory.level === 'none' ? ` · ${UI.noInventory}` : ''}`;
+    : `${bulletinTag(grid) ?? ratedEyebrow ?? UI.ratedEyebrow}`;
 }
 
 /** What the player did: a refused or clue-breaking pose, an undo, an erasure, a reset, the solve. */
@@ -293,7 +293,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     } else {
       m = boardMessage(ev, m) ?? {
         text: erase ? UI.hintErase : selected?.piece === STEP_KEY ? (stepPending !== null ? UI.stepPending(columnLabel(grid, stepPending)) : UI.hintStep)
-          : UI.hintChoose(grid.inventory.level !== 'exact', grid.neighbors.length > 0, window.matchMedia('(max-width: 860px)').matches),
+          : UI.hintChoose(grid.neighbors.length > 0, window.matchMedia('(max-width: 860px)').matches),
         tone: 'info',
       };
     }
@@ -318,9 +318,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   }
 
   function drawSide() {
-    const bookTitle = grid.inventory.level === 'exact' ? UI.book : UI.available;
-    const bookHint = grid.inventory.level === 'exact' ? '' : ` <small>${esc(UI.availableHint)}</small>`;
-    side.innerHTML = `<section class="card" aria-label="${esc(bookTitle)}"><h2 class="ct">${esc(bookTitle)}${bookHint}</h2>`
+    side.innerHTML = `<section class="card" aria-label="${esc(UI.book)}"><h2 class="ct">${esc(UI.book)}</h2>`
       + `${renderBook(grid, history.present, erase ? null : selected?.key ?? null)}</section>`
       + renderClues(grid, ev.clues, history.present, ev.missing === 0) + renderCo2(grid, history.present);
   }

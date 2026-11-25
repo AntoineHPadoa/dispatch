@@ -42,7 +42,7 @@ export function renderSheet(grid: Grid, tutorialIndex: number | null): string {
   if (exchanges) day.unshift(clueItem(grid, exchanges, null, true));
   const co2 = co2RuleText(grid);
   if (co2) day.push(`<li class="clue"><span><span class="kind">${esc(UI.co2Kind)}</span><span class="txt">${esc(co2)}</span></span></li>`);
-  const bookTitle = grid.inventory.level === 'exact' ? UI.book : UI.available;
+  const bookTitle = UI.book;
   const dayTitle = grid.clues.some((c) => c.type === 'length' || c.type === 'exchanges') || exchanges || co2 ? UI.printDayTitle : UI.engagedTitle;
   const foot = grid.step && grid.neighbors.length ? UI.printFootBoth
     : grid.step ? UI.printFootStep : grid.neighbors.length ? UI.printFootExports : UI.printFoot;

@@ -404,12 +404,9 @@ export const UI = {
   tutorialOf: (k: number, n: number) => `Tutoriel ${k} sur ${n}`,
   tutorialShort: (k: number) => `Tutoriel ${k}`,
   ratedEyebrow: 'Grille notée',
-  noInventory: 'sans carnet exact',
   gridNumber: (id: number) => `Grille n° ${id}`,
   instructions: 'Consigne',
   book: 'Carnet d’ordres',
-  available: 'Centrales disponibles',
-  availableHint: 'formes autorisées, quantités à déduire',
   importName: 'Import',
   importOf: (from: string) => `Import ${from}`,
   importHint: (country: string) => `${country}, 1\u00a0case`,
@@ -452,9 +449,9 @@ export const UI = {
     `${name}, ${col} : ${value} exporté${value > 1 ? 's' : ''}${imports ? `, ${imports} importé${imports > 1 ? 's' : ''}` : ''}. Touche pour changer l’export.`,
   exportLocked: (name: string, col: string) => `${name}, ${col} : flux publié, verrouillé.`,
   lockedTap: (col: string) => `Flux publié à ${col} : verrouillé.`,
-  /** Idle hint: `list` when the grid has no order book, `exports` when it has a neighbor line. */
-  hintChoose: (list: boolean, exports: boolean, phone = false) => 'Glisse sur la grille pour poser la centrale choisie'
-    + ` (ou touche la case de départ puis celle d’arrivée). Change de centrale dans ${phone ? 'la barre sous la grille' : list ? 'la liste' : 'le carnet'}.`
+  /** Idle hint: `exports` when the grid has a neighbor line. */
+  hintChoose: (exports: boolean, phone = false) => 'Glisse sur la grille pour poser la centrale choisie'
+    + ` (ou touche la case de départ puis celle d’arrivée). Change de centrale dans ${phone ? 'la barre sous la grille' : 'le carnet d’ordres'}.`
     + `${exports ? ' Exporte en touchant une case de la rangée du voisin, sous la grille.' : ''}`,
   hintSecondTap: (label: string) => `${label} : touche maintenant la case d’arrivée.`,
   hintErase: 'Gomme : touche une centrale pour la retirer.',

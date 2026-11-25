@@ -814,8 +814,8 @@ describe('clue text: punctuation stays glued to the plant chip', () => {
 
 describe('phone hint', () => {
   it('points to the row under the board below 860 px', () => {
-    expect(UI.hintChoose(false, false, true)).toContain('la barre sous la grille');
-    expect(UI.hintChoose(false, false)).toContain('le carnet');
+    expect(UI.hintChoose(false, true)).toContain('la barre sous la grille');
+    expect(UI.hintChoose(false)).toContain('le carnet d’ordres');
   });
 });
 
