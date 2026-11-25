@@ -356,6 +356,24 @@ describe('board and game helpers', () => {
     expect(renderBook(g8, newGame(g8), null, true)).not.toContain('∞');
   });
 
+  it('a coal ramp of contiguous widths is one glyph: smallest ramp solid, added middle columns dashed', () => {
+    const g = byId(12);
+    g.pieces.C!.len = [3, 4, 5, 6];
+    g.inventory.pieces.C = {};
+    const html = renderBook(g, newGame(g), null);
+    const coal = html.slice(html.indexOf('data-piece="C"'));
+    const glyph = coal.slice(coal.indexOf('<span class="mb'), coal.indexOf('</span>', coal.indexOf('mb-w')));
+    expect(glyph).toContain('repeat(6,auto)');
+    expect(glyph).toContain('3–6');
+    // Profile 1, 2, 2, 2, 2, 1 on two rows: 6 cells in the bottom row (3 dashed), 4 in the top row (3 dashed).
+    expect(glyph.match(/<i class="d"/g)).toHaveLength(6);
+    expect(glyph.match(/<i class="" /g)).toHaveLength(4);
+    expect(glyph.match(/<i class="e">/g)).toHaveLength(2);
+    // Gaps in the widths: one glyph per width, as before.
+    g.pieces.C!.len = [3, 5];
+    expect(renderBook(g, newGame(g), null).match(/class="mb/g)!.length).toBeGreaterThan(glyph.match(/class="mb/g)!.length);
+  });
+
   it('clue texts get plant chips and slot values; day clues are the unslotted ones', () => {
     const g = byId(7);
     const price = g.clues.find((c) => c.type === 'price')!;

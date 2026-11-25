@@ -63,7 +63,7 @@ export function bookEntries(grid: Grid): BookEntry[] {
  * Mini piece at scale: `w` x `h` cells, dashed from column `dashFrom`; a ramp (`shape`) draws its
  * profile on two rows, the cells outside it left blank.
  */
-function mb(p: string, w: number, h: number, o: { used?: boolean; dashFrom?: number; dashTop?: number; paper?: boolean; label?: string; shape?: ShapeKind; width?: string } = {}): string {
+function mb(p: string, w: number, h: number, o: { used?: boolean; dashFrom?: number; dashTo?: number; dashTop?: number; paper?: boolean; label?: string; shape?: ShapeKind; width?: string } = {}): string {
   const c = PIECE_COLORS[colorKey(p)];
   const prof = profile(o.shape ?? 'rect', w, h);
   const rows = Math.max(...prof.map(([b, k]) => b + k));
@@ -72,7 +72,7 @@ function mb(p: string, w: number, h: number, o: { used?: boolean; dashFrom?: num
     const row = rows - 1 - Math.floor(i / w);
     const [b, k] = prof[col] ?? [0, 0];
     if (row < b || row >= b + k) return '<i class="e"></i>';
-    const dashed = (o.dashFrom !== undefined && col >= o.dashFrom) || (o.dashTop !== undefined && row >= o.dashTop);
+    const dashed = (o.dashFrom !== undefined && col >= o.dashFrom && col < (o.dashTo ?? Infinity)) || (o.dashTop !== undefined && row >= o.dashTop);
     return `<i class="${dashed ? 'd' : ''}" style="background:${o.paper ? c.b : c.a};--c:${c.ink}"></i>`;
   }).join('');
   // The width, written over the bottom row (screen).
@@ -99,6 +99,7 @@ function importCells(state: PlayState, country: string): number {
 
 /**
  * Allowed shapes as mini pieces: a dashed tail for a range of widths, one piece per width otherwise.
+ * Screen: a trapezoid ramp of contiguous widths is one glyph (smallest ramp solid, added middle columns dashed).
  * Screen: optional heights are dashed rows on the same piece, which carries its width ("3–6" for a range).
  * Paper: one more piece per extra height.
  */
@@ -112,6 +113,11 @@ function shapeGlyphs(e: BookEntry, paper: boolean): string {
   if (!paper) {
     const maxH = ramp ? 1 : e.heights[e.heights.length - 1] ?? minH;
     const dashTop = maxH > minH ? minH : undefined;
+    // A trapezoid ramp of contiguous widths: one glyph at the widest scale, the smallest ramp in colour,
+    // the columns added in the middle dashed.
+    if (e.shape === 'trap' && !gaps && maxL > minL) {
+      return mb(id, maxL, 1, { shape: e.shape, dashFrom: minL - 1, dashTo: maxL - 1, width: widthLabel(minL, maxL) });
+    }
     return ramp || gaps
       ? e.lens.map((len) => mb(id, len, ramp ? 1 : maxH, { shape: e.shape, dashTop, width: widthLabel(len) })).join('')
       : mb(id, maxL, maxH, { dashFrom: minL, dashTop, width: widthLabel(minL, maxL) });
