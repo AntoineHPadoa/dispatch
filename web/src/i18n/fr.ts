@@ -14,14 +14,17 @@ interface PieceWords {
   a: string;
   /** "de gaz" (cells of). */
   of: string;
+  /** "groupe gaz": a laid plant, and its plural ("groupes nucléaires"; charbon, gaz, TAC and barrage stay invariable). */
+  group: string;
+  groups: string;
 }
 
 export const PIECE_WORDS: Record<PieceId, PieceWords> = {
-  N: { name: 'Nucléaire', the: 'le nucléaire', a: 'un réacteur', of: 'de nucléaire' },
-  B: { name: 'Barrage', the: 'le barrage', a: 'un barrage', of: 'de barrage' },
-  C: { name: 'Charbon', the: 'le charbon', a: 'une centrale à charbon', of: 'de charbon' },
-  G: { name: 'Gaz', the: 'le gaz', a: 'une centrale à gaz', of: 'de gaz' },
-  T: { name: 'TAC', the: 'la TAC', a: 'une TAC', of: 'de TAC' },
+  N: { name: 'Nucléaire', the: 'le nucléaire', a: 'un réacteur', of: 'de nucléaire', group: 'groupe nucléaire', groups: 'groupes nucléaires' },
+  B: { name: 'Barrage', the: 'le barrage', a: 'un barrage', of: 'de barrage', group: 'groupe barrage', groups: 'groupes barrage' },
+  C: { name: 'Charbon', the: 'le charbon', a: 'une centrale à charbon', of: 'de charbon', group: 'groupe charbon', groups: 'groupes charbon' },
+  G: { name: 'Gaz', the: 'le gaz', a: 'une centrale à gaz', of: 'de gaz', group: 'groupe gaz', groups: 'groupes gaz' },
+  T: { name: 'TAC', the: 'la TAC', a: 'une TAC', of: 'de TAC', group: 'groupe TAC', groups: 'groupes TAC' },
 };
 
 /** Stands for the country in exchange messages when totals cover all countries. */
@@ -115,7 +118,7 @@ export function clueText(grid: Grid, clue: Clue): string {
       return `${text.charAt(0).toUpperCase()}${text.slice(1)}.`;
     }
     case 'engaged':
-      return `Groupe déjà engagé : ${PIECE_WORDS[clue.piece].a} de ${at(clue.col)} à ${at(clue.col + clue.len)}, `
+      return `Groupe déjà engagé : un ${PIECE_WORDS[clue.piece].group} de ${at(clue.col)} à ${at(clue.col + clue.len)}, `
         + `${isRamp(shapeKind(grid.pieces[clue.piece])) ? 'base ' : ''}ligne ${clue.row + 1}.`;
   }
 }
@@ -180,22 +183,19 @@ function lenText(lens: number[]): string {
   return contiguous ? `${min} à ${max} créneaux` : `${lens.join(', ')} créneaux`;
 }
 
-/** "de nucléaire" -> "nucléaire". */
-const bare = (of: string) => of.replace(/^d(e |’)/, '');
-
 /** Rule violations, one function per reason. */
 export const MSG = {
   bounds: (ramp = false) => `Le groupe${ramp ? ' à paliers' : ''} dépasse de la grille.`,
-  length: (name: string, lens: number[]) => `Le groupe ${bare(name)} doit faire ${lenText(lens)}.`,
+  length: (subject: string, lens: number[]) => `${subject} doit faire ${lenText(lens)}.`,
   rampLength: (lens: number[]) => `Un groupe de charbon à paliers fait ${lenText(lens)}.`,
-  height: (name: string, heights: number[]) => `Le groupe ${bare(name)} doit faire ${heights.join(' ou ')} GW de haut.`,
+  height: (subject: string, heights: number[]) => `${subject} doit faire ${heights.join(' ou ')} GW de haut.`,
   silhouette: (col: string) => `Hors de la silhouette à ${col}.`,
   weather: (col: string) => `La météo occupe déjà ce bloc à ${col}.`,
   overlap: () => 'Bloc déjà occupé.',
   unavailable: (of: string) => `Pas de centrale ${of} dans cette grille.`,
   unknownCountry: () => 'Ce pays n’est pas relié à la grille.',
-  /** `name` is the plant complement ("de nucléaire"): "Plus de groupe nucléaire de 4 créneaux dans le carnet d’ordres." */
-  inventoryBar: (name: string, len: number, ramp = false) => `Plus de groupe${ramp ? ' à paliers' : ''} ${bare(name)} de ${plural(len, 'créneau', 'créneaux')} dans le carnet d’ordres.`,
+  /** `group` is the plant's group ("groupe nucléaire"): "Plus de groupe nucléaire de 4 créneaux dans le carnet d’ordres." */
+  inventoryBar: (group: string, len: number, ramp = false) => `Plus de ${group}${ramp ? ' à paliers' : ''} de ${plural(len, 'créneau', 'créneaux')} dans le carnet d’ordres.`,
   inventoryCells: (name: string, total: number) => `Plus de bloc ${name} dans le carnet d’ordres (${total} au total).`,
   stock: (piece: string, of: string, total: number) => (piece === 'B'
     ? `Plus d’eau dans le barrage (${plural(total, 'bloc')} au plus).`
@@ -213,7 +213,7 @@ export const MSG = {
   locked: () => 'Ce groupe est déjà engagé : on ne peut pas le retirer.',
   lockedOver: () => 'Un groupe déjà engagé occupe cette place : on ne peut pas le remplacer.',
   nothingHere: () => 'Aucun groupe sur ce bloc.',
-  tooManyBars: (name: string, extra: number[]) => `Groupes ${name} en trop : ${extra.join(', ')}.`,
+  tooManyBars: (groups: string, extra: number[]) => `${capitalize(groups)} en trop : ${extra.join(', ')}.`,
   tooManyCells: (name: string, got: number, want: number) => `Trop de blocs ${name} : ${got} pour ${want}.`,
   tooManyExports: (to: string, got: number, want: number) => `Trop d’exports ${to} : ${got} pour ${want}.`,
   tooManyImports: (from: string, got: number, want: number) => `Trop d’imports ${from} : ${got} pour ${want}.`,
@@ -223,7 +223,7 @@ export const MSG = {
 /** Reasons why a grid is not finished yet. */
 export const TODO = {
   missing: (k: number) => `Il reste ${plural(k, 'bloc')} à couvrir.`,
-  bars: (name: string, left: number[]) => `Il reste à poser des groupes ${name} : ${left.join(', ')}.`,
+  bars: (groups: string, left: number[]) => `Il reste à poser des ${groups} : ${left.join(', ')}.`,
   cells: (name: string, left: number) => `Il reste ${plural(left, 'bloc')} ${name} à poser.`,
   exports: (to: string, left: number) => `Il reste ${plural(left, 'bloc')} à exporter ${to}.`,
   imports: (from: string, left: number) => `Il reste ${plural(left, 'bloc')} à importer ${from}.`,
@@ -231,6 +231,12 @@ export const TODO = {
   clue: (text: string) => `Indice non respecté : ${text}`,
   otherSolution: () => 'Pose valide, mais ce n’est pas la solution attendue.',
 };
+
+/** Subject of a rule message about a laid plant: "Le groupe nucléaire", "L’import d’Allemagne". */
+export function groupSubject(grid: Grid, piece: string, country?: string): string {
+  if (piece === IMPORT_PIECE) return `L’import${country ? ` ${countryFrom(grid, country)}` : ''}`;
+  return `Le ${PIECE_WORDS[piece as PieceId]?.group ?? piece}`;
+}
 
 /** "de nucléaire", "d’import d’Allemagne": complement used by inventory messages. */
 export function ofPiece(grid: Grid, piece: string, country?: string): string {
@@ -471,7 +477,7 @@ export const UI = {
     }
     const parts = [...counts].map(([key, k]) => (key.startsWith('I:')
       ? `${plural(k, 'import')} ${countryFrom(grid, key.slice(2))}`
-      : `${plural(k, isRamp(shapeKind(grid.pieces[key as PieceId])) ? 'groupe à paliers' : 'groupe')} ${PIECE_WORDS[key as PieceId]?.of ?? key}`));
+      : `${k} ${k > 1 ? PIECE_WORDS[key as PieceId]?.groups ?? key : PIECE_WORDS[key as PieceId]?.group ?? key}${isRamp(shapeKind(grid.pieces[key as PieceId])) ? ' à paliers' : ''}`));
     const list = parts.length > 1 ? `${parts.slice(0, -1).join(', ')} et ${parts[parts.length - 1]}` : parts[0] ?? '';
     return `Remplace ${list}`;
   },

@@ -84,7 +84,7 @@ describe('reference solutions', () => {
     expect(ev.solved).toBe(false);
     expect(ev.missing).toBe(16);
     expect(ev.unmet).toContain('Il reste 16 blocs à couvrir.');
-    expect(ev.unmet).toContain('Il reste à poser des groupes de nucléaire : 6, 6.');
+    expect(ev.unmet).toContain('Il reste à poser des groupes nucléaires : 6, 6.');
   });
 });
 
@@ -425,7 +425,7 @@ describe('clues (one broken case per type)', () => {
     expect(clueText(g, { type: 'exchanges', exports: { DE: 2 }, step: 1 })).toBe("2 blocs exportés vers l’Allemagne, 1 pompage.");
     expect(clueText(g, { type: 'exchanges', imports: { '*': 2 } })).toBe('2 blocs importés, tous pays confondus.');
     expect(clueText(g, { type: 'exchanges', exports: { DE: 0 } })).toBe('Aucun bloc exporté vers l’Allemagne.');
-    expect(clueText(g, { type: 'engaged', piece: 'T', row: 4, col: 4, len: 1 })).toBe('Groupe déjà engagé : une TAC de 16h à 20h, ligne 5.');
+    expect(clueText(g, { type: 'engaged', piece: 'T', row: 4, col: 4, len: 1 })).toBe('Groupe déjà engagé : un groupe TAC de 16h à 20h, ligne 5.');
   });
 });
 

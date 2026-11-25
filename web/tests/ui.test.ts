@@ -19,7 +19,7 @@ import {
   applyLockedExports, boardMessage, bulletinTag, displayTitle, exportTap, initialState, isInitialState, newlyBroken, nextExportValue,
   poseMessage,
 } from '../src/ui/game';
-import { MSG, TUTORIAL_LORE, durationText } from '../src/i18n/fr';
+import { MSG, PIECE_WORDS, TUTORIAL_LORE, durationText, groupSubject } from '../src/i18n/fr';
 import { STEP_KEY, bookEntries, clueItem, inventoryExchanges, isDayClue, orderClues, withInventoryExchanges, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, richClueText, shownClueCount, splitExchanges, exchangeLines, co2Costs } from '../src/ui/panels';
 import { esc } from '../src/ui/palette';
 import { renderSheet, slotLegend } from '../src/ui/print';
@@ -143,7 +143,7 @@ describe('pose messages', () => {
   it('without a contradiction: replaced plants, else the pose fits', () => {
     const g1 = byId(1);
     expect(poseMessage(g1, 'TAC à 8h, ligne 2', [], null)).toEqual({ text: 'TAC à 8h, ligne 2 : la pose tient.', tone: 'ok' });
-    expect(poseMessage(g1, 'TAC à 8h, ligne 2', [{ piece: 'N' }], null).text).toBe('TAC à 8h, ligne 2 : remplace 1 groupe de nucléaire.');
+    expect(poseMessage(g1, 'TAC à 8h, ligne 2', [{ piece: 'N' }], null).text).toBe('TAC à 8h, ligne 2 : remplace 1 groupe nucléaire.');
     const ok = [{ clue: byId(2).clues[0]!, text: '', status: 'broken' as const }];
     expect(newlyBroken(ok, ok)).toBeNull();
   });
@@ -390,6 +390,17 @@ describe('board and game helpers', () => {
     expect(html).toContain('aria-label="Ordre de prix : nucléaire, gaz"');
     expect(html).toContain('aria-label="Ordre de prix : ');
     expect(clueItem(g, price, null, true)).not.toContain('class="cd');
+  });
+
+  it('a laid plant is a « groupe » followed by the plant, plural only on nucléaire', () => {
+    expect(PIECE_WORDS.N.groups).toBe('groupes nucléaires');
+    for (const id of ['B', 'C', 'G', 'T'] as const) expect(PIECE_WORDS[id].groups).toBe(`${PIECE_WORDS[id].group}`.replace('groupe', 'groupes'));
+    const g = byId(1);
+    expect(groupSubject(g, 'N')).toBe('Le groupe nucléaire');
+    expect(groupSubject(g, 'T')).toBe('Le groupe TAC');
+    expect(MSG.tooManyBars(PIECE_WORDS.N.groups, [3])).toBe('Groupes nucléaires en trop : 3.');
+    expect(MSG.inventoryBar(PIECE_WORDS.T.group, 1)).toBe('Plus de groupe TAC de 1 créneau dans le carnet d’ordres.');
+    expect(UI.replaces(g, [{ piece: 'N' }, { piece: 'N' }])).toBe('Remplace 2 groupes nucléaires');
   });
 
   it('clue texts get plant chips and slot values; day clues are the unslotted ones', () => {

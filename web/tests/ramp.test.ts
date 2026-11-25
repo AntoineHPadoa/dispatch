@@ -251,16 +251,16 @@ describe('ramp details: gauge, validator, sheet, messages', () => {
     const g = t1();
     const full = ok(place(g, newGame(g), C(1, 0, 3)));
     const r = place(g, full, C(0, 3, 3));
-    expect(!r.ok && r.error.message).toBe(MSG.inventoryBar('de charbon', 3, true));
-    expect(MSG.inventoryBar('de charbon', 3, true)).toMatch(/^Plus de groupe à paliers /);
+    expect(!r.ok && r.error.message).toBe(MSG.inventoryBar('groupe charbon', 3, true));
+    expect(MSG.inventoryBar('groupe charbon', 3, true)).toMatch(/^Plus de groupe charbon à paliers /);
     const out = place(g, newGame(g), C(1, 4, 3));
     expect(!out.ok && out.error.message).toBe('Le groupe à paliers dépasse de la grille.');
-    expect(UI.replaces(g, [{ piece: 'C' }])).toBe('Remplace 1 groupe à paliers de charbon');
-    expect(UI.replaces(g, [{ piece: 'N' }])).toBe('Remplace 1 groupe de nucléaire');
+    expect(UI.replaces(g, [{ piece: 'C' }])).toBe('Remplace 1 groupe charbon à paliers');
+    expect(UI.replaces(g, [{ piece: 'N' }])).toBe('Remplace 1 groupe nucléaire');
   });
 
   it('an engaged ramp is named by its base row', () => {
-    expect(clueText(t1(), { type: 'engaged', piece: 'C', row: 1, col: 0, len: 3 })).toBe('Groupe déjà engagé : une centrale à charbon de 0h à 12h, base ligne 2.');
+    expect(clueText(t1(), { type: 'engaged', piece: 'C', row: 1, col: 0, len: 3 })).toBe('Groupe déjà engagé : un groupe charbon de 0h à 12h, base ligne 2.');
   });
 
   it('a stair ramp (validated, not in the game yet) is drawn as one outline', () => {

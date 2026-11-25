@@ -8,7 +8,7 @@
  *          if (r.ok) state = r.state; else show(r.error.message);
  */
 import { ANY_COUNTRY, IMPORT_PIECE, type Grid, type Placement, type StepPair } from '../model/grid';
-import { MSG, columnLabel, countryFrom, countryTo, ofPiece } from '../i18n/fr';
+import { MSG, PIECE_WORDS, columnLabel, countryFrom, countryTo, groupSubject, ofPiece } from '../i18n/fr';
 import {
   barHeight, barIndexAt, co2PerCell, co2Total, exportsAt, importsAt, pieceCells, silhouette, totalExports, weatherCells,
   totalImports, type EngineError, type ErrorCode, type PlacedBar, type PlayState,
@@ -40,9 +40,9 @@ export function checkShape(grid: Grid, bar: Placement): Check {
     heights = isRamp(shapeKind(def)) ? [1] : def.height ?? [1];
     if (isRamp(shapeKind(def)) && !lens.includes(bar.len)) return fail('length', MSG.rampLength(lens));
   }
-  const name = ofPiece(grid, bar.piece, bar.country);
-  if (!lens.includes(bar.len)) return fail('length', MSG.length(name, lens));
-  if (!heights.includes(barHeight(bar))) return fail('height', MSG.height(name, heights));
+  const subject = groupSubject(grid, bar.piece, bar.country);
+  if (!lens.includes(bar.len)) return fail('length', MSG.length(subject, lens));
+  if (!heights.includes(barHeight(bar))) return fail('height', MSG.height(subject, heights));
   if (bar.row < 0 || bar.col < 0 || bar.col + bar.len > n) return fail('bounds', MSG.bounds(bar.piece !== IMPORT_PIECE && isRamp(shapeKind(grid.pieces[bar.piece]))));
   return OK;
 }
@@ -102,7 +102,7 @@ export function checkBudget(grid: Grid, state: PlayState, bar: Placement, skip =
     const name = ofPiece(grid, bar.piece);
     if (spec.bars) {
       const placed = state.bars.filter((b, i) => i !== skip && b.piece === bar.piece && b.len === bar.len).length;
-      if (placed >= spec.bars.filter((l) => l === bar.len).length) return fail('inventory', MSG.inventoryBar(name, bar.len, isRamp(shapeKind(grid.pieces[bar.piece]))));
+      if (placed >= spec.bars.filter((l) => l === bar.len).length) return fail('inventory', MSG.inventoryBar(PIECE_WORDS[bar.piece].group, bar.len, isRamp(shapeKind(grid.pieces[bar.piece]))));
     }
     if (spec.cells !== undefined && pieceCells(grid, state, bar.piece, skip) + cells > spec.cells) {
       return fail('inventory', MSG.inventoryCells(name, spec.cells));

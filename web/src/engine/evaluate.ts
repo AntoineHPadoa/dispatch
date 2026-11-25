@@ -10,7 +10,7 @@
  */
 import { ANY_COUNTRY, type Clue, type Grid, type PieceId } from '../model/grid';
 import {
-  ALL_COUNTRIES, INVENTORY, MSG, TODO, clueText, columnLabel, countryFrom, countryTo, ofPiece,
+  ALL_COUNTRIES, INVENTORY, MSG, PIECE_WORDS, TODO, clueText, columnLabel, countryFrom, countryTo, ofPiece,
 } from '../i18n/fr';
 import { checkShape, checkSilhouette } from './rules';
 import {
@@ -197,10 +197,10 @@ function inventoryReport(grid: Grid, state: PlayState, errors: EngineError[], to
       }
       left.sort((a, b) => b - a);
       if (extra.length) {
-        errors.push({ code: 'inventory', message: MSG.tooManyBars(name, extra) });
+        errors.push({ code: 'inventory', message: MSG.tooManyBars(PIECE_WORDS[id].groups, extra) });
         items.push({ key: id, status: 'over', text: INVENTORY.over(extra.join(', ')), left });
       } else if (left.length) {
-        todo.push(TODO.bars(name, left));
+        todo.push(TODO.bars(PIECE_WORDS[id].groups, left));
         items.push({ key: id, status: 'todo', text: INVENTORY.left(left.join(', ')), left });
       } else {
         items.push({ key: id, status: 'done', text: INVENTORY.done, left });
