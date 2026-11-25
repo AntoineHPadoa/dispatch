@@ -277,6 +277,20 @@ export function publishedStepPairs(grid: Grid): number | null {
   return null;
 }
 
+/** Merges exchanges clues into one: a grid often publishes one clue per country or per direction. Null when there is none. */
+export function mergeExchanges(clues: readonly Clue[]): ExchangesClue | null {
+  const merged: ExchangesClue = { type: 'exchanges' };
+  let any = false;
+  for (const c of clues) {
+    if (c.type !== 'exchanges') continue;
+    any = true;
+    if (c.exports) merged.exports = { ...merged.exports, ...c.exports };
+    if (c.imports) merged.imports = { ...merged.imports, ...c.imports };
+    if (c.step !== undefined && merged.step === undefined) merged.step = c.step;
+  }
+  return any ? merged : null;
+}
+
 /** Validate the structure of a grid (§14). Error messages are developer-facing (English). */
 export function validateGrid(raw: unknown): ValidationResult {
   const errors: string[] = [];

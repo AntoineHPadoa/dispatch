@@ -2,7 +2,7 @@
  * Every French text shown to the player: piece and country names, clue texts, rule violations,
  * inventory status. The engine and the UI import from here; no player text lives elsewhere.
  */
-import { IMPORT_PIECE, type Clue, type Grid, type PieceId } from '../model/grid';
+import { ANY_COUNTRY, IMPORT_PIECE, type Clue, type ExchangesClue, type Grid, type PieceId } from '../model/grid';
 import { isRamp, shapeKind, type ShapeKind } from '../model/shapes';
 
 interface PieceWords {
@@ -118,6 +118,32 @@ export function clueText(grid: Grid, clue: Clue): string {
       return `Déjà engagé : ${PIECE_WORDS[clue.piece].a} de ${at(clue.col)} à ${at(clue.col + clue.len)}, `
         + `${isRamp(shapeKind(grid.pieces[clue.piece])) ? 'base ' : ''}ligne ${clue.row + 1}.`;
   }
+}
+
+/**
+ * One line of the "day's exchanges" publication, for one country: "Allemagne : ↓ 1 import, ↑ 2 exports".
+ * A direction without a published total reads "∞" (none allowed at all: "0" on an exact inventory).
+ * The total of every country reads on its own: "4 blocs exportés au total".
+ */
+export function exchangeLineText(grid: Grid, line: ExchangesClue): string {
+  const both = { ...line.exports, ...line.imports };
+  if (ANY_COUNTRY in both) {
+    const parts: string[] = [];
+    const total = (k: number, one: string, many: string, none: string) => `${k ? plural(k, one, many) : none} au total`;
+    const imp = line.imports?.[ANY_COUNTRY];
+    const exp = line.exports?.[ANY_COUNTRY];
+    if (imp !== undefined) parts.push(total(imp, 'bloc importé', 'blocs importés', 'aucun bloc importé'));
+    if (exp !== undefined) parts.push(total(exp, 'bloc exporté', 'blocs exportés', 'aucun bloc exporté'));
+    const text = parts.join(', ');
+    return `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
+  }
+  const id = Object.keys(both)[0] ?? '';
+  const name = grid.neighbors.find((nb) => nb.id === id)?.name ?? id;
+  const exact = grid.inventory.level === 'exact';
+  const shared = (dir: 'exports' | 'imports') => grid.inventory[dir]?.[ANY_COUNTRY] !== undefined;
+  const value = (dir: 'exports' | 'imports') => line[dir]?.[id] ?? (exact && !shared(dir) ? 0 : null);
+  const part = (arrow: string, k: number | null, one: string) => `${arrow} ${k === null ? '∞' : k} ${one}${k !== null && k > 1 ? 's' : ''}`;
+  return `${name} : ${part('↓', value('imports'), 'import')}, ${part('↑', value('exports'), 'export')}`;
 }
 
 /** Short text of a clue drawn on the grid, for the paper legend: "8h : la TAC fixe le prix", "16h : 1 gaz, 3 TAC". */
@@ -408,8 +434,10 @@ export const UI = {
   co2ClueKind: 'Limite CO₂',
   co2Clue: (cap: number) => `${cap} points de CO₂ au plus.`,
   neighborLine: (name: string, cap: number) => `${name} · ${cap} ${cap > 1 ? 'blocs' : 'bloc'} par créneau`,
-  /** Day's exchanges under a neighbor row: "→ 1/2", or "→ 0" when none is allowed. */
-  exchangeCount: (arrow: string, got: number, want: number) => (want === 0 && got === 0 ? `${arrow} 0` : `${arrow} ${got}/${want}`),
+  /** Day's exchanges under a neighbor row: "↑ 1/2", "↓ 1/∞" (total not published), or "↑ 0" when none is allowed. */
+  exchangeCount: (arrow: string, got: number, want: number | null) => (want === 0 && got === 0 ? `${arrow} 0` : `${arrow} ${got}/${want ?? '∞'}`),
+  /** Spoken part of a neighbor cell that carries an import record. */
+  importRecordLabel: (k: number) => `Relevé d’import : ${k}.`,
   stepLine: 'STEP · pompage ▲ puis turbinage ▼',
   stepLineNumbered: 'STEP · pompage ▲ puis turbinage ▼ · numérote les paires : ▲1 ▼1, ▲2 ▼2…',
   stepName: 'STEP',

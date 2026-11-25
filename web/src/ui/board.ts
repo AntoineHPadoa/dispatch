@@ -12,7 +12,7 @@
  *   programme is a thin coloured line right under the grid on its range, packed on as few lanes as
  *   possible; on paper its name also stands in the band. Each neighbor has a row of cells under the
  *   band, headed by its id in a left gutter, and a tap on a cell exports a block in that slot. Under
- *   it (screen), the day's exchanges against what is laid ("→ 1/2  ← 0/2"), then the neighbor caption.
+ *   it (screen), the day's exchanges against what is laid ("↑ 1/2  ↓ 0/2"), then the neighbor caption.
  * - Records: a pill of colour squares and counts; with `recordChips` (desktop), a bare group of colour
  *   chips holding the counts, centred on the slot, three to a line at most before wrapping.
  * - Records on a narrow screen (pill style, cells under RECORD_MARKER_CELL): a record of several plants
@@ -23,7 +23,7 @@
  * - Rectangles are drawn as rects; a coal ramp as one outline following its profile (rounded
  *   corners on screen, concave ones included; square on paper).
  */
-import { ANY_COUNTRY, type Grid, type PieceId, type Placement } from '../model/grid';
+import { ANY_COUNTRY, mergeExchanges, type Clue, type Grid, type PieceId, type Placement } from '../model/grid';
 import { cellsOf, isRamp, kindOf, profileOf, topIn } from '../model/shapes';
 import {
   barHeight, exportsAt, importsAt, rawSilhouette, residual, totalExports, totalImports, type Evaluation, type PlayState, type ClueStatus,
@@ -99,6 +99,19 @@ export function recordLayout(counts: Record<string, number>, cell: number): Reco
   return { w, h: 18 + (rows.length - 1) * CHIP_ROW, chips };
 }
 
+/** Country of a record that counts only the imports of one neighbor (`I:<country>` keys): drawn on that country's row. */
+export function importRecordCountry(grid: Grid, clue: Clue): string | null {
+  if (clue.type !== 'column') return null;
+  const keys = Object.keys(clue.counts);
+  const first = keys[0];
+  if (!first || !keys.every((k) => k === first) || !first.startsWith('I:')) return null;
+  const country = first.slice(2);
+  return grid.neighbors.some((nb) => nb.id === country) ? country : null;
+}
+
+/** Cells the import record of a clue asks for. */
+export const importRecordValue = (clue: Clue): number => (clue.type === 'column' ? Object.values(clue.counts)[0] ?? 0 : 0);
+
 /** Export flow clues fix the export of one column: `country:col` -> value. */
 export function lockedExports(grid: Grid): Map<string, number> {
   const m = new Map<string, number>();
@@ -152,9 +165,7 @@ export interface BoardGeometry {
 export function allowedExchange(grid: Grid, country: string, dir: 'exports' | 'imports'): number | null {
   const inv = grid.inventory;
   if (inv.level === 'exact') return inv[dir]?.[ANY_COUNTRY] !== undefined ? null : inv[dir]?.[country] ?? 0;
-  const ex = grid.clues.find((c) => c.type === 'exchanges');
-  const m = ex && ex.type === 'exchanges' ? ex[dir] : undefined;
-  return m?.[country] ?? null;
+  return mergeExchanges(grid.clues)?.[dir]?.[country] ?? null;
 }
 
 /** Width of the left gutter of the export rows: the neighbor id ("DE") stands there. */
@@ -249,6 +260,8 @@ export function bandPlan(grid: Grid, cell: number, style: BoardStyle = 'A', reco
       const mid = xs(cl.col) + cell / 2;
       const [x1, x2] = extent(mid, w);
       raw.push({ kind: 'price', index, label, w, mid, x1, x2 });
+    } else if (cl.type === 'column' && style === 'A' && importRecordCountry(grid, cl) !== null) {
+      // An import record of one country sits on that country's row, not in the band.
     } else if (cl.type === 'column' && recordChips && style === 'A') {
       const rec = recordLayout(cl.counts, cell);
       const mid = xs(cl.col) + cell / 2;
@@ -719,6 +732,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
 
   // ---- neighbors: one row of cells per country under the grid (its id in the gutter), then STEP on paper
   const locked = lockedExports(grid);
+  const recordIndex = (country: string, c: number) => grid.clues.findIndex((cl) => cl.type === 'column' && cl.col === c && importRecordCountry(grid, cl) === country);
   const flowClue = (country: string, c: number) => grid.clues.findIndex((cl) => cl.type === 'flow' && cl.country === country && cl.col === c);
   const focus = input.interactive ? ' tabindex="0" role="button"' : '';
   const baseY = H * cell + 24 + geo.bandHeight;
@@ -731,19 +745,18 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     const importable = grid.co2_cap !== null && bookEntries(grid).some((e) => e.key === `I:${nb.id}`);
     const long = `${UI.neighborLine(nb.name, nb.cap)}${importable ? ` · ${UI.co2PerCell(nb.co2)}` : ''}`;
     s += T(X0 - 5, ry + rowH / 2 + 3.5, nb.id, { anchor: 'end', w: 800, size: 9.5, color: soft });
-    // Screen: the day's exchanges with this neighbor under the first block ("→ 1/2  ← 0/2"; a laid
-    // or published flow counts), green once met, red beyond, grey when none is allowed; then the caption.
+    // Screen: the day's exchanges with this neighbor under the first block ("↑ 1/2  ↓ 1/∞"; a laid
+    // or published flow counts; ∞ when the total is not published), green once met, red beyond, grey otherwise; then the caption.
     const capY = ry + rowH + 13;
     let capX = X0 + cgap / 2;
     if (A) {
       const flows: [string, number | null, number][] = [
-        ['→', allowedExchange(grid, nb.id, 'exports'), totalExports(state, nb.id)],
-        ['←', allowedExchange(grid, nb.id, 'imports'), totalImports(state, nb.id)],
+        ['↑', allowedExchange(grid, nb.id, 'exports'), totalExports(state, nb.id)],
+        ['↓', allowedExchange(grid, nb.id, 'imports'), totalImports(state, nb.id)],
       ];
       for (const [arrow, want, got] of flows) {
-        if (want === null) continue;
         const t = UI.exchangeCount(arrow, got, want);
-        const color = got > want ? BAD : want > 0 && got === want ? OK : soft;
+        const color = want !== null && got > want ? BAD : want !== null && want > 0 && got === want ? OK : soft;
         s += T(capX, capY, t, { anchor: 'start', w: 800, size: 9, color });
         capX += t.length * 5.4 + 8;
       }
@@ -768,17 +781,22 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       const im = importsAt(state, nb.id, c);
       const isLocked = locked.has(`${nb.id}:${c}`);
       const st = fi >= 0 ? statusOf(fi) : null;
-      const text = e && im ? `→${e} ←${im}` : e ? `→${e}` : im ? `←${im}` : flow && flow.type === 'flow' && flow.dir === 'import' && flow.value ? `←${flow.value}` : '';
-      const aria = isLocked ? UI.exportLocked(nb.name, columnLabel(grid, c)) : UI.exportLabel(nb.name, columnLabel(grid, c), e, im);
+      const ri = recordIndex(nb.id, c);
+      const rv = ri >= 0 ? importRecordValue(grid.clues[ri]!) : 0;
+      const text = e && im ? `↑${e} ↓${im}` : e ? `↑${e}` : im ? `↓${im}` : flow && flow.type === 'flow' && flow.dir === 'import' && flow.value ? `↓${flow.value}` : '';
+      const aria = (isLocked ? UI.exportLocked(nb.name, columnLabel(grid, c)) : UI.exportLabel(nb.name, columnLabel(grid, c), e, im)) + (ri >= 0 ? ` ${UI.importRecordLabel(rv)}` : '');
       const act = !input.interactive ? '' : ` data-act="${isLocked ? 'locked' : 'export'}" data-country="${esc(nb.id)}" data-col="${c}"${focus}`;
+      // An import record of this country sits on its cell: a chip with the value on the left, the cell text beside it.
+      const chipW = Math.max(13, String(rv).length * 5.9 + 5);
+      const tx = ri >= 0 ? px + 3 + chipW + 2 + (w - 3 - chipW - 2) / 2 : px + w / 2;
       s += `<g class="pill${act ? ' act' : ''}${isLocked ? ' locked' : ''}"${act} aria-label="${esc(aria)}">`;
       if (!e && !im) {
         const pending = flow && flow.type === 'flow' && flow.dir === 'import' && flow.value > 0;
         s += `<rect x="${px}" y="${yy}" width="${w}" height="${rowH}" rx="${rad}" fill="#fbf7f9" stroke="${pending ? PIECE_COLORS.I.ink : '#dccfd7'}" stroke-width="1.2" stroke-dasharray="3 3"/>`
-          + (text ? T(px + w / 2, yy + rowH / 2 + 3.5, text, { w: 700, size: 9, color: ink }) : '');
+          + (text ? T(tx, yy + rowH / 2 + 3.5, text, { w: 700, size: 9, color: ink }) : '');
       } else {
         s += `<rect x="${px}" y="${yy}" width="${w}" height="${rowH}" rx="${rad}" fill="${PIECE_COLORS.I.a}" stroke="${fi >= 0 ? ink : PIECE_COLORS.I.ink}" stroke-width="${fi >= 0 ? 1.5 : 1.2}"/>`
-          + T(px + w / 2 + (isLocked ? 5 : 0), yy + rowH / 2 + 3.5, text, { size: 9 });
+          + T(tx + (isLocked ? 5 : 0), yy + rowH / 2 + 3.5, text, { size: 9 });
       }
       // A published export is fixed: padlock inside its cell. A published import only outlines
       // the cell (the player still exports there freely).
@@ -786,6 +804,13 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
         s += `<g transform="translate(${px + 3} ${yy + (rowH - 12) / 2}) scale(.5)" fill="none" stroke="${ink}" stroke-width="2.4" stroke-linecap="round">${ICONS.lock}</g>`;
       }
       if (fi >= 0) s += clueMark(px + w - 2, yy + 1, st);
+      if (ri >= 0) {
+        // Same chip as the records under the hours: the colour of the line, the state mark on its top right corner.
+        const cx = px + 3;
+        s += `<rect class="import-record" x="${cx}" y="${yy + (rowH - 13) / 2}" width="${chipW}" height="13" rx="4" fill="${fill('I')}" stroke="${PIECE_COLORS.I.ink}" stroke-width=".8"/>`
+          + T(cx + chipW / 2, yy + rowH / 2 + 3.2, String(rv), { size: 9 })
+          + clueMark(cx + chipW - 1, yy + (rowH - 13) / 2 + 1, statusOf(ri));
+      }
       s += '</g>';
     }
   });

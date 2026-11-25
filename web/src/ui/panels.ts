@@ -5,11 +5,11 @@
  *   width; optional heights are dashed rows above the filled first row, optional widths a dashed tail.
  * - Paper (style B): every bar drawn, shape hints under the names, no usage.
  */
-import { ANY_COUNTRY, IMPORT_PIECE, PIECE_IDS, publishedStepPairs, type Clue, type ExchangesClue, type Grid, type PieceId } from '../model/grid';
+import { ANY_COUNTRY, IMPORT_PIECE, PIECE_IDS, mergeExchanges, publishedStepPairs, type Clue, type ExchangesClue, type Grid, type PieceId } from '../model/grid';
 import {
   clueText, co2PerCell, pieceCells, totalExports, totalImports, type ClueReport, type ClueStatus, type PlayState,
 } from '../engine';
-import { CLUE_KIND, PIECE_WORDS, UI, countryFrom, pieceHint } from '../i18n/fr';
+import { CLUE_KIND, PIECE_WORDS, UI, countryFrom, exchangeLineText, pieceHint } from '../i18n/fr';
 import { CLUE_ICON, PIECE_COLORS, colorKey, esc, icon } from './palette';
 import { cellCount, isRamp, profile, shapeKind, type ShapeKind } from '../model/shapes';
 
@@ -34,8 +34,13 @@ export { publishedStepPairs } from '../model/grid';
 /** True when no block can come from `country` today: a line without capacity, or a published zero total. */
 function importRuledOut(grid: Grid, country: string): boolean {
   if ((grid.neighbors.find((nb) => nb.id === country)?.cap ?? 0) <= 0) return true;
-  const imports = grid.clues.find((c): c is ExchangesClue => c.type === 'exchanges')?.imports;
+  const imports = mergeExchanges(grid.clues)?.imports;
   return imports !== undefined && (imports[ANY_COUNTRY] === 0 || imports[country] === 0);
+}
+
+/** Import total the exchanges clues publish for one country (a total shared by every country is not split); undefined when none. */
+export function publishedImport(grid: Grid, country: string): number | undefined {
+  return mergeExchanges(grid.clues)?.imports?.[country];
 }
 
 /** Plants, import lines and the STEP the player can lay, in merit order (no import line when none is possible). */
@@ -63,7 +68,7 @@ export function bookEntries(grid: Grid): BookEntry[] {
  * Mini piece at scale: `w` x `h` cells, dashed from column `dashFrom`; a ramp (`shape`) draws its
  * profile on two rows, the cells outside it left blank.
  */
-function mb(p: string, w: number, h: number, o: { used?: boolean; dashFrom?: number; dashTop?: number; paper?: boolean; label?: string; shape?: ShapeKind; width?: string } = {}): string {
+function mb(p: string, w: number, h: number, o: { used?: boolean; dashFrom?: number; dashTo?: number; dashTop?: number; paper?: boolean; label?: string; shape?: ShapeKind; width?: string } = {}): string {
   const c = PIECE_COLORS[colorKey(p)];
   const prof = profile(o.shape ?? 'rect', w, h);
   const rows = Math.max(...prof.map(([b, k]) => b + k));
@@ -72,7 +77,7 @@ function mb(p: string, w: number, h: number, o: { used?: boolean; dashFrom?: num
     const row = rows - 1 - Math.floor(i / w);
     const [b, k] = prof[col] ?? [0, 0];
     if (row < b || row >= b + k) return '<i class="e"></i>';
-    const dashed = (o.dashFrom !== undefined && col >= o.dashFrom) || (o.dashTop !== undefined && row >= o.dashTop);
+    const dashed = (o.dashFrom !== undefined && col >= o.dashFrom && col < (o.dashTo ?? Infinity)) || (o.dashTop !== undefined && row >= o.dashTop);
     return `<i class="${dashed ? 'd' : ''}" style="background:${o.paper ? c.b : c.a};--c:${c.ink}"></i>`;
   }).join('');
   // The width, written over the bottom row (screen).
@@ -99,6 +104,7 @@ function importCells(state: PlayState, country: string): number {
 
 /**
  * Allowed shapes as mini pieces: a dashed tail for a range of widths, one piece per width otherwise.
+ * Screen: a trapezoid ramp of contiguous widths is one glyph (smallest ramp solid, added middle columns dashed).
  * Screen: optional heights are dashed rows on the same piece, which carries its width ("3–6" for a range).
  * Paper: one more piece per extra height.
  */
@@ -112,6 +118,11 @@ function shapeGlyphs(e: BookEntry, paper: boolean): string {
   if (!paper) {
     const maxH = ramp ? 1 : e.heights[e.heights.length - 1] ?? minH;
     const dashTop = maxH > minH ? minH : undefined;
+    // A trapezoid ramp of contiguous widths: one glyph at the widest scale, the smallest ramp in colour,
+    // the columns added in the middle dashed.
+    if (e.shape === 'trap' && !gaps && maxL > minL) {
+      return mb(id, maxL, 1, { shape: e.shape, dashFrom: minL - 1, dashTo: maxL - 1, width: widthLabel(minL, maxL) });
+    }
     return ramp || gaps
       ? e.lens.map((len) => mb(id, len, ramp ? 1 : maxH, { shape: e.shape, dashTop, width: widthLabel(len) })).join('')
       : mb(id, maxL, maxH, { dashFrom: minL, dashTop, width: widthLabel(minL, maxL) });
@@ -152,7 +163,7 @@ export function renderBook(grid: Grid, state: PlayState, selected: PieceKey | nu
         if (grid.co2_cap !== null) hint += ` · ${UI.co2PerCell(grid.neighbors.find((nb) => nb.id === country)?.co2 ?? 0)}`;
       } else label = UI.importOf(countryFrom(grid, country));
       const used = importCells(state, country);
-      const want = inv.level === 'exact' ? inv.imports?.[country] ?? inv.imports?.[ANY_COUNTRY] : undefined;
+      const want = inv.level === 'exact' ? inv.imports?.[country] ?? inv.imports?.[ANY_COUNTRY] : paper ? undefined : publishedImport(grid, country);
       if (want !== undefined && !paper) {
         glyphs = group(mb('I', 1, 1, { used: used >= want }), used, want);
       } else if (want !== undefined) {
@@ -209,6 +220,9 @@ export function renderBook(grid: Grid, state: PlayState, selected: PieceKey | nu
   return `<div class="book">${rows.join('')}</div>`;
 }
 
+/** Hours ("8h") and counts of an escaped text, highlighted as slot values. */
+const slotValues = (html: string): string => html.replace(/(^|[\s(])(\d+h|\d+)(?=[\s,.)]|$)/g, (_m, pre: string, v: string) => `${pre}<span class="slot">${v}</span>`);
+
 /** Clue text with plant chips and slot values highlighted (text itself comes from fr.ts). */
 export function richClueText(grid: Grid, clue: Clue, text = clueText(grid, clue)): string {
   let html = esc(text);
@@ -231,8 +245,7 @@ export function richClueText(grid: Grid, clue: Clue, text = clueText(grid, clue)
     }
   }
   // Slot values: hours ("8h") and counts.
-  html = html.replace(/(^|[\s(])(\d+h|\d+)(?=[\s,.)]|$)/g, (_m, pre: string, v: string) => `${pre}<span class="slot">${v}</span>`);
-  return html;
+  return slotValues(html);
 }
 
 /** True when the clue is drawn on the grid (slot clues); day clues go to the list. */
@@ -250,17 +263,22 @@ export function clueItem(grid: Grid, clue: Clue, status: ClueReport['status'] | 
     + `<span><span class="kind">${kind}</span><span class="txt">${txt}</span></span>${stateDot(status)}</li>`;
 }
 
-/** Clues in reading order: day clues first (no slot), then slot clues by column; ties keep the grid order. */
+/**
+ * Clues in the order of the publications card (the CO2 limit comes before them all): the day's exchanges,
+ * the day clues without an hour (duration, engaged plant), the programmes by start hour, then every other
+ * clue by hour. Ties keep the grid order.
+ */
 export function orderClues<T extends { clue: Clue }>(reports: readonly T[]): T[] {
   const col = (c: Clue) => ('col' in c && typeof c.col === 'number' ? c.col : -1);
+  const rank = (c: Clue) => (c.type === 'exchanges' ? 0 : c.type === 'length' || c.type === 'engaged' ? 1 : c.type === 'bar' ? 2 : 3);
   return reports
     .map((r, i) => ({ r, i }))
-    .sort((a, b) => col(a.r.clue) - col(b.r.clue) || a.i - b.i)
+    .sort((a, b) => rank(a.r.clue) - rank(b.r.clue) || (rank(a.r.clue) >= 2 ? col(a.r.clue) - col(b.r.clue) : 0) || a.i - b.i)
     .map(({ r }) => r);
 }
 
 /**
- * Day totals an exact inventory imposes (exports, imports, STEP pairs), as an "exchanges" clue:
+ * Day totals an exact inventory imposes (exports, imports; the STEP pairs are not published), as an "exchanges" clue:
  * they are market publications like the clues of the no-inventory grids, so they live in the clue
  * card, not in the order book. Null when the inventory imposes none, or the grid has its own clue.
  */
@@ -270,13 +288,13 @@ export function inventoryExchanges(grid: Grid): ExchangesClue | null {
   const clue: ExchangesClue = { type: 'exchanges' };
   if (inv.exports && Object.keys(inv.exports).length) clue.exports = { ...inv.exports };
   if (inv.imports && Object.keys(inv.imports).length) clue.imports = { ...inv.imports };
-  if (grid.step && inv.step !== undefined) clue.step = inv.step;
-  return clue.exports || clue.imports || clue.step !== undefined ? clue : null;
+  return clue.exports || clue.imports ? clue : null;
 }
 
 /**
  * Display lines of an exchanges clue, one per subject, each checked on its own: every country (its
- * exports and imports together), then the import total of all countries (`*`), then the STEP pairs.
+ * exports and imports together), then the import total of all countries (`*`). The STEP pairs are not a publication:
+ * the STEP plant shows them ("laid / N").
  */
 export function exchangeLines(clue: ExchangesClue): ExchangesClue[] {
   const ids: string[] = [];
@@ -288,15 +306,14 @@ export function exchangeLines(clue: ExchangesClue): ExchangesClue[] {
     if (clue.imports?.[id] !== undefined) line.imports = { [id]: clue.imports[id] };
     return line;
   });
-  if (clue.step !== undefined) lines.push({ type: 'exchanges', step: clue.step });
-  return lines.length ? lines : [clue];
+  return lines;
 }
 
 /** Number of clues the clue card lists: the grid's own (an exchanges clue by its lines), the exchanges lines of an exact inventory, the CO2 limit. */
 export function shownClueCount(grid: Grid): number {
-  const lines = (c: Clue) => (c.type === 'exchanges' ? exchangeLines(c).length : 1);
-  const inv = inventoryExchanges(grid);
-  return grid.clues.reduce((n, c) => n + lines(c), 0) + (inv ? lines(inv) : 0) + (typeof grid.co2_cap === 'number' ? 1 : 0);
+  const merged = mergeExchanges(grid.clues) ?? inventoryExchanges(grid);
+  return grid.clues.filter((c) => c.type !== 'exchanges').length + (merged ? exchangeLines(merged).length : 0)
+    + (typeof grid.co2_cap === 'number' ? 1 : 0);
 }
 
 /** Status of an exchanges clue on a board: every total met (ok), one exceeded (broken), else open. */
@@ -305,7 +322,6 @@ function exchangesStatus(state: PlayState, clue: ExchangesClue): ClueStatus {
   const count = (got: number, want: number): ClueStatus => (got > want ? 'broken' : got === want ? 'ok' : 'open');
   for (const [k, v] of Object.entries(clue.exports ?? {})) st.push(count(totalExports(state, k), v));
   for (const [k, v] of Object.entries(clue.imports ?? {})) st.push(count(totalImports(state, k), v));
-  if (clue.step !== undefined) st.push(count(state.step.length, clue.step));
   return st.includes('broken') ? 'broken' : st.includes('open') ? 'open' : 'ok';
 }
 
@@ -316,10 +332,21 @@ export function withInventoryExchanges(grid: Grid, state: PlayState, reports: re
   return [...reports, { clue, text: clueText(grid, clue), status: exchangesStatus(state, clue) }];
 }
 
-/** Clue reports with every exchanges clue split into its display lines, each with its own status. */
+/**
+ * Clue reports with the exchanges clues (a grid may publish several) merged into one publication,
+ * split into its display lines (one per country, then the all-country totals), each with its own status.
+ * The lines sit where the first exchanges clue was.
+ */
 export function splitExchanges(grid: Grid, state: PlayState, reports: readonly ClueReport[]): ClueReport[] {
-  return reports.flatMap((r) => (r.clue.type !== 'exchanges' ? [r]
-    : exchangeLines(r.clue).map((line) => ({ clue: line, text: clueText(grid, line), status: exchangesStatus(state, line) }))));
+  const merged = mergeExchanges(reports.map((r) => r.clue));
+  const lines = merged ? exchangeLines(merged).map((line) => ({ clue: line, text: exchangeLineText(grid, line), status: exchangesStatus(state, line) })) : [];
+  const first = reports.findIndex((r) => r.clue.type === 'exchanges');
+  const out: ClueReport[] = [];
+  reports.forEach((r, i) => {
+    if (i === first) out.push(...lines);
+    if (r.clue.type !== 'exchanges') out.push(r);
+  });
+  return out;
 }
 
 /** CO2 points of the board, by plant ('I' for every import). */
@@ -360,6 +387,13 @@ export function co2ClueItem(grid: Grid, state: PlayState, full: boolean): { html
   return { html, status };
 }
 
+/** The day's exchanges as one publication: a line per country, each with its own status. */
+function exchangesItem(lines: readonly ClueReport[]): string {
+  const rows = lines.map((r) => `<span class="xline"><span class="txt">${slotValues(esc(r.text))}</span>${stateDot(r.status)}</span>`).join('');
+  return `<li class="clue clue-exchanges"><span class="ico">${icon(CLUE_ICON.exchanges ?? 'price')}</span>`
+    + `<span class="xlines"><span class="kind">${esc(CLUE_KIND.exchanges)}</span>${rows}</span></li>`;
+}
+
 /** Clue card: the CO2 limit and every clue in text, day clues first, then slot clues in time order. `full`: no cell left to cover. */
 export function renderClues(grid: Grid, boardReports: readonly ClueReport[], state: PlayState, full = false): string {
   const reports = splitExchanges(grid, state, withInventoryExchanges(grid, state, boardReports));
@@ -368,7 +402,15 @@ export function renderClues(grid: Grid, boardReports: readonly ClueReport[], sta
   const ok = reports.filter((r) => r.status === 'ok').length + (co2?.status === 'ok' ? 1 : 0);
   const n = reports.length + (co2 ? 1 : 0);
   const title = UI.cluesTitle;
-  const list = `<ul class="clues">${co2?.html ?? ''}${orderClues(reports).map((r) => clueItem(grid, r.clue, r.status, false, grid.clues.indexOf(r.clue))).join('')}</ul>`;
+  const exch = reports.filter((r) => r.clue.type === 'exchanges');
+  let grouped = false;
+  const items = orderClues(reports).map((r) => {
+    if (r.clue.type !== 'exchanges') return clueItem(grid, r.clue, r.status, false, grid.clues.indexOf(r.clue));
+    if (grouped) return '';
+    grouped = true;
+    return exchangesItem(exch);
+  }).join('');
+  const list = `<ul class="clues">${co2?.html ?? ''}${items}</ul>`;
   return `<section class="card" aria-label="${esc(title)}"><h2 class="ct">${esc(title)} <small>${esc(UI.cluesChecked(ok, n))}</small></h2>${list}</section>`;
 }
 
@@ -423,6 +465,10 @@ function entryCount(grid: Grid, state: PlayState, e: BookEntry): string {
   if (e.piece === STEP_KEY) {
     const want = publishedStepPairs(grid);
     return want === null ? '' : `${state.step.length}/${want}`;
+  }
+  if (e.piece === IMPORT_PIECE && inv.level !== 'exact') {
+    const want = publishedImport(grid, e.country ?? '');
+    return want === undefined ? '' : `${importCells(state, e.country ?? '')}/${want}`;
   }
   if (inv.level !== 'exact') return '';
   if (e.piece === IMPORT_PIECE) {

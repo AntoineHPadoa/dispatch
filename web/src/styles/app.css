@@ -131,6 +131,9 @@ button.prow:hover { background: #faf4f7; }
 .ico { width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; background: var(--wash); color: var(--ink); }
 .kind { font-size: .62rem; letter-spacing: .09em; text-transform: uppercase; color: var(--soft); font-weight: 800; display: block; }
 .txt { font-size: .84rem; }
+.clue-exchanges { grid-template-columns: 28px 1fr; }
+.clue-exchanges .xlines { display: grid; gap: 6px; }
+.clue-exchanges .xline { display: grid; grid-template-columns: 1fr 18px; gap: 10px; align-items: start; }
 .state { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--hair); margin-top: 3px; position: relative; flex: none; display: block; }
 .state.ok { background: var(--ok); border-color: var(--ok); }
 .state.ok::after { content: ""; position: absolute; left: 5px; top: 2px; width: 4px; height: 8px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }

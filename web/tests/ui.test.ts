@@ -14,7 +14,7 @@ import {
   ProgressStore, STORAGE_KEY, emptyProgress, isPlayState, nextGrid, parseProgress,
   playOrder, recordState, statusOf, gridFingerprint, savedBoard, type KeyValueStore,
 } from '../src/ui/progress';
-import { bandPlan, boardLead, recordLayout, boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard, stepTagLabels } from '../src/ui/board';
+import { allowedExchange, bandPlan, boardLead, recordLayout, boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard, stepTagLabels } from '../src/ui/board';
 import {
   applyLockedExports, boardMessage, bulletinTag, displayTitle, exportTap, initialState, isInitialState, newlyBroken, nextExportValue,
   poseMessage,
@@ -356,6 +356,24 @@ describe('board and game helpers', () => {
     expect(renderBook(g8, newGame(g8), null, true)).not.toContain('∞');
   });
 
+  it('a coal ramp of contiguous widths is one glyph: smallest ramp solid, added middle columns dashed', () => {
+    const g = byId(12);
+    g.pieces.C!.len = [3, 4, 5, 6];
+    g.inventory.pieces.C = {};
+    const html = renderBook(g, newGame(g), null);
+    const coal = html.slice(html.indexOf('data-piece="C"'));
+    const glyph = coal.slice(coal.indexOf('<span class="mb'), coal.indexOf('</span>', coal.indexOf('mb-w')));
+    expect(glyph).toContain('repeat(6,auto)');
+    expect(glyph).toContain('3–6');
+    // Profile 1, 2, 2, 2, 2, 1 on two rows: 6 cells in the bottom row (3 dashed), 4 in the top row (3 dashed).
+    expect(glyph.match(/<i class="d"/g)).toHaveLength(6);
+    expect(glyph.match(/<i class="" /g)).toHaveLength(4);
+    expect(glyph.match(/<i class="e">/g)).toHaveLength(2);
+    // Gaps in the widths: one glyph per width, as before.
+    g.pieces.C!.len = [3, 5];
+    expect(renderBook(g, newGame(g), null).match(/class="mb/g)!.length).toBeGreaterThan(glyph.match(/class="mb/g)!.length);
+  });
+
   it('clue texts get plant chips and slot values; day clues are the unslotted ones', () => {
     const g = byId(7);
     const price = g.clues.find((c) => c.type === 'price')!;
@@ -463,7 +481,7 @@ describe('print sheet', () => {
     const svg = renderBoard({ grid: g, state: s, ev: evaluate(g, s), style: 'A', cell: 50 }).svg;
     expect(svg).not.toContain('CO₂');
     const g2 = { ...g, clues: g.clues.slice(0, -1) };
-    expect(renderBoard({ grid: g2, state: s, ev: evaluate(g2, s), style: 'A', cell: 50 }).svg).toContain(UI.co2PerCell(3));
+    expect(renderBoard({ grid: g2, state: s, ev: evaluate(g2, s), style: 'A', cell: 70 }).svg).toContain(UI.co2PerCell(3));
   });
 
   it('book by width: one glyph per width with its width and its own counter', () => {
@@ -801,17 +819,20 @@ describe('phone hint', () => {
 });
 
 describe('clue card (every clue in text, time order)', () => {
-  const slotOf = (c: Grid['clues'][number]) => ('col' in c && typeof c.col === 'number' ? c.col : -1);
 
-  it('puts day clues first, then slot clues by column, keeping grid order on ties', () => {
-    for (const grid of grids) {
-      const ordered = orderClues(grid.clues.map((clue) => ({ clue })));
-      expect(ordered).toHaveLength(grid.clues.length);
-      const cols = ordered.map((r) => slotOf(r.clue));
-      expect(cols).toEqual([...cols].sort((a, b) => a - b));
-      const dayCount = grid.clues.filter((c) => slotOf(c) < 0).length;
-      expect(ordered.slice(0, dayCount).every((r) => slotOf(r.clue) < 0)).toBe(true);
-    }
+  it('orders: exchanges, day clues without hour, programmes by start, then the others by hour; ties keep the grid order', () => {
+    const clues: Grid['clues'] = [
+      { type: 'price', piece: 'N', col: 1 },
+      { type: 'bar', piece: 'N', col: 5, len: 2 },
+      { type: 'flow', country: 'DE', dir: 'export', col: 0, value: 1 },
+      { type: 'engaged', piece: 'N', row: 0, col: 3, len: 2 },
+      { type: 'bar', piece: 'G', col: 2, len: 2 },
+      { type: 'exchanges', exports: { DE: 1 } },
+      { type: 'length', piece: 'N', len: 4 },
+      { type: 'price', piece: 'G', col: 1 },
+    ] as Grid['clues'];
+    const ordered = orderClues(clues.map((clue) => ({ clue }))).map((r) => clues.indexOf(r.clue));
+    expect(ordered).toEqual([5, 3, 6, 4, 1, 2, 0, 7]);
   });
 
   it('lists every clue, with no collapsed list', () => {
@@ -819,7 +840,9 @@ describe('clue card (every clue in text, time order)', () => {
       if (!grid.clues.length) continue;
       const ev = evaluate(grid, newGame(grid));
       const html = renderClues(grid, ev.clues, newGame(grid));
-      expect(html.match(/<li class="clue"/g)?.length ?? 0).toBe(shownClueCount(grid));
+      // The exchanges are one publication of several lines: count items, then the lines beyond the first.
+      const lines = html.match(/class="xline"/g)?.length ?? 0;
+      expect((html.match(/<li class="clue/g)?.length ?? 0) + Math.max(0, lines - 1)).toBe(shownClueCount(grid));
       expect(html).not.toContain('<details');
     }
   });
@@ -1152,7 +1175,7 @@ describe('board card: fixed layout, price row, export rows', () => {
     expect(r.state).not.toBeNull();
     const svg = draw(g, r.state!).svg;
     expect(svg).toContain('aria-label="Allemagne');
-    expect(svg).toContain('>→1</text>');
+    expect(svg).toContain('>↑1</text>');
   });
 });
 
@@ -1185,13 +1208,15 @@ describe('order book without exchanges line; exchanges in the clue card', () => 
     const g6 = byId(6);
     const html = renderClues(g6, evaluate(g6, newGame(g6)).clues, newGame(g6));
     expect(html).not.toContain('Aujourd’hui');
-    expect(html).toContain('exporté');
-    // The exchanges line is the first publication.
-    expect(html.indexOf('exporté')).toBeLessThan(html.indexOf('class="clue"', html.indexOf('class="clue"') + 1));
+    expect(html).toContain('↑');
+    // The exchanges publication comes first.
+    const other = html.indexOf('data-clue="');
+    if (other >= 0) expect(html.indexOf('clue-exchanges')).toBeLessThan(other);
   });
 
-  it('G7 exchanges line also tells the STEP pair; grids without inventory or exports have none', () => {
-    expect(inventoryExchanges(byId(7))?.step).toBe(1);
+  it('the STEP pairs are not in the exchanges line; the STEP plant still counts them; grids without inventory or exports have none', () => {
+    expect(inventoryExchanges(byId(7))?.step).toBeUndefined();
+    expect(renderBook(byId(7), newGame(byId(7)), null)).toContain('0 / 1');
     expect(inventoryExchanges(byId(1))).toBeNull();
     expect(inventoryExchanges(byId(2))).toBeNull();
     for (const id of [8, 9, 10, 11]) expect(inventoryExchanges(byId(id))).toBeNull();
@@ -1213,17 +1238,41 @@ describe('order book without exchanges line; exchanges in the clue card', () => 
 });
 
 describe('exchanges: one line per country, each checked on its own', () => {
-  it('splits by country, the all-country import total and the STEP; grid 10 keeps one line', () => {
+  it('splits by country and the all-country import total, without the STEP; grid 10 keeps one line', () => {
     expect(exchangeLines({ type: 'exchanges', exports: { DE: 2 }, imports: { DE: 2 } })).toHaveLength(1);
     expect(exchangeLines({ type: 'exchanges', exports: { DE: 0, GB: 1 }, imports: { '*': 2, GB: 0 }, step: 1 })).toEqual([
       { type: 'exchanges', exports: { DE: 0 } },
       { type: 'exchanges', exports: { GB: 1 }, imports: { GB: 0 } },
       { type: 'exchanges', imports: { '*': 2 } },
-      { type: 'exchanges', step: 1 },
     ]);
+    expect(exchangeLines({ type: 'exchanges', step: 1 })).toEqual([]);
     const g10 = byId(10);
     const html = renderClues(g10, evaluate(g10, newGame(g10)).clues, newGame(g10));
     expect(html.match(/Échanges du jour/g)).toHaveLength(1);
+  });
+
+  it('a STEP published only by the exchanges clue: no pump line in the publications, the plant reads "0 / N"', () => {
+    const g = byId(7);
+    g.inventory = { level: 'none', pieces: {} };
+    g.clues = [...g.clues, { type: 'exchanges', step: 1 }];
+    const st = newGame(g);
+    expect(publishedStepPairs(g)).toBe(1);
+    expect(renderBook(g, st, null)).toMatch(/0 \/ 1/);
+    const html = renderClues(g, evaluate(g, st).clues, st);
+    expect(html).not.toMatch(/pompage/);
+    expect(splitExchanges(g, st, evaluate(g, st).clues).filter((r) => r.clue.type === 'exchanges')).toEqual([]);
+  });
+
+  it('several exchanges clues are merged: one per country or per direction all count', () => {
+    const g = byId(10);
+    g.clues = [...g.clues.filter((c) => c.type !== 'exchanges'),
+      { type: 'exchanges', exports: { DE: 1 } }, { type: 'exchanges', imports: { DE: 0 } }];
+    expect(allowedExchange(g, 'DE', 'exports')).toBe(1);
+    expect(allowedExchange(g, 'DE', 'imports')).toBe(0);
+    const st = newGame(g);
+    const lines = splitExchanges(g, st, evaluate(g, st).clues).filter((r) => r.clue.type === 'exchanges');
+    expect(lines.map((r) => r.text)).toEqual(['Allemagne : ↓ 0 import, ↑ 1 export']);
+    expect(renderClues(g, evaluate(g, st).clues, st).match(/Échanges du jour/g)).toHaveLength(1);
   });
 
   it('a country line is checked as soon as its own count is met', () => {
@@ -1234,12 +1283,12 @@ describe('exchanges: one line per country, each checked on its own', () => {
     const st = { ...s, exports: { ...s.exports, GB: g.columns.map((_, c) => (c === 0 ? 1 : 0)) } };
     const lines = splitExchanges(g, st, evaluate(g, st).clues).filter((r) => r.clue.type === 'exchanges');
     expect(lines.map((r) => [r.text, r.status])).toEqual([
-      ['2 blocs exportés vers l’Allemagne.', 'open'],
-      ['1 bloc exporté vers le Royaume-Uni.', 'ok'],
-      ['2 blocs importés, tous pays confondus.', 'open'],
+      ['Allemagne : ↓ ∞ import, ↑ 2 exports', 'open'],
+      ['Royaume-Uni : ↓ ∞ import, ↑ 1 export', 'ok'],
+      ['2 blocs importés au total', 'open'],
     ]);
     expect(shownClueCount(g)).toBe(g.clues.length + 2);
-    expect(renderClues(g, evaluate(g, st).clues, st)).toMatch(/Royaume-Uni\.<\/span><\/span><span class="state ok"/);
+    expect(renderClues(g, evaluate(g, st).clues, st)).toMatch(/Royaume-Uni : ↓ ∞ import, ↑ <span class="slot">1<\/span> export<\/span><span class="state ok"/);
   });
 });
 
@@ -1345,29 +1394,51 @@ describe('progress saved before weather bricks (B3)', () => {
 
 describe('exchanges under the neighbor rows', () => {
   const under = (g: Grid, s: PlayState) => renderBoard({ grid: g, state: s, ev: evaluate(g, s), style: 'A', cell: 60 }).svg;
-  const counts = (svg: string) => [...svg.matchAll(/>([→←] [\d/]+)<\/text>/g)].map((m) => m[1]);
+  const counts = (svg: string) => [...svg.matchAll(/>([↑↓] [\d/∞]+)<\/text>/g)].map((m) => m[1]);
 
   it('counts the day exchanges of each direction against what is laid', () => {
     const g = byId(10);
-    expect(counts(under(g, newGame(g)))).toEqual(['→ 0/2', '← 0/2']);
+    expect(counts(under(g, newGame(g)))).toEqual(['↑ 0/2', '↓ 0/2']);
     const s = { ...newGame(g), exports: { DE: [1, 0, 0, 0, 0, 0, 0, 0] } };
-    expect(counts(under(g, s))).toEqual(['→ 1/2', '← 0/2']);
+    expect(counts(under(g, s))).toEqual(['↑ 1/2', '↓ 0/2']);
   });
 
   it('greys a direction allowed zero times, counts published flows as laid and greens a met count', () => {
-    expect(counts(under(byId(9), newGame(byId(9))))).toEqual(['→ 0', '← 0/6']);
+    expect(counts(under(byId(9), newGame(byId(9))))).toEqual(['↑ 0', '↓ 0/6']);
     const g7 = byId(7);
     const svg = under(g7, applyLockedExports(g7, newGame(g7)));
     // Two exports published by flows: already laid; the exact inventory gives 2 imports.
-    expect(counts(svg)).toEqual(['→ 2/2', '← 0/2']);
-    expect(svg).toMatch(new RegExp(`fill="${OK}">→ 2/2<`));
+    expect(counts(svg)).toEqual(['↑ 2/2', '↓ 0/2']);
+    expect(svg).toMatch(new RegExp(`fill="${OK}">↑ 2/2<`));
   });
 
-  it('shows nothing for an unknown count or a total shared by every neighbor', () => {
+  it('an import record of one country sits on its row, not under the hours', () => {
+    const g = byId(10);
+    const nb = g.neighbors[0]!;
+    const plain = renderBoard({ grid: g, state: newGame(g), ev: evaluate(g, newGame(g)), style: 'A', cell: 60 });
+    g.clues = [...g.clues, { type: 'column', col: 2, counts: { [`I:${nb.id}`]: 1 } }];
+    const withRecord = renderBoard({ grid: g, state: newGame(g), ev: evaluate(g, newGame(g)), style: 'A', cell: 60 });
+    expect(withRecord.svg.match(/class="import-record"/g)).toHaveLength(1);
+    expect(withRecord.svg).toContain('Relevé d’import : 1.');
+    // No band item for it: the band keeps its height.
+    expect(withRecord.geo.height).toBe(plain.geo.height);
+  });
+
+  it('an Import plant takes the published total of its country as quota; ∞ without one or with a shared total', () => {
+    const g = byId(10);
+    const row = (grid: Grid, id: string) => renderBook(grid, newGame(grid), null).split(`data-piece="I:${id}"`)[1]!.split('data-piece=')[0]!;
+    expect(row(g, 'DE')).toContain('0 / 2');
+    const free = { ...g, clues: g.clues.filter((c) => c.type !== 'exchanges') };
+    expect(row(free, 'DE')).toContain('0 / ∞');
+    const shared = { ...g, clues: g.clues.map((c) => (c.type === 'exchanges' ? { ...c, imports: { '*': 2 } } : c)) };
+    expect(row(shared, 'DE')).toContain('0 / ∞');
+  });
+
+  it('reads ∞ for an unknown count or a total shared by every neighbor', () => {
     const g = byId(10);
     const free = { ...g, clues: g.clues.filter((c) => c.type !== 'exchanges') };
-    expect(counts(under(free, newGame(free)))).toEqual([]);
+    expect(counts(under(free, newGame(free)))).toEqual(['↑ 0/∞', '↓ 0/∞']);
     const shared = { ...g, clues: g.clues.map((c) => (c.type === 'exchanges' ? { ...c, imports: { '*': 2 } } : c)) };
-    expect(counts(under(shared, newGame(shared)))).toEqual(['→ 0/2']);
+    expect(counts(under(shared, newGame(shared)))).toEqual(['↑ 0/2', '↓ 0/∞']);
   });
 });
