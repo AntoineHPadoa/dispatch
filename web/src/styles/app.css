@@ -333,3 +333,28 @@ body.print-preview #print-root .a4 { box-shadow: 0 2px 18px rgba(59, 51, 64, .12
 .clue.flash { animation: clue-flash 1.8s ease-out; border-radius: 10px; }
 @keyframes clue-flash { 0%, 55% { background: #ece3f5; box-shadow: 0 0 0 6px #ece3f5; } 100% { background: transparent; box-shadow: 0 0 0 6px transparent; } }
 @media (prefers-reduced-motion: reduce) { .clue.flash { animation-duration: .01s; } }
+
+/* ---- tutorial overlay (desktop) ---- */
+.tut { position: fixed; inset: 0; z-index: 50; pointer-events: none; }
+.tut[hidden] { display: none; }
+.tut-block { position: absolute; inset: 0; pointer-events: auto; }
+.tut.guided .tut-block { display: none; }
+.tut-shade { position: absolute; inset: 0; overflow: visible; }
+.tut-dim { fill: rgba(59, 51, 64, .55); transition: fill .2s; }
+.tut.guided .tut-dim { fill: rgba(59, 51, 64, .22); }
+.tut-ring { stroke: var(--accent); stroke-width: 2.5; }
+.tut-bubble { position: absolute; pointer-events: auto; width: min(340px, calc(100vw - 24px)); background: var(--card); border: 1px solid var(--hair); border-radius: 16px; padding: 14px 16px 12px; box-shadow: 0 10px 30px rgba(59, 51, 64, .22); }
+.tut-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; min-height: 1em; }
+.tut-tech { font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); font-weight: 800; }
+.tut-count { font-size: .7rem; color: var(--soft); font-weight: 700; margin-left: auto; }
+.tut-text { margin: 6px 0 0; font-size: .92rem; line-height: 1.45; }
+.tut-text b { font-weight: 800; }
+.tut-refused { margin: 8px 0 0; font-size: .8rem; color: var(--bad); font-weight: 700; }
+.tut-refused[hidden] { display: none; }
+.tut-actions { display: flex; justify-content: space-between; gap: 8px; margin-top: 12px; }
+.tut-actions .tool[hidden] { display: none; }
+.tut-next { margin-left: auto; font-weight: 800; }
+.tut-bubble.shake { animation: tut-shake .3s; }
+@keyframes tut-shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+@media (prefers-reduced-motion: reduce) { .tut-bubble.shake { animation: none; } .tut-dim { transition: none; } }
+@media print { .tut { display: none !important; } }

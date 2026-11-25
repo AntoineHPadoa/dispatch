@@ -8,6 +8,8 @@
  *   link under a pointer that is pressing it.
  * - Touch: with a piece one row high the board lets vertical swipes scroll the page; a swipe the
  *   browser takes for scrolling cancels the gesture silently. Eraser and STEP taps act on release.
+ * - A grid with a tutorial script (desktop width) mounts the tutorial overlay: every move asks its
+ *   guard first, so a guided step only lets its expected moves through.
  */
 import { localIsoDate, weekdayIndex } from '../model/bulletin';
 import type { Grid, Placement } from '../model/grid';
@@ -26,6 +28,8 @@ import { canUndo, push, reset, start, undo, type History } from './history';
 import { STEP_KEY, bookEntries, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, shownClueCount, type BookEntry } from './panels';
 import { esc, icon } from './palette';
 import { stepArrowAction, stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from './step';
+import { mountTutorial, type TutorialController } from './tutorial';
+import { scriptFor, type Attempt, type GateResult } from '../tutorial';
 import { gridFingerprint, nextGrid, recordState, savedBoard, statusOf, type ProgressStore } from './progress';
 
 export interface GameContext {
@@ -170,6 +174,8 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   let pressedAct: string | null = null;
   /** Touch tap with the eraser or STEP: done on release, forgotten if the page scrolls instead. */
   let pendingTap: Cell | null = null;
+  /** Tutorial overlay of a grid with a script (mounted after the first draw). */
+  let tutorial: TutorialController | null = null;
   const elapsedBase = saved?.elapsedMs ?? 0;
   const sessionStart = Date.now();
   let frozenElapsed: number | null = saved?.status === 'done' && ev.solved ? elapsedBase : null;
@@ -318,7 +324,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   }
 
   function drawSide() {
-    side.innerHTML = `<section class="card" aria-label="${esc(UI.book)}"><h2 class="ct">${esc(UI.book)}</h2>`
+    side.innerHTML = `<section class="card" data-tutorial="book" aria-label="${esc(UI.book)}"><h2 class="ct">${esc(UI.book)}</h2>`
       + `${renderBook(grid, history.present, erase ? null : selected?.key ?? null)}</section>`
       + renderClues(grid, ev.clues, history.present, ev.missing === 0) + renderCo2(grid, history.present);
   }
@@ -335,6 +341,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     drawSide();
     drawChips();
     drawTools();
+    tutorial?.refresh();
   }
 
   // ---- state changes
@@ -363,9 +370,19 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     drawMessage();
   }
 
+  /** Ask the tutorial first: null when it refuses the move (its bubble says why). */
+  function guard(at: Attempt): GateResult | null {
+    if (!tutorial) return { ok: true, move: null };
+    const g = tutorial.guard(at);
+    if (!g) { gesture = cancel(gesture); stepPending = null; message = null; drawBoard(); }
+    return g;
+  }
+
   function layAt(r: Rect) {
     if (!selected) return;
     const bar = barOf(selected, r);
+    const g = guard({ action: 'place', bar });
+    if (!g) return;
     const res = placeOver(grid, history.present, bar);
     // A pose that contradicts a clue is allowed (the player may try things), but the message says so.
     if (res.ok) {
@@ -375,6 +392,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
         if (m.tone === 'bad') ctx.onEvent?.('error');
         return m;
       });
+      tutorial?.played(g);
     } else { ctx.onEvent?.('error'); message = { text: UI.poseBad(labelOf(bar), res.error.message), tone: 'bad' }; drawBoard(); }
   }
 
@@ -384,8 +402,10 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     const i = barIndexAt(grid, history.present, c.row, c.col);
     if (i < 0 && isStepCell(c) && removePairAt(c.col)) return;
     const bar = i >= 0 ? history.present.bars[i] : undefined;
+    const g = bar ? guard({ action: 'remove', row: c.row, col: c.col }) : null;
+    if (bar && !g) return;
     const res = remove(grid, history.present, c.row, c.col);
-    if (res.ok && bar) { ctx.onEvent?.('erase'); commit(res.state, UI.removed(labelOf(bar)), 'info'); }
+    if (res.ok && bar) { ctx.onEvent?.('erase'); commit(res.state, UI.removed(labelOf(bar)), 'info'); if (g) tutorial?.played(g); }
     else if (!res.ok) say(res.error.message, 'bad');
   }
 
@@ -400,15 +420,23 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
 
   function cycleExport(country: string, col: number) {
     const r = exportTap(grid, history.present, country, col);
-    if (r.refused) say(r.refused, 'bad');
-    else if (r.state) { ctx.onEvent?.('move'); commit(r.state, null); }
+    if (r.refused) { if (guard({ action: 'setExport', country, col, value: exportsAt(history.present, country, col) + 1 })) say(r.refused, 'bad'); }
+    else if (r.state) {
+      const g = guard({ action: 'setExport', country, col, value: exportsAt(r.state, country, col) });
+      if (!g) return;
+      ctx.onEvent?.('move');
+      commit(r.state, null);
+      tutorial?.played(g);
+    }
   }
 
   /** STEP chosen: the first tap pumps, a tap on a later slot turbines. */
   function stepTap(col: number) {
+    const g = guard(stepPending === null ? { action: 'pump', col } : { action: 'turbine', pump: stepPending, col });
+    if (!g) return;
     const r = stepTapResult(grid, history.present, stepPending, col);
     stepPending = r.pending;
-    if (r.state) { ctx.onEvent?.('move'); commit(r.state, r.message.text); }
+    if (r.state) { ctx.onEvent?.('move'); commit(r.state, r.message.text); tutorial?.played(g); }
     else if (r.message.tone === 'info') { message = r.message; drawBoard(); }
     else say(r.message.text, r.message.tone);
   }
@@ -417,6 +445,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   function removePairAt(col: number): boolean {
     const k = stepPairIndexAt(history.present, col);
     if (k < 0) return false;
+    if (!guard({ action: 'removeStep' })) return true;
     const res = removeStep(history.present, k);
     if (res.ok) commit(res.state, UI.stepRemoved, 'info');
     return res.ok;
@@ -626,6 +655,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     const btn = (e.target as Element).closest<HTMLElement>('[data-tool]');
     if (!btn) return;
     const tool = btn.getAttribute('data-tool');
+    if ((tool === 'erase' || tool === 'undo' || tool === 'reset') && !guard({ action: 'tool', tool })) return;
     if (tool === 'erase') {
       erase = !erase;
       stepPending = null;
@@ -715,7 +745,24 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   drawAll();
   fit();
 
+  const script = scriptFor(grid.id);
+  tutorial = script ? mountTutorial({
+    screen: gameEl, grid, script, initial,
+    board: () => history.present,
+    restore: (state) => {
+      const wasSolved = ev.solved;
+      history = start(state);
+      gesture = idle();
+      stepPending = null;
+      erase = false;
+      message = null;
+      afterChange(wasSolved);
+      drawAll();
+    },
+  }) : null;
+
   return () => {
+    tutorial?.destroy();
     onLeave();
     ro?.disconnect();
     clearLongPress();

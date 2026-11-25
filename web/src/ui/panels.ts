@@ -426,7 +426,7 @@ export function renderClues(grid: Grid, boardReports: readonly ClueReport[], sta
     return exchangesItem(exch);
   }).join('');
   const list = `<ul class="clues">${co2?.html ?? ''}${items}</ul>`;
-  return `<section class="card" aria-label="${esc(title)}"><h2 class="ct">${esc(title)} <small>${esc(UI.cluesChecked(ok, n))}</small></h2>${list}</section>`;
+  return `<section class="card" data-tutorial="clues" aria-label="${esc(title)}"><h2 class="ct">${esc(title)} <small>${esc(UI.cluesChecked(ok, n))}</small></h2>${list}</section>`;
 }
 
 /** CO2 points per cell of a book entry (plant or import line; 0 for the STEP). */
@@ -461,7 +461,7 @@ export function renderCo2(grid: Grid, state: PlayState): string {
     .map(([k, v]) => `<i style="width:${(100 * v) / scale}%;background:${PIECE_COLORS[colorKey(k)].a}"></i>`).join('');
   const legend = co2Costs(grid).map((c) => `<span><i class="sw" style="background:${c.color}"></i>${esc(c.name)} <span class="per">${c.per}</span></span>`).join('');
   const over = total > cap;
-  return `<section class="card gauge${over ? ' over' : ''}" aria-label="${esc(UI.co2Kind)}">
+  return `<section class="card gauge${over ? ' over' : ''}" data-tutorial="co2" aria-label="${esc(UI.co2Kind)}">
     <div class="lbl"><span><b>${esc(UI.co2)}</b> ${esc(UI.co2Points(total, cap))}</span><span class="soft">${esc(UI.co2Left(cap - total))}</span></div>
     <div class="track">${segs}</div>
     ${legend ? `<div class="co2-legend" aria-label="${esc(UI.co2LegendLabel)}">${legend}</div>` : ''}</section>`;

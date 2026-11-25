@@ -523,3 +523,37 @@ export const UI = {
   printPreviewLead: 'Une grille par page A4, en couleur, sans corrigé.',
   engagedTitle: 'Déjà engagé',
 };
+
+// ---- interactive tutorial (desktop) ------------------------------------------
+
+/** Labels of the tutorial bubble. */
+export const TUTORIAL_UI = {
+  next: 'Suivant',
+  finish: 'Terminer',
+  skip: 'Passer le tutoriel',
+  skipDiscovery: 'Fermer',
+  count: (k: number, n: number) => `${k} / ${n}`,
+  /** A move the guided step does not expect. */
+  refused: 'Pas encore : joue le coup indiqué.',
+  /** Undo, reset or eraser while a guided step runs. */
+  refusedTool: 'Pendant le tutoriel, les outils attendent la fin de la résolution.',
+  dialog: 'Tutoriel',
+};
+
+/** Bubble texts of the tutorial scripts (web/src/tutorial/), by text key. `**…**` is shown in bold. */
+export const TUTORIAL: Record<string, string> = {
+  // Provisional script (grid 7), replaced by the real tutorial.
+  'demo.welcome': 'Premier quart au dispatching : ta mission, couvrir la demande du jour, bloc par bloc.',
+  'demo.board': 'La **grille** : chaque colonne est un créneau, sa hauteur la demande à couvrir.',
+  'demo.book': 'Le **carnet d’ordres** : les groupes à poser, avec leurs durées de marche.',
+  'demo.clues': 'Les **publications du marché** : chaque indice réduit les possibilités.',
+  'demo.exchanges': 'La **ligne d’échanges** avec l’Allemagne : exporter remonte la silhouette, importer la comble.',
+  'demo.margins': 'Autour de la grille, les **marques** des publications rappellent où elles portent.',
+  'demo.tools': '**Gomme**, **Annuler**, **Recommencer** : pour corriger un essai.',
+  'demo.step': 'La STEP pompe à 9h et turbine à 12h.',
+  'demo.row0a': 'Pose un réacteur de 3 créneaux en bas à gauche.',
+  'demo.row0b': 'Puis un réacteur de 3 créneaux de 9h à 15h.',
+  'demo.imports': 'Les deux derniers créneaux sont importés d’Allemagne.',
+  'demo.rest': 'Termine avec les réacteurs restants.',
+  'demo.end': 'Grille résolue : tu sais dispatcher.',
+};
