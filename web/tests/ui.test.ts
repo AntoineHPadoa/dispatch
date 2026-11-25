@@ -870,9 +870,8 @@ describe('clue card (every clue in text, time order)', () => {
       if (!grid.clues.length) continue;
       const ev = evaluate(grid, newGame(grid));
       const html = renderClues(grid, ev.clues, newGame(grid));
-      // The exchanges are one publication of several lines: count items, then the lines beyond the first.
-      const lines = html.match(/class="xline"/g)?.length ?? 0;
-      expect((html.match(/<li class="clue/g)?.length ?? 0) + Math.max(0, lines - 1)).toBe(shownClueCount(grid));
+      // Every publication line (the exchanges are one publication of several) carries one status dot.
+      expect(html.match(/class="pubrow"/g)?.length ?? 0).toBe(shownClueCount(grid));
       expect(html).not.toContain('<details');
     }
   });
