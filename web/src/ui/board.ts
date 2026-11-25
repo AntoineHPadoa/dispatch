@@ -852,7 +852,7 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
           + (text ? T(tx, yy + rowH / 2 + es * 0.37, text, { w: 700, size: f2(es), color: EXPORT_TEXT }) : '');
       } else {
         s += `<rect x="${px}" y="${yy}" width="${w}" height="${rowH}" rx="${rad}" fill="${PIECE_COLORS.I.a}" stroke="${fi >= 0 ? ink : PIECE_COLORS.I.ink}" stroke-width="${fi >= 0 ? 1.5 : 1.2}"/>`
-          + T(tx + (isLocked ? 5 : 0), yy + rowH / 2 + es * 0.37, text, { size: f2(es), color: EXPORT_TEXT });
+          + T(tx, yy + rowH / 2 + es * 0.37, text, { size: f2(es), color: EXPORT_TEXT });
       }
       // A published export is fixed: padlock inside its cell. A published import only outlines
       // the cell (the player still exports there freely).
