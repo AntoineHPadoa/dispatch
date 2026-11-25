@@ -785,7 +785,7 @@
   },
   {
     "id": 6,
-    "title": "6. La case la plus chère",
+    "title": "6. Le bloc le plus cher",
     "section": "tutorial",
     "teaches": [
       "top_price"
@@ -1204,7 +1204,7 @@
     "id": 8,
     "title": "Moyen",
     "section": "rated",
-    "intro": "Sans carnet exact : tu connais les centrales disponibles, pas leurs quantités. Seul le stock d’eau du barrage est connu : 2 cases au plus. Les indices du marché suffisent à déduire la seule pose.",
+    "intro": "Sans carnet exact : tu connais les centrales disponibles, pas leurs quantités. Seul le stock d’eau du barrage est connu : 2 blocs au plus. Les indices du marché suffisent à déduire la seule pose.",
     "columns": [
       "0h",
       "3h",
@@ -1371,7 +1371,7 @@
     "bulletin": {
       "number": 211,
       "title": "Nuit calme",
-      "text": "Le réseau respire : la demande reste basse presque toute la journée, avec un petit pic en début d’après-midi. Le barrage ne garde que deux cases d’eau en réserve.",
+      "text": "Le réseau respire : la demande reste basse presque toute la journée, avec un petit pic en début d’après-midi. Le barrage ne garde que deux blocs d’eau en réserve.",
       "weather": [
         "moon",
         "moon",
@@ -1620,7 +1620,7 @@
     "id": 10,
     "title": "Moyen",
     "section": "rated",
-    "intro": "Sans carnet exact. Il faudra répartir les barres entre les lignes.",
+    "intro": "Sans carnet exact. Il faudra répartir les groupes entre les lignes.",
     "columns": [
       "0h",
       "3h",

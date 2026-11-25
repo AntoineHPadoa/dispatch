@@ -30,9 +30,9 @@ import {
 } from '../engine';
 import { UI, columnLabel, priceTag, priceTagShort, programLabel } from '../i18n/fr';
 import type { Cell, Rect } from './gesture';
-import { bookEntries } from './panels';
 import {
   BAD, ICONS, INK_A, INK_B, OK, PIECE_COLORS, SOFT_A, SOFT_B, ACCENT, colorKey, esc,
+  STEP_INK,
 } from './palette';
 
 export type BoardStyle = 'A' | 'B';
@@ -119,7 +119,55 @@ export function lockedExports(grid: Grid): Map<string, number> {
   return m;
 }
 
-const STEP_BLUE = '#e3eefa';
+/** Proportions of the screen board follow a 40 px cell (the design mock): sizes below are given for it. */
+const unit = (cell: number): number => cell / 40;
+/** STEP tags and arrows never shrink below their 40 px size. */
+export const stepUnit = (cell: number): number => Math.max(1, cell / 40);
+/** Hours under the axis (screen): 11.4 px for a 40 px cell, never under 10. */
+export const hoursSize = (cell: number): number => Math.max(10, cell * 0.285);
+/** Room the hours take beyond the 10.5 px of the paper style. */
+export const hoursExtra = (cell: number, style: BoardStyle): number => (style === 'A' ? Math.round(Math.max(0, hoursSize(cell) - 10.5) * 1.3) : 0);
+/**
+ * Where the clue band starts under the grid (screen): the gap between the hours and the pills under them
+ * equals the gap between the bottom of the grid and the hours (digit top, 0.71 of the font size).
+ */
+export const bandStart = (cell: number, style: BoardStyle): number => {
+  if (style !== 'A') return 20;
+  return Math.round(11 + hoursExtra(cell, style) + gapAboveHours(cell));
+};
+/** Grid bottom to digit top of the hours (screen). */
+const gapAboveHours = (cell: number): number => 15.5 + hoursExtra(cell, 'A') - 0.71 * hoursSize(cell);
+/** Gap above the hours and gap below them (baseline to the pills), screen. */
+export const hoursGap = (cell: number): { above: number; below: number } => ({
+  above: gapAboveHours(cell),
+  below: bandStart(cell, 'A') + 3 - (14 + hoursExtra(cell, 'A')),
+});
+/** Text size of the exchange rows (arrows, numbers, counters): ~12 px at the usual desktop cell. */
+export const exchangeSize = (cell: number): number => Math.max(9, cell * 0.21);
+/** Text of the exchange cells: the violet of their border, a shade darker so it stays readable on the light violet. */
+const EXPORT_TEXT = '#6a54b3';
+/**
+ * ▲ or ▼ drawn as a polygon centred on (`cx`, `cy`), with the pair number beside it when there is one:
+ * a text triangle has no optical centre in its text box, so it is drawn.
+ */
+function stepGlyph(cx: number, cy: number, kind: 'up' | 'down', u: number, color: string, num?: number | string): string {
+  const gw = 8.4 * u;
+  const gh = 7 * u;
+  const digit = num === undefined ? 0 : 6 * u;
+  const gap = num === undefined ? 0 : 2 * u;
+  const left = cx - (gw + gap + digit) / 2;
+  const gx = left + gw / 2;
+  const pts = kind === 'up'
+    ? [[gx, cy - gh / 2], [gx - gw / 2, cy + gh / 2], [gx + gw / 2, cy + gh / 2]]
+    : [[gx, cy + gh / 2], [gx - gw / 2, cy - gh / 2], [gx + gw / 2, cy - gh / 2]];
+  let out = `<polygon points="${pts.map(([px, py]) => `${Number(px!.toFixed(2))},${Number(py!.toFixed(2))}`).join(' ')}" fill="${color}"/>`;
+  if (num !== undefined) {
+    out += `<text x="${Number((left + gw + gap + digit / 2).toFixed(2))}" y="${Number((cy + 3.6 * u).toFixed(2))}" text-anchor="middle" font-family="Manrope, system-ui, sans-serif" font-size="${Number((10 * u).toFixed(2))}" font-weight="800" fill="${color}">${num}</text>`;
+  }
+  return out;
+}
+
+const STEP_BLUE = '#e7ebf3';
 
 /** Icons of the STEP tags in column `c`: ▲ for a pump, ▼ for a turbine, with the pair number when `numbered`. */
 export function stepTagLabels(step: readonly { pump: number; turbine: number }[], c: number, numbered: boolean): string[] {
@@ -179,7 +227,7 @@ const neighborPitch = (cell: number): number => exportCellHeight(cell) + 24;
 function tagsPerColumn(grid: Grid, style: BoardStyle): number[] {
   const t = grid.columns.map(() => 0);
   // One slot per column for the STEP arrows and pair tags, so the board never jumps when the mode opens.
-  if (style === 'A' && grid.step) for (let c = 0; c < t.length; c++) t[c]! += 1;
+  if (style === 'A' && grid.step) for (let c = 0; c < t.length; c++) t[c]! += Math.max(1, maxStepPairs(grid));
   return t;
 }
 
@@ -337,15 +385,16 @@ export function boardGeometry(grid: Grid, style: BoardStyle, cell: number, recor
   const tags = tagsPerColumn(grid, style);
   // Tags sit above what a column can reach (paper: above the rectangle), so nothing depends on the play state.
   const tops = style === 'B' ? res.map(() => rows) : colMax;
-  const need = Math.max(0, ...tags.map((k, c) => (k ? k * 22 + 6 - (rows - tops[c]!) * cell : 0)));
+  const ut = stepUnit(cell);
+  const need = Math.max(0, ...tags.map((k, c) => (k ? k * 22 * ut + 6 * ut - (rows - tops[c]!) * cell : 0)));
   const topPad = Math.max(8, need);
   const bandHeight = bandPlan(grid, cell, style, recordChips).height;
   // Export rows (one per neighbor); STEP: chosen from the order book on screen, a row of boxes on paper.
   const bottomRows = grid.neighbors.length + (grid.step && style === 'B' ? 1 : 0);
   const lead = boardLead(grid);
-  const botPad = 20 + (bandHeight ? bandHeight + 4 : 0) + bottomRows * neighborPitch(cell) + 4;
+  const botPad = bandStart(cell, style) + (bandHeight ? bandHeight + 4 : 0) + bottomRows * neighborPitch(cell) + 4;
   return {
-    n, cell, rows, weather, topPad, botPad, width: lead + n * cell + 4, height: rows * cell + topPad + botPad,
+    n, cell, rows, weather, topPad, botPad, width: 2 * lead + n * cell + 4, height: rows * cell + topPad + botPad,
     bottomRows, lead, reach: colMax, bandHeight,
   };
 }
@@ -435,6 +484,12 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   const rad = A ? Math.round(cell * 0.15) : 0;
   const id = ++uid;
   const fs = Math.max(7.5, Math.min(9.5, cell * 0.19));
+  const u = unit(cell);
+  const ut = stepUnit(cell);
+  const f2 = (v: number) => Number(v.toFixed(2));
+  /** Dashed outline of an exported, pumped, turbined or surplus block, in proportion of the cell. */
+  const dashed = (color: string, w = 1.7) => `stroke="${color}" stroke-width="${f2(Math.max(1.2, w * u))}" stroke-dasharray="${f2(4 * u)} ${f2(3 * u)}"`;
+  const es = exchangeSize(cell);
   const fill = (p: string) => (A ? PIECE_COLORS[colorKey(p)].a : PIECE_COLORS[colorKey(p)].b);
   const res = residual(grid);
   const raw = A ? rawSilhouette(grid, state) : res;
@@ -479,14 +534,10 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       const k = v < F ? 'F' : 'R';
       const { bx, by, w } = box(c, v);
       s += `<rect x="${bx}" y="${by}" width="${w}" height="${w}" rx="${rad}" fill="url(#h${k}${id})"${A ? '' : ` stroke="${ink}" stroke-width=".8"`}/>`;
-      s += T(bx + w / 2, by + w / 2 + cell * 0.07, k, { size: cell * 0.2, op: 0.55 });
+      s += T(bx + w / 2, by + w / 2 + cell * 0.125, k, { size: cell * 0.3, w: 700, color: k === 'R' ? '#6f8f68' : '#4f8f88' });
       if (v >= F + R - surplus) {
-        s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="none" stroke="${BAD}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
+        s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="none" ${dashed(BAD, 1.6)}/>`;
       }
-    }
-    if (grid.demand[c]! < F + R) {
-      const ly = y(grid.demand[c]!, 0);
-      s += `<line x1="${x(c) - 4}" x2="${x(c + 1) + 4}" y1="${ly}" y2="${ly}" stroke="${ink}" stroke-width="1.6" stroke-dasharray="6 3"/>`;
     }
     const k = sil[c]!;
     const e = A ? exportsOf(c) : 0;
@@ -498,16 +549,16 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
         s += A ? `<rect x="${bx}" y="${by}" width="${w}" height="${w}" rx="${rad}" fill="#fff" stroke="#eadfe6"/>`
           : `<rect x="${bx}" y="${by}" width="${w}" height="${w}" fill="#fff" stroke="#c7d5d1" stroke-width=".8"/>`;
       } else if (kind === 'pump') {
-        s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" stroke="${PIECE_COLORS.B.ink}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
+        s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" ${dashed(STEP_INK)}/>`;
       } else {
         // Exported block: a dashed violet cell above the column.
-        s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" stroke="${PIECE_COLORS.I.ink}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
+        s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" ${dashed(PIECE_COLORS.I.ink)}/>`;
       }
     }
     // The pump chosen but not yet turbined: its dashed cell shows already.
     if (A && input.stepPending === c) {
       const { bx, by, w } = box(c, weather[c]! + k + turbines[c]!);
-      s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" stroke="${PIECE_COLORS.B.ink}" stroke-width="1.6" stroke-dasharray="4 3"/>`;
+      s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="#fff" ${dashed(STEP_INK)}/>`;
     }
     // Paper: the grid is a full rectangle; cells above the demand line are plain white too.
     if (!A) {
@@ -517,9 +568,10 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       }
     }
     for (let t = 0; t < turbines[c]!; t++) {
+      // Turbined block: the dashed slate cell of a pumped one, struck by a slate diagonal.
       const { bx, by, w } = box(c, weather[c]! + k + t);
-      s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="none" stroke="${soft}" stroke-opacity=".6" stroke-width="1.2" stroke-dasharray="2 3"/>`
-        + `<path d="M${bx + 8} ${by + 8} L${bx + w - 8} ${by + w - 8}" stroke="${soft}" stroke-opacity=".5" stroke-width="1.2"/>`;
+      s += `<rect x="${bx + 1}" y="${by + 1}" width="${w - 2}" height="${w - 2}" rx="${rad}" fill="none" ${dashed(STEP_INK)}/>`
+        + `<path d="M${f2(bx + 6 * u)} ${f2(by + 6 * u)} L${f2(bx + w - 6 * u)} ${f2(by + w - 6 * u)}" stroke="${STEP_INK}" stroke-width="${f2(Math.max(1.2, 1.4 * u))}"/>`;
     }
   }
 
@@ -555,11 +607,11 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       const ly = y(topIn(grid, b, b.col + b.len - 1), 0) + gap / 2 + cell * 0.07;
       s += `<g transform="translate(${lx} ${ly}) scale(${(cell * 0.0115).toFixed(3)})" fill="none" stroke="${ink}" stroke-width="2" stroke-linecap="round">${ICONS.lock}</g>`;
     }
-    const label = b.piece === 'I' ? b.country ?? '' : h > 1 ? `${h} GW` : '';
+    const label = b.piece === 'I' ? b.country ?? '' : '';
     if (label) {
       const cx = x(b.col) + (b.len * cell) / 2;
-      const cy = y(b.row, h) + (h * cell) / 2 + cell * 0.08;
-      s += T(cx, cy, label, { size: cell * 0.22, op: b.piece === 'I' ? 0.8 : 0.55 });
+      const cy = y(b.row, h) + (h * cell) / 2 + cell * 0.11;
+      s += T(cx, cy, label, { size: cell * 0.3, w: 700, op: b.piece === 'I' ? 0.8 : 0.55 });
     }
   });
 
@@ -571,8 +623,8 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       for (let r = Math.max(0, k - pumps[c]! - e); r < k; r++) {
         if (!hiddenAny.has(`${weather[c]! + r},${c}`)) continue;
         const { bx, by, w } = box(c, weather[c]! + r);
-        const color = r >= k - pumps[c]! ? PIECE_COLORS.B.ink : PIECE_COLORS.I.ink;
-        s += `<rect class="covered" x="${bx + 2.5}" y="${by + 2.5}" width="${w - 5}" height="${w - 5}" rx="${Math.max(0, rad - 2)}" fill="none" stroke="${color}" stroke-width="1.6" stroke-dasharray="4 3" pointer-events="none"/>`;
+        const color = r >= k - pumps[c]! ? STEP_INK : PIECE_COLORS.I.ink;
+        s += `<rect class="covered" x="${bx + 2.5}" y="${by + 2.5}" width="${w - 5}" height="${w - 5}" rx="${Math.max(0, rad - 2)}" fill="none" ${dashed(color)} pointer-events="none"/>`;
       }
     }
   }
@@ -611,16 +663,16 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   // never moves when a column rises.
   const stack = grid.columns.map(() => 0);
   const topOf = (c: number) => weather[c]! + sil[c]! + turbines[c]! + (input.stepPending === c ? 1 : 0);
-  const tagY = (c: number) => y(topOf(c) - 1) - 24 - stack[c]!++ * 22;
+  const tagY = (c: number) => y(topOf(c) - 1) - 24 * ut - stack[c]!++ * 22 * ut;
   // A pill centred on `mid`, kept inside the board; `content(textCentre, left)` draws what is inside.
   // Its state mark sits on its top right corner.
   const W = n * cell;
   const minX = X0;
   const maxX = X0 + W;
   const pill = (mid: number, py: number, w: number, bg: string, stroke: string | null,
-    content: (tc: number, left: number) => string, st: ClueStatus | null) => {
+    content: (tc: number, left: number) => string, st: ClueStatus | null, ph = 18, sw?: number) => {
     const px = Math.min(Math.max(mid - w / 2, minX), Math.max(minX, maxX - w));
-    return `<rect x="${px}" y="${py}" width="${w}" height="18" rx="9" fill="${bg}"${stroke ? ` stroke="${stroke}"` : ''}/>${content(px + w / 2, px)}`
+    return `<rect x="${px}" y="${py}" width="${w}" height="${ph}" rx="${ph / 2}" fill="${bg}"${stroke ? ` stroke="${stroke}"${sw !== undefined ? ` stroke-width="${sw}"` : ''}` : ''}/>${content(px + w / 2, px)}`
       + clueMark(Math.min(px + w - 2, maxX - 4), py + 1, st);
   };
   if (A) {
@@ -632,25 +684,27 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
     const numbered = maxStepPairs(grid) > 1;
     for (let c = 0; c < n; c++) {
       if (!pumps[c] && !turbines[c]) continue;
-      const ty = tagY(c);
-      const full = cell >= 48;
-      const labels = stepTagLabels(state.step, c, numbered);
-      // Arrows only (▲ pump, ▼ turbine); several in one tag are joined.
-      const label = labels.join('');
-      const w = full ? Math.max(cell - 8, label.length * 5 + 12) : Math.max(cell - 8, label.length * 5.5 + 8);
-      const mid = x(c) + cell / 2;
-      const k = state.step.findIndex((q) => q.pump === c || q.turbine === c);
-      const pair = k >= 0 ? state.step[k] : undefined;
-      const act = input.interactive && pair
-        ? ` data-act="step-tag" data-col="${c}" tabindex="0" role="button" aria-label="${esc(UI.stepTagLabel(columnLabel(grid, pair.pump), columnLabel(grid, pair.turbine)))}"` : '';
-      tags += `<g class="tag step-tag${act ? ' act' : ''}"${act}>`
-        + pill(mid, ty, w, STEP_BLUE, PIECE_COLORS.B.ink, (tc) => T(tc, ty + 12.5, label, { size: full ? 8.5 : 9.5 }), null)
-        + '</g>';
+      // One pill per pair end in this column, stacked: the first pair laid is the lowest, nearest the column.
+      state.step.forEach((pair, k) => {
+        const ends: ('up' | 'down')[] = [];
+        if (pair.pump === c) ends.push('up');
+        if (pair.turbine === c) ends.push('down');
+        for (const kind of ends) {
+          const ty = tagY(c);
+          const w = Math.max(cell - 10 * ut, 28 * ut);
+          const mid = x(c) + cell / 2;
+          const act = input.interactive
+            ? ` data-act="step-tag" data-col="${c}" tabindex="0" role="button" aria-label="${esc(UI.stepTagLabel(columnLabel(grid, pair.pump), columnLabel(grid, pair.turbine)))}"` : '';
+          tags += `<g class="tag step-tag${act ? ' act' : ''}"${act}>`
+            + pill(mid, ty, w, STEP_BLUE, STEP_INK, (tc) => stepGlyph(tc, ty + 9 * ut, kind, ut, STEP_INK, numbered ? k + 1 : undefined), null, f2(18 * ut), f2(1.1 * ut))
+            + '</g>';
+        }
+      });
     }
     s += tags;
     if (input.stepMode) {
       // ▲ over each slot to choose the pump; once chosen, it stays filled and ▼ shows on later slots.
-      const r = Math.min(11, cell / 2 - 3);
+      const r = Math.min(11 * ut, cell / 2 - 3);
       const nextPair = state.step.length + 1;
       for (let c = 0; c < n; c++) {
         const chosen = pending === c;
@@ -658,21 +712,21 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
         if (!kind) continue;
         const ty = tagY(c);
         const cx = x(c) + cell / 2;
-        const cy = ty + 9;
-        const col = PIECE_COLORS.B.ink;
+        const cy = ty + 9 * ut;
+        const col = STEP_INK;
         const label = kind === 'up' ? (chosen ? UI.stepArrowChosen(columnLabel(grid, c)) : UI.stepArrowPump(columnLabel(grid, c))) : UI.stepArrowTurbine(columnLabel(grid, c));
         const act = input.interactive ? ` data-act="step-arrow" data-col="${c}" tabindex="0" role="button" aria-label="${esc(label)}"` : '';
         s += `<g class="step-arrow${act ? ' act' : ''}"${act}><circle cx="${cx}" cy="${cy}" r="${r}" fill="${chosen ? col : STEP_BLUE}" stroke="${col}" stroke-width="1.4"/>`
-          + T(cx, cy + 4, (kind === 'up' ? '▲' : '▼') + (numbered ? String(nextPair) : ''), { size: numbered ? 9 : 11, color: chosen ? '#fff' : col }) + '</g>';
+          + stepGlyph(cx, cy, kind === 'up' ? 'up' : 'down', ut * (numbered ? 0.9 : 1.1), chosen ? '#fff' : col, numbered ? nextPair : undefined) + '</g>';
       }
     }
   }
 
   // ---- column labels
-  grid.columns.forEach((label, c) => { s += T(x(c) + cell / 2, H * cell + 14 + plan.offset, label, { w: 600, size: Math.min(10.5, fs + 1), color: soft }); });
+  grid.columns.forEach((label, c) => { s += T(x(c) + cell / 2, H * cell + 14 + hoursExtra(cell, style) + plan.offset, label, { w: 600, size: A ? f2(hoursSize(cell)) : Math.min(10.5, fs + 1), color: soft }); });
 
   // ---- slot clues: one band under the hours, aligned on the columns (see bandPlan)
-  const bandY = H * cell + 20;
+  const bandY = H * cell + bandStart(cell, style);
   for (const it of plan.items) {
     const cl = grid.clues[it.index]!;
     const st = statusOf(it.index);
@@ -735,35 +789,37 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
   const recordIndex = (country: string, c: number) => grid.clues.findIndex((cl) => cl.type === 'column' && cl.col === c && importRecordCountry(grid, cl) === country);
   const flowClue = (country: string, c: number) => grid.clues.findIndex((cl) => cl.type === 'flow' && cl.country === country && cl.col === c);
   const focus = input.interactive ? ' tabindex="0" role="button"' : '';
-  const baseY = H * cell + 24 + geo.bandHeight;
+  const baseY = H * cell + 4 + bandStart(cell, style) + geo.bandHeight;
   const rowH = exportCellHeight(cell);
   const pitch = rowH + 24;
   const cgap = 3;
   grid.neighbors.forEach((nb, k) => {
     const ry = baseY + k * pitch;
-    // The CO2 of an import line shows only when that import is possible today.
-    const importable = grid.co2_cap !== null && bookEntries(grid).some((e) => e.key === `I:${nb.id}`);
-    const long = `${UI.neighborLine(nb.name, nb.cap)}${importable ? ` · ${UI.co2PerCell(nb.co2)}` : ''}`;
-    s += T(X0 - 5, ry + rowH / 2 + 3.5, nb.id, { anchor: 'end', w: 800, size: 9.5, color: soft });
+    const long = UI.neighborLine(nb.name, nb.cap);
+    s += T(X0 - 5, ry + rowH / 2 + 3.5, nb.id, { anchor: 'end', w: 800, size: A ? Math.max(9.5, es * 0.9) : 9.5, color: soft });
     // Screen: the day's exchanges with this neighbor under the first block ("↑ 1/2  ↓ 1/∞"; a laid
     // or published flow counts; ∞ when the total is not published), green once met, red beyond, grey otherwise; then the caption.
     const capY = ry + rowH + 13;
-    let capX = X0 + cgap / 2;
+    // One text, one regular string: "↑ 0/2 ↓ 0/3 · Allemagne · 1 bloc par créneau", each counter in its own colour.
+    const counters: { t: string; color: string }[] = [];
     if (A) {
       const flows: [string, number | null, number][] = [
         ['↑', allowedExchange(grid, nb.id, 'exports'), totalExports(state, nb.id)],
         ['↓', allowedExchange(grid, nb.id, 'imports'), totalImports(state, nb.id)],
       ];
       for (const [arrow, want, got] of flows) {
-        const t = UI.exchangeCount(arrow, got, want);
-        const color = want !== null && got > want ? BAD : want !== null && want > 0 && got === want ? OK : soft;
-        s += T(capX, capY, t, { anchor: 'start', w: 800, size: 9, color });
-        capX += t.length * 5.4 + 8;
+        counters.push({
+          t: UI.exchangeCount(arrow, got, want),
+          color: want !== null && got > want ? BAD : want !== null && want > 0 && got === want ? OK : soft,
+        });
       }
     }
     // The long caption only where it fits beside the counts, else the neighbor's name alone.
-    const cap = W >= 240 && capX - X0 + long.length * 4.9 <= W ? long : nb.name;
-    s += T(capX, capY, cap, { anchor: 'start', w: 700, size: 9, color: soft });
+    const used = counters.reduce((a, c) => a + c.t.length * 5.4 + 8, 0);
+    const cap = W >= 240 && used + long.length * 4.9 <= W ? long : nb.name;
+    const lead = counters.map((c) => `<tspan font-weight="800" fill="${c.color}">${esc(c.t)}</tspan>`).join(' ');
+    s += `<text x="${X0 + cgap / 2}" y="${capY}" text-anchor="start" font-family="Manrope, system-ui, sans-serif" font-size="9" font-weight="700" fill="${soft}">`
+      + `${lead}${lead ? ' · ' : ''}${esc(cap)}</text>`;
     for (let c = 0; c < n; c++) {
       const px = x(c) + cgap / 2;
       const w = cell - cgap;
@@ -793,10 +849,10 @@ export function renderBoard(input: BoardInput): { svg: string; geo: BoardGeometr
       if (!e && !im) {
         const pending = flow && flow.type === 'flow' && flow.dir === 'import' && flow.value > 0;
         s += `<rect x="${px}" y="${yy}" width="${w}" height="${rowH}" rx="${rad}" fill="#fbf7f9" stroke="${pending ? PIECE_COLORS.I.ink : '#dccfd7'}" stroke-width="1.2" stroke-dasharray="3 3"/>`
-          + (text ? T(tx, yy + rowH / 2 + 3.5, text, { w: 700, size: 9, color: ink }) : '');
+          + (text ? T(tx, yy + rowH / 2 + es * 0.37, text, { w: 700, size: f2(es), color: EXPORT_TEXT }) : '');
       } else {
         s += `<rect x="${px}" y="${yy}" width="${w}" height="${rowH}" rx="${rad}" fill="${PIECE_COLORS.I.a}" stroke="${fi >= 0 ? ink : PIECE_COLORS.I.ink}" stroke-width="${fi >= 0 ? 1.5 : 1.2}"/>`
-          + T(tx + (isLocked ? 5 : 0), yy + rowH / 2 + 3.5, text, { size: 9 });
+          + T(tx, yy + rowH / 2 + es * 0.37, text, { size: f2(es), color: EXPORT_TEXT });
       }
       // A published export is fixed: padlock inside its cell. A published import only outlines
       // the cell (the player still exports there freely).

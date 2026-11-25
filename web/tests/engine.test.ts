@@ -83,8 +83,8 @@ describe('reference solutions', () => {
     const ev = evaluate(g, newGame(g));
     expect(ev.solved).toBe(false);
     expect(ev.missing).toBe(16);
-    expect(ev.unmet).toContain('Il reste 16 cases à couvrir.');
-    expect(ev.unmet).toContain('Il reste à poser des barres de nucléaire : 6, 6.');
+    expect(ev.unmet).toContain('Il reste 16 blocs à couvrir.');
+    expect(ev.unmet).toContain('Il reste à poser des groupes nucléaires : 6, 6.');
   });
 });
 
@@ -127,8 +127,8 @@ describe('weather cells (imposed bricks, absolute rows)', () => {
   });
 
   it('a bar on a weather cell is refused, at the first column it covers', () => {
-    expect(refused(place(g, s0, N(1, 0, 3)))).toEqual({ code: 'weather', message: 'La météo occupe déjà cette case à 8h.' });
-    expect(refused(place(g, s0, N(0, 0, 3)))).toEqual({ code: 'weather', message: 'La météo occupe déjà cette case à 0h.' });
+    expect(refused(place(g, s0, N(1, 0, 3)))).toEqual({ code: 'weather', message: 'La météo occupe déjà ce bloc à 8h.' });
+    expect(refused(place(g, s0, N(0, 0, 3)))).toEqual({ code: 'weather', message: 'La météo occupe déjà ce bloc à 0h.' });
     expect(refused(place(g, s0, { piece: 'T', row: 2, col: 3, len: 1 })).code).toBe('weather');
   });
 
@@ -146,7 +146,7 @@ describe('weather cells (imposed bricks, absolute rows)', () => {
   it('a saved bar on the weather is reported, not removed', () => {
     const ev = evaluate(g, { ...s0, bars: [N(1, 0, 3)] });
     expect(ev.invalidBars).toEqual([0]);
-    expect(ev.errors).toContainEqual({ code: 'weather', message: 'La météo occupe déjà cette case à 8h.' });
+    expect(ev.errors).toContainEqual({ code: 'weather', message: 'La météo occupe déjà ce bloc à 8h.' });
   });
 
   it('the validator refuses a placement or an engaged plant on the weather', () => {
@@ -179,7 +179,7 @@ describe('placement rules (one invalid case per rule)', () => {
   const s0 = newGame(g);
 
   it('width', () => {
-    expect(refused(place(g, s0, N(0, 0, 2)))).toEqual({ code: 'length', message: 'La barre de nucléaire doit faire 3 à 6 créneaux.' });
+    expect(refused(place(g, s0, N(0, 0, 2)))).toEqual({ code: 'length', message: 'Le groupe nucléaire doit faire 3 à 6 créneaux.' });
   });
 
   it('height', () => {
@@ -196,7 +196,7 @@ describe('placement rules (one invalid case per rule)', () => {
 
   it('overlap', () => {
     const s = ok(place(g, s0, N(0, 0, 6)));
-    expect(refused(place(g, s, { piece: 'T', row: 0, col: 3, len: 1 }))).toEqual({ code: 'overlap', message: 'Case déjà occupée.' });
+    expect(refused(place(g, s, { piece: 'T', row: 0, col: 3, len: 1 }))).toEqual({ code: 'overlap', message: 'Bloc déjà occupé.' });
   });
 
   it('piece not in the grid', () => {
@@ -205,11 +205,11 @@ describe('placement rules (one invalid case per rule)', () => {
   });
 
   it('inventory: bar width not in the order book, bar already used, cells exhausted', () => {
-    expect(refused(place(g, s0, N(0, 0, 3))).message).toBe('Plus de barre de nucléaire de 3 créneaux dans le carnet.');
+    expect(refused(place(g, s0, N(0, 0, 3))).message).toBe('Plus de groupe nucléaire de 3 créneaux dans le carnet d’ordres.');
     let s = ok(place(g, s0, { piece: 'G', row: 0, col: 0, len: 2 }));
     expect(refused(place(g, s, { piece: 'G', row: 1, col: 0, len: 2 })).code).toBe('inventory');
     s = ok(place(g, s, { piece: 'T', row: 0, col: 2, len: 1 }));
-    expect(refused(place(g, s, { piece: 'T', row: 0, col: 3, len: 1 })).message).toBe('Plus de case de TAC dans le carnet (1 au total).');
+    expect(refused(place(g, s, { piece: 'T', row: 0, col: 3, len: 1 })).message).toBe('Plus de bloc de TAC dans le carnet d’ordres (1 au total).');
   });
 
   it('inventory: imports and exports', () => {
@@ -217,13 +217,13 @@ describe('placement rules (one invalid case per rule)', () => {
     expect(refused(place(g, s, { piece: 'I', country: 'DE', row: 0, col: 1, len: 1 })).code).toBe('inventory');
     expect(refused(place(g, s0, { piece: 'I', country: 'UK', row: 0, col: 1, len: 1 })).code).toBe('inventory');
     s = ok(setExport(g, s0, 'DE', 2, 1));
-    expect(refused(setExport(g, s, 'DE', 3, 1)).message).toBe('Plus d’export vers l’Allemagne dans le carnet (1 au total).');
+    expect(refused(setExport(g, s, 'DE', 3, 1)).message).toBe('Plus d’export vers l’Allemagne dans le carnet d’ordres (1 au total).');
   });
 
   it('stock (level none)', () => {
     const h = makeGrid({ inventory: { level: 'none', pieces: { B: { max_cells: 1 } } } });
     const s = ok(place(h, newGame(h), { piece: 'B', row: 0, col: 0, len: 1 }));
-    expect(refused(place(h, s, { piece: 'B', row: 0, col: 1, len: 1 }))).toEqual({ code: 'stock', message: 'Plus d’eau dans le barrage (1 case au plus).' });
+    expect(refused(place(h, s, { piece: 'B', row: 0, col: 1, len: 1 }))).toEqual({ code: 'stock', message: 'Plus d’eau dans le barrage (1 bloc au plus).' });
     expect(evaluate(h, { ...s, bars: [...s.bars, { piece: 'B', row: 0, col: 1, len: 1 }] }).errors.map((e) => e.code)).toContain('stock');
   });
 
@@ -232,10 +232,10 @@ describe('placement rules (one invalid case per rule)', () => {
     let s = newGame(h);
     s = ok(place(h, s, { piece: 'B', row: 0, col: 0, len: 1 }));
     s = ok(place(h, s, { piece: 'B', row: 0, col: 1, len: 1 }));
-    expect(refused(place(h, s, { piece: 'B', row: 0, col: 5, len: 1 }))).toEqual({ code: 'stock', message: 'Plus d’eau dans le barrage (2 cases au plus).' });
+    expect(refused(place(h, s, { piece: 'B', row: 0, col: 5, len: 1 }))).toEqual({ code: 'stock', message: 'Plus d’eau dans le barrage (2 blocs au plus).' });
     const over: PlayState = { ...s, bars: [...s.bars, { piece: 'B', row: 0, col: 5, len: 1 }] };
     const ev = evaluate(h, over);
-    expect(ev.errors).toContainEqual({ code: 'stock', message: 'Plus d’eau dans le barrage (2 cases au plus).' });
+    expect(ev.errors).toContainEqual({ code: 'stock', message: 'Plus d’eau dans le barrage (2 blocs au plus).' });
     expect(ev.inventory.find((it) => it.key === 'B')).toMatchObject({ status: 'over', text: '3 / 2' });
   });
 
@@ -419,13 +419,13 @@ describe('clues (one broken case per type)', () => {
     expect(clueText(g, { type: 'price', col: 2, piece: 'G' })).toBe("À 8h, c’est le gaz qui fixe le prix.");
     expect(clueText(g, { type: 'bar', piece: 'N', col: 1, len: 5 })).toBe('Un réacteur tourne de 4h à 24h.');
     expect(clueText(g, { type: 'length', piece: 'N', len: 6 })).toBe("Un réacteur tourne 6 créneaux d’affilée.");
-    expect(clueText(g, { type: 'column', col: 4, counts: { G: 2, T: 0 } })).toBe('Relevé de 16h : 2 cases de gaz, aucune case de TAC.');
+    expect(clueText(g, { type: 'column', col: 4, counts: { G: 2, T: 0 } })).toBe('Relevé de 16h : 2 blocs de gaz, aucun bloc de TAC.');
     expect(clueText(g, { type: 'flow', col: 5, country: 'DE', dir: 'export', value: 1 })).toBe("À 20h, 1 bloc part vers l’Allemagne.");
     expect(clueText(g, { type: 'flow', col: 5, country: 'UK', dir: 'import', value: 0 })).toBe("À 20h, aucun bloc n’arrive du Royaume-Uni.");
     expect(clueText(g, { type: 'exchanges', exports: { DE: 2 }, step: 1 })).toBe("2 blocs exportés vers l’Allemagne, 1 pompage.");
     expect(clueText(g, { type: 'exchanges', imports: { '*': 2 } })).toBe('2 blocs importés, tous pays confondus.');
     expect(clueText(g, { type: 'exchanges', exports: { DE: 0 } })).toBe('Aucun bloc exporté vers l’Allemagne.');
-    expect(clueText(g, { type: 'engaged', piece: 'T', row: 4, col: 4, len: 1 })).toBe('Déjà engagé : une TAC de 16h à 20h, ligne 5.');
+    expect(clueText(g, { type: 'engaged', piece: 'T', row: 4, col: 4, len: 1 })).toBe('Groupe déjà engagé : un groupe TAC de 16h à 20h, ligne 5.');
   });
 });
 

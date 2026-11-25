@@ -43,7 +43,7 @@ export function gameEyebrow(grid: Grid, grids: readonly Grid[], ratedEyebrow?: s
   const tutorials = grids.filter((g) => g.section === 'tutorial').sort((a, b) => a.id - b.id);
   return grid.section === 'tutorial'
     ? UI.tutorialOf(tutorials.findIndex((g) => g.id === grid.id) + 1, tutorials.length)
-    : `${bulletinTag(grid) ?? ratedEyebrow ?? UI.ratedEyebrow}${grid.inventory.level === 'none' ? ` · ${UI.noInventory}` : ''}`;
+    : `${bulletinTag(grid) ?? ratedEyebrow ?? UI.ratedEyebrow}`;
 }
 
 /** What the player did: a refused or clue-breaking pose, an undo, an erasure, a reset, the solve. */
@@ -293,7 +293,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     } else {
       m = boardMessage(ev, m) ?? {
         text: erase ? UI.hintErase : selected?.piece === STEP_KEY ? (stepPending !== null ? UI.stepPending(columnLabel(grid, stepPending)) : UI.hintStep)
-          : UI.hintChoose(grid.inventory.level !== 'exact', grid.neighbors.length > 0, window.matchMedia('(max-width: 860px)').matches),
+          : UI.hintChoose(grid.neighbors.length > 0, window.matchMedia('(max-width: 860px)').matches),
         tone: 'info',
       };
     }
@@ -318,9 +318,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   }
 
   function drawSide() {
-    const bookTitle = grid.inventory.level === 'exact' ? UI.book : UI.available;
-    const bookHint = grid.inventory.level === 'exact' ? '' : ` <small>${esc(UI.availableHint)}</small>`;
-    side.innerHTML = `<section class="card" aria-label="${esc(bookTitle)}"><h2 class="ct">${esc(bookTitle)}${bookHint}</h2>`
+    side.innerHTML = `<section class="card" aria-label="${esc(UI.book)}"><h2 class="ct">${esc(UI.book)}</h2>`
       + `${renderBook(grid, history.present, erase ? null : selected?.key ?? null)}</section>`
       + renderClues(grid, ev.clues, history.present, ev.missing === 0) + renderCo2(grid, history.present);
   }
@@ -683,15 +681,15 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     const narrow = window.matchMedia('(max-width: 860px)').matches;
     const n = grid.columns.length;
     // The board sits in a card (30 px of border and padding on desktop); its left gutter holds the neighbor ids.
-    const beside = gameEl.clientWidth - 340 - 30 - 48 - 30 - 6 - boardLead(grid);
+    const beside = gameEl.clientWidth - 340 - 30 - 48 - 30 - 6 - 2 * boardLead(grid);
     const stacked = !narrow && Math.floor(beside / n) < MIN_CELL;
     gameEl.classList.toggle('stacked', stacked);
-    const avail = narrow || stacked ? wrap.clientWidth - 6 - boardLead(grid) : beside;
+    const avail = narrow || stacked ? wrap.clientWidth - 6 - 2 * boardLead(grid) : beside;
     const next = Math.max(MIN_CELL, Math.min(MAX_CELL, Math.floor(avail / n)));
     // Beside the panels, the board column is exactly the board card (svg plus 30 of padding and
     // border), so the side column never takes the room the board was sized for.
     if (narrow || stacked) gameEl.style.removeProperty('--board-col');
-    else gameEl.style.setProperty('--board-col', `${boardLead(grid) + n * next + 4 + 30}px`);
+    else gameEl.style.setProperty('--board-col', `${2 * boardLead(grid) + n * next + 4 + 30}px`);
     if (next !== cell || recordChips === narrow || !geo) { cell = next; recordChips = !narrow; drawBoard(); } else syncSlider();
   }
   const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(fit) : null;

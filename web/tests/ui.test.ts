@@ -14,13 +14,13 @@ import {
   ProgressStore, STORAGE_KEY, emptyProgress, isPlayState, nextGrid, parseProgress,
   playOrder, recordState, statusOf, gridFingerprint, savedBoard, type KeyValueStore,
 } from '../src/ui/progress';
-import { allowedExchange, bandPlan, boardLead, recordLayout, boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard, stepTagLabels } from '../src/ui/board';
+import { allowedExchange, bandPlan, bandStart, hoursGap, boardLead, recordLayout, boardGeometry, cellAt, lockedExports, maxStepPairs, renderBoard, stepTagLabels } from '../src/ui/board';
 import {
   applyLockedExports, boardMessage, bulletinTag, displayTitle, exportTap, initialState, isInitialState, newlyBroken, nextExportValue,
   poseMessage,
 } from '../src/ui/game';
-import { MSG, TUTORIAL_LORE, durationText } from '../src/i18n/fr';
-import { STEP_KEY, bookEntries, inventoryExchanges, isDayClue, orderClues, withInventoryExchanges, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, richClueText, shownClueCount, splitExchanges, exchangeLines, co2Costs } from '../src/ui/panels';
+import { MSG, PIECE_WORDS, TUTORIAL_LORE, durationText, groupSubject } from '../src/i18n/fr';
+import { STEP_KEY, bookEntries, clueItem, inventoryExchanges, isDayClue, orderClues, withInventoryExchanges, publishedStepPairs, renderBook, renderChips, renderClues, renderCo2, richClueText, shownClueCount, splitExchanges, exchangeLines, co2Costs } from '../src/ui/panels';
 import { esc } from '../src/ui/palette';
 import { renderSheet, slotLegend } from '../src/ui/print';
 import { OK, PIECE_COLORS } from '../src/ui/palette';
@@ -143,7 +143,7 @@ describe('pose messages', () => {
   it('without a contradiction: replaced plants, else the pose fits', () => {
     const g1 = byId(1);
     expect(poseMessage(g1, 'TAC à 8h, ligne 2', [], null)).toEqual({ text: 'TAC à 8h, ligne 2 : la pose tient.', tone: 'ok' });
-    expect(poseMessage(g1, 'TAC à 8h, ligne 2', [{ piece: 'N' }], null).text).toBe('TAC à 8h, ligne 2 : remplace 1 barre de nucléaire.');
+    expect(poseMessage(g1, 'TAC à 8h, ligne 2', [{ piece: 'N' }], null).text).toBe('TAC à 8h, ligne 2 : remplace 1 groupe nucléaire.');
     const ok = [{ clue: byId(2).clues[0]!, text: '', status: 'broken' as const }];
     expect(newlyBroken(ok, ok)).toBeNull();
   });
@@ -347,12 +347,12 @@ describe('board and game helpers', () => {
     expect(renderBook(byId(9), newGame(byId(9)), null)).toContain('Import d’Allemagne');
     // Screen: no hint under the names, the stock is drawn and counted; free plants count to ∞.
     const screen = renderBook(g8, newGame(g8), null);
-    expect(screen).not.toContain('stock : 2 cases');
+    expect(screen).not.toContain('stock : 2 blocs');
     expect(screen).toContain('0 / 2');
     expect(screen).toContain('0 / ∞');
     expect(screen).not.toMatch(/posée|créneaux|ruban/);
     // Paper keeps the hints and shows no usage.
-    expect(renderBook(g8, newGame(g8), null, true)).toContain('stock : 2 cases');
+    expect(renderBook(g8, newGame(g8), null, true)).toContain('stock : 2 blocs');
     expect(renderBook(g8, newGame(g8), null, true)).not.toContain('∞');
   });
 
@@ -372,6 +372,35 @@ describe('board and game helpers', () => {
     // Gaps in the widths: one glyph per width, as before.
     g.pieces.C!.len = [3, 5];
     expect(renderBook(g, newGame(g), null).match(/class="mb/g)!.length).toBeGreaterThan(glyph.match(/class="mb/g)!.length);
+  });
+
+  it('a price publication carries the price scale: book plants in merit order, the price setter ringed', () => {
+    const g = byId(6);
+    const price = g.clues.find((c) => c.type === 'price' && c.piece === 'G')!;
+    if (price.type !== 'price') throw new Error('no price clue');
+    const html = clueItem(g, price, null);
+    const plants = bookEntries(g).map((e) => e.piece).filter((p) => p !== 'STEP' && p !== 'I');
+    expect(html.match(/class="cd/g)).toHaveLength(plants.length);
+    expect(html.match(/class="cd hi"/g)).toHaveLength(1);
+    // The ringed dot is the price setter's colour; the others follow the merit order.
+    const dots = [...html.matchAll(/<i class="cd( hi)?" style="background:([^"]+)"/g)];
+    expect(dots.map((m) => m[2])).toEqual(plants.map((p) => PIECE_COLORS[p as 'N'].a));
+    expect(dots.findIndex((m) => m[1])).toBe(plants.indexOf(price.piece));
+    expect(plants).toEqual(['N', 'G']);
+    expect(html).toContain('aria-label="Ordre de prix : nucléaire, gaz"');
+    expect(html).toContain('aria-label="Ordre de prix : ');
+    expect(clueItem(g, price, null, true)).not.toContain('class="cd');
+  });
+
+  it('a laid plant is a « groupe » followed by the plant, plural only on nucléaire', () => {
+    expect(PIECE_WORDS.N.groups).toBe('groupes nucléaires');
+    for (const id of ['B', 'C', 'G', 'T'] as const) expect(PIECE_WORDS[id].groups).toBe(`${PIECE_WORDS[id].group}`.replace('groupe', 'groupes'));
+    const g = byId(1);
+    expect(groupSubject(g, 'N')).toBe('Le groupe nucléaire');
+    expect(groupSubject(g, 'T')).toBe('Le groupe TAC');
+    expect(MSG.tooManyBars(PIECE_WORDS.N.groups, [3])).toBe('Groupes nucléaires en trop : 3.');
+    expect(MSG.inventoryBar(PIECE_WORDS.T.group, 1)).toBe('Plus de groupe TAC de 1 créneau dans le carnet d’ordres.');
+    expect(UI.replaces(g, [{ piece: 'N' }, { piece: 'N' }])).toBe('Remplace 2 groupes nucléaires');
   });
 
   it('clue texts get plant chips and slot values; day clues are the unslotted ones', () => {
@@ -480,8 +509,9 @@ describe('print sheet', () => {
     expect(co2Costs(g).map((c) => c.name)).toEqual(['Charbon', 'TAC', 'Gaz']);
     const svg = renderBoard({ grid: g, state: s, ev: evaluate(g, s), style: 'A', cell: 50 }).svg;
     expect(svg).not.toContain('CO₂');
+    // The cost per cell stays in the CO2 card, never under the neighbor rows.
     const g2 = { ...g, clues: g.clues.slice(0, -1) };
-    expect(renderBoard({ grid: g2, state: s, ev: evaluate(g2, s), style: 'A', cell: 70 }).svg).toContain(UI.co2PerCell(3));
+    expect(renderBoard({ grid: g2, state: s, ev: evaluate(g2, s), style: 'A', cell: 70 }).svg).not.toContain('CO₂');
   });
 
   it('book by width: one glyph per width with its width and its own counter', () => {
@@ -578,9 +608,12 @@ describe('STEP in the order book', () => {
     expect(maxStepPairs(multi)).toBe(2);
     const s = { ...initialState(multi), step: pairs };
     const svg = renderBoard({ grid: multi, state: s, ev: null, style: 'A', cell: 50 }).svg;
-    for (const l of ['▲1', '▲2', '▼1', '▼2']) expect(svg).toContain(l);
+    // One pill per pair end (4), each with its drawn triangle and its pair number.
+    expect(svg.match(/class="tag step-tag"/g)).toHaveLength(4);
+    expect(svg.match(/<polygon /g)).toHaveLength(4);
+    for (const l of ['1', '2']) expect(svg).toContain(`>${l}</text>`);
     const arrows = renderBoard({ grid: multi, state: { ...initialState(multi), step: [pairs[0]!] }, ev: null, style: 'A', cell: 50, stepMode: true, interactive: true }).svg;
-    expect(arrows).toContain('▲2'); // next pair to place
+    expect(arrows.match(/class="step-arrow[^]*?<\/g>/)![0]).toContain('>2</text>'); // next pair to place
   });
 
   it('STEP numbering: two pairs pumping at the same slot keep both numbers, compact tag widens', () => {
@@ -588,10 +621,20 @@ describe('STEP in the order book', () => {
     const s = { ...initialState(multi), step: [{ pump: 1, turbine: 3 }, { pump: 1, turbine: 5 }] };
     for (const cell of [50, 34]) {
       const svg = renderBoard({ grid: multi, state: s, ev: null, style: 'A', cell }).svg;
-      expect(svg).toContain('▲1▲2');
+      // Two pills in the same column, stacked: the first pair laid is the lowest.
+      const ys = [...svg.matchAll(/class="tag step-tag"><rect x="[\d.]+" y="([\d.-]+)"/g)].map((m) => Number(m[1]));
+      expect(ys).toHaveLength(4); // two pumps in column 1, the turbines of columns 3 and 5
+      expect(ys[0]!).toBeGreaterThan(ys[1]!);
     }
     const both = { ...initialState(multi), step: [{ pump: 1, turbine: 3 }, { pump: 3, turbine: 5 }] };
-    expect(renderBoard({ grid: multi, state: both, ev: null, style: 'A', cell: 34 }).svg).toContain('▲2▼1');
+    expect(renderBoard({ grid: multi, state: both, ev: null, style: 'A', cell: 34 }).svg.match(/class="tag step-tag"/g)).toHaveLength(4);
+  });
+
+  it('the gap under the hours equals the gap above them (screen)', () => {
+    for (const cell of [30, 40, 50, 58, 60]) {
+      const gap = hoursGap(cell);
+      expect(Math.abs(gap.above - gap.below)).toBeLessThanOrEqual(0.6);
+    }
   });
 
   it('paper keeps its STEP boxes and draws no pair', () => {
@@ -705,8 +748,8 @@ describe('review S6.3 round 3', () => {
   });
 
   it('the stock refusal has one colon only', () => {
-    expect(MSG.stock('B', 'du barrage', 2)).toBe('Plus d’eau dans le barrage (2 cases au plus).');
-    expect(MSG.stock('G', 'de gaz', 1)).toBe('Plus de stock de gaz (1 case au plus).');
+    expect(MSG.stock('B', 'du barrage', 2)).toBe('Plus d’eau dans le barrage (2 blocs au plus).');
+    expect(MSG.stock('G', 'de gaz', 1)).toBe('Plus de stock de gaz (1 bloc au plus).');
   });
 });
 
@@ -813,8 +856,8 @@ describe('clue text: punctuation stays glued to the plant chip', () => {
 
 describe('phone hint', () => {
   it('points to the row under the board below 860 px', () => {
-    expect(UI.hintChoose(false, false, true)).toContain('la barre sous la grille');
-    expect(UI.hintChoose(false, false)).toContain('le carnet');
+    expect(UI.hintChoose(false, true)).toContain('la rangée de centrales sous la grille');
+    expect(UI.hintChoose(false)).toContain('le carnet d’ordres');
   });
 });
 
@@ -840,9 +883,8 @@ describe('clue card (every clue in text, time order)', () => {
       if (!grid.clues.length) continue;
       const ev = evaluate(grid, newGame(grid));
       const html = renderClues(grid, ev.clues, newGame(grid));
-      // The exchanges are one publication of several lines: count items, then the lines beyond the first.
-      const lines = html.match(/class="xline"/g)?.length ?? 0;
-      expect((html.match(/<li class="clue/g)?.length ?? 0) + Math.max(0, lines - 1)).toBe(shownClueCount(grid));
+      // Every publication line (the exchanges are one publication of several) carries one status dot.
+      expect(html.match(/class="pubrow"/g)?.length ?? 0).toBe(shownClueCount(grid));
       expect(html).not.toContain('<details');
     }
   });
@@ -888,18 +930,29 @@ describe('board card: fixed layout, price row, export rows', () => {
     const r = exportTap(g, initialState(g), 'DE', 2);
     expect(r.state).not.toBeNull();
     const after = draw(g, r.state!);
-    expect(after.svg).toContain('stroke="#8f78cf" stroke-width="1.6" stroke-dasharray="4 3"');
+    expect(after.svg).toMatch(/stroke="#8f78cf" stroke-width="2\.13" stroke-dasharray="5 3\.75"/); // 1.7 / 4 / 3 of a 40 px cell, at 50 px
     expect(viewBox(after.svg)).toBe(viewBox(before.svg));
   });
 
-  it('a pump chosen but not yet turbined already shows its dashed blue cell; the turbine only once laid', () => {
+  it('a pump chosen but not yet turbined already shows its dashed slate cell; the turbine only once laid', () => {
     const g = byId(7);
     const st = initialState(g);
     const plain = renderBoard({ grid: g, state: st, ev: evaluate(g, st), style: 'A', cell: 50, stepMode: true, interactive: true });
     const pend = renderBoard({ grid: g, state: st, ev: evaluate(g, st), style: 'A', cell: 50, stepMode: true, interactive: true, stepPending: 3 });
-    const blue = (svg: string) => (svg.match(/stroke="#6f9bd0" stroke-width="1.6" stroke-dasharray="4 3"/g) ?? []).length;
+    const blue = (svg: string) => (svg.match(/stroke="#5d6f93" stroke-width="2\.13" stroke-dasharray="5 3\.75"/g) ?? []).length;
     expect(blue(pend.svg)).toBe(blue(plain.svg) + 1);
     expect(viewBox(pend.svg)).toBe(viewBox(plain.svg));
+  });
+
+  it('a turbined block is a dashed slate cell struck by a slate diagonal; no black demand line under the weather', () => {
+    const g = byId(7);
+    const st = { ...initialState(g), step: [{ pump: 3, turbine: 5 }] };
+    const svg = renderBoard({ grid: g, state: st, ev: evaluate(g, st), style: 'A', cell: 50 }).svg;
+    expect(svg).toContain('d="M' ) ;
+    expect(svg).toMatch(/stroke="#5d6f93" stroke-width="1\.75"\/>/);
+    expect(svg).not.toContain('#6f9bd0" stroke-width="1.6"');
+    const w = byId(8);
+    expect(renderBoard({ grid: w, state: initialState(w), ev: evaluate(w, initialState(w)), style: 'A', cell: 50 }).svg).not.toMatch(/stroke-dasharray="6 3"/);
   });
 
   it('price tags sit under the hours, below the grid, not above the columns', () => {
@@ -995,7 +1048,7 @@ describe('board card: fixed layout, price row, export rows', () => {
           for (const p of band) {
             expect(p.x1).toBeGreaterThanOrEqual(geo.lead);
             expect(p.x2).toBeLessThanOrEqual(geo.lead + g.columns.length * cell);
-            expect(p.y + 18).toBeLessThanOrEqual(geo.rows * cell + 24 + geo.bandHeight);
+            expect(p.y + 18).toBeLessThanOrEqual(geo.rows * cell + bandStart(cell, 'A') + 4 + geo.bandHeight);
           }
         }
       }
@@ -1129,16 +1182,16 @@ describe('board card: fixed layout, price row, export rows', () => {
     const H = plain.geo.rows;
     const a = arrows(plain.svg);
     expect(a.size).toBe(g.columns.length - 1);
-    for (const [c, cy] of a) expect(cy).toBe((H - top(st, c)) * 50 - 24 + 9);
+    for (const [c, cy] of a) expect(cy).toBe((H - top(st, c)) * 50 - 15 * 1.25);
     // Pending pump on slot 3: its arrow rises by one cell; the other arrows stay; the viewBox too.
     const pend = renderBoard({ grid: g, state: st, ev: evaluate(g, st), style: 'A', cell: 50, stepMode: true, interactive: true, stepPending: 3 });
     const b = arrows(pend.svg);
     expect(b.get(3)).toBe(a.get(3)! - 50);
     for (const [c, cy] of b) if (c > 3 && a.has(c)) expect(cy).toBe(a.get(c));
-    expect(b.get(g.columns.length - 1)).toBe((H - top(st, g.columns.length - 1)) * 50 - 15); // ▼ on the last slot
+    expect(b.get(g.columns.length - 1)).toBe((H - top(st, g.columns.length - 1)) * 50 - 15 * 1.25); // ▼ on the last slot
     expect(pend.svg.match(/viewBox="([^"]+)"/)![1]).toBe(plain.svg.match(/viewBox="([^"]+)"/)![1]);
     // Every arrow stays inside the card, whatever the column height.
-    for (const cy of [...a.values(), ...b.values()]) expect(cy - 11).toBeGreaterThanOrEqual(-plain.geo.topPad);
+    for (const cy of [...a.values(), ...b.values()]) expect(cy - 11 * 1.25).toBeGreaterThanOrEqual(-plain.geo.topPad);
   });
 
   it('two neighbours: one export row each, distinct positions, viewBox stable after an export', () => {
@@ -1271,7 +1324,7 @@ describe('exchanges: one line per country, each checked on its own', () => {
     expect(allowedExchange(g, 'DE', 'imports')).toBe(0);
     const st = newGame(g);
     const lines = splitExchanges(g, st, evaluate(g, st).clues).filter((r) => r.clue.type === 'exchanges');
-    expect(lines.map((r) => r.text)).toEqual(['Allemagne : ↓ 0 import, ↑ 1 export']);
+    expect(lines.map((r) => r.text)).toEqual(['Allemagne : ↑ 1 export, ↓ 0 import']);
     expect(renderClues(g, evaluate(g, st).clues, st).match(/Échanges du jour/g)).toHaveLength(1);
   });
 
@@ -1283,12 +1336,12 @@ describe('exchanges: one line per country, each checked on its own', () => {
     const st = { ...s, exports: { ...s.exports, GB: g.columns.map((_, c) => (c === 0 ? 1 : 0)) } };
     const lines = splitExchanges(g, st, evaluate(g, st).clues).filter((r) => r.clue.type === 'exchanges');
     expect(lines.map((r) => [r.text, r.status])).toEqual([
-      ['Allemagne : ↓ ∞ import, ↑ 2 exports', 'open'],
-      ['Royaume-Uni : ↓ ∞ import, ↑ 1 export', 'ok'],
+      ['Allemagne : ↑ 2 exports, ↓ ∞ import', 'open'],
+      ['Royaume-Uni : ↑ 1 export, ↓ ∞ import', 'ok'],
       ['2 blocs importés au total', 'open'],
     ]);
     expect(shownClueCount(g)).toBe(g.clues.length + 2);
-    expect(renderClues(g, evaluate(g, st).clues, st)).toMatch(/Royaume-Uni : ↓ ∞ import, ↑ <span class="slot">1<\/span> export<\/span><span class="state ok"/);
+    expect(renderClues(g, evaluate(g, st).clues, st)).toMatch(/Royaume-Uni : ↑ <span class="slot">1<\/span> export, ↓ ∞ import<\/span><span class="state ok"/);
   });
 });
 
@@ -1394,7 +1447,7 @@ describe('progress saved before weather bricks (B3)', () => {
 
 describe('exchanges under the neighbor rows', () => {
   const under = (g: Grid, s: PlayState) => renderBoard({ grid: g, state: s, ev: evaluate(g, s), style: 'A', cell: 60 }).svg;
-  const counts = (svg: string) => [...svg.matchAll(/>([↑↓] [\d/∞]+)<\/text>/g)].map((m) => m[1]);
+  const counts = (svg: string) => [...svg.matchAll(/>([↑↓] [\d/∞]+)<\/tspan>/g)].map((m) => m[1]);
 
   it('counts the day exchanges of each direction against what is laid', () => {
     const g = byId(10);
@@ -1409,7 +1462,7 @@ describe('exchanges under the neighbor rows', () => {
     const svg = under(g7, applyLockedExports(g7, newGame(g7)));
     // Two exports published by flows: already laid; the exact inventory gives 2 imports.
     expect(counts(svg)).toEqual(['↑ 2/2', '↓ 0/2']);
-    expect(svg).toMatch(new RegExp(`fill="${OK}">↑ 2/2<`));
+    expect(svg).toMatch(new RegExp(`fill="${OK}">↑ 2/2</tspan>`));
   });
 
   it('an import record of one country sits on its row, not under the hours', () => {
@@ -1432,6 +1485,17 @@ describe('exchanges under the neighbor rows', () => {
     expect(row(free, 'DE')).toContain('0 / ∞');
     const shared = { ...g, clues: g.clues.map((c) => (c.type === 'exchanges' ? { ...c, imports: { '*': 2 } } : c)) };
     expect(row(shared, 'DE')).toContain('0 / ∞');
+  });
+
+  it('the legend is one regular string; the card has the same margin left and right of the grid', () => {
+    const g = byId(10);
+    const { svg, geo } = renderBoard({ grid: g, state: newGame(g), ev: evaluate(g, newGame(g)), style: 'A', cell: 60 });
+    expect(svg).toMatch(/>↑ 0\/2<\/tspan> <tspan[^>]*>↓ 0\/2<\/tspan> · Allemagne · 1 bloc par créneau<\/text>/);
+    const [vx, , vw] = svg.match(/viewBox="([^"]+)"/)![1]!.split(' ').map(Number);
+    const left = geo.lead - vx!;
+    const right = vx! + vw! - (geo.lead + geo.n * geo.cell);
+    expect(right).toBe(left);
+    expect(geo.lead).toBeGreaterThan(0); // the country codes stay in the left gutter
   });
 
   it('reads ∞ for an unknown count or a total shared by every neighbor', () => {

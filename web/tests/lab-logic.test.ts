@@ -136,8 +136,8 @@ describe('blind lists and labels', () => {
   });
   it('numbers candidates from 1', () => expect(displayNumber(0)).toBe('1'));
   it('translates techniques and falls back on the id', () => {
-    expect(techniqueLabel('single_cover')).toBe('Une seule barre pour cette case');
-    expect(techniqueLabel('record')).toBe('Le relevé compte les cases');
+    expect(techniqueLabel('single_cover')).toBe('Un seul groupe pour ce bloc');
+    expect(techniqueLabel('record')).toBe('Le relevé compte les blocs');
     expect(techniqueLabel('ramp_relay')).toBe('Deux bords se relaient');
     expect(techniqueLabel('given')).toBe('Centrale engagée');
     expect(techniqueLabel('new_tech')).toBe('new tech');
