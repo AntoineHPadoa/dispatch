@@ -2,7 +2,7 @@
 
 import random
 
-from conftest import published
+from conftest import grid_by_id
 
 from dispatch_solver.deduce import deduce
 from dispatch_solver.deduce.trace import Result, Step, compactness, coupled_globals, decisions
@@ -11,7 +11,7 @@ from dispatch_solver.generate.lot import Quotas, _draw, check_lot, config_types,
 
 
 def grid(gid: int) -> dict:
-    return next(g for g in published() if g["id"] == gid)
+    return grid_by_id(gid)
 
 
 def test_published_ratings_under_notation_a():

@@ -5,7 +5,7 @@ import json
 import random
 
 import pytest
-from conftest import FIXTURES, published
+from conftest import FIXTURES, grid_by_id
 
 from dispatch_solver import exact
 from dispatch_solver.board import reference_composition
@@ -63,7 +63,7 @@ def test_exchanges_are_structured():
 
 def test_inventory_totals_are_steps():
     """S4.2 C3: the exact inventory's exchange totals are applied by a traced step, not silently."""
-    g = next(x for x in published() if x["id"] == 7)
+    g = grid_by_id(7)
     res = deduce(g)
     assert any(s.rule == "exhausted" and s.scope == "day" for s in res.steps)
 
@@ -95,7 +95,7 @@ def test_ramp_techniques_in_traces():
 
 
 def test_trace_fields():
-    g = next(x for x in published() if x["difficulty"]["rating"] == 3)
+    g = grid_by_id(7)  # former tutorial 7, Difficile
     res = deduce(g)
     d = res.to_dict()
     assert d["status"] == "solved" and d["rating"] == 3

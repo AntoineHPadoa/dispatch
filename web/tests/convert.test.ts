@@ -60,7 +60,9 @@ describe('lostIds', () => {
     const published = JSON.parse(readFileSync(resolve(__dirname, '../src/data/grids.json'), 'utf8')) as { id: number }[];
     const converted = proto.filter((g) => g.mode === 'pose').map(convertGrid);
     const lost = lostIds(published, converted);
-    expect(lost.length).toBe(published.length - converted.length);
+    const convertedIds = new Set(converted.map((g) => g.id));
+    expect(lost.length).toBeGreaterThan(0);
+    expect(lost).toEqual(published.map((g) => g.id).filter((id) => !convertedIds.has(id)));
     expect(lostIds(converted, converted)).toEqual([]);
   });
 });
