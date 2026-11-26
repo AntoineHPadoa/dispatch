@@ -6,6 +6,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import gridsJson from '../src/data/grids.json';
+import { gridById } from './legacy';
 import { currentBulletin, isPublished, localIsoDate, previousBulletins, publishedBulletins, weekdayIndex } from '../src/model/bulletin';
 import { dossierNext, dossierProgress, dossiers } from '../src/model/dossiers';
 import { renderDossier, renderHome } from '../src/ui/home';
@@ -132,19 +133,22 @@ describe('home lists', () => {
     expect(weekdayIndex('2026-11-22')).toBe(0);
   });
 
-  it('the training dossier "Premiers pas" holds the 9 tutorial grids in order', () => {
+  it('the training dossier "Premiers pas" holds the tutorial grids in id order', () => {
     const [d] = dossiers(grids);
+    const ids = grids.filter((g) => g.section === 'tutorial').map((g) => g.id).sort((a, b) => a - b);
+    expect(ids.length).toBeGreaterThan(3);
     expect(d?.id).toBe('premiers-pas');
-    expect(d?.grids.map((g) => g.id)).toEqual([1, 2, 3, 4, 5, 6, 7, 12, 13]);
+    expect(d?.grids.map((g) => g.id)).toEqual(ids);
     expect(dossiers(rated)).toEqual([]);
   });
 
   it('dossier progress counts finished grids; the card opens the first unfinished one', () => {
     const d = dossiers(grids)[0]!;
-    const done = new Set([1, 2, 4]);
-    expect(dossierProgress(d, (id) => done.has(id))).toEqual({ done: 3, total: 9 });
-    expect(dossierNext(d, (id) => done.has(id))?.id).toBe(3);
-    expect(dossierNext(d, () => true)?.id).toBe(1);
+    const ids = d.grids.map((g) => g.id);
+    const done = new Set([ids[0], ids[1], ids[3]]);
+    expect(dossierProgress(d, (id) => done.has(id))).toEqual({ done: 3, total: ids.length });
+    expect(dossierNext(d, (id) => done.has(id))?.id).toBe(ids[2]);
+    expect(dossierNext(d, () => true)?.id).toBe(ids[0]);
   });
 });
 
@@ -212,7 +216,7 @@ describe('home rendering', () => {
   });
 
   it('a finished STEP sheet: one silhouette cell per cell of the laid pieces', () => {
-    const g7 = grids.find((g) => g.id === 7)!;
+    const g7 = gridById(7); // former tutorial 7: STEP, exports and imports
     expect(g7.solution!.step.length).toBeGreaterThan(0);
     const svg = sheetSilhouette(g7, g7.demand.map(() => 'sun' as const), () => '', '', true);
     const covered = g7.solution!.placements.reduce((a, p) => a + p.len * (p.height ?? 1), 0);
@@ -220,7 +224,7 @@ describe('home rendering', () => {
   });
 
   it('a column both pumped and exported: the pumped cell on top, the export under it (review S8 tour 2 N5)', () => {
-    const g7 = grids.find((g) => g.id === 7)!;
+    const g7 = gridById(7); // former tutorial 7: STEP, exports and imports
     const c = g7.solution!.step[0]!.pump;
     const exports = { XX: g7.demand.map((_, i) => (i === c ? 1 : 0)) };
     const sheet = { ...g7, solution: { ...g7.solution!, exports } } as Grid;

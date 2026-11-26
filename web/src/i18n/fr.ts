@@ -283,15 +283,15 @@ export const TECHNIQUES: Record<string, { name: string; text: string }> = {
 
 /** One lore line per tutorial (by grid id), shown under the title instead of an instructions card. */
 export const TUTORIAL_LORE: Record<number, string> = {
-  1: 'Premier quart au centre de dispatching : le carnet d’ordres est arrivé, à toi de caser chaque centrale sous la courbe.',
-  2: 'La bourse vient de publier ses prix : sur ces créneaux, aucune centrale plus chère ne tournera.',
-  3: 'La ligne vers l’Allemagne est ouverte : ce qui manque arrive par le câble, ce qui déborde repart.',
-  4: 'Un réacteur n’aime pas s’arrêter : chaque creux de la demande lui barre la route.',
-  5: 'Le gestionnaire du réseau a annoncé ses échanges avec l’Allemagne : ces créneaux sont réservés.',
-  6: 'Quand la bourse affiche un prix, la centrale qui le fixe tourne forcément dans le créneau.',
-  7: 'La STEP de montagne remonte son eau quand le courant abonde et la relâche quand la demande grimpe.',
-  12: 'La vieille centrale à charbon est lente à se réveiller : elle démarre progressivement et s’éteint de même.',
-  13: 'Deux centrales à charbon se passent le relais : l’une s’éteint doucement pendant que l’autre démarre.',
+  14: 'Premier quart en salle de dispatching : le carnet d’ordres est arrivé, la bourse et RTE ont publié. À toi de caser chaque centrale.',
+  15: 'La ligne vers l’Allemagne est ouverte : un bloc part aujourd’hui, à toi de voir quand.',
+  16: 'L’Espagne vend et achète : deux blocs partent, deux arrivent, et le carnet est juste.',
+  17: 'Plus de carnet d’ordres : la bourse et RTE donnent les indices, à toi de composer la journée.',
+  18: 'La STEP de montagne remonte son eau quand le courant abonde et la relâche quand la demande grimpe.',
+  19: 'La vieille centrale à charbon peut pousser jusqu’à 2 GW quand la pointe l’exige.',
+  20: 'La centrale à charbon est lente à se réveiller : elle démarre doucement et s’éteint de même.',
+  21: 'Le quota carbone du jour est serré : chaque bloc de gaz compte, le nucléaire ne coûte rien.',
+  22: 'Dernier dossier : la STEP et la ligne vers l’Italie travaillent ensemble pour boucler la journée.',
 };
 
 /** Name of the `given` trace step (an engaged plant), not a technique the player learns. */
@@ -394,11 +394,14 @@ export const UI = {
   briefing: {
     swap: 'Premier quart : le carnet est exact, tu poses tout, ni plus ni moins.',
     price_cap: 'La bourse affiche un prix : aucune centrale plus chère n’a sa place sous ce créneau.',
-    just_enough: 'La ligne vers l’Allemagne s’ouvre : exporte juste ce qu’il faut pour boucler.',
+    just_enough: 'Le carnet est juste : compte les places possibles, il n’y en a pas une de trop.',
     ribbon: 'Le nucléaire tourne en ruban : repère où la demande creuse et où il peut passer.',
-    flow: 'Berlin annonce son échange : compte ta colonne, le dernier bloc se déduit.',
+    flow: 'Les échanges publiés fixent un créneau ; le reste, STEP comprise, se déduit.',
     top_price: 'La bourse exige une centrale chère sur ce créneau : trouve où elle peut tourner.',
-    silhouette: 'La STEP entre en scène : pompe la nuit, turbine au pic, et suis le programme de RTE.',
+    silhouette: 'Exports et pompages font monter la silhouette : place-les là où tes centrales en ont besoin.',
+    program: 'Plus de carnet : programmes et relevés publiés disent qui tourne, et quand.',
+    record: 'RTE publie ses relevés : chaque bloc compté est un bloc de moins à chercher.',
+    carbon: 'Le quota carbone du jour est serré : chaque bloc de gaz pèse sur la jauge.',
     ramp_plateau: 'Le charbon monte et descend par paliers : surveille ses bords.',
     ramp_relay: 'Deux charbons par paliers se croisent : l’un s’arrête, l’autre démarre.',
   } as Record<string, string>,

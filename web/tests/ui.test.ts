@@ -4,6 +4,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import gridsJson from '../src/data/grids.json';
+import { gridById } from './legacy';
 import type { Grid } from '../src/model/grid';
 import { evaluate, newGame, place, rawSilhouette, solutionState, type PlayState } from '../src/engine';
 import {
@@ -29,7 +30,7 @@ import { UI } from '../src/i18n/fr';
 import { currentBulletin } from '../src/model/bulletin';
 
 const grids = gridsJson as unknown as Grid[];
-const byId = (id: number) => structuredClone(grids.find((g) => g.id === id)!);
+const byId = gridById;
 
 const BAR: Shape = { lens: [3, 4, 5, 6], heights: [1] };
 const CELL: Shape = { lens: [1], heights: [1] };
@@ -1277,8 +1278,9 @@ describe('order book without exchanges line; exchanges in the clue card', () => 
 
 
   it('a tutorial sheet prints its lore line, without any technique name', () => {
-    const sheet = renderSheet(byId(3), 3);
-    expect(sheet).toContain(`<p class="lead">${esc(TUTORIAL_LORE[3]!)}</p>`);
+    const g = grids.find((x) => x.teaches?.includes('just_enough'))!;
+    const sheet = renderSheet(g, g.id);
+    expect(sheet).toContain(`<p class="lead">${esc(TUTORIAL_LORE[g.id]!)}</p>`);
     expect(sheet).not.toContain('Carnet juste.');
   });
   it('the paper day list carries the exchanges line, and the card has one name', () => {

@@ -6,6 +6,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import gridsJson from '../src/data/grids.json';
+import { legacyGrids } from './legacy';
 import { cellCount, cellsOf } from '../src/model/shapes';
 import {
   ANY_COUNTRY, IMPORT_PIECE, PIECE_SPEC, validateGrid, type Clue, type Grid, type PieceId, type Placement,
@@ -20,8 +21,9 @@ function solutionErrors(g: Grid): string[] {
   const sol = g.solution;
   const nbIds = g.neighbors.map((nb) => nb.id);
 
-  // Silhouette
-  const h = g.demand.map((d, c) => d - g.weather.R[c]! - g.weather.F[c]!);
+  // Silhouette: rows are absolute (0 at the bottom of the grid); the weather fills the bottom of each column.
+  const floor = g.demand.map((_, c) => g.weather.R[c]! + g.weather.F[c]!);
+  const h = g.demand.map((d, c) => d - floor[c]!);
   for (const id of nbIds) (sol.exports[id] ?? []).forEach((e, c) => { h[c]! += e; });
   for (const s of sol.step) {
     if (!g.step) errs.push('STEP without STEP');
@@ -44,13 +46,13 @@ function solutionErrors(g: Grid): string[] {
       if (!(def.height ?? [1]).includes(ph)) errs.push(`bad height ${p.piece} ${ph}`);
     }
     for (const [r, c] of cellsOf(g, p)) {
-      if (c >= n || r >= h[c]!) errs.push(`outside silhouette at ${r},${c}`);
+      if (c >= n || r < floor[c]! || r >= floor[c]! + h[c]!) errs.push(`outside silhouette at ${r},${c}`);
       const k = `${r},${c}`;
       if (cell.has(k)) errs.push(`overlap at ${k}`);
       cell.set(k, p);
     }
   }
-  for (let c = 0; c < n; c++) for (let r = 0; r < h[c]!; r++) if (!cell.has(`${r},${c}`)) errs.push(`hole at ${r},${c}`);
+  for (let c = 0; c < n; c++) for (let r = floor[c]!; r < floor[c]! + h[c]!; r++) if (!cell.has(`${r},${c}`)) errs.push(`hole at ${r},${c}`);
 
   const colCells = (c: number) => [...cell.entries()].filter(([k]) => Number(k.split(',')[1]) === c).map(([, p]) => p);
   const imports = (id: string, c?: number) => sol.placements
@@ -150,7 +152,7 @@ describe('published grids', () => {
   });
 
   it('the checker catches a broken solution or clue', () => {
-    const top = grids.find((x) => x.teaches?.includes('top_price'))!;
+    const top = legacyGrids.find((x) => x.teaches?.includes('top_price'))!;
     const g = structuredClone(top);
     g.solution.placements.pop();
     expect(solutionErrors(g).join()).toMatch(/hole/);
@@ -185,7 +187,7 @@ describe('published grids', () => {
 });
 
 describe('validateGrid', () => {
-  const base = grids.find((g) => g.step && g.section === 'tutorial')!;
+  const base = legacyGrids.find((g) => g.step && g.section === 'tutorial')!;
   const broken = (patch: (g: Record<string, unknown>) => void) => {
     const g = structuredClone(base) as unknown as Record<string, unknown>;
     patch(g);

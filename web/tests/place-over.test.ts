@@ -4,13 +4,12 @@
  * restores the board as it was.
  */
 import { describe, expect, it } from 'vitest';
-import gridsJson from '../src/data/grids.json';
-import type { Grid, Placement } from '../src/model/grid';
+import { gridById } from './legacy';
+import type { Placement } from '../src/model/grid';
 import { checkPlaceOver, newGame, place, placeOver, type ActionResult, type PlayState } from '../src/engine';
 import { push, start, undo } from '../src/ui/history';
 
-const grids = gridsJson as unknown as Grid[];
-const byId = (id: number) => structuredClone(grids.find((g) => g.id === id)!);
+const byId = gridById;
 
 function ok(r: ActionResult): PlayState {
   if (!r.ok) throw new Error(`unexpected refusal: ${r.error.message}`);

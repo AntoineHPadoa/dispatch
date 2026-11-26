@@ -41,6 +41,7 @@ from dispatch_solver.grid import LABELS, load_grids, validate
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "fixtures" / "grids"
 PUBLISHED = ROOT / "web" / "src" / "data" / "grids.json"
+LEGACY = ROOT / "fixtures" / "legacy-tutorials.json"  # former tutorials, kept as test data
 
 TALL_C = {"C": {"len": [3, 4], "height": [1, 2]}}
 RAMP_TRAP = {"C": {"len": [3, 4, 5], "shape": "trap"}}
@@ -618,7 +619,7 @@ def main() -> None:
         built[f"{prefix}-{fx['name']}.json"] = fx
         print(f"{prefix}-{fx['name']}: {e['compositions']} {e['deduction']} {e.get('rating')} {e.get('techniques')}")
     published = load_grids(PUBLISHED)
-    base = copy.deepcopy(next(g for g in published if g["id"] == 5))
+    base = copy.deepcopy(next(g for g in load_grids(LEGACY) if g["id"] == 5))
     for name, (g, expected, allow) in invalid_cases(base).items():
         errors = validate(g, allow_ramp=allow)
         if errors != expected:

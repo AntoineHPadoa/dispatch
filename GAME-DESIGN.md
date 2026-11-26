@@ -208,7 +208,28 @@ Les autres mesures (K, trous, part de nucléaire) restent descriptives : aucune 
 
 ## 11. Tutoriel
 
-Une grille par technique, en inventaire exact, dans cet ordre : poser l'inventaire (cases interchangeables) → le prix plafonne la colonne → inventaire juste → le creux coupe le ruban → flux publié et compter la colonne → la case la plus chère → pompage, relevé et programme. Chaque grille introduit **une** technique nommée, dans son texte d'introduction.
+Conception, maquettes et vérifications : `docs/next/tutoriel-v5.html`.
+
+- **Grille tuto (id 14)**, sur ordinateur seulement (à partir d’environ 1024 px), ouverte par le bouton « Tutoriel ». Elle ne présente que l’interface :
+  - grille : 8 créneaux, carnet exact, nucléaire, barrage, gaz et TAC ; une ligne de production du fil de l’eau ; aucun voisin, aucune STEP ; un prix et un relevé ; note Facile ;
+  - présentation : 7 bulles, dans l’ordre grille, production imposée, carnet, publications, indices au bord de la grille, outils ;
+  - résolution guidée stricte : 5 coups, seul le coup attendu est accepté, et le titre de la bulle est la technique appliquée ;
+  - fin : la 1re grille des Premiers pas.
+  - Sur téléphone, la grille se joue sans bulles.
+- **Premiers pas (ids 15 à 22)** : des grilles du labo notées par un joueur, une nouveauté chacune, dans cet ordre :
+  - export ;
+  - import et échanges du jour (Carnet juste) ;
+  - sans carnet d’ordres ;
+  - STEP (avec le stock du barrage) ;
+  - charbon sur deux lignes ;
+  - charbon par paliers ;
+  - plafond CO₂ ;
+  - STEP couplée à un export.
+- **Pourquoi cet ordre** : les échanges et la STEP arrivent dans les quatre premières ; le carnet exact passe avant les grilles sans carnet ; les mécaniques globales couplées viennent en dernier (notation A, §9).
+- **Bulles de découverte** : une ou deux, à la 1re ouverture d’une grille Premiers pas, relançables par « Revoir l’explication ».
+- **Pas de grille dédiée** pour « Le creux coupe le ruban » (la base du jeu), « Deux bords se relaient » (une tactique) ni « Le bloc le plus cher » (la lecture des prix est montrée par la grille tuto). Le solveur les garde dans ses traces et dans la note.
+- **Textes** : la voix du chef de quart, 1 ou 2 phrases, 25 mots au plus par bulle. Les scripts sont dans `web/src/tutorial/script.ts` (format `types.ts`), les textes dans `web/src/i18n/fr.ts`.
+- **Anciens tutoriels** (ids 1-7, 12, 13) : retirés du jeu, gardés comme données de test (`fixtures/legacy-tutorials.json`).
 
 ## 12. Hors périmètre actuel (backlog)
 

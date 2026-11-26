@@ -4,6 +4,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import gridsJson from '../src/data/grids.json';
+import { gridById } from './legacy';
 import { validateGrid, type Clue, type Grid, type PieceId, type Placement } from '../src/model/grid';
 import {
   addStep, checkPlacement, clueText, evaluate, newGame, place, remove, removeStep, residual, setExport,
@@ -11,7 +12,7 @@ import {
 } from '../src/engine';
 
 const grids = gridsJson as unknown as Grid[];
-const byId = (id: number) => structuredClone(grids.find((g) => g.id === id)!);
+const byId = gridById;
 
 /** Synthetic grid with every mechanic: 2 neighbors, STEP, exact inventory. */
 function makeGrid(patch: Partial<Grid> = {}): Grid {
