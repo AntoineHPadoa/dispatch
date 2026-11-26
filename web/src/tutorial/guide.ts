@@ -185,6 +185,11 @@ export function saveRun(kv: (() => KeyValue | null), gridId: number, run: Tutori
   } catch { /* blocked or full storage */ }
 }
 
+/** The « Tutoriel » button: start the run over from its first step, unless one is under way. */
+export function restartUnlessRunning(kv: (() => KeyValue | null), gridId: number): void {
+  if (loadRun(kv, gridId)?.status !== 'running') saveRun(kv, gridId, startRun());
+}
+
 /** A run that is still valid for this script (a step index past the end, or played moves out of range, start over). */
 export function validRun(script: TutorialScript, run: TutorialRun | null): TutorialRun | null {
   if (!run) return null;

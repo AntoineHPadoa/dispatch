@@ -9,7 +9,8 @@
  * - Touch: with a piece one row high the board lets vertical swipes scroll the page; a swipe the
  *   browser takes for scrolling cancels the gesture silently. Eraser and STEP taps act on release.
  * - A grid with a tutorial script (desktop width) mounts the tutorial overlay: every move asks its
- *   guard first, so a guided step only lets its expected moves through.
+ *   guard first, so a guided step only lets its expected moves through. Once the run is over,
+ *   « Revoir l'explication » replays it; the intro's end opens the next grid.
  */
 import { localIsoDate, weekdayIndex } from '../model/bulletin';
 import type { Grid, Placement } from '../model/grid';
@@ -18,7 +19,7 @@ import {
   barIndexAt, checkPlaceOver, evaluate, newGame, placeOver, remove, removeStep, setExport, exportsAt,
   importsAt, type ClueReport, type Evaluation, type PlayState,
 } from '../engine';
-import { MSG, TUTORIAL_LORE, UI, columnLabel, countryTo, durationText, placementLabel, slotClueShort } from '../i18n/fr';
+import { MSG, TUTORIAL_LORE, TUTORIAL_UI, UI, columnLabel, countryTo, durationText, placementLabel, slotClueShort } from '../i18n/fr';
 import { siteHead } from './home-art';
 import { boardLead, lockedExports, renderBoard, cellAt, type BoardGeometry } from './board';
 import {
@@ -29,7 +30,8 @@ import { STEP_KEY, bookEntries, publishedStepPairs, renderBook, renderChips, ren
 import { esc, icon } from './palette';
 import { stepArrowAction, stepEraseResult, stepPairIndexAt, stepTapResult, stepUndoPlan } from './step';
 import { mountTutorial, type TutorialController } from './tutorial';
-import { scriptFor, type Attempt, type GateResult } from '../tutorial';
+import { INTRO_GRID_ID, scriptFor, type Attempt, type GateResult } from '../tutorial';
+import { dossiers } from '../model/dossiers';
 import { gridFingerprint, nextGrid, recordState, savedBoard, statusOf, type ProgressStore } from './progress';
 
 export interface GameContext {
@@ -42,9 +44,13 @@ export interface GameContext {
   ratedEyebrow?: string;
 }
 
-/** Eyebrow tag of the game screen: tutorial rank, else bulletin tag or the rated label (`ratedEyebrow` overrides it). */
+/**
+ * Eyebrow tag of the game screen: « Tutoriel » for the guided tutorial grid, rank in « Premiers pas »
+ * for the other tutorial grids, else bulletin tag or the rated label (`ratedEyebrow` overrides it).
+ */
 export function gameEyebrow(grid: Grid, grids: readonly Grid[], ratedEyebrow?: string): string {
-  const tutorials = grids.filter((g) => g.section === 'tutorial').sort((a, b) => a.id - b.id);
+  if (grid.id === INTRO_GRID_ID && grid.section === 'tutorial') return TUTORIAL_UI.gridEyebrow;
+  const tutorials = dossiers(grids)[0]?.grids ?? [];
   return grid.section === 'tutorial'
     ? UI.tutorialOf(tutorials.findIndex((g) => g.id === grid.id) + 1, tutorials.length)
     : `${bulletinTag(grid) ?? ratedEyebrow ?? UI.ratedEyebrow}`;
@@ -210,6 +216,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
         <button type="button" class="tool erase-tool" data-tool="erase" aria-pressed="false">${icon('erase')}${esc(UI.tools.erase)}</button>
         <button type="button" class="tool" data-tool="undo">${icon('undo')}${esc(UI.tools.undo)}</button>
         <button type="button" class="tool" data-tool="reset">${icon('reset')}${esc(UI.tools.reset)}</button>
+        ${scriptFor(grid.id) ? `<button type="button" class="tool replay-tool" data-tool="replay" data-tutorial="replay" hidden>${esc(grid.id === INTRO_GRID_ID ? TUTORIAL_UI.replayIntro : TUTORIAL_UI.replay)}</button>` : ''}
       </div>
       <div class="msg-slot" aria-live="polite"></div>
     </div>
@@ -223,6 +230,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
   const msgSlot = root.querySelector<HTMLElement>('.msg-slot')!;
   const tools = root.querySelector<HTMLElement>('.tools')!;
   const chipsEl = root.querySelector<HTMLElement>('.chips')!;
+  const replayBtn = root.querySelector<HTMLButtonElement>('[data-tool="replay"]');
   // Tool clicks (toolbar and end banner) are caught on this screen's own element, so a grid
   // opened before never reacts to them.
   const gameEl = root.querySelector<HTMLElement>('.game')!;
@@ -658,6 +666,7 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     if (!btn) return;
     const tool = btn.getAttribute('data-tool');
     if ((tool === 'erase' || tool === 'undo' || tool === 'reset') && !guard({ action: 'tool', tool })) return;
+    if (tool === 'replay') { tutorial?.replay(); return; }
     if (tool === 'erase') {
       erase = !erase;
       stepPending = null;
@@ -761,7 +770,11 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
       afterChange(wasSolved);
       drawAll();
     },
+    // The intro ends on the first « Premiers pas » grid.
+    onEnd: (run) => { if (run.status === 'finished' && script.next !== undefined) ctx.navigate(`#/grille/${script.next}`); },
+    onChange: (showing) => { if (replayBtn) replayBtn.hidden = showing; },
   }) : null;
+  if (replayBtn) replayBtn.hidden = !tutorial || tutorial.showing();
 
   return () => {
     tutorial?.destroy();

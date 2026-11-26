@@ -32,6 +32,8 @@ export interface TutorialHost {
   restore(state: PlayState): void;
   /** The run ended (finished or skipped). */
   onEnd?(run: TutorialRun): void;
+  /** The overlay showed or hid (run state or screen width changed). */
+  onChange?(showing: boolean): void;
   storage?: () => KeyValue | null;
 }
 
@@ -44,12 +46,14 @@ export interface TutorialController {
   refresh(): void;
   /** Start the script again from its first step (board reset). */
   replay(): void;
+  /** Is the overlay showing (a run under way on a wide screen)? */
+  showing(): boolean;
   destroy(): void;
 }
 
 const OPEN: GateResult = { ok: true, move: null };
 
-const browserStorage = (): KeyValue | null => {
+export const tutorialStorage = (): KeyValue | null => {
   try { return typeof window !== 'undefined' ? window.localStorage : null; } catch { return null; }
 };
 
@@ -71,7 +75,7 @@ const ANCHOR_SELECTORS: Record<string, string> = {
 
 export function mountTutorial(host: TutorialHost): TutorialController {
   const { screen, grid, script } = host;
-  const kv = host.storage ?? browserStorage;
+  const kv = host.storage ?? tutorialStorage;
   const wide = window.matchMedia(`(min-width: ${TUTORIAL_MIN_WIDTH}px)`);
   let run: TutorialRun = validRun(script, loadRun(kv, grid.id)) ?? startRun();
   let refusal = '';
@@ -190,8 +194,10 @@ export function mountTutorial(host: TutorialHost): TutorialController {
   // ---- drawing
   function render() {
     const s = step();
+    const was = !layer.hidden;
     layer.hidden = !visible();
     document.body.classList.toggle('tut-on', !layer.hidden);
+    if (was === layer.hidden) host.onChange?.(!layer.hidden);
     if (layer.hidden || !s) return;
     const guided = s.kind === 'guided';
     layer.classList.toggle('guided', guided);
@@ -319,6 +325,7 @@ export function mountTutorial(host: TutorialHost): TutorialController {
       setRun(record(script, run, result));
     },
     refresh: schedule,
+    showing: () => !layer.hidden,
     replay() {
       refusal = '';
       lastStep = -1;

@@ -1,12 +1,12 @@
 /*
  * Home screen "market bulletin" and dossier page.
- * - Home: logo and rules toggle, the sheet of the day (bulletin published most recently, see
+ * - Home: logo, « Tutoriel » (desktop, from TUTORIAL_MIN_WIDTH) or the rules toggle (phone), the sheet of the day (bulletin published most recently, see
  *   model/bulletin.ts), the previous sheets, and the training dossiers with their progress.
  * - Dossier page: the grids of one dossier with their status.
  * - Accent: one pink (stamp, price cell, progress, finished items); the finished sheet of the day
  *   shows its solution in the plant colours.
  */
-import { UI, frenchSpaces } from '../i18n/fr';
+import { TUTORIAL_LORE, TUTORIAL_UI, UI, frenchSpaces } from '../i18n/fr';
 import { currentBulletin, localIsoDate, previousBulletins, type BulletinGrid } from '../model/bulletin';
 import { dossierNext, dossierProgress, dossiers, type Dossier } from '../model/dossiers';
 import type { Grid } from '../model/grid';
@@ -71,7 +71,7 @@ export function renderHome(root: HTMLElement, grids: readonly Grid[], progress: 
   const prev = previousBulletins(grids, today);
   const list = dossiers(grids);
   root.innerHTML = `<div class="m home">
-    ${siteHead(`<div class="head-actions"><a class="ghost print-all" href="#/imprimer/tout" aria-label="${esc(UI.printAll)}" title="${esc(UI.printAll)}">${icon('print')}<span class="label">${esc(UI.printAll)}</span></a><button type="button" class="ghost" aria-expanded="false" aria-controls="rules" data-rules>${esc(UI.bulletin.howTo)}</button></div>`)}
+    ${siteHead(`<div class="head-actions"><a class="ghost print-all" href="#/imprimer/tout" aria-label="${esc(UI.printAll)}" title="${esc(UI.printAll)}">${icon('print')}<span class="label">${esc(UI.printAll)}</span></a><a class="ghost wide-only" href="#/tutoriel" data-tutorial-open>${esc(TUTORIAL_UI.open)}</a><button type="button" class="ghost narrow-only" aria-expanded="false" aria-controls="rules" data-rules>${esc(UI.bulletin.howTo)}</button></div>`)}
     <h1 class="sr-only">${esc(UI.appName)}</h1>
     <section class="card rules" id="rules" hidden><h2 class="ct">${esc(UI.rulesTitle)}</h2><p class="rtag">${esc(UI.tagline)}</p><ol>${UI.rules.map((r) => `<li>${esc(r)}</li>`).join('')}</ol></section>
     <div class="hgrid">
@@ -99,7 +99,8 @@ export function renderDossier(root: HTMLElement, d: Dossier, progress: Progress)
   const { done, total } = dossierProgress(d, (id) => statusOf(progress, id) === 'done');
   const cards = d.grids.map((g, i) => {
     const st = statusOf(progress, g.id);
-    const blurb = (g.teaches ?? []).map((t) => UI.briefing[t]).find(Boolean);
+    // The grid's own lore line names its novelty; else the briefing of the first technique it teaches.
+    const blurb = TUTORIAL_LORE[g.id] ?? (g.teaches ?? []).map((t) => UI.briefing[t]).find(Boolean);
     const isNext = g.id === next?.id && st !== 'done';
     return `<li class="fiche ${st}${isNext ? ' next' : ''}"><a href="#/grille/${g.id}">
       <span class="fband">${cellSilhouette(g.demand, 11)}<span class="fnum" aria-hidden="true">${i + 1}</span></span>

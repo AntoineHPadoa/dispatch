@@ -2,6 +2,11 @@
 // - Home and dossier: no horizontal page scroll, no JS or console error.
 // - Every published grid: opens without horizontal scroll, clue pills whole (inside the board) and apart,
 //   the solution of grids.json laid with real clicks/taps until the verdict banner, still no scroll.
+// - Tutorial (from 1024 px): the intro grid is played through its script (src/tutorial/script.ts, read
+//   by Node's type stripping): every bubble lit on its target, a wrong move refused, the guided moves
+//   accepted, the end opens the next grid; on the other tutorial grids the discovery bubbles show
+//   and close, then the solution is laid as usual. Below 1024 px no bubble shows. The home
+//   « Tutoriel » button opens the intro.
 // - Print: one A4 page per grid published today (#/imprimer/tout).
 // - Captures (start and verdict of each grid, home) and results.json go to the output folder.
 // - Usage (from web/): npm run build && npm run preview -- --port 4173 --strictPort, then
@@ -10,6 +15,9 @@
 import { chromium } from 'playwright-core';
 import fs from 'node:fs';
 import path from 'node:path';
+import { TUTORIAL_SCRIPTS } from '../src/tutorial/script.ts';
+
+const TUTORIAL_MIN_WIDTH = 1024;
 
 const arg = (name, dflt) => {
   const i = process.argv.indexOf(`--${name}`);
@@ -128,6 +136,64 @@ async function playSolution(p, g) {
   }
 }
 
+const tut = (p) => p.evaluate(() => {
+  const layer = document.querySelector('.tut');
+  return {
+    showing: !!layer && !layer.hidden,
+    eyebrow: document.querySelector('.tut-eyebrow')?.textContent ?? '',
+    lit: (document.querySelector('.tut-ring')?.getAttribute('d') ?? '') !== '',
+    refused: document.querySelector('.tut-refused:not([hidden])')?.textContent ?? '',
+    bubbleInside: (() => { const r = document.querySelector('.tut-bubble')?.getBoundingClientRect(); return !r || (r.left >= 0 && r.top >= 0 && r.right <= innerWidth && r.bottom <= innerHeight); })(),
+    replay: !!document.querySelector('[data-tool="replay"]') && !document.querySelector('[data-tool="replay"]').hidden && getComputedStyle(document.querySelector('[data-tool="replay"]')).display !== 'none',
+  };
+});
+
+/** Present steps: lit on their target, bubble on screen, then « Suivant ». */
+async function presentStep(p, tag, k, st) {
+  const t = await tut(p);
+  check(`${tag} step ${k + 1} shows its bubble inside the window`, t.showing && t.bubbleInside, JSON.stringify(t));
+  if (st.target) check(`${tag} step ${k + 1} lights its target`, t.lit, JSON.stringify(st.target));
+}
+
+/** Walks the intro script: present steps by « Suivant », guided steps by their moves (one wrong move refused). */
+async function playIntro(p, g, script) {
+  const tag = `intro G${g.id}`;
+  let wrongTried = false;
+  for (const [k, st] of script.steps.entries()) {
+    await presentStep(p, tag, k, st);
+    if (k === 1) await p.screenshot({ path: `${OUT}/tutorial-intro-present-1280.png` });
+    if (st.kind === 'present') {
+      if (k === script.steps.length - 1) await p.screenshot({ path: `${OUT}/tutorial-intro-end-1280.png` });
+      await p.click('.tut-next');
+      await p.waitForTimeout(150);
+      continue;
+    }
+    if (!wrongTried) {
+      wrongTried = true;
+      const m = st.moves[0].bar;
+      await select(p, m.piece);
+      const board = () => p.evaluate(() => localStorage.getItem('dispatch:progress:v1'));
+      const before = await board();
+      // Same plant, shifted one slot: a legal pose the step does not expect.
+      await lay(p, { ...m, col: m.col + m.len < g.columns.length ? m.col + 1 : m.col - 1 });
+      const t = await tut(p);
+      check(`${tag} a wrong move is refused, the board unchanged`, !!t.refused
+        && before === await board(), t.refused);
+      await p.screenshot({ path: `${OUT}/tutorial-intro-refused-1280.png` });
+    }
+    const before = (await tut(p)).eyebrow;
+    for (const m of st.moves) {
+      if (m.action !== 'place') { check(`${tag} step ${k + 1}: only place moves are walked`, false, m.action); continue; }
+      await select(p, m.bar.piece === 'I' ? `I:${m.bar.country}` : m.bar.piece);
+      await lay(p, m.bar);
+    }
+    const t = await tut(p);
+    check(`${tag} step ${k + 1}: the guided moves are accepted, the next step opens`, !t.refused && t.eyebrow !== before, `${before} -> ${t.eyebrow} ${t.refused}`);
+  }
+  await p.waitForTimeout(300);
+  check(`${tag} the end opens grid ${script.next}`, p.url().endsWith(`#/grille/${script.next}`), p.url());
+}
+
 /** Clue pills (rect h=18 rx=9): inside the board and not overlapping each other. */
 const pillProblems = (p) => p.evaluate(() => {
   const svg = document.querySelector('.board-svg');
@@ -154,6 +220,17 @@ for (const w of WIDTHS) {
   await p.waitForSelector('.home');
   check(`home@${w} no horizontal scroll`, (await hscroll(p)) <= 0, await hscroll(p));
   await p.screenshot({ path: `${OUT}/home-${w}.png`, fullPage: true });
+  const tutoBtn = await p.locator('[data-tutorial-open]').isVisible();
+  const howTo = await p.locator('[data-rules]').isVisible();
+  check(`home@${w} ${w >= TUTORIAL_MIN_WIDTH ? '« Tutoriel » shown, « Comment jouer » hidden' : '« Comment jouer » shown, « Tutoriel » hidden'}`,
+    w >= TUTORIAL_MIN_WIDTH ? tutoBtn && !howTo : howTo && !tutoBtn, `tutoriel ${tutoBtn}, comment jouer ${howTo}`);
+  if (w >= TUTORIAL_MIN_WIDTH) {
+    await p.click('[data-tutorial-open]');
+    await p.waitForSelector('.board-svg');
+    await p.waitForTimeout(300);
+    const intro = Object.values(TUTORIAL_SCRIPTS).find((x) => x.kind === 'intro');
+    check(`home@${w} « Tutoriel » opens the intro grid with its first bubble`, p.url().endsWith(`#/grille/${intro.gridId}`) && (await tut(p)).showing, p.url());
+  }
   await p.goto(`${BASE}#/dossier/premiers-pas`);
   await p.waitForTimeout(200);
   check(`dossier@${w} no horizontal scroll`, (await hscroll(p)) <= 0, await hscroll(p));
@@ -172,6 +249,31 @@ for (const w of WIDTHS) {
     const pills = await pillProblems(q);
     check(`${tag} clue pills whole and apart`, !pills.length, pills.join(', '));
     await q.screenshot({ path: `${OUT}/g${g.id}-start-${w}.png`, fullPage: true });
+    const script = TUTORIAL_SCRIPTS[g.id];
+    if (script && w < TUTORIAL_MIN_WIDTH) {
+      const t = await tut(q);
+      check(`${tag} no tutorial bubble below ${TUTORIAL_MIN_WIDTH} px`, !t.showing && !t.replay, JSON.stringify(t));
+    }
+    if (script && w >= TUTORIAL_MIN_WIDTH && script.kind === 'intro') {
+      await playIntro(q, g, script);
+      await q.goto(`${BASE}#/grille/${g.id}`);
+      await q.waitForSelector('.board-svg');
+      await q.waitForTimeout(200);
+      check(`${tag} after the intro: solved, no bubble, « Revoir le tutoriel » offered`, (await banner(q)) && !(await tut(q)).showing && (await tut(q)).replay, JSON.stringify(await tut(q)));
+      check(`${tag} no JS or console error`, !q.errors.length, q.errors.join(' | '));
+      await q.context().close();
+      continue;
+    }
+    if (script && w >= TUTORIAL_MIN_WIDTH) {
+      for (const [k, st] of script.steps.entries()) {
+        await presentStep(q, `${tag} discovery`, k, st);
+        if (k === 0) await q.screenshot({ path: `${OUT}/tutorial-discovery-g${g.id}-1280.png` });
+        await q.click('.tut-next');
+        await q.waitForTimeout(150);
+      }
+      const t = await tut(q);
+      check(`${tag} discovery closed, « Revoir l'explication » offered`, !t.showing && t.replay, JSON.stringify(t));
+    }
     await playSolution(q, g);
     await q.waitForTimeout(200);
     check(`${tag} solution -> verdict`, await banner(q), await message(q));

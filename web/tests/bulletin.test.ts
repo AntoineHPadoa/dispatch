@@ -10,7 +10,8 @@ import { gridById } from './legacy';
 import { currentBulletin, isPublished, localIsoDate, previousBulletins, publishedBulletins, weekdayIndex } from '../src/model/bulletin';
 import { dossierNext, dossierProgress, dossiers } from '../src/model/dossiers';
 import { renderDossier, renderHome } from '../src/ui/home';
-import { frenchSpaces } from '../src/i18n/fr';
+import { TUTORIAL_LORE, frenchSpaces } from '../src/i18n/fr';
+import { INTRO_GRID_ID } from '../src/tutorial';
 import { sheetSilhouette } from '../src/ui/home-art';
 import { emptyProgress, nextGrid, playOrder } from '../src/ui/progress';
 import { isIsoDate, validateGrid, type Grid } from '../src/model/grid';
@@ -133,9 +134,10 @@ describe('home lists', () => {
     expect(weekdayIndex('2026-11-22')).toBe(0);
   });
 
-  it('the training dossier "Premiers pas" holds the tutorial grids in id order', () => {
+  it('the training dossier "Premiers pas" holds the tutorial grids in id order, without the guided tutorial grid', () => {
     const [d] = dossiers(grids);
-    const ids = grids.filter((g) => g.section === 'tutorial').map((g) => g.id).sort((a, b) => a - b);
+    const ids = grids.filter((g) => g.section === 'tutorial' && g.id !== INTRO_GRID_ID).map((g) => g.id).sort((a, b) => a - b);
+    expect(grids.find((g) => g.id === INTRO_GRID_ID)?.section).toBe('tutorial');
     expect(ids.length).toBeGreaterThan(3);
     expect(d?.id).toBe('premiers-pas');
     expect(d?.grids.map((g) => g.id)).toEqual(ids);
@@ -250,10 +252,25 @@ describe('home rendering', () => {
     expect(root.innerHTML).toContain('Premier bulletin le 18 novembre 2026');
   });
 
+  it('desktop opens the guided tutorial, the phone keeps « Comment jouer »', () => {
+    const root = stub();
+    renderHome(root, grids, emptyProgress(), '2026-11-21');
+    expect(root.innerHTML).toMatch(/<a class="ghost wide-only" href="#\/tutoriel"[^>]*>Tutoriel<\/a>/);
+    expect(root.innerHTML).toMatch(/<button type="button" class="ghost narrow-only"[^>]*data-rules>Comment jouer<\/button>/);
+    expect(root.innerHTML).toContain('id="rules"');
+  });
+
+  it('a dossier card shows the grid\'s own lore line', () => {
+    const root = stub();
+    const d = dossiers(grids)[0]!;
+    renderDossier(root, d, emptyProgress());
+    for (const g of d.grids) if (TUTORIAL_LORE[g.id]) expect(root.innerHTML).toContain(frenchSpaces(TUTORIAL_LORE[g.id]!).replace(/’/g, '’'));
+  });
+
   it('dossier page lists every tutorial grid', () => {
     const root = stub();
     renderDossier(root, dossiers(grids)[0]!, emptyProgress());
-    expect(root.innerHTML.match(/class="fiche /g)).toHaveLength(grids.filter((g) => g.section === 'tutorial').length);
+    expect(root.innerHTML.match(/class="fiche /g)).toHaveLength(grids.filter((g) => g.section === 'tutorial' && g.id !== INTRO_GRID_ID).length);
   });
 });
 

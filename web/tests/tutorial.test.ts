@@ -7,11 +7,11 @@ import gridsJson from '../src/data/grids.json';
 import type { Grid, Placement } from '../src/model/grid';
 import { evaluate, newGame } from '../src/engine';
 import { TECHNIQUES, TUTORIAL } from '../src/i18n/fr';
-import { initialState } from '../src/ui/game';
+import { gameEyebrow, initialState } from '../src/ui/game';
 import { renderBoard } from '../src/ui/board';
 import { richText, sameBoard } from '../src/ui/tutorial';
 import {
-  SCRIPTS, TUTORIAL_KEY, applyMove, arrowOffset, stepRank, cellBox, currentStep, expectedBoard, gate, loadRun, next, parseRuns, placeBubble,
+  INTRO_GRID_ID, SCRIPTS, TUTORIAL_KEY, restartUnlessRunning, scriptFor, applyMove, arrowOffset, stepRank, cellBox, currentStep, expectedBoard, gate, loadRun, next, parseRuns, placeBubble,
   record, saveRun, shadePath, skip, startRun, union, validRun, type Attempt, type KeyValue, type TutorialRun,
 } from '../src/tutorial';
 import type { TutorialScript } from '../src/tutorial/types';
@@ -87,6 +87,35 @@ describe('shipped scripts', () => {
       run = record(s, run, r);
     }
     expect(run.status).toBe('finished');
+  });
+});
+
+describe('wiring', () => {
+  it('every tutorial grid has a script; the intro grid is the « Tutoriel » one', () => {
+    for (const g of grids.filter((x) => x.section === 'tutorial')) expect(scriptFor(g.id), `grid ${g.id}`).not.toBeNull();
+    expect(scriptFor(INTRO_GRID_ID)?.kind).toBe('intro');
+    expect(grids.filter((x) => x.section !== 'tutorial').every((g) => scriptFor(g.id) === null)).toBe(true);
+  });
+
+  it('eyebrow: « Tutoriel » for the intro grid, the rank in « Premiers pas » for the others', () => {
+    const intro = grids.find((g) => g.id === INTRO_GRID_ID)!;
+    expect(gameEyebrow(intro, grids)).toBe('Tutoriel');
+    const firsts = grids.filter((g) => g.section === 'tutorial' && g.id !== INTRO_GRID_ID).sort((a, b) => a.id - b.id);
+    expect(gameEyebrow(firsts[0]!, grids)).toBe(`Tutoriel 1 sur ${firsts.length}`);
+    expect(scriptFor(INTRO_GRID_ID)?.next).toBe(firsts[0]!.id);
+  });
+
+  it('the « Tutoriel » button starts a finished or skipped run over, never a run under way', () => {
+    const m = new Map<string, string>();
+    const kv = () => ({ getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => { m.set(k, v); } });
+    restartUnlessRunning(kv, 14);
+    expect(loadRun(kv, 14)).toEqual(startRun());
+    saveRun(kv, 14, at(3, [1]));
+    restartUnlessRunning(kv, 14);
+    expect(loadRun(kv, 14)).toEqual(at(3, [1]));
+    saveRun(kv, 14, skip(at(3)));
+    restartUnlessRunning(kv, 14);
+    expect(loadRun(kv, 14)).toEqual(startRun());
   });
 });
 

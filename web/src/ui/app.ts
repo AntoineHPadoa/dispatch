@@ -2,6 +2,7 @@
  * Hash router of the static site.
  * - #/                home
  * - #/grille/<id>     game screen
+ * - #/tutoriel        the guided tutorial grid, started over unless a run is under way
  * - #/dossier/<id>    training dossier (grids of one theme)
  * - #/imprimer/<id>   print preview of one grid (#/imprimer/tout: every grid)
  * The print root (#print-root) holds the A4 sheets; it is the only thing printed.
@@ -15,6 +16,8 @@ import { renderDossier, renderHome } from './home';
 import { esc, icon } from './palette';
 import { renderSheets } from './print';
 import { browserStore, playOrder } from './progress';
+import { INTRO_GRID_ID, restartUnlessRunning } from '../tutorial';
+import { tutorialStorage } from './tutorial';
 
 export function startApp(app: HTMLElement, printRoot: HTMLElement, grids: readonly Grid[]): void {
   const store = browserStore();
@@ -32,6 +35,11 @@ export function startApp(app: HTMLElement, printRoot: HTMLElement, grids: readon
     const found = grids.find((g) => String(g.id) === arg);
     // A bulletin not yet published is not reachable by URL.
     const grid = found && isPublished(found, localIsoDate()) ? found : undefined;
+    if (page === 'tutoriel') {
+      restartUnlessRunning(tutorialStorage, INTRO_GRID_ID);
+      window.location.replace(`#/grille/${INTRO_GRID_ID}`);
+      return;
+    }
     if (page === 'grille' && grid) {
       document.title = `${displayTitle(grid)} · ${UI.appName}`;
       fillPrint([grid]);

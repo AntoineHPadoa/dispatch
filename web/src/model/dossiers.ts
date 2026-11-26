@@ -1,9 +1,11 @@
 /*
  * Training dossiers: fixed grids gathered by theme, playable at any time (pure, no DOM).
- * - "Premiers pas" is the tutorial; its grids are the tutorial section, in id order.
+ * - "Premiers pas" holds the tutorial section in id order, except the guided tutorial grid (opened from
+ *   the home « Tutoriel » button).
  * - dossierProgress(): how many grids of a dossier are finished.
  */
 import type { Grid } from './grid';
+import { INTRO } from '../tutorial/script';
 
 export interface Dossier {
   id: string;
@@ -11,7 +13,7 @@ export interface Dossier {
 }
 
 export function dossiers(grids: readonly Grid[]): Dossier[] {
-  const tutorial = grids.filter((g) => g.section === 'tutorial').sort((a, b) => a.id - b.id);
+  const tutorial = grids.filter((g) => g.section === 'tutorial' && g.id !== INTRO.gridId).sort((a, b) => a.id - b.id);
   return tutorial.length ? [{ id: 'premiers-pas', grids: tutorial }] : [];
 }
 

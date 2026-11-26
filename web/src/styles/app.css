@@ -367,3 +367,6 @@ body.print-preview #print-root .a4 { box-shadow: 0 2px 18px rgba(59, 51, 64, .12
 @keyframes tut-shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
 @media (prefers-reduced-motion: reduce) { .tut-bubble.shake { animation: none; } }
 @media print { .tut { display: none !important; } }
+/* Tutorial entry points: desktop only (TUTORIAL_MIN_WIDTH); phones keep « Comment jouer ». */
+@media (min-width: 1024px) { .narrow-only { display: none; } }
+@media (max-width: 1023.98px) { .wide-only, .replay-tool { display: none !important; } }
