@@ -530,30 +530,46 @@ export const UI = {
 export const TUTORIAL_UI = {
   next: 'Suivant',
   finish: 'Terminer',
-  skip: 'Passer le tutoriel',
-  skipDiscovery: 'Fermer',
-  count: (k: number, n: number) => `${k} / ${n}`,
+  skip: 'Passer',
+  close: 'Fermer',
+  eyebrowPresent: (k: number, n: number) => `Présentation · ${k} / ${n}`,
+  eyebrowGuided: (k: number, n: number) => `Résolution · ${k} / ${n}`,
+  eyebrowDiscovery: 'Nouveau',
+  /** Reminder of a guided step, by the action of its first expected move. */
+  hint: {
+    place: 'Pose la centrale dans la zone surlignée.',
+    remove: 'Retire la centrale surlignée.',
+    setExport: 'Touche la case d’échange surlignée.',
+    addStep: 'Pompe puis turbine sur les créneaux surlignés.',
+  } as Record<'place' | 'remove' | 'setExport' | 'addStep', string>,
   /** A move the guided step does not expect. */
   refused: 'Pas encore : joue le coup indiqué.',
   /** Undo, reset or eraser while a guided step runs. */
   refusedTool: 'Pendant le tutoriel, les outils attendent la fin de la résolution.',
-  dialog: 'Tutoriel',
 };
 
 /** Bubble texts of the tutorial scripts (web/src/tutorial/), by text key. `**…**` is shown in bold. */
 export const TUTORIAL: Record<string, string> = {
   // Provisional script (grid 7), replaced by the real tutorial.
-  'demo.welcome': 'Premier quart au dispatching : ta mission, couvrir la demande du jour, bloc par bloc.',
-  'demo.board': 'La **grille** : chaque colonne est un créneau, sa hauteur la demande à couvrir.',
-  'demo.book': 'Le **carnet d’ordres** : les groupes à poser, avec leurs durées de marche.',
-  'demo.clues': 'Les **publications du marché** : chaque indice réduit les possibilités.',
-  'demo.exchanges': 'La **ligne d’échanges** avec l’Allemagne : exporter remonte la silhouette, importer la comble.',
-  'demo.margins': 'Autour de la grille, les **marques** des publications rappellent où elles portent.',
-  'demo.tools': '**Gomme**, **Annuler**, **Recommencer** : pour corriger un essai.',
+  'demo.welcome.title': 'Premier quart',
+  'demo.welcome': 'Ta mission au dispatching : couvrir la demande du jour, bloc par bloc.',
+  'demo.board.title': 'La grille',
+  'demo.board': 'Chaque colonne est un créneau, sa hauteur la demande à couvrir.',
+  'demo.book.title': 'Le carnet d’ordres',
+  'demo.book': 'Les groupes à poser, avec leurs durées de marche.',
+  'demo.clues.title': 'Les publications du marché',
+  'demo.clues': 'Chaque indice réduit les possibilités.',
+  'demo.exchanges.title': 'La ligne d’échanges',
+  'demo.exchanges': 'Exporter vers l’Allemagne remonte la silhouette, importer la comble.',
+  'demo.margins.title': 'Autour de la grille',
+  'demo.margins': 'Les marques des publications rappellent où elles portent.',
+  'demo.tools.title': 'Les outils',
+  'demo.tools': 'Gomme, Annuler et Recommencer, pour corriger un essai.',
+  'demo.end.title': 'Grille résolue',
   'demo.step': 'La STEP pompe à 9h et turbine à 12h.',
   'demo.row0a': 'Pose un réacteur de 3 créneaux en bas à gauche.',
   'demo.row0b': 'Puis un réacteur de 3 créneaux de 9h à 15h.',
   'demo.imports': 'Les deux derniers créneaux sont importés d’Allemagne.',
   'demo.rest': 'Termine avec les réacteurs restants.',
-  'demo.end': 'Grille résolue : tu sais dispatcher.',
+  'demo.end': 'Tu sais dispatcher : la suite t’attend.',
 };

@@ -13,7 +13,7 @@ import type { Grid } from '../model/grid';
 import type { PlayState } from '../engine';
 import { TECHNIQUES, TUTORIAL, TUTORIAL_UI } from '../i18n/fr';
 import {
-  TUTORIAL_MIN_WIDTH, currentStep, expectedBoard, gate, loadRun, next, holesPath, pad, placeBubble, record, saveRun, shadePath, skip,
+  TUTORIAL_MIN_WIDTH, arrowOffset, currentStep, stepRank, expectedBoard, gate, loadRun, next, holesPath, pad, placeBubble, record, saveRun, shadePath, skip,
   startRun, union, validRun, cellBox, type Attempt, type Box, type GateResult, type KeyValue, type TutorialRun,
 } from '../tutorial';
 import type { SpotTarget, TutorialScript, TutorialStep } from '../tutorial/types';
@@ -82,9 +82,10 @@ export function mountTutorial(host: TutorialHost): TutorialController {
   layer.className = 'tut';
   layer.hidden = true;
   layer.innerHTML = `<div class="tut-block"></div><svg class="tut-shade" aria-hidden="true"><path class="tut-dim" fill-rule="evenodd"/><path class="tut-ring" fill="none"/></svg>`
-    + `<div class="tut-bubble" role="dialog" aria-label="${esc(TUTORIAL_UI.dialog)}"><div class="tut-head"><span class="tut-tech"></span><span class="tut-count"></span></div>`
+    + `<div class="tut-bubble" role="dialog" aria-labelledby="tut-title-${grid.id}"><i class="tut-arrow" aria-hidden="true"></i>`
+    + `<div class="eyebrow tut-eyebrow"></div><h2 class="tut-title" id="tut-title-${grid.id}"></h2>`
     + `<p class="tut-text" aria-live="polite"></p><p class="tut-refused" role="alert" hidden></p>`
-    + `<div class="tut-actions"><button type="button" class="tool tut-skip"></button><button type="button" class="tool on tut-next"></button></div></div>`;
+    + `<div class="tut-foot"><span class="tut-hint"></span><button type="button" class="tut-skip"></button><button type="button" class="tut-next"></button></div></div>`;
   document.body.appendChild(layer);
   const svg = layer.querySelector<SVGSVGElement>('.tut-shade')!;
   const dim = layer.querySelector<SVGPathElement>('.tut-dim')!;
@@ -92,6 +93,7 @@ export function mountTutorial(host: TutorialHost): TutorialController {
   const bubble = layer.querySelector<HTMLElement>('.tut-bubble')!;
   const nextBtn = layer.querySelector<HTMLButtonElement>('.tut-next')!;
   const skipBtn = layer.querySelector<HTMLButtonElement>('.tut-skip')!;
+  const arrow = layer.querySelector<HTMLElement>('.tut-arrow')!;
 
   const step = (): TutorialStep | null => currentStep(script, run);
   const visible = () => run.status === 'running' && wide.matches && !!step();
@@ -172,11 +174,13 @@ export function mountTutorial(host: TutorialHost): TutorialController {
     }
   }
 
+  const overlaps = (b: Box, o: Box) => b.left < o.left + o.width && o.left < b.left + b.width && b.top < o.top + o.height && o.top < b.top + b.height;
+
   /** Holes of the shade: padded target boxes, overlapping ones merged. */
   function holes(t: SpotTarget | undefined): Box[] {
     const out: Box[] = [];
     for (const b of targetBoxes(t).filter((x) => x.width > 0 && x.height > 0).map((x) => pad(x, 6))) {
-      const hit = out.findIndex((o) => b.left < o.left + o.width && o.left < b.left + b.width && b.top < o.top + o.height && o.top < b.top + b.height);
+      const hit = out.findIndex((o) => overlaps(b, o));
       if (hit >= 0) out[hit] = union([out[hit]!, b])!;
       else out.push(b);
     }
@@ -191,16 +195,23 @@ export function mountTutorial(host: TutorialHost): TutorialController {
     if (layer.hidden || !s) return;
     const guided = s.kind === 'guided';
     layer.classList.toggle('guided', guided);
-    const tech = guided ? TECHNIQUES[s.technique]?.name ?? '' : '';
-    layer.querySelector('.tut-tech')!.textContent = tech;
-    layer.querySelector('.tut-count')!.textContent = TUTORIAL_UI.count(run.step + 1, script.steps.length);
+    const rank = stepRank(script, run);
+    layer.querySelector('.tut-eyebrow')!.textContent = rank.kind === 'discovery' ? TUTORIAL_UI.eyebrowDiscovery
+      : rank.kind === 'guided' ? TUTORIAL_UI.eyebrowGuided(rank.k, rank.n) : TUTORIAL_UI.eyebrowPresent(rank.k, rank.n);
+    const title = guided ? TECHNIQUES[s.technique]?.name ?? '' : s.title ? TUTORIAL[s.title] ?? '' : '';
+    const titleEl = layer.querySelector<HTMLElement>('.tut-title')!;
+    titleEl.textContent = title;
+    titleEl.hidden = !title;
     layer.querySelector('.tut-text')!.innerHTML = richText(TUTORIAL[s.text] ?? s.text);
     const ref = layer.querySelector<HTMLElement>('.tut-refused')!;
     ref.hidden = !refusal;
     ref.textContent = refusal;
+    const hint = layer.querySelector<HTMLElement>('.tut-hint')!;
+    hint.textContent = guided ? TUTORIAL_UI.hint[s.moves[0]?.action ?? 'place'] : '';
+    hint.hidden = !guided;
     nextBtn.hidden = guided;
     nextBtn.textContent = run.step + 1 >= script.steps.length ? TUTORIAL_UI.finish : TUTORIAL_UI.next;
-    skipBtn.textContent = script.kind === 'intro' ? TUTORIAL_UI.skip : TUTORIAL_UI.skipDiscovery;
+    skipBtn.textContent = script.kind === 'discovery' ? TUTORIAL_UI.close : TUTORIAL_UI.skip;
     if (run.step !== lastStep) {
       lastStep = run.step;
       bringIntoView(s);
@@ -227,15 +238,28 @@ export function mountTutorial(host: TutorialHost): TutorialController {
     svg.setAttribute('viewBox', `0 0 ${view.width} ${view.height}`);
     svg.setAttribute('width', String(view.width));
     svg.setAttribute('height', String(view.height));
-    dim.setAttribute('d', shadePath(view, hs));
+    // A guided bubble (side auto) sits under the order book, which stays unveiled: the board is free
+    // and the plants at hand.
+    const bookEl = s.kind === 'guided' && (s.side ?? 'auto') === 'auto' ? screen.querySelector('[data-tutorial="book"]') : null;
+    const book = bookEl ? pad(bookEl.getBoundingClientRect(), 6) : null;
+    const veil = book && !hs.some((h) => overlaps(h, book)) ? [...hs, book] : hs;
+    dim.setAttribute('d', shadePath(view, veil));
     ring.setAttribute('d', holesPath(hs));
     const size = { width: bubble.offsetWidth, height: bubble.offsetHeight };
-    // A guided bubble (side auto) sits under the order book: the board stays free and the plants at hand.
-    const book = s.kind === 'guided' && (s.side ?? 'auto') === 'auto' ? screen.querySelector('[data-tutorial="book"]') : null;
-    const p = book ? placeBubble(book.getBoundingClientRect(), size, view, 'bottom') : placeBubble(union(hs), size, view, s.side ?? 'auto');
+    const anchor = book ?? union(hs);
+    const p = book ? placeBubble(book, size, view, 'bottom') : placeBubble(anchor, size, view, s.side ?? 'auto');
     bubble.style.left = `${Math.round(p.left)}px`;
     bubble.style.top = `${Math.round(p.top)}px`;
     bubble.dataset.side = p.side;
+    // The arrow points at the target only when the bubble sits beside it (not under the order book).
+    const towards = p.side === 'center' || !anchor || book ? null : ({ bottom: 'top', top: 'bottom', right: 'left', left: 'right' } as const)[p.side];
+    arrow.hidden = !towards;
+    if (towards && anchor) {
+      arrow.dataset.edge = towards;
+      const off = arrowOffset(towards, p, size, anchor);
+      arrow.style.left = towards === 'top' || towards === 'bottom' ? `${Math.round(off)}px` : '';
+      arrow.style.top = towards === 'left' || towards === 'right' ? `${Math.round(off)}px` : '';
+    }
   }
 
   const schedule = () => {

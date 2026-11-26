@@ -10,7 +10,7 @@
  *
  * Example:
  *   const s: TutorialScript = { gridId: 101, kind: 'intro', next: 102, steps: [
- *     { kind: 'present', text: 'intro.board', target: { kind: 'anchor', anchor: 'board' } },
+ *     { kind: 'present', title: 'intro.board.title', text: 'intro.board', target: { kind: 'anchor', anchor: 'board' } },
  *     { kind: 'guided', technique: 'swap', text: 'intro.solve1',
  *       target: { kind: 'board', cols: [0, 7], rows: [0, 0] },
  *       moves: [{ action: 'place', bar: { piece: 'N', row: 0, col: 0, len: 8 } }] },
@@ -62,8 +62,13 @@ export type ExpectedMove =
 export type BubbleSide = 'auto' | 'top' | 'bottom' | 'left' | 'right';
 
 interface StepBase {
-  /** Bubble text. 1-2 sentences, 25 words at most. */
+  /** Bubble text. 1-2 sentences, 25 words at most, no bold markup. */
   text: TextKey;
+  /**
+   * Bubble title (`<text key>.title` by convention): the element shown. Required on presentation
+   * and discovery steps; a guided step has none, its title is the technique name.
+   */
+  title?: TextKey;
   /** Highlighted element or zone; none = centered bubble over a dimmed screen. */
   target?: SpotTarget;
   side?: BubbleSide;
@@ -80,7 +85,7 @@ export interface PresentStep extends StepBase {
  */
 export interface GuidedStep extends StepBase {
   kind: 'guided';
-  /** §9 technique applied at this step: key of `TECHNIQUES` in fr.ts, its name shown in bold. */
+  /** §9 technique applied at this step: key of `TECHNIQUES` in fr.ts; its name is the bubble title. */
   technique: string;
   moves: readonly ExpectedMove[];
 }

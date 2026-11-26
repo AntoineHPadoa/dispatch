@@ -10,7 +10,7 @@ import { TECHNIQUES, TUTORIAL } from '../src/i18n/fr';
 import { initialState } from '../src/ui/game';
 import { richText, sameBoard } from '../src/ui/tutorial';
 import {
-  SCRIPTS, TUTORIAL_KEY, applyMove, cellBox, currentStep, expectedBoard, gate, loadRun, next, parseRuns, placeBubble,
+  SCRIPTS, TUTORIAL_KEY, applyMove, arrowOffset, stepRank, cellBox, currentStep, expectedBoard, gate, loadRun, next, parseRuns, placeBubble,
   record, saveRun, shadePath, skip, startRun, union, validRun, type Attempt, type KeyValue, type TutorialRun,
 } from '../src/tutorial';
 import type { TutorialScript } from '../src/tutorial/types';
@@ -53,6 +53,7 @@ describe('shipped scripts', () => {
     expect(grids.some((g) => g.id === s.gridId)).toBe(true);
     for (const st of s.steps) {
       expect(TUTORIAL[st.text], st.text).toBeTruthy();
+      if (st.kind === 'present') expect(st.title && TUTORIAL[st.title], `${st.text} title`).toBeTruthy();
       if (st.kind === 'guided') {
         expect(TECHNIQUES[st.technique], st.technique).toBeTruthy();
         expect(st.moves.length).toBeGreaterThan(0);
@@ -162,6 +163,13 @@ describe('run progress', () => {
     expect(end.bars).toHaveLength(2);
   });
 
+  it('stepRank counts present and guided steps apart; a discovery script has no count', () => {
+    expect(stepRank(script, at(0))).toEqual({ kind: 'present', k: 1, n: 2 });
+    expect(stepRank(script, at(3))).toEqual({ kind: 'guided', k: 3, n: 3 });
+    expect(stepRank(script, at(4))).toEqual({ kind: 'present', k: 2, n: 2 });
+    expect(stepRank({ ...script, kind: 'discovery' }, at(0)).kind).toBe('discovery');
+  });
+
   it('expectedBoard is null when the script does not replay', () => {
     const bad: TutorialScript = { ...script, steps: [{ kind: 'guided', technique: 'room', text: 'x', moves: [{ action: 'place', bar: N(0, 0, 2) }] }] };
     expect(expectedBoard(grid, bad, at(1), newGame(grid))).toBeNull();
@@ -241,6 +249,13 @@ describe('spotlight geometry', () => {
     expect(huge.left).toBeGreaterThanOrEqual(12);
     expect(huge.top).toBeGreaterThanOrEqual(12);
     expect(huge.top + bubble.height).toBeLessThanOrEqual(800 - 12);
+  });
+
+  it('arrowOffset aims at the target centre, away from the corners', () => {
+    const t = { left: 500, top: 100, width: 100, height: 40 };
+    expect(arrowOffset('top', { left: 400, top: 160 }, bubble, t)).toBe(150);
+    expect(arrowOffset('top', { left: 600, top: 160 }, bubble, t)).toBe(18);
+    expect(arrowOffset('left', { left: 620, top: 0 }, bubble, t)).toBe(102);
   });
 
   it('placeBubble centres the bubble without a target', () => {

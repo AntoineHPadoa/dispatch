@@ -340,21 +340,30 @@ body.print-preview #print-root .a4 { box-shadow: 0 2px 18px rgba(59, 51, 64, .12
 .tut-block { position: absolute; inset: 0; pointer-events: auto; }
 .tut.guided .tut-block { display: none; }
 .tut-shade { position: absolute; inset: 0; overflow: visible; }
-.tut-dim { fill: rgba(59, 51, 64, .55); transition: fill .2s; }
-.tut.guided .tut-dim { fill: rgba(59, 51, 64, .22); }
-.tut-ring { stroke: var(--accent); stroke-width: 2.5; }
-.tut-bubble { position: absolute; pointer-events: auto; width: min(340px, calc(100vw - 24px)); background: var(--card); border: 1px solid var(--hair); border-radius: 16px; padding: 14px 16px 12px; box-shadow: 0 10px 30px rgba(59, 51, 64, .22); }
-.tut-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; min-height: 1em; }
-.tut-tech { font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); font-weight: 800; }
-.tut-count { font-size: .7rem; color: var(--soft); font-weight: 700; margin-left: auto; }
-.tut-text { margin: 6px 0 0; font-size: .92rem; line-height: 1.45; }
-.tut-text b { font-weight: 800; }
-.tut-refused { margin: 8px 0 0; font-size: .8rem; color: var(--bad); font-weight: 700; }
+.tut-dim { fill: rgba(40, 28, 40, .45); }
+.tut-ring { stroke: var(--accent); stroke-width: 2; }
+.tut-bubble { position: absolute; pointer-events: auto; width: min(320px, calc(100vw - 32px)); background: #fff; color: var(--ink); border-radius: 14px; padding: 14px 16px 12px; box-shadow: 0 8px 24px rgba(40, 20, 40, .22); }
+.tut-arrow { position: absolute; width: 12px; height: 12px; background: #fff; transform: translate(-50%, -50%) rotate(45deg); }
+.tut-arrow[hidden] { display: none; }
+.tut-arrow[data-edge="top"] { top: 0; }
+.tut-arrow[data-edge="bottom"] { top: 100%; }
+.tut-arrow[data-edge="left"] { left: 0; }
+.tut-arrow[data-edge="right"] { left: 100%; }
+.tut-title { font-family: var(--f-title); font-size: 18px; font-weight: 500; line-height: 1.15; margin: 4px 0 0; }
+.tut-title[hidden] { display: none; }
+.tut-text { margin: 6px 0 0; font-size: 14.5px; line-height: 1.45; }
+.tut-refused { margin: 8px 0 0; font-size: 12.5px; color: var(--bad); font-weight: 700; }
 .tut-refused[hidden] { display: none; }
-.tut-actions { display: flex; justify-content: space-between; gap: 8px; margin-top: 12px; }
-.tut-actions .tool[hidden] { display: none; }
-.tut-next { margin-left: auto; font-weight: 800; }
+.tut-foot { display: flex; align-items: center; gap: 10px; margin-top: 12px; min-height: 30px; }
+.tut-hint { font-size: 12.5px; color: var(--soft); flex: 1; line-height: 1.3; }
+.tut-hint[hidden] { display: none; }
+.tut-skip { background: none; border: 0; padding: 4px 2px; color: var(--soft); font-size: 13px; cursor: pointer; }
+.tut-skip:hover { color: var(--ink); text-decoration: underline; }
+.tut:not(.guided) .tut-skip { margin-right: auto; }
+.tut-next { background: var(--accent); color: #fff; border: 0; border-radius: 999px; padding: 6px 14px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.tut-next:hover { background: #95496f; }
+.tut-next[hidden] { display: none; }
 .tut-bubble.shake { animation: tut-shake .3s; }
 @keyframes tut-shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-@media (prefers-reduced-motion: reduce) { .tut-bubble.shake { animation: none; } .tut-dim { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .tut-bubble.shake { animation: none; } }
 @media print { .tut { display: none !important; } }

@@ -65,6 +65,17 @@ export function placeBubble(target: Box | null, bubble: Size, view: Size, side: 
   }
 }
 
+/**
+ * Offset of the bubble's arrow along the edge facing the target (from the bubble's left or top),
+ * aimed at the target's centre and kept `inset` px from the corners.
+ */
+export function arrowOffset(side: 'top' | 'bottom' | 'left' | 'right', at: { left: number; top: number }, bubble: Size, target: Box, inset = 18): number {
+  const along = side === 'top' || side === 'bottom';
+  const centre = along ? target.left + target.width / 2 - at.left : target.top + target.height / 2 - at.top;
+  const len = along ? bubble.width : bubble.height;
+  return Math.max(inset, Math.min(centre, len - inset));
+}
+
 /** SVG path of rounded rectangles (the outlines of the holes). */
 export function holesPath(holes: readonly Box[], r = 10): string {
   let d = '';

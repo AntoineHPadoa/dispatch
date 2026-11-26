@@ -107,6 +107,14 @@ export function record(script: TutorialScript, run: TutorialRun, result: GateRes
   return played.length >= step.moves.length ? next(script, run) : { ...run, played };
 }
 
+/** Eyebrow of the bubble: rank of the step among the steps of its kind (present or guided), or discovery. */
+export function stepRank(script: TutorialScript, run: TutorialRun): { kind: 'present' | 'guided' | 'discovery'; k: number; n: number } {
+  const s = script.steps[run.step];
+  if (script.kind === 'discovery' || !s) return { kind: 'discovery', k: 0, n: 0 };
+  const same = script.steps.map((x, i) => [x, i] as const).filter(([x]) => x.kind === s.kind);
+  return { kind: s.kind, k: same.findIndex(([, i]) => i === run.step) + 1, n: same.length };
+}
+
 /** Apply one expected move to a board with the engine (null when the engine refuses it). */
 export function applyMove(grid: Grid, board: PlayState, m: ExpectedMove): PlayState | null {
   const r = m.action === 'place' ? placeOver(grid, board, m.bar)
