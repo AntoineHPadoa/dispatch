@@ -121,3 +121,58 @@
   - Code, commentaires et clés en anglais. Textes joueur seulement dans `fr.ts`.
   - En-têtes courts, sur l'état actuel. `GAME-DESIGN.md` §11 et `CLAUDE.md` sont à jour.
   - Les tests choisissent les grilles par propriété (`section`, `kind`, `next`), sans compte en dur.
+
+## Relecture des corrections (S4.3)
+
+- **Relu** : `git diff ebe5e9f..2b7e372` (`guide.ts`, `ui/tutorial.ts`, `script.ts`, `fr.ts`, `check-ui.mjs`, tests).
+- **Rejoué** : les reproductions de la review, rejouées dans Chrome sur la build de 2b7e372 (preview). Captures dans `v5-tutorial/fixes/`.
+- **Verdict** : les 14 constats sont corrigés, sans régression trouvée. **Prêt à merger.**
+
+### Contrôles du dépôt
+
+| Commande | Résultat |
+|---|---|
+| `npm test` | OK : 500 tests verts (13 fichiers), dont 4 nouveaux pour B1, A4, B2/B3 et M7 |
+| `npm run typecheck`, `npm run build` | OK |
+| `scripts/check_unique.py` | OK |
+| `check-ui.mjs` | OK : 315/315 |
+
+### Constat par constat
+
+| # | Rejoué | Résultat |
+|---|---|---|
+| B1 | Deux réacteurs de 6 sur la ligne 1. Une TAC sur un gaz (18h, ligne 2). Une TAC sur la TAC déjà posée | Corrigé : les trois sont refusés (« Pas encore : joue le coup indiqué »), la grille reste inchangée. La fin du tutoriel donne une grille `done` (8 centrales). `gate()` refuse toute pose qui remplacerait une centrale (`checkPlaceOver().replaced`). |
+| B2 | Grille 15 : poser un gaz, puis « Revoir l'explication » | Corrigé : la grille est gardée pendant et après la bulle (`b2-g15-after-replay-1280.png`). |
+| B3 | Grille 16 : un nucléaire posé à 375 px, puis élargir à 1280 px | Corrigé : la découverte s'ouvre et la centrale reste (`b3-g16-widened-1280.png`). `touchesBoard()` limite la synchronisation de la grille à l'intro. |
+| A1 | Sur-titres de l'intro | Corrigé : « Présentation · 1 / 7 » … « 7 / 7 », puis « Résolution · k / 5 ». La bulle de fin affiche « Résolution » (`a1-end-1280.png`). |
+| A2 | Échap pendant la résolution, focus sur une centrale du carnet | Corrigé : la bulle reste. Échap depuis la bulle elle-même passe le tutoriel, ce qui est voulu. |
+| A3 | Tab sur une bulle de présentation ; focus à la fermeture | Corrigé : Tab reste dans la bulle et `aria-modal` est posé. À la fermeture, le focus revient sur la grille (`.board-wrap`). |
+| A4 | 1er réacteur posé sur la ligne 2, puis rechargement | Corrigé : il reste sur la ligne 2 (`rows: {"7:0": 2}` dans le run). Le second se pose sur la ligne 1. |
+| M1 | Bulle de fin | Corrigé : pas de « Passer ». Échap termine le run (`finished`) et ouvre la grille 15. |
+| M2 | Découverte d'une bulle (grille 15) | Corrigé : seul « Terminer » est affiché. |
+| M3 | Grille 22 | Corrigé : « Dernière grille » dans le texte de la grille et dans la bulle. |
+| M4 | `intro.tools` | Corrigé : « Ils serviront ensuite : d'abord, on résout ensemble. » (23 mots). |
+| M5 | En-tête de `guide.ts` | Corrigé : l'exemple suit les signatures (`applyMove`, `record(script, run, g)`). |
+| M6 | Grille 22 | Corrigé : bulle à droite, grille dégagée (`m6-g22-1280.png`). |
+| M7 | Limite de 25 mots | Corrigé : un test Vitest vérifie chaque bulle. |
+
+### Relecture du diff
+
+- **`rows`**
+  - Le run garde la ligne choisie, clé `<étape>:<coup>`.
+  - Il est validé à la lecture (`isRun`) et conservé par `next()` et `skip()`.
+  - `startRun()` le remet à zéro, à la relance comme au bouton « Tutoriel ».
+  - `expectedBoard()` le rejoue.
+- **Refus d'une pose qui écraserait** : il ne joue que pendant une étape guidée de l'intro, car `guard()` rend `OPEN` quand la bulle est cachée. Le jeu libre et les découvertes ne changent pas.
+- **Clavier**
+  - Le piège de Tab et la gestion d'Entrée ne valent que sur une étape de présentation.
+  - Sur une étape guidée, le clavier reste au jeu : curseur de la grille, Échap qui annule un geste.
+
+### Réserve de s2 : « Revoir le tutoriel » remet la grille 14 à zéro
+
+- **Rejoué** : sur une grille 14 finie, « Revoir le tutoriel » vide la grille. Le statut reste `done` dans `dispatch:progress:v1`, même après « Passer » et un rechargement (`reserve-g14-reload-1280.png`).
+- **Avis : acceptable.**
+  - Le geste est explicite et son libellé dit qu'on refait le tutoriel.
+  - La résolution guidée doit repartir de la grille vide.
+  - La grille 14 n'est dans aucun dossier, et son statut `done` n'est pas perdu.
+- **Seul effet visible** : une grille 14 marquée finie mais affichée vide si le joueur passe le tutoriel relancé. C'est cohérent avec un nouveau départ.
