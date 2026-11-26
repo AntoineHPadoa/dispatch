@@ -149,7 +149,7 @@ export function mountTutorial(host: TutorialHost): TutorialController {
     return [u];
   }
 
-  /** Under the cells: hours, price marks and records, down to the exchange line. */
+  /** Under the cells, over the columns' width: hours, price marks and records, down to the exchange line. */
   function marginBoxes(): Box[] {
     const b = boardSvg();
     if (!b) return [];
@@ -157,7 +157,7 @@ export function mountTutorial(host: TutorialHost): TutorialController {
     const bottomOfCells = cells.top + cells.height;
     const pills = exchangeBoxes(null, null)[0];
     const bottom = pills ? pills.top - 2 : b.box.top + b.box.height;
-    return [{ left: b.box.left, top: bottomOfCells, width: b.box.width, height: Math.max(0, bottom - bottomOfCells) }];
+    return [{ left: cells.left, top: bottomOfCells, width: cells.width, height: Math.max(0, bottom - bottomOfCells) }];
   }
 
   function targetBoxes(t: SpotTarget | undefined): Box[] {
