@@ -8,6 +8,7 @@ import type { Grid, Placement } from '../src/model/grid';
 import { evaluate, newGame } from '../src/engine';
 import { TECHNIQUES, TUTORIAL } from '../src/i18n/fr';
 import { initialState } from '../src/ui/game';
+import { renderBoard } from '../src/ui/board';
 import { richText, sameBoard } from '../src/ui/tutorial';
 import {
   SCRIPTS, TUTORIAL_KEY, applyMove, arrowOffset, stepRank, cellBox, currentStep, expectedBoard, gate, loadRun, next, parseRuns, placeBubble,
@@ -236,6 +237,33 @@ describe('spotlight geometry', () => {
     expect(cellBox(svg, m, [5, 5]).height).toBe(200);
     // Drawn at half size.
     expect(cellBox({ ...svg, width: m.width / 2 }, m, [0, 0], [0, 0]).width).toBe(20);
+  });
+
+  it('cellBox frames the weather cells of a rendered board (rows from the bottom, weather included)', () => {
+    const g = structuredClone(grids.find((x) => x.neighbors.length > 0)!);
+    const R = g.columns.map((_, c) => (c % 3) + 1);
+    g.weather = { ...g.weather, R };
+    g.demand = g.demand.map((d, c) => d + R[c]!);
+    const cell = 50;
+    const { svg, geo } = renderBoard({ grid: g, state: initialState(g), ev: null, style: 'A', cell, interactive: true, recordChips: true });
+    // Weather rects, in user units (viewBox from (-2, -topPad)): drawn at scale 1 with the svg at (0, 0).
+    const rects = [...svg.matchAll(/<rect x="([\d.]+)" y="(-?[\d.]+)" width="([\d.]+)" height="[\d.]+" rx="[\d.]+" fill="url\(#hR/g)]
+      .map((m) => ({ left: +m[1]! + 2, top: +m[2]! + geo.topPad, width: +m[3]!, height: +m[3]! }));
+    expect(rects).toHaveLength(R.reduce((a, b) => a + b, 0));
+    const drawn = union(rects)!;
+    const m = { cell, lead: geo.lead, rows: geo.rows, top: geo.topPad, width: geo.width };
+    const cut = cellBox({ left: 0, top: 0, width: geo.width, height: geo.height }, m, [0, g.columns.length - 1], [0, Math.max(...R) - 1]);
+    // The cut is the cells' squares; the drawn tiles sit inside with the same gap on every side.
+    const gap = drawn.left - cut.left;
+    expect(gap).toBeGreaterThanOrEqual(0);
+    expect(gap).toBeLessThan(cell / 10);
+    expect(drawn.top - cut.top).toBeCloseTo(gap, 5);
+    expect(cut.left + cut.width - (drawn.left + drawn.width)).toBeCloseTo(gap, 5);
+    expect(cut.top + cut.height - (drawn.top + drawn.height)).toBeCloseTo(gap, 5);
+    // One row: the bottom row of the grid only.
+    const row0 = cellBox({ left: 0, top: 0, width: geo.width, height: geo.height }, m, [0, 0], [0, 0]);
+    const first = rects.filter((r) => Math.abs(r.left - drawn.left) < 1).sort((a, b) => b.top - a.top)[0]!;
+    expect(first.top - row0.top).toBeCloseTo(gap, 5);
   });
 
   it('placeBubble: below by default, else the side with room, always inside the viewport', () => {

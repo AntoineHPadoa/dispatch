@@ -291,6 +291,11 @@ export function mountTutorial(host: TutorialHost): TutorialController {
   document.addEventListener('keydown', onKey, true);
   window.addEventListener('resize', schedule);
   window.addEventListener('scroll', schedule, { capture: true, passive: true });
+  // Late layout changes (web fonts, panels growing) move the targets without any scroll or resize.
+  const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(schedule) : null;
+  ro?.observe(screen);
+  ro?.observe(document.documentElement);
+  void document.fonts?.ready.then(schedule);
   const onWidth = () => { if (wide.matches) sync(); refusal = ''; lastStep = -1; render(); };
   wide.addEventListener('change', onWidth);
 
@@ -324,6 +329,7 @@ export function mountTutorial(host: TutorialHost): TutorialController {
     },
     destroy() {
       if (frame) cancelAnimationFrame(frame);
+      ro?.disconnect();
       document.removeEventListener('keydown', onKey, true);
       window.removeEventListener('resize', schedule);
       window.removeEventListener('scroll', schedule, { capture: true });

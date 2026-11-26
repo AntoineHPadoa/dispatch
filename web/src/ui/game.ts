@@ -269,6 +269,8 @@ export function mountGame(root: HTMLElement, grid: Grid, ctx: GameContext): () =
     wrap.classList.toggle('erasing', erase);
     syncSlider();
     drawMessage(pv);
+    // The board may change size (fit, exports): the spotlight follows it.
+    tutorial?.refresh();
   }
 
   /** Wide boards (touch-action none while placing) scroll with a slider under the grid. */
