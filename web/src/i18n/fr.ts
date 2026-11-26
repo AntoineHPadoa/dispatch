@@ -291,7 +291,7 @@ export const TUTORIAL_LORE: Record<number, string> = {
   19: 'La vieille centrale à charbon peut pousser jusqu’à 2 GW quand la pointe l’exige.',
   20: 'La centrale à charbon est lente à se réveiller : elle démarre doucement et s’éteint de même.',
   21: 'Le quota carbone du jour est serré : chaque bloc de gaz compte, le nucléaire ne coûte rien.',
-  22: 'Dernier dossier : la STEP et la ligne vers l’Italie travaillent ensemble pour boucler la journée.',
+  22: 'Dernière grille : la STEP et la ligne vers l’Italie travaillent ensemble pour boucler la journée.',
 };
 
 /** Name of the `given` trace step (an engaged plant), not a technique the player learns. */
@@ -538,6 +538,8 @@ export const TUTORIAL_UI = {
   eyebrowPresent: (k: number, n: number) => `Présentation · ${k} / ${n}`,
   eyebrowGuided: (k: number, n: number) => `Résolution · ${k} / ${n}`,
   eyebrowDiscovery: 'Nouveau',
+  /** Eyebrow of the bubble after the guided solve. */
+  eyebrowEnd: 'Résolution',
   /** Reminder of a guided step, by the action of its first expected move. */
   hint: {
     place: 'Pose la centrale dans la zone surlignée.',
@@ -573,7 +575,7 @@ export const TUTORIAL: Record<string, string> = {
   'intro.clues.title': 'Les publications',
   'intro.margins': 'Chaque publication se lit aussi sous son créneau : le prix de 0h, le relevé de 15h. Un coup d’œil suffit.',
   'intro.margins.title': 'Au bord de la grille',
-  'intro.tools': 'Gomme pour retirer, Annuler pour revenir d’un coup, Recommencer pour repartir à zéro. À toi, je reste à côté.',
+  'intro.tools': 'Gomme pour retirer, Annuler pour revenir d’un coup, Recommencer pour repartir à zéro. Ils serviront ensuite : d’abord, on résout ensemble.',
   'intro.tools.title': 'Tes outils',
   'intro.reactors': 'À 0h, la bourse dit nucléaire : rien de plus cher ne tourne. Deux blocs, donc deux réacteurs de 6. Lance-les à 0h.',
   'intro.dam': 'RTE relève un barrage à 15h, et il ne reste qu’un bloc libre dans la colonne. Il est pour lui.',
@@ -600,6 +602,6 @@ export const TUTORIAL: Record<string, string> = {
   'discovery.ramp.title': 'Le charbon par paliers',
   'discovery.co2': 'Le quota carbone du jour : 4 points. Chaque bloc de gaz en coûte un, le nucléaire aucun. Garde un œil sur la jauge.',
   'discovery.co2.title': 'Plafond CO₂',
-  'discovery.coupled': 'Dernier dossier : la STEP et les exports se répondent. Les publications disent combien, à toi de dire où.',
+  'discovery.coupled': 'Dernière grille : la STEP et les exports se répondent. Les publications disent combien, à toi de dire où.',
   'discovery.coupled.title': 'STEP et exports',
 };

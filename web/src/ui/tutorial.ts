@@ -5,15 +5,19 @@
  * - Present steps block the page: « Suivant » (Enter) or « Passer le tutoriel » (Escape).
  * - Guided steps let the page through but gate every move: the game asks guard() before acting and
  *   calls played() once the engine accepted the move; any other move is refused with a message.
- * - The run (step, moves played) is saved under its own key; on load, and when the screen widens
- *   again, the board is reset to the one the run expects. Below the width threshold the overlay
+ * - The run (step, moves played) is saved under its own key. A script with guided steps (the intro)
+ *   owns the board: on load, on replay and when the screen widens again, the board is reset to the
+ *   one the run expects. A discovery never touches the board. Below the width threshold the overlay
  *   hides and the grid plays normally.
+ * - Keyboard: a present step is a modal dialog (Tab stays in the bubble, Enter goes on, Escape
+ *   skips); a guided step leaves the keyboard to the game. The focus goes back to the board when
+ *   the bubble closes.
  */
 import type { Grid } from '../model/grid';
 import type { PlayState } from '../engine';
 import { TECHNIQUES, TUTORIAL, TUTORIAL_UI } from '../i18n/fr';
 import {
-  TUTORIAL_MIN_WIDTH, arrowOffset, currentStep, stepRank, expectedBoard, gate, loadRun, next, holesPath, pad, placeBubble, record, saveRun, shadePath, skip,
+  TUTORIAL_MIN_WIDTH, arrowOffset, currentStep, stepRank, touchesBoard, expectedBoard, gate, loadRun, next, holesPath, pad, placeBubble, record, saveRun, shadePath, skip,
   startRun, union, validRun, cellBox, type Attempt, type Box, type GateResult, type KeyValue, type TutorialRun,
 } from '../tutorial';
 import type { SpotTarget, TutorialScript, TutorialStep } from '../tutorial/types';
@@ -112,7 +116,7 @@ export function mountTutorial(host: TutorialHost): TutorialController {
 
   /** Put the board where the run stands (or drop a run whose script no longer replays). */
   function sync() {
-    if (run.status !== 'running' || !wide.matches) return;
+    if (run.status !== 'running' || !wide.matches || !touchesBoard(script)) return;
     const want = expectedBoard(grid, script, run, host.initial);
     if (!want) { setRun(skip(run)); return; }
     if (!sameBoard(want, host.board())) host.restore(want);
@@ -197,13 +201,23 @@ export function mountTutorial(host: TutorialHost): TutorialController {
     const was = !layer.hidden;
     layer.hidden = !visible();
     document.body.classList.toggle('tut-on', !layer.hidden);
-    if (was === layer.hidden) host.onChange?.(!layer.hidden);
+    if (was === layer.hidden) {
+      host.onChange?.(!layer.hidden);
+      // Closed: the keyboard goes back to the board, not to the page.
+      const active = document.activeElement;
+      if (layer.hidden && (!active || active === document.body || layer.contains(active))) {
+        screen.querySelector<HTMLElement>('.board-wrap')?.focus({ preventScroll: true });
+      }
+    }
     if (layer.hidden || !s) return;
     const guided = s.kind === 'guided';
     layer.classList.toggle('guided', guided);
     const rank = stepRank(script, run);
     layer.querySelector('.tut-eyebrow')!.textContent = rank.kind === 'discovery' ? TUTORIAL_UI.eyebrowDiscovery
-      : rank.kind === 'guided' ? TUTORIAL_UI.eyebrowGuided(rank.k, rank.n) : TUTORIAL_UI.eyebrowPresent(rank.k, rank.n);
+      : rank.kind === 'end' ? TUTORIAL_UI.eyebrowEnd
+        : rank.kind === 'guided' ? TUTORIAL_UI.eyebrowGuided(rank.k, rank.n) : TUTORIAL_UI.eyebrowPresent(rank.k, rank.n);
+    if (guided) bubble.removeAttribute('aria-modal');
+    else bubble.setAttribute('aria-modal', 'true');
     const title = guided ? TECHNIQUES[s.technique]?.name ?? '' : s.title ? TUTORIAL[s.title] ?? '' : '';
     const titleEl = layer.querySelector<HTMLElement>('.tut-title')!;
     titleEl.textContent = title;
@@ -215,8 +229,11 @@ export function mountTutorial(host: TutorialHost): TutorialController {
     const hint = layer.querySelector<HTMLElement>('.tut-hint')!;
     hint.textContent = guided ? TUTORIAL_UI.hint[s.moves[0]?.action ?? 'place'] : '';
     hint.hidden = !guided;
+    const last = run.step + 1 >= script.steps.length;
     nextBtn.hidden = guided;
-    nextBtn.textContent = run.step + 1 >= script.steps.length ? TUTORIAL_UI.finish : TUTORIAL_UI.next;
+    nextBtn.textContent = last ? TUTORIAL_UI.finish : TUTORIAL_UI.next;
+    // On the last bubble « Terminer » is the only way out: skipping it would not finish the run.
+    skipBtn.hidden = last && !guided;
     skipBtn.textContent = script.kind === 'discovery' ? TUTORIAL_UI.close : TUTORIAL_UI.skip;
     if (run.step !== lastStep) {
       lastStep = run.step;
@@ -287,9 +304,25 @@ export function mountTutorial(host: TutorialHost): TutorialController {
   function onKey(e: KeyboardEvent) {
     const s = step();
     if (layer.hidden || !s) return;
-    const inBoard = (e.target as Element | null)?.closest?.('.board-wrap');
-    if (e.key === 'Escape' && !(s.kind === 'guided' && inBoard)) { e.preventDefault(); e.stopPropagation(); quit(); return; }
-    if (s.kind === 'present' && e.key === 'Enter' && e.target !== skipBtn) { e.preventDefault(); e.stopPropagation(); advance(); }
+    const inBubble = bubble.contains(e.target as Node | null);
+    // A guided step leaves Escape to the game (cancel a gesture); it skips only from the bubble itself.
+    if (e.key === 'Escape' && (s.kind === 'present' || inBubble)) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (s.kind === 'present' && run.step + 1 >= script.steps.length) advance();
+      else quit();
+      return;
+    }
+    if (s.kind !== 'present') return;
+    if (e.key === 'Enter' && e.target !== skipBtn) { e.preventDefault(); e.stopPropagation(); advance(); return; }
+    if (e.key === 'Tab') {
+      // Modal bubble: Tab cycles through its own buttons.
+      e.preventDefault();
+      e.stopPropagation();
+      const stops = [skipBtn, nextBtn].filter((b) => !b.hidden);
+      const i = stops.indexOf(document.activeElement as HTMLButtonElement);
+      stops[(i + (e.shiftKey ? -1 : 1) + stops.length) % stops.length]?.focus({ preventScroll: true });
+    }
   }
 
   nextBtn.addEventListener('click', advance);

@@ -11,7 +11,7 @@ import { gameEyebrow, initialState } from '../src/ui/game';
 import { renderBoard } from '../src/ui/board';
 import { richText, sameBoard } from '../src/ui/tutorial';
 import {
-  INTRO_GRID_ID, SCRIPTS, TUTORIAL_KEY, restartUnlessRunning, scriptFor, applyMove, arrowOffset, stepRank, cellBox, currentStep, expectedBoard, gate, loadRun, next, parseRuns, placeBubble,
+  INTRO_GRID_ID, SCRIPTS, TUTORIAL_KEY, touchesBoard, restartUnlessRunning, scriptFor, applyMove, arrowOffset, stepRank, cellBox, currentStep, expectedBoard, gate, loadRun, next, parseRuns, placeBubble,
   record, saveRun, shadePath, skip, startRun, union, validRun, type Attempt, type KeyValue, type TutorialRun,
 } from '../src/tutorial';
 import type { TutorialScript } from '../src/tutorial/types';
@@ -81,7 +81,7 @@ describe('shipped scripts', () => {
       const m = st.moves[k]!;
       const attempt: Attempt = m;
       const r = gate(g, s, run, board, attempt);
-      expect(r, `step ${run.step}`).toEqual({ ok: true, move: k });
+      expect(r, `step ${run.step}`).toMatchObject({ ok: true, move: k });
       board = applyMove(g, board, m)!;
       expect(board, `step ${run.step}`).not.toBeNull();
       run = record(s, run, r);
@@ -91,6 +91,11 @@ describe('shipped scripts', () => {
 });
 
 describe('wiring', () => {
+  it('every bubble text holds 25 words at most (review M7)', () => {
+    const words = (t: string) => t.split(/\s+/).filter((w) => /[\p{L}\d]/u.test(w)).length;
+    for (const s of SCRIPTS) for (const st of s.steps) expect(words(TUTORIAL[st.text]!), st.text).toBeLessThanOrEqual(25);
+  });
+
   it('every tutorial grid has a script; the intro grid is the « Tutoriel » one', () => {
     for (const g of grids.filter((x) => x.section === 'tutorial')) expect(scriptFor(g.id), `grid ${g.id}`).not.toBeNull();
     expect(scriptFor(INTRO_GRID_ID)?.kind).toBe('intro');
@@ -136,7 +141,7 @@ describe('strict gate', () => {
   });
 
   it('anyRow matches the bar on another row', () => {
-    expect(gate(grid, script, at(2), b0, { action: 'place', bar: N(2, 0, 3) })).toEqual({ ok: true, move: 0 });
+    expect(gate(grid, script, at(2), b0, { action: 'place', bar: N(2, 0, 3) })).toEqual({ ok: true, move: 0, row: 2 });
   });
 
   it('export taps climb to the expected value, then complete the move', () => {
@@ -152,6 +157,17 @@ describe('strict gate', () => {
     expect(gate(grid, script, at(3), b0, { action: 'pump', col: 1 }).ok).toBe(false);
     expect(gate(grid, script, at(3), b0, { action: 'turbine', pump: 0, col: 3 })).toEqual({ ok: true, move: 0 });
     expect(gate(grid, script, at(3), b0, { action: 'turbine', pump: 0, col: 4 }).ok).toBe(false);
+  });
+
+  it('a pose that would replace a plant is refused, even an anyRow match (review B1)', () => {
+    const b1 = applyMove(grid, b0, { action: 'place', bar: N(1, 0, 3) })!;
+    // Step 2 expects N(1,0,3) on any row: laying it again on row 1 would replace the first one.
+    expect(gate(grid, script, at(2, [1]), b1, { action: 'place', bar: N(1, 0, 3) }).ok).toBe(false);
+    const s2: TutorialScript = { gridId: 99, kind: 'intro', steps: [{ kind: 'guided', technique: 'room', text: 'x', moves: [
+      { action: 'place', bar: N(0, 0, 3), anyRow: true }, { action: 'place', bar: N(1, 0, 3), anyRow: true }] }] };
+    const once = applyMove(grid, b0, { action: 'place', bar: N(0, 0, 3) })!;
+    expect(gate(grid, s2, at(0, [0]), once, { action: 'place', bar: N(0, 0, 3) }).ok).toBe(false);
+    expect(gate(grid, s2, at(0, [0]), once, { action: 'place', bar: N(1, 0, 3) })).toEqual({ ok: true, move: 1, row: 1 });
   });
 
   it('a played move is not accepted twice', () => {
@@ -193,11 +209,33 @@ describe('run progress', () => {
     expect(end.bars).toHaveLength(2);
   });
 
-  it('stepRank counts present and guided steps apart; a discovery script has no count', () => {
-    expect(stepRank(script, at(0))).toEqual({ kind: 'present', k: 1, n: 2 });
+  it('stepRank counts presentation and guided steps apart; the bubble after the solve is the end (review A1)', () => {
+    expect(stepRank(script, at(0))).toEqual({ kind: 'present', k: 1, n: 1 });
     expect(stepRank(script, at(3))).toEqual({ kind: 'guided', k: 3, n: 3 });
-    expect(stepRank(script, at(4))).toEqual({ kind: 'present', k: 2, n: 2 });
+    expect(stepRank(script, at(4)).kind).toBe('end');
     expect(stepRank({ ...script, kind: 'discovery' }, at(0)).kind).toBe('discovery');
+  });
+
+  it('expectedBoard keeps the row the player chose for an anyRow move (review A4)', () => {
+    const s2: TutorialScript = { gridId: 99, kind: 'intro', steps: [
+      { kind: 'guided', technique: 'room', text: 'x', moves: [{ action: 'place', bar: N(0, 0, 3), anyRow: true }, { action: 'place', bar: N(0, 0, 6) }] },
+      { kind: 'present', text: 'y' }] };
+    // The player lays the script's « row 0 » bar on row 1.
+    const r = record(s2, at(0), { ok: true, move: 0, row: 1 });
+    expect(r.rows).toEqual({ '0:0': 1 });
+    const b = expectedBoard(grid, s2, r, newGame(grid))!;
+    expect(b.bars.map((x) => `${x.row}:${x.col}:${x.len}`)).toEqual(['1:0:3']);
+    // Kept through the next step and storage.
+    const later = record(s2, r, { ok: true, move: 1 });
+    expect(later).toMatchObject({ step: 1, rows: { '0:0': 1 } });
+    expect(expectedBoard(grid, s2, later, newGame(grid))!.bars.map((x) => x.row).sort()).toEqual([0, 1]);
+    expect(parseRuns(JSON.stringify({ 1: later }))[1]).toEqual(later);
+    expect(parseRuns(JSON.stringify({ 1: { ...later, rows: { a: -1 } } }))).toEqual({});
+  });
+
+  it('only a script with guided steps drives the board; a discovery never does (review B2, B3)', () => {
+    expect(touchesBoard(script)).toBe(true);
+    for (const s of SCRIPTS) expect(touchesBoard(s), `grid ${s.gridId}`).toBe(s.kind === 'intro');
   });
 
   it('expectedBoard is null when the script does not replay', () => {

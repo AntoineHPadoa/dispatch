@@ -5,18 +5,21 @@
  *   expect several moves, in any order). Present steps advance with next(); guided steps advance
  *   when every expected move is played.
  * - Strict guiding: gate() refuses any attempt that is not one of the step's unplayed moves (undo,
- *   reset, eraser and STEP tag removal included). Export taps (+1 each) are accepted while they
- *   climb towards the expected value; a STEP pair is two taps (pump, then turbine).
- * - expectedBoard() replays the script's moves from the initial board, so a reload resumes on the
- *   exact board the run expects, whatever the progress store holds.
+ *   reset, eraser and STEP tag removal included), and any pose that would replace a plant already
+ *   laid. Export taps (+1 each) are accepted while they climb towards the expected value; a STEP pair
+ *   is two taps (pump, then turbine).
+ * - expectedBoard() replays the script's moves from the initial board (with the row the player chose
+ *   for `anyRow` moves), so a reload resumes on the exact board the run expects. Only a script with
+ *   guided steps owns the board (touchesBoard): a discovery never changes it.
  * - Runs are stored under their own localStorage key (never the progress key), guarded by try/catch.
  *
  * Example:
  *   let run = startRun();
- *   if (gate(grid, script, run, board, attempt).ok) { board = apply(...); run = record(grid, script, run, board, attempt); }
+ *   const g = gate(grid, script, run, board, attempt);
+ *   if (g.ok) { board = applyMove(grid, board, attempt); run = record(script, run, g); }
  */
 import type { Grid, Placement } from '../model/grid';
-import { addStep, barIndexAt, exportsAt, placeOver, remove, setExport, type PlayState } from '../engine';
+import { addStep, barIndexAt, checkPlaceOver, exportsAt, placeOver, remove, setExport, type PlayState } from '../engine';
 import type { ExpectedMove, GuidedStep, TutorialScript, TutorialStep } from './types';
 
 /** Screen width from which the tutorial runs (below it, the grid plays normally). */
@@ -30,6 +33,8 @@ export interface TutorialRun {
   step: number;
   /** Indexes (in the current guided step's `moves`) already played. */
   played: number[];
+  /** Row the player chose for each `anyRow` move played, by `<step>:<move>`. */
+  rows?: Record<string, number>;
 }
 
 /** What the player tries on the board. `value` of setExport is the value after the tap. */
@@ -40,7 +45,8 @@ export type Attempt =
   | { action: 'tool'; tool: 'erase' | 'undo' | 'reset' }
   | { action: 'removeStep' };
 
-export type GateResult = { ok: true; move: number | null } | { ok: false };
+/** `move`: index of the completed expected move (null on a partial one); `row`: the row laid, for an `anyRow` pose. */
+export type GateResult = { ok: true; move: number | null; row?: number } | { ok: false };
 
 export const startRun = (): TutorialRun => ({ status: 'running', step: 0, played: [] });
 
@@ -54,8 +60,11 @@ const isGuided = (s: TutorialStep | null): s is GuidedStep => s?.kind === 'guide
 export function next(script: TutorialScript, run: TutorialRun): TutorialRun {
   if (run.status !== 'running') return run;
   const step = run.step + 1;
-  return step >= script.steps.length ? { status: 'finished', step, played: [] } : { status: 'running', step, played: [] };
+  return { ...run, status: step >= script.steps.length ? 'finished' : 'running', step, played: [] };
 }
+
+/** Does the script drive the board (guided steps)? A discovery only shows bubbles. */
+export const touchesBoard = (script: TutorialScript): boolean => script.steps.some((s) => s.kind === 'guided');
 
 export const skip = (run: TutorialRun): TutorialRun => ({ ...run, status: 'skipped', played: [] });
 
@@ -86,12 +95,15 @@ function matches(grid: Grid, board: PlayState, exp: ExpectedMove, at: Attempt): 
 export function gate(grid: Grid, script: TutorialScript, run: TutorialRun, board: PlayState, at: Attempt): GateResult {
   const step = currentStep(script, run);
   if (!isGuided(step)) return { ok: false };
+  // A pose never replaces a plant while the guide runs: the expected one goes on free cells.
+  if (at.action === 'place' && checkPlaceOver(grid, board, at.bar).replaced.length) return { ok: false };
   const k = step.moves.findIndex((m, i) => !run.played.includes(i) && matches(grid, board, m, at));
   if (k < 0) return { ok: false };
   const exp = step.moves[k]!;
   const complete = exp.action === 'setExport' ? at.action === 'setExport' && at.value === exp.value
     : exp.action === 'addStep' ? at.action !== 'pump'
       : true;
+  if (exp.action === 'place' && exp.anyRow && at.action === 'place') return { ok: true, move: k, row: at.bar.row };
   return { ok: true, move: complete ? k : null };
 }
 
@@ -104,15 +116,23 @@ export function record(script: TutorialScript, run: TutorialRun, result: GateRes
   const step = currentStep(script, run);
   if (!isGuided(step)) return run;
   const played = [...run.played, result.move];
-  return played.length >= step.moves.length ? next(script, run) : { ...run, played };
+  const rows = result.row === undefined ? run.rows : { ...run.rows, [`${run.step}:${result.move}`]: result.row };
+  const after = { ...run, played, ...(rows ? { rows } : {}) };
+  return played.length >= step.moves.length ? next(script, after) : after;
 }
 
-/** Eyebrow of the bubble: rank of the step among the steps of its kind (present or guided), or discovery. */
-export function stepRank(script: TutorialScript, run: TutorialRun): { kind: 'present' | 'guided' | 'discovery'; k: number; n: number } {
+/**
+ * Eyebrow of the bubble: rank among the presentation steps (those before the first guided step) or
+ * among the guided steps; a presentation step after the solve is the end bubble; or discovery.
+ */
+export function stepRank(script: TutorialScript, run: TutorialRun): { kind: 'present' | 'guided' | 'end' | 'discovery'; k: number; n: number } {
   const s = script.steps[run.step];
   if (script.kind === 'discovery' || !s) return { kind: 'discovery', k: 0, n: 0 };
-  const same = script.steps.map((x, i) => [x, i] as const).filter(([x]) => x.kind === s.kind);
-  return { kind: s.kind, k: same.findIndex(([, i]) => i === run.step) + 1, n: same.length };
+  const firstGuided = script.steps.findIndex((x) => x.kind === 'guided');
+  const kind = s.kind === 'guided' ? 'guided' : firstGuided >= 0 && run.step > firstGuided ? 'end' : 'present';
+  const same = script.steps.map((_, i) => i).filter((i) => (kind === 'guided' ? script.steps[i]!.kind === 'guided'
+    : kind === 'present' ? script.steps[i]!.kind === 'present' && (firstGuided < 0 || i < firstGuided) : i === run.step));
+  return { kind, k: same.indexOf(run.step) + 1, n: same.length };
 }
 
 /** Apply one expected move to a board with the engine (null when the engine refuses it). */
@@ -134,8 +154,11 @@ export function expectedBoard(grid: Grid, script: TutorialScript, run: TutorialR
   for (let i = 0; i <= last && board; i++) {
     const s = script.steps[i] ?? null;
     if (!isGuided(s)) continue;
-    const moves = i < run.step ? s.moves : s.moves.filter((_, k) => run.played.includes(k));
-    for (const m of moves) { if (board) board = applyMove(grid, board, m); }
+    s.moves.forEach((m, k) => {
+      if (!board || (i === run.step && !run.played.includes(k))) return;
+      const row = m.action === 'place' && m.anyRow ? run.rows?.[`${i}:${k}`] : undefined;
+      board = applyMove(grid, board, row === undefined || m.action !== 'place' ? m : { ...m, bar: { ...m.bar, row } });
+    });
   }
   return board;
 }
@@ -156,7 +179,8 @@ const isRun = (v: unknown): v is TutorialRun => {
   const r = v as Record<string, unknown>;
   return (r.status === 'running' || r.status === 'finished' || r.status === 'skipped')
     && Number.isInteger(r.step) && (r.step as number) >= 0
-    && Array.isArray(r.played) && r.played.every((k) => Number.isInteger(k) && k >= 0);
+    && Array.isArray(r.played) && r.played.every((k) => Number.isInteger(k) && k >= 0)
+    && (r.rows === undefined || (typeof r.rows === 'object' && r.rows !== null && Object.values(r.rows).every((x) => Number.isInteger(x) && (x as number) >= 0)));
 };
 
 export function parseRuns(raw: string | null): RunMap {

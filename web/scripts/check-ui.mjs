@@ -5,7 +5,8 @@
 // - Tutorial (from 1024 px): the intro grid is played through its script (src/tutorial/script.ts, read
 //   by Node's type stripping): every bubble lit on its target, a wrong move refused, the guided moves
 //   accepted, the end opens the next grid; on the other tutorial grids the discovery bubbles show
-//   and close, then the solution is laid as usual. Below 1024 px no bubble shows. The home
+//   and close, then the solution is laid as usual; replaying them, or widening a phone game to
+//   1280 px, leaves the board as it is. Below 1024 px no bubble shows. The home
 //   « Tutoriel » button opens the intro.
 // - Print: one A4 page per grid published today (#/imprimer/tout).
 // - Captures (start and verdict of each grid, home) and results.json go to the output folder.
@@ -148,6 +149,9 @@ const tut = (p) => p.evaluate(() => {
   };
 });
 
+/** Bars laid on a grid, as saved in the progress store. */
+const progressOf = (p, id) => p.evaluate((gid) => JSON.stringify(JSON.parse(localStorage.getItem('dispatch:progress:v1') ?? '{}').grids?.[gid]?.state?.bars ?? []), String(id));
+
 /** Present steps: lit on their target, bubble on screen, then « Suivant ». */
 async function presentStep(p, tag, k, st) {
   const t = await tut(p);
@@ -182,10 +186,22 @@ async function playIntro(p, g, script) {
       await p.screenshot({ path: `${OUT}/tutorial-intro-refused-1280.png` });
     }
     const before = (await tut(p)).eyebrow;
-    for (const m of st.moves) {
+    for (const [j, m] of st.moves.entries()) {
       if (m.action !== 'place') { check(`${tag} step ${k + 1}: only place moves are walked`, false, m.action); continue; }
       await select(p, m.bar.piece === 'I' ? `I:${m.bar.country}` : m.bar.piece);
       await lay(p, m.bar);
+      if (j === 0 && st.moves.length > 1) {
+        // Review B1: the same pose again would replace the plant just laid; it is refused.
+        const saved = await progressOf(p, g.id);
+        await lay(p, m.bar);
+        const t = await tut(p);
+        check(`${tag} step ${k + 1}: a pose over a laid plant is refused, the board unchanged`, !!t.refused && saved === await progressOf(p, g.id), t.refused);
+        // Review A4: a reload in the middle of the step keeps the board.
+        await p.reload();
+        await p.waitForSelector('.board-svg');
+        await p.waitForTimeout(300);
+        check(`${tag} step ${k + 1}: a reload keeps the board and the step`, saved === await progressOf(p, g.id) && (await tut(p)).eyebrow === before, await progressOf(p, g.id));
+      }
     }
     const t = await tut(p);
     check(`${tag} step ${k + 1}: the guided moves are accepted, the next step opens`, !t.refused && t.eyebrow !== before, `${before} -> ${t.eyebrow} ${t.refused}`);
@@ -278,6 +294,23 @@ for (const w of WIDTHS) {
     await q.waitForTimeout(200);
     check(`${tag} solution -> verdict`, await banner(q), await message(q));
     check(`${tag} no horizontal scroll after the verdict`, (await hscroll(q)) <= 0, await hscroll(q));
+    if (script?.kind === 'discovery') {
+      const solved = await progressOf(q, g.id);
+      if (w >= TUTORIAL_MIN_WIDTH) {
+        // Review B2: replaying the explanation of a finished grid leaves the board as it is.
+        await q.click('.play [data-tool="replay"]');
+        await q.waitForTimeout(200);
+        check(`${tag} « Revoir l'explication » shows the bubble, the solved board stays`, (await tut(q)).showing && solved === await progressOf(q, g.id) && await banner(q), await progressOf(q, g.id));
+        for (let k = 0; k < script.steps.length; k++) { await q.click('.tut-next'); await q.waitForTimeout(100); }
+      } else {
+        // Review B3: a grid played on a phone keeps its board when the window widens (first discovery).
+        await q.setViewportSize({ width: 1280, height: 860 });
+        await q.waitForTimeout(400);
+        check(`${tag} widened to 1280 px: the discovery opens, the board stays`, (await tut(q)).showing && solved === await progressOf(q, g.id), await progressOf(q, g.id));
+        await q.setViewportSize({ width: w, height: 860 });
+        await q.waitForTimeout(200);
+      }
+    }
     await q.evaluate(() => window.scrollTo(0, 0));
     await q.screenshot({ path: `${OUT}/g${g.id}-solved-${w}.png`, fullPage: true });
     check(`${tag} no JS or console error`, !q.errors.length, q.errors.join(' | '));

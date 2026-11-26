@@ -51,7 +51,7 @@ export const DISCOVERY: TutorialScript[] = [
     { kind: 'present', title: 'discovery.co2.title', text: 'discovery.co2', target: { kind: 'anchor', anchor: 'co2' } },
   ] },
   { gridId: 22, kind: 'discovery', steps: [
-    { kind: 'present', title: 'discovery.coupled.title', text: 'discovery.coupled', target: { kind: 'exchange', country: 'IT', cols: [0, 7] } },
+    { kind: 'present', title: 'discovery.coupled.title', text: 'discovery.coupled', target: { kind: 'exchange', country: 'IT', cols: [0, 7] }, side: 'right' },
   ] },
 ];
 
